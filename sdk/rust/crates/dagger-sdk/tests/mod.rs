@@ -1,5 +1,5 @@
 use dagger_sdk::{
-    connect, connect_opts,
+    connect_legacy, connect_opts,
     core::{config, gql_client::GraphQlExtension, graphql_client::GraphQLError},
     errors::DaggerError,
     logging::StdLogger,
@@ -43,7 +43,7 @@ fn feature_2_test_foundations_record_boundaries_and_persist_256_cases() {
 
 #[tokio::test]
 async fn test_error_parsing() {
-    connect(|client| async move {
+    connect_legacy(|client| async move {
         let alpine = client.container().from("alpine:3.16.2");
 
         let err = alpine
@@ -164,7 +164,7 @@ async fn test_default_config_connects() {
 
 #[tokio::test]
 async fn test_example_container() {
-    connect(|client| async move {
+    connect_legacy(|client| async move {
         let alpine = client.container().from("alpine:3.16.2");
 
         let out = alpine
@@ -183,7 +183,7 @@ async fn test_example_container() {
 
 #[tokio::test]
 async fn test_directory() {
-    connect(|client| async move {
+    connect_legacy(|client| async move {
         let contents = client
             .directory()
             .with_new_file("/hello.txt", "world")
@@ -202,7 +202,7 @@ async fn test_directory() {
 
 #[tokio::test]
 async fn test_git() {
-    connect(|client| async move {
+    connect_legacy(|client| async move {
         let tree = client.git("github.com/dagger/dagger").branch("main").tree();
 
         let _ = tree
@@ -226,7 +226,7 @@ async fn test_git() {
 
 #[tokio::test]
 async fn test_container() {
-    connect(|client| async move {
+    connect_legacy(|client| async move {
         let alpine = client.container().from("alpine:3.16.2");
 
         let contents = alpine.file("/etc/alpine-release").contents().await.unwrap();
@@ -248,7 +248,7 @@ async fn test_container() {
 // Test that a Container can be loaded from its ID via node() + inline fragment.
 #[tokio::test]
 async fn test_node_load_container() {
-    connect(|client| async move {
+    connect_legacy(|client| async move {
         let id = client.container().from("alpine:3.16.2").id().await.unwrap();
 
         let loaded: dagger_sdk::Container = client.r#ref(id);
@@ -269,7 +269,7 @@ async fn test_node_load_container() {
 // Test that a Directory can be loaded from its ID via node().
 #[tokio::test]
 async fn test_node_load_directory() {
-    connect(|client| async move {
+    connect_legacy(|client| async move {
         let id = client
             .directory()
             .with_new_file("/hello.txt", "world")
@@ -291,7 +291,7 @@ async fn test_node_load_directory() {
 // Test that a File can be loaded from its ID via node().
 #[tokio::test]
 async fn test_node_load_file() {
-    connect(|client| async move {
+    connect_legacy(|client| async move {
         let id = client
             .directory()
             .with_new_file("/hello.txt", "from-id")
@@ -313,7 +313,7 @@ async fn test_node_load_file() {
 
 #[tokio::test]
 async fn test_container_sync_roundtrip() {
-    connect(|client| async move {
+    connect_legacy(|client| async move {
         let synced = client
             .container()
             .from("alpine:3.16.2")
@@ -335,7 +335,7 @@ async fn test_container_sync_roundtrip() {
 
 #[tokio::test]
 async fn test_env_variables() {
-    connect(|client| async move {
+    connect_legacy(|client| async move {
         let envs = client
             .container()
             .from("alpine:3.20.2")

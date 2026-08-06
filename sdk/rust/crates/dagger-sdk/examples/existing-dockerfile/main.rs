@@ -4,7 +4,7 @@ use rand::Rng;
 async fn main() -> eyre::Result<()> {
     let mut rng = rand::thread_rng();
 
-    dagger_sdk::connect(|client| async move {
+    dagger_sdk::connect_legacy(|client| async move {
         let context_dir = client
             .host()
             .directory("./examples/existing-dockerfile/app");

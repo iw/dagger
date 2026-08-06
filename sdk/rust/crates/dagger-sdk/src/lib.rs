@@ -7,11 +7,14 @@
 
 pub mod config;
 pub mod connection;
+mod connector;
 pub mod core;
 pub mod diagnostic;
 pub mod errors;
 pub mod graphql;
 
+mod client;
+mod lifecycle;
 pub mod logging;
 // Keeping the planning module private lets the owned client and concrete connector
 // adopt it without making that staging seam part of the stable API.
@@ -34,10 +37,6 @@ pub use graphql::{
 
 #[cfg(feature = "gen")]
 #[allow(dead_code)]
-mod client;
-
-#[cfg(feature = "gen")]
-#[allow(dead_code)]
 // Schema descriptions are external input and can contain text that rustdoc
 // interprets as links, HTML, or bare URLs.
 #[allow(
@@ -47,7 +46,6 @@ mod client;
 )]
 mod r#gen;
 
-#[cfg(feature = "gen")]
 pub use client::*;
 
 #[cfg(feature = "gen")]
@@ -117,6 +115,12 @@ mod tests {
 
 #[cfg(test)]
 mod foundation_tests;
+
+#[cfg(test)]
+mod lifecycle_tests;
+
+#[cfg(test)]
+mod connector_tests;
 
 #[cfg(test)]
 mod preflight_tests;

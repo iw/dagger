@@ -2,7 +2,7 @@
 async fn main() -> eyre::Result<()> {
     tracing_subscriber::fmt::init();
 
-    dagger_sdk::connect(|client| async move {
+    dagger_sdk::connect_legacy(|client| async move {
         let version = client
             .container()
             .from("golang:1.19")

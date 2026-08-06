@@ -208,8 +208,8 @@
     and rustdoc; require deterministic launch requests across repeated runs and zero
     side-effect events for every rejected or explicit-connection fixture.
 
-- [ ] 7. Implement the shared lifecycle, close election, request fence, and drop cleanup
-  - [ ] 7.1 Implement `SharedSession` and explicit lease accounting
+- [x] 7. Implement the shared lifecycle, close election, request fence, and drop cleanup
+  - [x] 7.1 Implement `SharedSession` and explicit lease accounting
     - Add private `LifecycleState`, `SharedSession`, and `SessionHandle` with atomic
       `Open`, `Closing`, and `Closed` state plus a separate external lease count.
     - Increment/decrement leases through manual `Clone`/`Drop`; never use
@@ -217,7 +217,7 @@
     - Document the state, lease, memory-ordering, and internal-Arc invariants with WHY
       comments at each non-obvious synchronization boundary.
     - _Requirements: 2.2–2.9, 3.1, 3.10, 4.1, 4.2, 10.11, 10.15_
-  - [ ] 7.2 Implement single-flight close and terminal-result publication
+  - [x] 7.2 Implement single-flight close and terminal-result publication
     - Elect `Open -> Closing` with one compare-exchange and launch exactly one SDK-owned
       close task; make every `Client::close` call a cancellation-safe waiter.
     - Publish one cloneable success/failure to `OnceLock` before the Release transition
@@ -227,14 +227,14 @@
       abandonment, or runtime teardown records a terminal result and invokes the abort
       backstop at most once.
     - _Requirements: 3.1–3.7, 3.10, 3.14, 4.9_
-  - [ ] 7.3 Implement lifecycle-gated request execution
+  - [x] 7.3 Implement lifecycle-gated request execution
     - Add the final Acquire gate before connection invocation, return `ClientClosed`
       without transport work once state leaves `Open`, and avoid a global request mutex.
     - Allow requests admitted before close to complete or map resource cancellation to
       `InterruptedByClose`; catch an injected execute panic as a typed redacted failure.
     - Keep caller cancellation local to that request and leave the shared session usable.
     - _Requirements: 3.11, 3.12, 8.15, 8.16, 9.12, 10.3, 10.4_
-  - [ ] 7.4 Implement non-blocking final-lease cleanup
+  - [x] 7.4 Implement non-blocking final-lease cleanup
     - When the lease decrement identifies the final handle, use the same close election
       and schedule graceful shutdown on a compatible Tokio runtime without waiting in
       `Drop`.
@@ -244,34 +244,34 @@
     - Ensure non-final drop performs no state transition and `SharedSession` retains an
       ultimate resource-drop backstop.
     - _Requirements: 4.1–4.4, 4.9–4.11_
-  - [ ] 7.5 Add a Loom lifecycle model and deterministic operation-sequence fixture
+  - [x] 7.5 Add a Loom lifecycle model and deterministic operation-sequence fixture
     - Model lease clone/drop, close election, terminal publication, waiter registration,
       request admission, abort election, and internal shutdown ownership with a simpler
       reference state machine.
     - Exercise the production-equivalent atomic protocol under Loom and retain Tokio
       barriers for async task/cancellation observations Loom cannot model.
     - _Requirements: 2.2, 2.7–2.9, 3.1–3.7, 3.10–3.12, 4.1–4.4_
-  - [ ] 7.6 Property test: Property 5 — close linearizes once
+  - [x] 7.6 Property test: Property 5 — close linearizes once
     - Implement a reference-state-machine `proptest` with at least 256 generated clone,
       close, cancel-waiter, resource-result, resource-panic, and task-abandon sequences;
       supplement it with exhaustive Loom schedules.
     - Tag: `// Feature: rust-sdk-client-lifecycle, Property 5: close linearizes once`
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.10, 3.14_
-  - [ ] 7.7 Property test: Property 7 — the close fence prevents new transport work
+  - [x] 7.7 Property test: Property 7 — the close fence prevents new transport work
     - Implement a barrier-controlled `proptest` with at least 256 request/close schedules
       and connection outcomes; compare gate order, connection-call counts, and typed
       results to the reference linearization.
     - Tag: `// Feature: rust-sdk-client-lifecycle, Property 7: the close fence prevents new transport work`
     - _Requirements: 3.11, 3.12, 8.16_
-  - [ ] 7.8 Property test: Property 8 — only the final lease initiates implicit cleanup
+  - [x] 7.8 Property test: Property 8 — only the final lease initiates implicit cleanup
     - Implement a handle-tree/reference `proptest` with at least 256 clone/derive/drop
       orders, runtime availability states, close outcomes, and abort panics; assert one
       non-blocking cleanup election and no non-final state change.
     - Tag: `// Feature: rust-sdk-client-lifecycle, Property 8: only the final lease initiates implicit cleanup`
     - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.9, 4.11_
 
-- [ ] 8. Implement connection-resource ownership, cancellation cleanup, timeouts, and owned Client wiring
-  - [ ] 8.1 Implement the internal `Connector` and armed `PendingConnection`
+- [x] 8. Implement connection-resource ownership, cancellation cleanup, timeouts, and owned Client wiring
+  - [x] 8.1 Implement the internal `Connector` and armed `PendingConnection`
     - Add a private connector seam and create an armed guard before child/process I/O
       resources can exist.
     - On ordinary failure, terminate and reap the child and join/abort every owned I/O
@@ -280,7 +280,7 @@
     - Configure the child kill-on-drop backstop and disarm the guard only when a complete
       connection resource transfers into `SharedSession`.
     - _Requirements: 4.5–4.8, 9.5, 9.6, 9.11_
-  - [ ] 8.2 Adapt new-CLI and Existing_Session resources to `EngineConnection`
+  - [x] 8.2 Adapt new-CLI and Existing_Session resources to `EngineConnection`
     - Replace the detached optional process plus GraphQL-client pair with concrete
       connection resources that own exactly the transport/process/tasks allowed by the
       Session Resource Policy.
@@ -289,7 +289,7 @@
       signal the external engine.
     - Keep Reqwest, process handles, stdin, session parameters, and credentials private.
     - _Requirements: 2.10–2.12, 3.8, 3.9, 3.13, 4.4, 10.6–10.8_
-  - [ ] 8.3 Enforce the three independent timeout boundaries
+  - [x] 8.3 Enforce the three independent timeout boundaries
     - Apply startup timeout around connector establishment, HTTP-connect timeout only in
       the SDK HTTP transport, and optional GraphQL execution timeout around each shared
       connection execute future including injected connections.
@@ -298,7 +298,7 @@
     - Route startup timeout through the armed pending guard so child termination and
       reaping follow the same cancellation path.
     - _Requirements: 7.12, 9.1–9.12_
-  - [ ] 8.4 Implement the owned Client connection facade
+  - [x] 8.4 Implement the owned Client connection facade
     - Replace callback-scoped `connect` with `connect() -> Result<Client, ConnectError>`
       and add `connect_with(ClientConfig)`; consume config and return only after a
       complete `SharedSession` exists.
@@ -307,7 +307,7 @@
     - Remove callback control flow rather than layering owned lifetime underneath a
       second stable connection model.
     - _Requirements: 2.1–2.4, 2.9, 2.13–2.15, 3.1–3.14, 8.1, 8.16_
-  - [ ] 8.5 Wire explicit connections through the owned Client
+  - [x] 8.5 Wire explicit connections through the owned Client
     - Move the boxed connection directly from `ConnectionPlan::Explicit` into
       `SharedSession` with no environment lookup, discovery, download, process creation,
       or concrete transport construction.
@@ -315,32 +315,32 @@
       the stable trait; retain its error as the typed source while ordinary output stays
       redacted.
     - _Requirements: 7.1–7.13, 10.6–10.8, 10.18_
-  - [ ] 8.6 Property test: Property 6 — close respects resource ownership
+  - [x] 8.6 Property test: Property 6 — close respects resource ownership
     - Implement a resource-event/reference `proptest` with at least 256 new-CLI and
       Existing_Session close sequences, child/task outcomes, and failures; assert the
       required ordering and absence of external-engine termination.
     - Tag: `// Feature: rust-sdk-client-lifecycle, Property 6: close respects resource ownership`
     - _Requirements: 3.8, 3.9, 3.13_
-  - [ ] 8.7 Property test: Property 9 — pending connection resources cannot escape cancellation
+  - [x] 8.7 Property test: Property 9 — pending connection resources cannot escape cancellation
     - Implement a staged-resource `proptest` with at least 256 failure, timeout, and
       cancellation points before/after child and each I/O task creation; compare
       terminate/reap/task-end events to the reference guard model.
     - Tag: `// Feature: rust-sdk-client-lifecycle, Property 9: pending connection resources cannot escape cancellation`
     - _Requirements: 4.5, 4.6, 4.7, 4.8, 9.5, 9.6, 9.11_
-  - [ ] 8.8 Property test: Property 18 — injected execution preserves its abstraction
+  - [x] 8.8 Property test: Property 18 — injected execution preserves its abstraction
     - Implement a recording-connection `proptest` with at least 256 request sequences,
       timeout choices, close outcomes, abort fallbacks, and typed injected failures;
       assert request fidelity, exact operation counts, and retained source identity.
     - Tag: `// Feature: rust-sdk-client-lifecycle, Property 18: injected execution preserves its abstraction`
     - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5, 7.12, 7.13_
-  - [ ] 8.9 Property test: Property 21 — timeout phases are independent and non-poisoning
+  - [x] 8.9 Property test: Property 21 — timeout phases are independent and non-poisoning
     - Implement a paused-time/reference `proptest` with at least 256 positive timeout
       triples, phase delays, request cancellation points, and later-success schedules;
       assert only the elapsed phase fails and reusable sessions stay open.
     - Tag: `// Feature: rust-sdk-client-lifecycle, Property 21: timeout phases are independent and non-poisoning`
     - _Requirements: 9.4, 9.7, 9.8, 9.9, 9.10, 9.12_
 
-- [ ] 9. Checkpoint: lifecycle, owned Client, resources, and timeout tests are green
+- [x] 9. Checkpoint: lifecycle, owned Client, resources, and timeout tests are green
   - Run formatting, locked unit/property/Loom/Tokio tests, clippy, and rustdoc; require
     zero leaked fake resources, one terminal close result under every generated
     schedule, and continued client usability after non-lifecycle request failures.
