@@ -82,8 +82,11 @@ impl EngineConnection for LifecycleProbe {
         ));
         match self.execute_mode.load(Ordering::SeqCst) {
             1 => {
+                // Register before publishing "started" so close cannot broadcast the
+                // release between those operations and strand this fake request.
+                let released = self.execute_release.notified();
                 self.execute_started.notify_one();
-                self.execute_release.notified().await;
+                released.await;
                 Err(Self::error())
             }
             2 => {
@@ -112,9 +115,12 @@ impl EngineConnection for LifecycleProbe {
 
     async fn close(&self) -> Result<(), EngineConnectionError> {
         self.close_calls.fetch_add(1, Ordering::SeqCst);
+        // Keep the test handshake correct even when a release follows the started
+        // notification immediately under an optimized scheduler.
+        let released = self.close_release.notified();
         self.close_started.notify_one();
         self.execute_release.notify_waiters();
-        self.close_release.notified().await;
+        released.await;
         match self.close_mode {
             CLOSE_OK => Ok(()),
             CLOSE_ERROR => Err(Self::error()),

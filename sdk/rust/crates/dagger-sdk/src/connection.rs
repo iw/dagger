@@ -68,16 +68,6 @@ impl EngineConnectionError {
         }
     }
 
-    pub(crate) fn with_boxed_source(
-        kind: EngineConnectionErrorKind,
-        source: Box<dyn Error + Send + Sync + 'static>,
-    ) -> Self {
-        Self {
-            kind,
-            source: Some(Arc::from(source)),
-        }
-    }
-
     /// Returns the stable connection failure category.
     pub const fn kind(&self) -> EngineConnectionErrorKind {
         self.kind

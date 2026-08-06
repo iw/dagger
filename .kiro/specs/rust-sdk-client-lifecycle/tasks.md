@@ -345,8 +345,8 @@
     zero leaked fake resources, one terminal close result under every generated
     schedule, and continued client usability after non-lifecycle request failures.
 
-- [ ] 10. Refactor query construction and generated handles onto the shared session
-  - [ ] 10.1 Make private selection construction fallible and panic-free
+- [x] 10. Refactor query construction and generated handles onto the shared session
+  - [x] 10.1 Make private selection construction fallible and panic-free
     - Replace eager serialization `unwrap` and lazy ID `unwrap` with stored
       `QueryBuildError` results surfaced by document construction or execution.
     - Keep selection paths immutable, make argument ordering deterministic, and remove
@@ -354,7 +354,7 @@
     - Add fixed tests for aliases, inline fragments, arrays, absent fields, lazy IDs,
       failed serialization, and failed selected-data decoding.
     - _Requirements: 8.7, 8.12–8.15, 10.3, 10.4, 10.12_
-  - [ ] 10.2 Add the stable session-bound `QueryBuilder`
+  - [x] 10.2 Add the stable session-bound `QueryBuilder`
     - Implement immutable select, alias, argument, document, and typed execute methods
       over a private `Selection` and cloned `SessionHandle`.
     - Route execution through `SharedSession::execute`; keep construction free of session
@@ -362,7 +362,7 @@
     - Preserve complete `RawResponse` inside generated GraphQL error results so partial
       data is inspectable.
     - _Requirements: 8.4–8.15, 10.12, 10.17_
-  - [ ] 10.3 Change generator storage to private session leases
+  - [x] 10.3 Change generator storage to private session leases
     - Update object, interface, root Query, loadable, and function templates so every
       generated handle contains only private `SessionHandle` plus `Selection` fields.
     - Seal internal construction while retaining the public generic bounds required by
@@ -370,35 +370,35 @@
     - Ensure every derived handle clones the session lease and generated request methods
       execute through it.
     - _Requirements: 2.5–2.12, 8.13, 10.10–10.12_
-  - [ ] 10.4 Wire `Client::query` and generated execution
+  - [x] 10.4 Wire `Client::query` and generated execution
     - With the `gen` feature, construct a fresh root `Query` on the client's shared
       session without I/O; keep `Client` free of `Deref` and generated forwarding methods.
     - Route generated and `QueryBuilder` operations through the raw request pipeline and
       map raw response/GraphQL/selected-data failures to typed query errors.
     - Preserve root-drop/derived-handle usability and concurrent raw/generated execution.
     - _Requirements: 2.7–2.9, 8.12–8.15_
-  - [ ] 10.5 Regenerate bindings and lock generator fixtures
+  - [x] 10.5 Regenerate bindings and lock generator fixtures
     - Regenerate `dagger-sdk/src/gen.rs` from the target introspection snapshot and update
       generator golden tests for object, interface, root, loadable, lazy ID, and method
       execution shapes.
     - Require deterministic generated output and prove the change is storage/execution
       wiring only, with no schema capability added, removed, or reinterpreted.
     - _Requirements: 2.5–2.12, 8.13, 10.10–10.12_
-  - [ ] 10.6 Property test: Property 3 — handles share exactly one session
+  - [x] 10.6 Property test: Property 3 — handles share exactly one session
     - Implement a handle-tree/reference `proptest` with at least 256 client clones,
       generated/query-builder derivations, requests, and non-final drop orders; assert
       one connector/session identity and usability while open.
     - Tag: `// Feature: rust-sdk-client-lifecycle, Property 3: handles share exactly one session`
     - _Requirements: 2.1, 2.2, 2.7, 2.8, 2.9_
-  - [ ] 10.7 Property test: Property 20 — every query surface uses the same session concurrently
+  - [x] 10.7 Property test: Property 20 — every query surface uses the same session concurrently
     - Implement a mixed-operation `proptest` with at least 256 raw/generated/compositional
       request sets, construction interleavings, and response shapes; assert one recording
       connection and no construction serialization.
     - Tag: `// Feature: rust-sdk-client-lifecycle, Property 20: every query surface uses the same session concurrently`
     - _Requirements: 8.12, 8.13, 8.14, 8.15_
 
-- [ ] 11. Seal, document, harden, and snapshot the stable public API
-  - [ ] 11.1 Replace beta exports with the intentional 1.0 facade
+- [x] 11. Seal, document, harden, and snapshot the stable public API
+  - [x] 11.1 Replace beta exports with the intentional 1.0 facade
     - Make implementation modules private, remove `pub mod core`, and explicitly
       re-export only `Client`, config/builder, connection/diagnostic contracts, raw/query
       values, generated API, and public error families.
@@ -407,7 +407,7 @@
       `gen` and gate generated root access precisely.
     - Add fixed compile-pass and compile-fail consumers for supported and removed paths.
     - _Requirements: 2.10–2.15, 5.16, 5.17, 10.1, 10.2, 10.10–10.13_
-  - [ ] 11.2 Complete panic containment, redaction, and source auditing
+  - [x] 11.2 Complete panic containment, redaction, and source auditing
     - Catch unwinding caller implementations at execute/close/abort/sink boundaries and
       map them to typed static failures without rendering panic payloads.
     - Hand-write secret-safe `Debug`/`Display` for config, connection/error wrappers, and
@@ -417,14 +417,14 @@
       paths which rejects unsafe, `unwrap`, `expect`, and `panic!` outside exact reviewed
       test-only exclusions.
     - _Requirements: 4.9, 4.10, 10.3–10.9_
-  - [ ] 11.3 Add the beta-to-stable migration input
+  - [x] 11.3 Add the beta-to-stable migration input
     - Record callback `connect`, `connect_opts`, `DaggerConn`, `Config`, `config_path`,
       `timeout_ms`, `execute_timeout_ms`, public generated storage fields, and their
       stable replacements in the machine-readable migration input consumed by Feature 9.
     - Validate removed/renamed items against the old public-API snapshot and target
       facade so stale or missing migration rows fail tests.
     - _Requirements: 2.13–2.15, 5.16, 5.17, 5.18, 10.13_
-  - [ ] 11.4 Add public documentation, API snapshots, and UI fixtures
+  - [x] 11.4 Add public documentation, API snapshots, and UI fixtures
     - Document every public item plus lifecycle, configuration, raw GraphQL, query, and
       connection modules; state defaults, ownership, cancellation, partial-data,
       redaction, side-effect, and advanced-testing contracts.
@@ -434,38 +434,38 @@
       Send + Sync and inaccessible lifecycle/process/transport/credential/selection/beta
       fields.
     - _Requirements: 2.3–2.6, 2.10–2.12, 7.1–7.5, 8.1, 8.12, 10.10–10.18_
-  - [ ] 11.5 Property test: Property 4 — public handles are safely shareable and encapsulated
+  - [x] 11.5 Property test: Property 4 — public handles are safely shareable and encapsulated
     - Implement a manifest-driven `proptest` with at least 256 generated handle samples
       and public-path mutations, backed by generic Send + Sync assertions and trybuild
       fixtures for private fields and forbidden concrete types.
     - Tag: `// Feature: rust-sdk-client-lifecycle, Property 4: public handles are safely shareable and encapsulated`
     - _Requirements: 2.3, 2.4, 2.5, 2.6, 2.10, 2.11, 2.12, 10.10, 10.11, 10.12_
-  - [ ] 11.6 Property test: Property 10 — implicit-cleanup diagnostics are secret-safe
+  - [x] 11.6 Property test: Property 10 — implicit-cleanup diagnostics are secret-safe
     - Implement a marker/redaction `proptest` with at least 256 token, header,
       environment, opaque-source, cleanup-failure, sink-failure, and panic-payload
       combinations; search every ordinary display/debug/trace/sink capture.
     - Tag: `// Feature: rust-sdk-client-lifecycle, Property 10: implicit-cleanup diagnostics are secret-safe`
     - _Requirements: 4.9, 4.10, 10.5, 10.6, 10.7, 10.8, 10.9_
-  - [ ] 11.7 Property test: Property 13 — stable configuration contains no beta unit/path fields
+  - [x] 11.7 Property test: Property 13 — stable configuration contains no beta unit/path fields
     - Implement a public-snapshot/migration-map `proptest` with at least 256 removed,
       renamed, extra, stale, and missing item combinations, supplemented by compile-fail
       fixtures for `config_path` and both `*_ms` fields.
     - Tag: `// Feature: rust-sdk-client-lifecycle, Property 13: stable configuration contains no beta unit/path fields`
     - _Requirements: 5.16, 5.17, 5.18_
-  - [ ] 11.8 Property test: Property 22 — public failure paths are typed and panic-free
+  - [x] 11.8 Property test: Property 22 — public failure paths are typed and panic-free
     - Implement a failure-schedule `proptest` with at least 256 invalid inputs, injected
       errors/panics, task failures, request/decode failures, and shutdown outcomes;
       assert the exact public error family, zero escaping unwind, and source-audit result.
     - Tag: `// Feature: rust-sdk-client-lifecycle, Property 22: public failure paths are typed and panic-free`
     - _Requirements: 10.1, 10.2, 10.3, 10.4_
-  - [ ] 11.9 Property test: Property 23 — the stable surface is documented and intentionally exported
+  - [x] 11.9 Property test: Property 23 — the stable surface is documented and intentionally exported
     - Implement a public-manifest `proptest` with at least 256 item/subset/mutation cases
       comparing re-exports, stability labels, module ownership, required documentation,
       and forbidden implementation modules; pair it with warning-denied rustdoc.
     - Tag: `// Feature: rust-sdk-client-lifecycle, Property 23: the stable surface is documented and intentionally exported`
     - _Requirements: 10.10, 10.13, 10.14, 10.15, 10.16, 10.17, 10.18_
 
-- [ ] 12. Checkpoint: generated handles and stable public API are green
+- [x] 12. Checkpoint: generated handles and stable public API are green
   - Run deterministic code generation twice, formatting, locked workspace tests including
     all UI/doctest/property/Loom suites, clippy, warning-denied rustdoc, public-API diff,
     and cargo-deny; require byte-identical generated output and no unintended public item.

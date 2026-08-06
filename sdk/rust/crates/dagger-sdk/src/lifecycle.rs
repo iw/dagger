@@ -267,6 +267,11 @@ impl SessionHandle {
             LifecycleState::Closed => "closed",
         }
     }
+
+    #[cfg(test)]
+    pub(crate) fn identity(&self) -> usize {
+        Arc::as_ptr(&self.shared) as usize
+    }
 }
 
 impl Clone for SessionHandle {
