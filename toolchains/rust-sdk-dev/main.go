@@ -22,7 +22,7 @@ const (
 
 	rustSdkCrate     = "dagger-sdk"
 	cargoEditVersion = "0.13.0"
-	cargoChefVersion = "0.1.62"
+	cargoChefVersion = "0.1.77"
 	cargoDenyVersion = "0.19.9"
 
 	mockCargoRegistryName = "mock"
@@ -70,6 +70,7 @@ func New(
 			"!internal/version/VERSION",
 			"!future/sdk-tests.md",
 			"!.kiro/specs/rust-sdk-completeness-contract/requirements.md",
+			"!.kiro/specs/rust-sdk-client-lifecycle/requirements.md",
 		},
 	})
 
