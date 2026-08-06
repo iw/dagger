@@ -1,7 +1,7 @@
 //! Side-effect-bounded validation and deterministic connection planning.
 //!
 //! This module is the boundary between the pure [`crate::ClientConfig`] builder and
-//! Feature 3's connector. It may inspect current filesystem state and snapshot the two
+//! the concrete connector. It may inspect current filesystem state and snapshot the two
 //! Dagger session environment values needed to select an existing session, but it
 //! cannot discover a CLI, access the network, spawn a process, or open a connection.
 //! Every rejected configuration therefore fails before external work is representable.
@@ -25,7 +25,7 @@ const RUNNER_HOST_KEY: &str = "_EXPERIMENTAL_DAGGER_RUNNER_HOST";
 ///
 /// Tests replace this seam with a recorder. The absence of discovery, network, spawn,
 /// or connection methods is intentional: those effects begin only after a successful
-/// [`ConnectionPlan`] reaches the Feature 3 connector.
+/// [`ConnectionPlan`] reaches the connector.
 pub(crate) trait PreflightContext {
     fn is_directory(&self, path: &Path) -> bool;
     fn process_inputs(&self) -> ProcessInputs;

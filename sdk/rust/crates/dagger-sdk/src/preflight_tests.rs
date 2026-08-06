@@ -1,4 +1,4 @@
-//! Properties and fixed examples for Feature 2 preflight and source planning.
+//! Properties and fixed examples for preflight and source planning.
 
 use std::ffi::OsString;
 use std::path::Path;

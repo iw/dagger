@@ -112,14 +112,14 @@ pub trait DiagnosticSink: Send + Sync + 'static {
 /// payload can contain the session token, so making it impossible to hand those bytes
 /// to the sink is stronger than relying on every caller to remember redaction.
 #[derive(Clone, Copy)]
-#[allow(dead_code)] // The Feature 3 CLI readers become the production ingesters in Task 8.
+#[allow(dead_code)] // The CLI stream reader is not yet wired to this dispatcher.
 pub(crate) enum DiagnosticInput<'a> {
     SessionControl,
     Progress(Diagnostic<'a>),
 }
 
 /// Serializes optional sink callbacks and permanently contains the first sink failure.
-#[allow(dead_code)] // Planning owns the dispatcher before CLI ingestion is wired in Task 8.
+#[allow(dead_code)] // Connection planning is not yet wired into the public client path.
 pub(crate) struct DiagnosticDispatcher {
     sink: Mutex<Option<Arc<dyn DiagnosticSink>>>,
 }

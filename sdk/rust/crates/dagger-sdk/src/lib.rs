@@ -13,9 +13,8 @@ pub mod errors;
 pub mod graphql;
 
 pub mod logging;
-// Tasks 5–6 establish the planning contract before Tasks 7–8 wire it into the owned
-// client and concrete connector. Keeping the module private prevents that staging seam
-// from becoming part of the stable API.
+// Keeping the planning module private lets the owned client and concrete connector
+// adopt it without making that staging seam part of the stable API.
 #[allow(dead_code)]
 mod preflight;
 mod querybuilder;
