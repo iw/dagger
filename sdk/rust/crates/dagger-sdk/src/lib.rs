@@ -164,6 +164,9 @@ mod public_api_tests;
 mod connector_tests;
 
 #[cfg(test)]
+mod contract_regression_tests;
+
+#[cfg(test)]
 mod preflight_tests;
 
 #[cfg(test)]

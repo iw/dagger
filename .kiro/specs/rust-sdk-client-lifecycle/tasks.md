@@ -470,8 +470,8 @@
     all UI/doctest/property/Loom suites, clippy, warning-denied rustdoc, public-API diff,
     and cargo-deny; require byte-identical generated output and no unintended public item.
 
-- [ ] 13. Integrate end-to-end verification, evidence, and truthful ledger updates
-  - [ ] 13.1 Add owned-client end-to-end test fixtures
+- [x] 13. Integrate end-to-end verification, evidence, and truthful ledger updates
+  - [x] 13.1 Add owned-client end-to-end test fixtures
     - Cover default and configured connect, root query derivation, a generated request,
       raw partial-data response, concurrent clones, query-builder execution, explicit
       close, repeated close, root drop with a live generated handle, and final-handle
@@ -479,14 +479,14 @@
     - Add raw-only no-`gen` coverage and an injected-connection example which proves all
       implicit source counters stay zero.
     - _Requirements: 2.1–2.12, 3.1–3.14, 7.1–7.13, 8.1–8.16_
-  - [ ] 13.2 Add cancellation, timeout, and resource integration fixtures
+  - [x] 13.2 Add cancellation, timeout, and resource integration fixtures
     - Pause connection after child creation and after each I/O task start, then exercise
       ordinary failure, caller cancellation, startup timeout, graceful close, dropped
       close waiter, HTTP-connect timeout, execution timeout, and cancelled request.
     - Assert child/task event ordering, no external-engine termination, terminal-result
       reuse, no leaked fake resource, and later request usability where required.
     - _Requirements: 3.3–3.14, 4.1–4.11, 9.4–9.12_
-  - [ ] 13.3 Extend the Rust Dagger toolchain verification boundary
+  - [x] 13.3 Extend the Rust Dagger toolchain verification boundary
     - Include the exact Feature 2 spec files and new API/UI/property/Loom fixtures in the
       Rust toolchain source filter.
     - Ensure `check` runs locked compile/clippy/rustdoc/API/source-audit checks and `test`
@@ -495,7 +495,7 @@
     - Keep engine-backed Feature 3 verification separately identifiable so its absence
       cannot be mistaken for Feature 2 evidence.
     - _Requirements: 1.3, 1.8–1.11, 10.3, 10.4, 10.13–10.18_
-  - [ ] 13.4 Record target-scoped implementation and verification evidence
+  - [x] 13.4 Record target-scoped implementation and verification evidence
     - Add evidence records only for exact Feature 2 capabilities proved by the passing
       implementation, property, UI, documentation, and integration checks at the current
       Target_Revision.
@@ -504,14 +504,14 @@
       presence, or an unrelated passing test as completion evidence.
     - Record reviewed decision evidence for the intentionally absent closure helper.
     - _Requirements: 1.8, 1.9, 1.10, 2.13–2.15_
-  - [ ] 13.5 Regenerate and verify completeness artifacts
+  - [x] 13.5 Regenerate and verify completeness artifacts
     - Resolve the final path-bounded ownership rules, policy additions, truthful status
       transitions, evidence graph, ledger, JSON report, and Markdown report.
     - Require the exact Feature 2 scope/digest, preservation checks, evidence-closed
       statuses, residual sibling blockers, deterministic artifacts, and no change caused
       solely by ownership correction.
     - _Requirements: 1.1–1.11_
-  - [ ] 13.6 Add fixed regression coverage for the stable contract
+  - [x] 13.6 Add fixed regression coverage for the stable contract
     - Lock exact tests for the three timeout defaults, every config conflict/error leaf,
       all reserved environment keys, missing/null/partial raw data, GraphQL path shapes,
       callback API removal, private generated fields, close-result reuse, no-runtime
@@ -519,7 +519,7 @@
     - Keep exact third-party error wording and scheduler timing out of assertions.
     - _Requirements: 3.1–3.14, 4.1–4.11, 5.1–5.18, 6.1–6.19, 7.1–7.13, 8.1–8.16, 9.1–9.12, 10.1–10.18_
 
-- [ ] 14. Checkpoint: Feature 2 is complete and ready for review
+- [x] 14. Checkpoint: Feature 2 is complete and ready for review
   - From `sdk/rust`, run `cargo fmt --all --check`, locked workspace check/test/clippy,
     warning-denied rustdoc, public-API/UI/source-audit checks, and `cargo deny check`.
   - Run the repository Dagger Rust SDK check, test, and completeness-verification

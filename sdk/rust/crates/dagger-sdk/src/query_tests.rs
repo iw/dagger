@@ -16,6 +16,16 @@ struct QueryProbe {
     calls: Arc<AtomicUsize>,
     active: Arc<AtomicUsize>,
     peak: Arc<AtomicUsize>,
+    overlap_barrier: Option<Arc<tokio::sync::Barrier>>,
+}
+
+impl QueryProbe {
+    fn requiring_overlap(parties: usize) -> Self {
+        Self {
+            overlap_barrier: Some(Arc::new(tokio::sync::Barrier::new(parties))),
+            ..Self::default()
+        }
+    }
 }
 
 #[async_trait]
@@ -24,6 +34,11 @@ impl EngineConnection for QueryProbe {
         self.calls.fetch_add(1, Ordering::SeqCst);
         let active = self.active.fetch_add(1, Ordering::SeqCst) + 1;
         self.peak.fetch_max(active, Ordering::SeqCst);
+        if let Some(barrier) = &self.overlap_barrier {
+            // A scheduler may immediately repoll after yield_now. The barrier makes
+            // overlap a fixture invariant instead of a wall-clock or fairness guess.
+            barrier.wait().await;
+        }
         tokio::task::yield_now().await;
         self.active.fetch_sub(1, Ordering::SeqCst);
         Ok(RawResponse::new(ResponseData::Value(
@@ -117,7 +132,8 @@ proptest! {
             .build()
             .expect("test runtime");
         runtime.block_on(async move {
-            let probe = QueryProbe::default();
+            let total = raw_count + generated_count + compositional_count;
+            let probe = QueryProbe::requiring_overlap(total);
             let client = client_with(probe.clone()).await;
 
             let document = client
@@ -156,10 +172,7 @@ proptest! {
                 task.await.expect("query task").expect("query succeeds");
             }
 
-            prop_assert_eq!(
-                probe.calls.load(Ordering::SeqCst),
-                raw_count + generated_count + compositional_count,
-            );
+            prop_assert_eq!(probe.calls.load(Ordering::SeqCst), total);
             prop_assert!(probe.peak.load(Ordering::SeqCst) > 1);
             client.close().await.expect("probe close");
             Ok(())

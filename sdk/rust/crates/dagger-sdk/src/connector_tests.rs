@@ -189,6 +189,30 @@ async fn pending_child_is_terminated_and_reaped_on_failure() {
         .expect("child termination and reap are bounded");
 }
 
+#[cfg(unix)]
+#[tokio::test]
+async fn every_staged_child_and_io_acquisition_is_cleanup_safe() {
+    for acquired_io_tasks in 0..=3 {
+        let ended = Arc::new(AtomicUsize::new(0));
+        let mut pending = PendingConnection::new();
+        let mut command = tokio::process::Command::new("sh");
+        command.args(["-c", "sleep 30"]);
+        pending
+            .spawn_child(&mut command)
+            .expect("portable test child starts");
+
+        for _ in 0..acquired_io_tasks {
+            pending.push_io_task(tokio::spawn(guarded_task(Arc::clone(&ended))));
+            tokio::task::yield_now().await;
+        }
+
+        tokio::time::timeout(Duration::from_secs(3), pending.cleanup())
+            .await
+            .expect("each partially acquired resource set cleans up");
+        assert_eq!(ended.load(Ordering::SeqCst), acquired_io_tasks);
+    }
+}
+
 #[tokio::test]
 async fn cli_resource_close_waits_for_owned_io_tasks() {
     let ended = Arc::new(AtomicUsize::new(0));
