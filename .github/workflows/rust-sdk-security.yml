@@ -60,7 +60,7 @@ jobs:
         run: |
           cargo package -p dagger-sdk --all-features --locked
           package_files="$(cargo package -p dagger-sdk --list --locked)"
-          rg --fixed-strings --line-regexp 'README.md' <<<"$package_files"
-          rg --fixed-strings --line-regexp 'LICENSE' <<<"$package_files"
-          rg --fixed-strings --line-regexp 'examples/first-pipeline/main.rs' <<<"$package_files"
-          rg --fixed-strings --line-regexp 'src/gen/mod.rs' <<<"$package_files"
+          grep -Fqx -- 'README.md' <<<"$package_files"
+          grep -Fqx -- 'LICENSE' <<<"$package_files"
+          grep -Fqx -- 'examples/first-pipeline/main.rs' <<<"$package_files"
+          grep -Fqx -- 'src/gen/mod.rs' <<<"$package_files"
