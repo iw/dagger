@@ -60,7 +60,7 @@ func New(
 				"!internal",
 				"!sdk",
 				"sdk/**/examples",
-				"!cmd",
+				"!LICENSE",
 				"!modules",
 				"!toolchains",
 				"!.changes",
