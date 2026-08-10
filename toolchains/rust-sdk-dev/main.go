@@ -366,7 +366,11 @@ func (content *RustEngineContent) Resolution(ctx context.Context) (string, error
 		dag.Container().
 			From(goHelperImage+"@"+goHelperDigest).
 			WithDirectory("/work", dag.Directory()).
-			WithWorkdir("/work"),
+			WithWorkdir("/work").
+			WithExec([]string{"git", "init"}).
+			WithExec([]string{"git", "config", "user.name", "Rust SDK Check"}).
+			WithExec([]string{"git", "config", "user.email", "rust-sdk-check@dagger.invalid"}).
+			WithExec([]string{"git", "commit", "--allow-empty", "-m", "initialize workspace"}),
 		dagger.DaggerEngineInstallClientOpts{
 			Service: service,
 			Version: coreTargetVersion,
