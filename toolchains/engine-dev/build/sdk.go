@@ -101,7 +101,7 @@ func (build *Builder) RustSDKContent(ctx context.Context) (*sdkContent, error) {
 	rustWorkspace := build.source.Directory("sdk/rust").Filter(dagger.DirectoryFilterOpts{
 		Include: []string{
 			"Cargo.toml", "Cargo.lock", "rust-toolchain.toml",
-			"completeness/target.json",
+			"completeness/target.json", "completeness/snapshots/schema.json",
 			"crates/**/Cargo.toml", "crates/**/src/**/*.rs", "crates/**/assets/**",
 		},
 	})
