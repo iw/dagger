@@ -396,6 +396,10 @@ fn diagnostics_and_cli_are_bounded_redacted_and_closed() {
     assert!(!rendered.contains("secret-value"));
     assert!(!rendered.contains("user:pass"));
     assert!(rendered.contains("GENERATION_FAILED"));
+    assert_eq!(
+        format!("{rendered}\n").as_bytes(),
+        canonical_bytes(&diagnostic).unwrap()
+    );
 
     assert!(
         dagger_sdk_engine::cli::command()

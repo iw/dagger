@@ -353,17 +353,29 @@ fn validate_operation_manifest(
         RuntimeCodegenMode::CheckedGenerated => GenerationMode::CheckedGenerated,
         RuntimeCodegenMode::LegacyRuntimeCodegen => GenerationMode::LegacyRuntimeCodegen,
     };
-    if manifest.mode != expected_mode
-        || manifest.target != request.target
-        || manifest.sdk_dependency != descriptor.sdk_dependency
-        || manifest.module_source_digest.as_ref() != Some(&request.module.source_digest)
-        || manifest.output_root != request.module.source_subpath
-    {
-        return Err(runtime_error(
-            EngineDiagnosticCode::GeneratedStale,
-            request.operation_manifest.as_str(),
-            "generated ownership manifest differs from runtime inputs; run `dagger generate`",
-        ));
+    for (matches, coordinate) in [
+        (manifest.mode == expected_mode, "runtime.manifest.mode"),
+        (manifest.target == request.target, "runtime.manifest.target"),
+        (
+            manifest.sdk_dependency == descriptor.sdk_dependency,
+            "runtime.manifest.sdk-dependency",
+        ),
+        (
+            manifest.module_source_digest.as_ref() == Some(&request.module.source_digest),
+            "runtime.manifest.module-source-digest",
+        ),
+        (
+            manifest.output_root == request.module.source_subpath,
+            "runtime.manifest.output-root",
+        ),
+    ] {
+        if !matches {
+            return Err(runtime_error(
+                EngineDiagnosticCode::GeneratedStale,
+                coordinate,
+                "generated ownership manifest differs from runtime inputs; run `dagger generate`",
+            ));
+        }
     }
     Ok(())
 }

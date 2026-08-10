@@ -121,3 +121,32 @@ func TestModuleSourceDigestIsDomainSeparated(t *testing.T) {
 	require.Len(t, digest, 71)
 	require.NotEqual(t, DigestBytes([]byte("xxh3:opaque")), digest)
 }
+
+func TestModuleSourceFileDigestIsCanonicalAndSensitive(t *testing.T) {
+	t.Parallel()
+
+	first, err := DigestModuleSourceFiles([]ModuleSourceFile{
+		{Path: "src/lib.rs", Digest: "xxh3:lib"},
+		{Path: "Cargo.toml", Digest: "xxh3:manifest"},
+	})
+	require.NoError(t, err)
+	permuted, err := DigestModuleSourceFiles([]ModuleSourceFile{
+		{Path: "Cargo.toml", Digest: "xxh3:manifest"},
+		{Path: "src/lib.rs", Digest: "xxh3:lib"},
+	})
+	require.NoError(t, err)
+	require.Equal(t, first, permuted)
+
+	changed, err := DigestModuleSourceFiles([]ModuleSourceFile{
+		{Path: "Cargo.toml", Digest: "xxh3:changed"},
+		{Path: "src/lib.rs", Digest: "xxh3:lib"},
+	})
+	require.NoError(t, err)
+	require.NotEqual(t, first, changed)
+
+	_, err = DigestModuleSourceFiles([]ModuleSourceFile{
+		{Path: "Cargo.toml", Digest: "xxh3:first"},
+		{Path: "Cargo.toml", Digest: "xxh3:second"},
+	})
+	require.Error(t, err)
+}

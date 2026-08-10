@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"path"
+	"sort"
 	"strings"
 )
 
@@ -211,6 +212,38 @@ func DigestModuleSource(value string) string {
 	digest.Write([]byte("dagger-rust-module-source-v1\x00"))
 	digest.Write([]byte(value))
 	return "sha256:" + hex.EncodeToString(digest.Sum(nil))
+}
+
+// ModuleSourceFile is one normalized caller-owned leaf in semantic source identity.
+type ModuleSourceFile struct {
+	Path   string `json:"path"`
+	Digest string `json:"digest"`
+}
+
+// DigestModuleSourceFiles makes source enumeration order irrelevant while retaining
+// every normalized file path and its metadata-free content digest.
+func DigestModuleSourceFiles(files []ModuleSourceFile) (string, error) {
+	normalized := append([]ModuleSourceFile(nil), files...)
+	sort.Slice(normalized, func(left, right int) bool {
+		return normalized[left].Path < normalized[right].Path
+	})
+	for index, file := range normalized {
+		if file.Path == "." || strings.HasSuffix(file.Path, "/") ||
+			!isNormalizedRelativePath(file.Path) || file.Digest == "" || len(file.Digest) > 256 {
+			return "", fmt.Errorf("semantic module source contains an invalid file record")
+		}
+		if index > 0 && normalized[index-1].Path == file.Path {
+			return "", fmt.Errorf("semantic module source contains duplicate path %q", file.Path)
+		}
+	}
+	encoded, err := CanonicalJSON(struct {
+		FormatVersion uint32             `json:"format_version"`
+		Files         []ModuleSourceFile `json:"files"`
+	}{FormatVersion: 1, Files: normalized})
+	if err != nil {
+		return "", fmt.Errorf("encode semantic module source: %w", err)
+	}
+	return DigestModuleSource(string(encoded)), nil
 }
 
 // RebaseOperationPath gives the private Rust capability root one fixed first

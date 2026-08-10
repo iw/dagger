@@ -91,10 +91,10 @@ func (sdk *RustSDK) ModuleRuntime(
 			Expect:         dagger.ReturnTypeAny,
 			RedirectStderr: runtimeDiagnosticPath,
 		})
-	verified, err := builder.Sync(ctx)
-	if err != nil {
-		return nil, safeRuntimeFailure("verification", err)
-	}
+	// Querying the exit code preserves the failed container so its bounded Rust
+	// diagnostic remains readable. Sync would collapse that typed failure into an
+	// opaque execution error before the adapter can validate and project it.
+	verified := builder
 	verificationExit, err := verified.ExitCode(ctx)
 	if err != nil {
 		return nil, safeRuntimeFailure("verification", err)

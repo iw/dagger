@@ -22,6 +22,8 @@ const (
 	coreTargetRepository    = "https://github.com/dagger/dagger.git"
 	coreTargetRevision      = "25300124ca110612edc09c43f89cb5fad6028170"
 	coreTargetVersion       = "v1.0.0-beta.10"
+	focusedEngineBaseImage  = "registry.dagger.io/engine:v1.0.0-beta.9@sha256:de22dbf0c848d618efa9243f76fd47364110d31bb2e24cce063b702e91e1b73e"
+	focusedEngineBaseCommit = "1c6e07b197327c57e9db8584deb36e5166278677"
 	defaultEngineRepository = "https://github.com/dagger/dagger"
 
 	rustSdkCrate     = "dagger-sdk"
@@ -68,6 +70,10 @@ func New(
 			"!sdk/rust/completeness",
 			"!sdk/rust/examples",
 			"!sdk/rust/runtime",
+			// Example workspaces have independent Cargo targets which the repository
+			// ignore file cannot describe as one root build directory.
+			"sdk/rust/target",
+			"sdk/rust/**/target",
 			"!sdk/rust/AGENTS.md",
 			"!sdk/rust/ARCHITECTURE.md",
 			"!sdk/rust/CONTRIBUTING.md",
@@ -119,6 +125,41 @@ func rustBaseContainer() *dagger.Container {
 		WithEnvVariable("CARGO_HOME", "/root/.cargo").
 		WithMountedCache("/root/.cargo", dag.CacheVolume("rust-cargo-"+rustSdkImage)).
 		WithWorkdir("/src")
+}
+
+// focusedEngineSource is the complete source closure for the changing engine,
+// CLI, and Rust integration. Keeping the distribution's other SDKs and local
+// build products outside this boundary prevents unrelated bytes from invalidating
+// the development engine while retaining every source package used by the two Go
+// binaries.
+func (t *RustSdkDev) focusedEngineSource() *dagger.Directory {
+	return t.Ws.Directory("/", dagger.WorkspaceDirectoryOpts{Exclude: []string{
+		"*",
+		"!LICENSE",
+		"!go.mod",
+		"!go.sum",
+		"!analytics",
+		"!auth",
+		"!cmd",
+		"!core",
+		"!dagql",
+		"!engine",
+		"!internal",
+		"!network",
+		"!util",
+		// The root module replaces dagger.io/dagger with this local module. Go must
+		// resolve the replacement even though only the engine and CLI are compiled.
+		"!sdk/go/**",
+		"!sdk/rust/Cargo.lock",
+		"!sdk/rust/Cargo.toml",
+		"!sdk/rust/rust-toolchain.toml",
+		"!sdk/rust/completeness/target.json",
+		"!sdk/rust/completeness/snapshots/schema.json",
+		"!sdk/rust/crates/**/Cargo.toml",
+		"!sdk/rust/crates/**/src/**",
+		"!sdk/rust/crates/**/assets/**",
+		"!sdk/rust/runtime/**",
+	}})
 }
 
 // engineClientContainer is the explicit engine-bearing boundary reserved for engine-content and
@@ -327,7 +368,7 @@ func (t *RustSdkDev) EngineContent(ctx context.Context) (*RustEngineContent, err
 		ClientDockerConfig: t.ClientDockerConfig,
 		Ws:                 t.Ws,
 		VcsRepository:      t.EngineRepository,
-	})
+	}).WithSource(t.focusedEngineSource())
 	built := engine.RustSdkcontent(dagger.DaggerEngineRustSdkcontentOpts{
 		Version: coreTargetVersion,
 	})
@@ -357,10 +398,14 @@ func (content *RustEngineContent) Resolution(ctx context.Context) (string, error
 	if content.Engine == nil || content.Built == nil {
 		return "", fmt.Errorf("Rust SDK content is detached from its engine construction graph")
 	}
-	service := content.Engine.ServiceWithRustSdkcontent(
+	service := content.Engine.ServiceWithFocusedRustSdkcontent(
 		content.Built,
 		"rust-sdk-resolution",
-		dagger.DaggerEngineServiceWithRustSdkcontentOpts{Version: coreTargetVersion},
+		focusedEngineBaseImage,
+		focusedEngineBaseCommit,
+		coreTargetRepository,
+		coreTargetRevision,
+		dagger.DaggerEngineServiceWithFocusedRustSdkcontentOpts{Version: coreTargetVersion},
 	)
 	runner := content.Engine.InstallClient(
 		dag.Container().
@@ -464,10 +509,14 @@ func (content *RustEngineContent) EngineIntegration(
 		seen[name] = struct{}{}
 	}
 
-	service := content.Engine.ServiceWithRustSdkcontent(
+	service := content.Engine.ServiceWithFocusedRustSdkcontent(
 		content.Built,
 		"rust-sdk-engine-integration",
-		dagger.DaggerEngineServiceWithRustSdkcontentOpts{Version: coreTargetVersion},
+		focusedEngineBaseImage,
+		focusedEngineBaseCommit,
+		coreTargetRepository,
+		coreTargetRevision,
+		dagger.DaggerEngineServiceWithFocusedRustSdkcontentOpts{Version: coreTargetVersion},
 	)
 	observations := make(map[string]string, len(cases))
 	for _, name := range cases {

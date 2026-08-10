@@ -16,7 +16,9 @@ use sha2::{Digest as _, Sha256};
 
 use crate::canonical::{DigestDomain, canonical_digest};
 use crate::diagnostic::{EngineDiagnostic, EngineDiagnosticCode};
-use crate::post_work::{Cancellation, CommandSpec, current_allowlisted_environment, execute_fixed};
+use crate::post_work::{
+    Cancellation, CommandSpec, current_allowlisted_environment, execute_fixed_structured_stdout,
+};
 use crate::project::toolchain::{ToolchainDeclaration, select_toolchain};
 use crate::{
     ArtifactOwnership, CargoPackage, CargoTarget, DiscoveredCargoProject, ExactRustToolchain,
@@ -274,7 +276,7 @@ pub async fn discover_project(
             "selected Cargo manifest is missing or not regular",
         )
     })?;
-    let outcome = execute_fixed(
+    let outcome = execute_fixed_structured_stdout(
         root,
         &CommandSpec {
             executable: "/usr/local/cargo/bin/cargo",
@@ -291,6 +293,13 @@ pub async fn discover_project(
             EngineDiagnosticCode::DependencyResolutionFailed,
             "cargo-metadata",
             "Cargo metadata failed while resolving the selected local workspace",
+        ));
+    }
+    if outcome.truncated {
+        return Err(diagnostic(
+            EngineDiagnosticCode::CargoManifestInvalid,
+            "cargo-metadata",
+            "Cargo metadata exceeds its process-output bound",
         ));
     }
     let metadata = decode_metadata(&outcome.stdout)?;

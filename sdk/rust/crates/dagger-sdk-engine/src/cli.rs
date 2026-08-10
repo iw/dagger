@@ -273,9 +273,16 @@ fn package_content(matches: &clap::ArgMatches) -> Result<(), EngineDiagnostic> {
 /// Serializes one bounded structured diagnostic for private stderr.
 #[must_use]
 pub fn render_diagnostic(diagnostic: &EngineDiagnostic) -> String {
-    serde_json::to_string(diagnostic).unwrap_or_else(|_| {
-        "{\"code\":\"GENERATION_FAILED\",\"message\":\"diagnostic encoding failed\"}".to_owned()
-    })
+    canonical_bytes(diagnostic)
+		.map(|bytes| {
+			// The process entrypoint supplies the terminal newline. Removing the
+			// encoder's newline here keeps the bytes canonical after `eprintln!`.
+			let payload = bytes.strip_suffix(b"\n").unwrap_or(&bytes);
+			String::from_utf8_lossy(payload).into_owned()
+		})
+		.unwrap_or_else(|_| {
+			"{\n  \"causes\": [],\n  \"code\": \"GENERATION_FAILED\",\n  \"coordinate\": \"diagnostic\",\n  \"message\": \"diagnostic encoding failed\"\n}".to_owned()
+		})
 }
 
 fn required(name: &'static str) -> Arg {

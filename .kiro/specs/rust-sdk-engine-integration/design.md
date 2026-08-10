@@ -1236,12 +1236,15 @@ an otherwise identical second run. Unknown fields are rejected at this engine bo
 rather than silently discarded.
 
 `ModuleOperationInput.source_digest` is computed over the implementation-scoped source
-after excluding only the SDK-owned generated binding subtree, generated runtime
-entrypoint, operation-manifest subtree, and Dagger-maintained `.gitattributes` and
-`.gitignore` bookkeeping. Those excluded bytes are products authenticated separately
-by `OperationManifest.artifacts`; including them in their own input identity would make
-a newly published manifest stale immediately. Cargo inputs, lock state, module config,
-and every caller-authored implementation path remain inside the semantic source digest.
+as a canonical path-ordered inventory of metadata-free leaf-file digests after
+overlaying the engine's normalized module-config representation, then excluding only
+the SDK-owned generated binding subtree, generated runtime entrypoint,
+operation-manifest subtree, and Dagger-maintained `.gitattributes` and `.gitignore`
+bookkeeping. Empty directories and parent scaffolding created solely by excluded paths
+do not affect identity. Those excluded bytes are products authenticated separately by
+`OperationManifest.artifacts`; including them in their own input identity would make a
+newly published manifest stale immediately. Cargo inputs, lock state, module config,
+and every caller-authored implementation file remain inside the semantic source digest.
 
 ### Operation plan and manifest
 

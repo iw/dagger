@@ -164,6 +164,56 @@ pub(crate) async fn execute_fixed(
     failure_code: EngineDiagnosticCode,
     coordinate: &str,
 ) -> Result<ProcessOutcome, EngineDiagnostic> {
+    execute_fixed_with_stdout_policy(
+        root,
+        spec,
+        allowlisted_environment,
+        cancel,
+        failure_code,
+        coordinate,
+        StdoutPolicy::Diagnostic,
+    )
+    .await
+}
+
+/// Executes a fixed machine-readable command without applying diagnostic URL
+/// redaction to stdout. Callers must parse the bounded bytes privately and must never
+/// project them into diagnostics; stderr remains redacted normally.
+pub(crate) async fn execute_fixed_structured_stdout(
+    root: &OperationRoot,
+    spec: &CommandSpec,
+    allowlisted_environment: &BTreeMap<String, String>,
+    cancel: &Cancellation,
+    failure_code: EngineDiagnosticCode,
+    coordinate: &str,
+) -> Result<ProcessOutcome, EngineDiagnostic> {
+    execute_fixed_with_stdout_policy(
+        root,
+        spec,
+        allowlisted_environment,
+        cancel,
+        failure_code,
+        coordinate,
+        StdoutPolicy::Structured,
+    )
+    .await
+}
+
+#[derive(Clone, Copy)]
+enum StdoutPolicy {
+    Diagnostic,
+    Structured,
+}
+
+async fn execute_fixed_with_stdout_policy(
+    root: &OperationRoot,
+    spec: &CommandSpec,
+    allowlisted_environment: &BTreeMap<String, String>,
+    cancel: &Cancellation,
+    failure_code: EngineDiagnosticCode,
+    coordinate: &str,
+    stdout_policy: StdoutPolicy,
+) -> Result<ProcessOutcome, EngineDiagnostic> {
     validate_environment(allowlisted_environment)?;
     validate_fixed_secret_mounts()?;
     if cancel.is_cancelled() {
@@ -212,7 +262,7 @@ pub(crate) async fn execute_fixed(
         .map_err(|_| failure())?;
     Ok(ProcessOutcome {
         success: status.success(),
-        stdout: redact_output(stdout),
+        stdout: project_stdout(stdout, stdout_policy),
         stderr: redact_output(stderr),
         truncated: stdout_truncated || stderr_truncated,
     })
@@ -299,10 +349,35 @@ fn redact_output(mut output: Vec<u8>) -> Vec<u8> {
     output
 }
 
+fn project_stdout(output: Vec<u8>, policy: StdoutPolicy) -> Vec<u8> {
+    match policy {
+        StdoutPolicy::Diagnostic => redact_output(output),
+        StdoutPolicy::Structured => output,
+    }
+}
+
 fn cancelled() -> EngineDiagnostic {
     EngineDiagnostic::new(
         EngineDiagnosticCode::OperationCancelled,
         Some("operation"),
         "operation was cancelled and its child process was reaped",
     )
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{StdoutPolicy, project_stdout};
+
+    #[test]
+    fn structured_stdout_is_not_diagnostic_redaction() {
+        let cargo_json = br#"{"source":"registry+https://github.com/rust-lang/crates.io-index"}"#;
+        assert_eq!(
+            project_stdout(cargo_json.to_vec(), StdoutPolicy::Diagnostic),
+            b"[REDACTED]"
+        );
+        assert_eq!(
+            project_stdout(cargo_json.to_vec(), StdoutPolicy::Structured),
+            cargo_json
+        );
+    }
 }
