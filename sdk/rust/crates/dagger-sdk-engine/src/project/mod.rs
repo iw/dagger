@@ -216,6 +216,49 @@ pub fn metadata_arguments(manifest: &RelativeOperationPath, locked: bool) -> Vec
     arguments
 }
 
+/// Reads the nearest exact toolchain declaration in package-to-workspace precedence.
+pub fn toolchain_declarations(
+    root: &OperationRoot,
+    module_root: &RelativeOperationPath,
+) -> Result<Vec<(RelativeOperationPath, Vec<u8>)>, EngineDiagnostic> {
+    let mut current = Some(module_root.as_str().to_owned());
+    while let Some(directory) = current {
+        let mut level = Vec::new();
+        for name in ["rust-toolchain.toml", "rust-toolchain"] {
+            let spelling = if directory.is_empty() {
+                name.to_owned()
+            } else {
+                format!("{directory}/{name}")
+            };
+            let path = RelativeOperationPath::parse(&spelling).map_err(|_| {
+                diagnostic(
+                    EngineDiagnosticCode::OutputPathEscape,
+                    module_root.as_str(),
+                    "toolchain search path is not canonical",
+                )
+            })?;
+            if root.exists(&path) {
+                level.push((path.clone(), root.read(&path)?));
+            }
+        }
+        if level.len() > 1 {
+            return Err(diagnostic(
+                EngineDiagnosticCode::ToolchainNonReproducible,
+                &directory,
+                "multiple toolchain declarations have equal precedence",
+            ));
+        }
+        if !level.is_empty() {
+            return Ok(level);
+        }
+        current = directory
+            .rsplit_once('/')
+            .map(|(parent, _)| parent.to_owned())
+            .or_else(|| (!directory.is_empty()).then(String::new));
+    }
+    Ok(Vec::new())
+}
+
 /// Runs bounded no-dependency metadata and returns a validated discovery typestate.
 pub async fn discover_project(
     root: &OperationRoot,

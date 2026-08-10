@@ -433,6 +433,227 @@ func (content *RustEngineContent) Resolution(ctx context.Context) (string, error
 	return string(evidence), nil
 }
 
+// EngineIntegration exercises the initialization, operation, and runtime boundaries
+// against one exact-target engine and one previously built Rust SDK content object.
+func (content *RustEngineContent) EngineIntegration(
+	ctx context.Context,
+	// Focused case names; an empty list runs the complete checkpoint.
+	cases []string,
+) (string, error) {
+	if content.Engine == nil || content.Built == nil {
+		return "", fmt.Errorf("Rust SDK content is detached from its engine construction graph")
+	}
+	if len(cases) == 0 {
+		cases = []string{
+			"init-empty", "init-existing", "init-no-generate", "operations",
+			"runtime-checked", "runtime-legacy",
+		}
+	}
+	allowed := map[string]struct{}{
+		"init-empty": {}, "init-existing": {}, "init-no-generate": {},
+		"operations": {}, "runtime-checked": {}, "runtime-legacy": {},
+	}
+	seen := make(map[string]struct{}, len(cases))
+	for _, name := range cases {
+		if _, ok := allowed[name]; !ok {
+			return "", fmt.Errorf("unknown Rust engine-integration case %q", name)
+		}
+		if _, duplicate := seen[name]; duplicate {
+			return "", fmt.Errorf("duplicate Rust engine-integration case %q", name)
+		}
+		seen[name] = struct{}{}
+	}
+
+	service := content.Engine.ServiceWithRustSdkcontent(
+		content.Built,
+		"rust-sdk-engine-integration",
+		dagger.DaggerEngineServiceWithRustSdkcontentOpts{Version: coreTargetVersion},
+	)
+	observations := make(map[string]string, len(cases))
+	for _, name := range cases {
+		runner := content.integrationRunner(service, name)
+		identity, err := content.runEngineIntegrationCase(ctx, runner, name)
+		if err != nil {
+			return "", fmt.Errorf("run Rust engine-integration case %s: %w", name, err)
+		}
+		observations[name] = identity
+	}
+	evidence, err := json.Marshal(struct {
+		Cases            map[string]string `json:"cases"`
+		DescriptorDigest string            `json:"descriptor_digest"`
+		ManifestDigest   string            `json:"manifest_digest"`
+	}{
+		Cases: observations, DescriptorDigest: content.DescriptorDigest,
+		ManifestDigest: content.ManifestDigest,
+	})
+	if err != nil {
+		return "", fmt.Errorf("encode Rust engine-integration evidence: %w", err)
+	}
+	return string(evidence), nil
+}
+
+func (content *RustEngineContent) integrationRunner(
+	service *dagger.Service,
+	name string,
+) *dagger.Container {
+	base := dag.Container().
+		From(goHelperImage+"@"+goHelperDigest).
+		WithDirectory("/work", dag.Directory()).
+		WithWorkdir("/work").
+		WithExec([]string{"git", "init"}).
+		WithExec([]string{"git", "config", "user.name", "Rust SDK Check"}).
+		WithExec([]string{"git", "config", "user.email", "rust-sdk-check@dagger.invalid"}).
+		WithExec([]string{"git", "commit", "--allow-empty", "-m", "initialize workspace"}).
+		WithEnvVariable("RUST_SDK_ENGINE_INTEGRATION_CASE", name)
+	return content.Engine.InstallClient(base, dagger.DaggerEngineInstallClientOpts{
+		Service: service, Version: coreTargetVersion,
+	})
+}
+
+func (content *RustEngineContent) runEngineIntegrationCase(
+	ctx context.Context,
+	runner *dagger.Container,
+	name string,
+) (string, error) {
+	installed := runner.WithExec([]string{"dagger", "-y", "sdk", "install", "--here", "rust"})
+	switch name {
+	case "init-empty":
+		result := installed.WithExec([]string{
+			"dagger", "-y", "module", "init", "rust", "empty", "--path", "modules/empty",
+		})
+		if err := requirePaths(ctx, result.Directory("/work"), []string{
+			"modules/empty/Cargo.toml", "modules/empty/Cargo.lock",
+			"modules/empty/rust-toolchain.toml", "modules/empty/src/lib.rs",
+			"modules/empty/.dagger/rust/operation-manifest.json",
+			"modules/empty/src/bin/dagger-module.rs",
+		}); err != nil {
+			return "", err
+		}
+		return result.Directory("/work/modules/empty").Digest(ctx)
+	case "init-existing":
+		const callerSource = "//! caller-owned source\npub fn caller_owned() {}\n"
+		result := installed.
+			WithNewFile("/work/modules/existing/Cargo.toml", "[package]\nname = \"existing\"\nversion = \"0.1.0\"\nedition = \"2024\"\nrust-version = \"1.97.1\"\n\n[dependencies]\nserde = \"1\"\n").
+			WithNewFile("/work/modules/existing/src/lib.rs", callerSource).
+			WithExec([]string{
+				"dagger", "-y", "module", "init", "rust", "existing", "--path", "modules/existing",
+			})
+		contents, err := result.File("/work/modules/existing/src/lib.rs").Contents(ctx)
+		if err != nil {
+			return "", fmt.Errorf("read preserved authored source: %w", err)
+		}
+		if contents != callerSource {
+			return "", fmt.Errorf("Rust initialization changed caller-owned source")
+		}
+		manifest, err := result.File("/work/modules/existing/Cargo.toml").Contents(ctx)
+		if err != nil {
+			return "", fmt.Errorf("read adopted Cargo manifest: %w", err)
+		}
+		if !strings.Contains(manifest, "serde = \"1\"") || !strings.Contains(manifest, "dagger-sdk") {
+			return "", fmt.Errorf("Rust initialization did not preserve and adopt the Cargo manifest")
+		}
+		return result.Directory("/work/modules/existing").Digest(ctx)
+	case "init-no-generate":
+		result := installed.WithExec([]string{
+			"dagger", "-y", "module", "init", "rust", "ungenerated", "--path", "modules/ungenerated", "--no-generate",
+		})
+		if err := requirePaths(ctx, result.Directory("/work"), []string{
+			"modules/ungenerated/Cargo.toml", "modules/ungenerated/Cargo.lock",
+			"modules/ungenerated/src/lib.rs",
+		}); err != nil {
+			return "", err
+		}
+		exists, err := result.Directory("/work").Exists(ctx, "modules/ungenerated/.dagger/rust/operation-manifest.json")
+		if err != nil {
+			return "", fmt.Errorf("inspect no-generate output: %w", err)
+		}
+		if exists {
+			return "", fmt.Errorf("--no-generate published a Rust operation manifest")
+		}
+		return result.Directory("/work/modules/ungenerated").Digest(ctx)
+	case "operations":
+		result := installed.WithExec([]string{"dagger", "-y", "module", "init", "rust", "operations"})
+		workspaceConfig, err := result.File("/work/dagger.toml").Contents(ctx)
+		if err != nil {
+			return "", fmt.Errorf("read operations workspace config: %w", err)
+		}
+		// Client initialization is an optional SDK surface. Registering the client
+		// directly proves the mandatory GenerateClient hook without conflating it
+		// with an initializer that this SDK does not advertise.
+		workspaceConfig += "\n[[modules.dagger-rust-sdk.as-sdk.clients]]\n" +
+			"path = \"clients/rust\"\n" +
+			"module = \".dagger/modules/operations\"\n"
+		result = result.
+			WithNewFile("/work/dagger.toml", workspaceConfig).
+			WithExec([]string{"dagger", "-y", "generate"})
+		if err := requirePaths(ctx, result.Directory("/work"), []string{
+			".dagger/modules/operations/.dagger/rust/operation-manifest.json",
+			".dagger/modules/operations/src/dagger_generated/mod.rs",
+			"clients/rust/Cargo.toml", "clients/rust/src/lib.rs",
+			"clients/rust/src/dagger_generated/mod.rs",
+		}); err != nil {
+			return "", err
+		}
+		return result.Directory("/work").Digest(ctx)
+	case "runtime-checked":
+		result := installed.
+			WithExec([]string{"dagger", "-y", "module", "init", "rust", "runtime-checked"})
+		functions, err := result.WithExec([]string{
+			"dagger", "-m", ".dagger/modules/runtime-checked", "functions",
+		}).Stdout(ctx)
+		if err != nil {
+			return "", fmt.Errorf("load checked Rust runtime: %w", err)
+		}
+		if !strings.Contains(functions, "probe") {
+			return "", fmt.Errorf("checked Rust runtime omitted the fixed protocol surface")
+		}
+		return result.Directory("/work/.dagger/modules/runtime-checked").Digest(ctx)
+	case "runtime-legacy":
+		result := installed.
+			WithExec([]string{
+				"dagger", "-y", "module", "init", "rust", "runtime-legacy", "--path", "modules/runtime-legacy", "--no-generate",
+			}).
+			WithExec([]string{"rm", "modules/runtime-legacy/dagger-module.toml"}).
+			WithNewFile("/work/modules/runtime-legacy/dagger.json", `{"name":"runtime-legacy","engineVersion":"v1.0.0-beta.10","sdk":{"source":"rust"}}`)
+		functions, err := result.WithExec([]string{
+			"dagger", "-m", "modules/runtime-legacy", "functions",
+		}).Stdout(ctx)
+		if err != nil {
+			return "", fmt.Errorf("load legacy Rust runtime: %w", err)
+		}
+		if !strings.Contains(functions, "probe") {
+			return "", fmt.Errorf("legacy Rust runtime omitted the fixed protocol surface")
+		}
+		generatedOnHost, err := result.Directory("/work").Exists(ctx, "modules/runtime-legacy/.dagger/rust/operation-manifest.json")
+		if err != nil {
+			return "", fmt.Errorf("inspect legacy host source: %w", err)
+		}
+		if generatedOnHost {
+			return "", fmt.Errorf("legacy runtime generation escaped its private snapshot")
+		}
+		return result.Directory("/work/modules/runtime-legacy").Digest(ctx)
+	default:
+		return "", fmt.Errorf("unreachable Rust engine-integration case %q", name)
+	}
+}
+
+func requirePaths(ctx context.Context, root *dagger.Directory, paths []string) error {
+	for _, candidate := range paths {
+		exists, err := root.Exists(ctx, candidate)
+		if err != nil {
+			return fmt.Errorf("inspect required path %s: %w", candidate, err)
+		}
+		if !exists {
+			manifests, globErr := root.Glob(ctx, "**/.dagger/rust/operation-manifest.json")
+			if globErr != nil {
+				return fmt.Errorf("required path %s is absent; inspect operation manifests: %w", candidate, globErr)
+			}
+			return fmt.Errorf("required path %s is absent; operation manifests: %v", candidate, manifests)
+		}
+	}
+	return nil
+}
+
 func isCanonicalSHA256(value string) bool {
 	algorithm, encoded, found := strings.Cut(value, ":")
 	if !found || algorithm != "sha256" || len(encoded) != 64 {

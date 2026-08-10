@@ -55,9 +55,13 @@ func TestReusableEngineContentBoundaryIsGenerated(t *testing.T) {
 	if got := selectorCount(resolution, "RustSdkcontent"); got != 0 {
 		t.Fatalf("Resolution must reuse the retained content object, got %d rebuilds", got)
 	}
+	integration := findFunction(t, source, "EngineIntegration")
+	if got := selectorCount(integration, "RustSdkcontent"); got != 0 {
+		t.Fatalf("EngineIntegration must reuse the retained content object, got %d rebuilds", got)
+	}
 
 	generated := parseGoFile(t, "../../dagger.gen.go")
-	for _, function := range []string{"EngineContent", "Resolution"} {
+	for _, function := range []string{"EngineContent", "EngineIntegration", "Resolution"} {
 		if got := selectorCount(generated, function); got != 1 {
 			t.Fatalf("generated adapter must dispatch %s exactly once, got %d", function, got)
 		}

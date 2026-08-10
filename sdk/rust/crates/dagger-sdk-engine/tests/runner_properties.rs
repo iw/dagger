@@ -131,7 +131,9 @@ proptest! {
         let command = command_spec(&plan);
         prop_assert!(!command.arguments.iter().any(|argument| argument.contains(';')));
         prop_assert!(matches!(command.executable,
-            "/usr/local/cargo/bin/cargo" | "/usr/local/cargo/bin/rustfmt"));
+            "/usr/local/cargo/bin/cargo"
+                | "/usr/local/rustup/toolchains/1.97.1-x86_64-unknown-linux-gnu/bin/rustfmt"
+                | "/usr/local/rustup/toolchains/1.97.1-aarch64-unknown-linux-gnu/bin/rustfmt"));
         let projections = if converges {
             vec![seed, seed]
         } else {

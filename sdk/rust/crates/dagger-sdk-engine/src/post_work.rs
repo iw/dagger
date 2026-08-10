@@ -17,7 +17,12 @@ use crate::diagnostic::{EngineDiagnostic, EngineDiagnosticCode};
 use crate::{OperationRoot, PostWorkPlan};
 
 const CARGO: &str = "/usr/local/cargo/bin/cargo";
-const RUSTFMT: &str = "/usr/local/cargo/bin/rustfmt";
+#[cfg(target_arch = "x86_64")]
+const RUSTFMT: &str = "/usr/local/rustup/toolchains/1.97.1-x86_64-unknown-linux-gnu/bin/rustfmt";
+#[cfg(target_arch = "aarch64")]
+const RUSTFMT: &str = "/usr/local/rustup/toolchains/1.97.1-aarch64-unknown-linux-gnu/bin/rustfmt";
+#[cfg(not(any(target_arch = "x86_64", target_arch = "aarch64")))]
+compile_error!("the Rust SDK engine supports only linux/amd64 and linux/arm64");
 const MAX_PROCESS_OUTPUT_BYTES: usize = 256 * 1024;
 const FIXED_SECRET_MOUNTS: &[&str] = &[
     "/run/secrets/dagger-rust/cargo-credentials.toml",
@@ -78,12 +83,14 @@ pub struct ProcessOutcome {
 #[must_use]
 pub fn command_spec(plan: &PostWorkPlan) -> CommandSpec {
     match plan {
-        PostWorkPlan::FormatRust { toolchain, files } => {
-            let mut arguments = vec![
-                format!("+{toolchain}"),
-                "--edition".to_owned(),
-                "2024".to_owned(),
-            ];
+        PostWorkPlan::FormatRust {
+            toolchain: _,
+            files,
+        } => {
+            // The formatter is a hashed engine-content asset built from the exact
+            // request toolchain. It is not a rustup proxy, so no ambient component or
+            // network resolution participates in post-work.
+            let mut arguments = vec!["--edition".to_owned(), "2024".to_owned()];
             arguments.extend(files.iter().map(ToString::to_string));
             CommandSpec {
                 executable: RUSTFMT,
