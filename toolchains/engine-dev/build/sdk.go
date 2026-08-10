@@ -132,7 +132,10 @@ func (build *Builder) RustSDKContent(ctx context.Context) (*sdkContent, error) {
 		dependencyValue = build.vcsCommit
 	}
 	sealedCtr := buildCtr.
-		WithDirectory("/content", rootfs).
+		// A scratch mount makes the package tool's writes available as a clean
+		// directory output. Taking a subdirectory from the build container itself
+		// would retain builder layers and their original /content path in the OCI image.
+		WithMountedDirectory("/content", rootfs).
 		WithExec([]string{
 			"/src/target/release/dagger-rust-engine", "package-content",
 			"--root", "/content",
