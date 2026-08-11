@@ -4004,8 +4004,8 @@
   },
   "integrity_errors": [],
   "integrity_verdict": true,
-  "inventory_digest": "sha256:c28bfa1b1b491f4bc4b7836b90cb5286338661ba4e78860a1566a9d68fbf0f5a",
-  "ledger_digest": "sha256:f5fbb35aea7501f4fea1a8593dd74aa4c41d05a4652cce1819469bf6d1095af3",
+  "inventory_digest": "sha256:bc69d573cbf2c92f3bd161b942f630e0515f2b7cc0d64f96a64163e55141deee",
+  "ledger_digest": "sha256:678dd42c7accad09d5ce1227d432f034dbb780db6c9711cd43b74084543b5e96",
   "target_descriptor": {
     "contract_format_version": "1.0.0",
     "dagger_repository": "github.com/dagger/dagger",

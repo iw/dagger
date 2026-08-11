@@ -400,38 +400,32 @@ func (r *RustSDKDev) WithGeneratedClient() *RustSDKDev {
 type RustSDKDevRustEngineContent struct { // rust-sdk-dev (../../../../:0:0)
 	query *querybuilder.Selection
 
-	descriptorDigest  *string
-	engineIntegration *string
-	id                *ID
-	manifestDigest    *string
-	resolution        *string
-}
-
-// RustSDKDevRustEngineContentEngineIntegrationOpts contains focused case selection.
-type RustSDKDevRustEngineContentEngineIntegrationOpts struct {
-	Cases []string
-}
-
-// EngineIntegration exercises Rust SDK hooks against one reusable exact engine.
-func (r *RustSDKDevRustEngineContent) EngineIntegration(ctx context.Context, opts ...RustSDKDevRustEngineContentEngineIntegrationOpts) (string, error) {
-	if r.engineIntegration != nil {
-		return *r.engineIntegration, nil
-	}
-	q := r.query.Select("engineIntegration")
-	for i := len(opts) - 1; i >= 0; i-- {
-		if !querybuilder.IsZeroValue(opts[i].Cases) {
-			q = q.Arg("cases", opts[i].Cases)
-		}
-	}
-	var response string
-	q = q.Bind(&response)
-	return response, q.Execute(ctx)
+	completenessTargetDigest *string
+	descriptorDigest         *string
+	engineEvidence           *string
+	engineIntegration        *string
+	id                       *ID
+	manifestDigest           *string
+	mappingDigest            *string
+	resolution               *string
 }
 
 func (r *RustSDKDevRustEngineContent) WithGraphQLQuery(q *querybuilder.Selection) *RustSDKDevRustEngineContent {
 	return &RustSDKDevRustEngineContent{
 		query: q,
 	}
+}
+
+func (r *RustSDKDevRustEngineContent) CompletenessTargetDigest(ctx context.Context) (string, error) {
+	if r.completenessTargetDigest != nil {
+		return *r.completenessTargetDigest, nil
+	}
+	q := r.query.Select("completenessTargetDigest")
+
+	var response string
+
+	q = q.Bind(&response)
+	return response, q.Execute(ctx)
 }
 
 func (r *RustSDKDevRustEngineContent) Content() *Directory {
@@ -447,6 +441,37 @@ func (r *RustSDKDevRustEngineContent) DescriptorDigest(ctx context.Context) (str
 		return *r.descriptorDigest, nil
 	}
 	q := r.query.Select("descriptorDigest")
+
+	var response string
+
+	q = q.Bind(&response)
+	return response, q.Execute(ctx)
+}
+
+// EngineEvidence runs the complete closed case set before publishing target-bound evidence.
+//
+// A caller cannot supply selectors here: focused case subsets are useful during development but
+// are never equivalent to the complete matrix admitted by the completeness contract.
+func (r *RustSDKDevRustEngineContent) EngineEvidence(ctx context.Context) (string, error) {
+	if r.engineEvidence != nil {
+		return *r.engineEvidence, nil
+	}
+	q := r.query.Select("engineEvidence")
+
+	var response string
+
+	q = q.Bind(&response)
+	return response, q.Execute(ctx)
+}
+
+// EngineIntegration exercises the initialization, operation, and runtime boundaries
+// against one exact-target engine and one previously built Rust SDK content object.
+func (r *RustSDKDevRustEngineContent) EngineIntegration(ctx context.Context, cases []string) (string, error) {
+	if r.engineIntegration != nil {
+		return *r.engineIntegration, nil
+	}
+	q := r.query.Select("engineIntegration")
+	q = q.Arg("cases", cases)
 
 	var response string
 
@@ -508,6 +533,18 @@ func (r *RustSDKDevRustEngineContent) ManifestDigest(ctx context.Context) (strin
 		return *r.manifestDigest, nil
 	}
 	q := r.query.Select("manifestDigest")
+
+	var response string
+
+	q = q.Bind(&response)
+	return response, q.Execute(ctx)
+}
+
+func (r *RustSDKDevRustEngineContent) MappingDigest(ctx context.Context) (string, error) {
+	if r.mappingDigest != nil {
+		return *r.mappingDigest, nil
+	}
+	q := r.query.Select("mappingDigest")
 
 	var response string
 

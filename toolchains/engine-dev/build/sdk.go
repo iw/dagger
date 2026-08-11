@@ -18,10 +18,20 @@ import (
 )
 
 type sdkContent struct {
-	index    ocispecs.Index
-	sdkDir   *dagger.Directory
-	envName  string
-	extraEnv map[string]string
+	index         ocispecs.Index
+	sdkDir        *dagger.Directory
+	envName       string
+	extraEnv      map[string]string
+	sdkDependency sdkDependencyCoordinates
+}
+
+type sdkDependencyCoordinates struct {
+	Source       string `json:"source"`
+	Registry     string `json:"registry,omitempty"`
+	PackageName  string `json:"package"`
+	ExactVersion string `json:"exact_version,omitempty"`
+	URL          string `json:"url,omitempty"`
+	Revision     string `json:"revision,omitempty"`
 }
 
 // Directory returns the complete OCI content-store layout.
@@ -37,6 +47,14 @@ func (content *sdkContent) ManifestDigest() string {
 // DescriptorDigest returns the domain-separated immutable source identity.
 func (content *sdkContent) DescriptorDigest() string {
 	return content.extraEnv[distconsts.RustSDKDescriptorDigestEnvName]
+}
+
+func (content *sdkContent) DependencyDescriptor() (string, error) {
+	encoded, err := json.Marshal(content.sdkDependency)
+	if err != nil {
+		return "", fmt.Errorf("encode Rust SDK dependency descriptor: %w", err)
+	}
+	return string(encoded), nil
 }
 
 func (content *sdkContent) apply(ctr *dagger.Container) *dagger.Container {
@@ -143,9 +161,21 @@ func (build *Builder) RustSDKContent(ctx context.Context) (*sdkContent, error) {
 
 	dependencyKind := "registry"
 	dependencyValue := target.RustSDKVersion
+	sdkDependency := sdkDependencyCoordinates{
+		Source:       dependencyKind,
+		Registry:     "crates-io",
+		PackageName:  "dagger-sdk",
+		ExactVersion: dependencyValue,
+	}
 	if repository != canonicalDaggerRepository {
 		dependencyKind = "git"
 		dependencyValue = build.vcsCommit
+		sdkDependency = sdkDependencyCoordinates{
+			Source:      dependencyKind,
+			PackageName: "dagger-sdk",
+			URL:         repository,
+			Revision:    dependencyValue,
+		}
 	}
 	packageArgs := []string{
 		"/src/target/release/dagger-rust-engine", "package-content",
@@ -196,9 +226,10 @@ func (build *Builder) RustSDKContent(ctx context.Context) (*sdkContent, error) {
 		return nil, fmt.Errorf("Rust SDK OCI content must contain exactly one manifest")
 	}
 	return &sdkContent{
-		index:   index,
-		sdkDir:  sdkDir,
-		envName: distconsts.RustSDKManifestDigestEnvName,
+		index:         index,
+		sdkDir:        sdkDir,
+		envName:       distconsts.RustSDKManifestDigestEnvName,
+		sdkDependency: sdkDependency,
 		extraEnv: map[string]string{
 			distconsts.RustSDKDescriptorDigestEnvName: descriptorDigest,
 		},

@@ -69,13 +69,46 @@ func TestReusableEngineContentBoundaryIsGenerated(t *testing.T) {
 	}
 
 	generated := parseGoFile(t, "../../dagger.gen.go")
-	for _, function := range []string{"EngineContent", "EngineIntegration", "Resolution"} {
+	for _, function := range []string{"EngineContent", "EngineIntegration", "EngineEvidence", "Resolution"} {
 		if got := selectorCount(generated, function); got != 1 {
 			t.Fatalf("generated adapter must dispatch %s exactly once, got %d", function, got)
 		}
 		if got := stringLiteralCount(generated, function); got != 2 {
 			t.Fatalf("generated adapter must expose and dispatch %s, got %d registrations", function, got)
 		}
+	}
+}
+
+func TestEngineEvidenceOwnsTheCompleteClosedCaseSet(t *testing.T) {
+	t.Parallel()
+
+	source := parseGoFile(t, "../../main.go")
+	integration := findFunction(t, source, "EngineIntegration")
+	if got := identifierCount(integration, "engineIntegrationCases"); got < 2 {
+		t.Fatalf("EngineIntegration must validate and default from the one closed case inventory, got %d references", got)
+	}
+	evidence := findFunction(t, source, "EngineEvidence")
+	if got := identifierCount(evidence, "engineIntegrationCases"); got != 1 {
+		t.Fatalf("EngineEvidence must consume the complete case inventory exactly once, got %d", got)
+	}
+	if got := identifierCount(evidence, "requireCompleteEngineCaseSet"); got != 1 {
+		t.Fatalf("EngineEvidence must reject incomplete observations before publication")
+	}
+	want := []string{
+		"resolution",
+		"init-empty",
+		"init-existing",
+		"init-no-generate",
+		"operations",
+		"runtime-checked",
+		"runtime-legacy",
+		"negative-generated-lock-toolchain",
+		"negative-path-ownership",
+		"negative-redaction",
+	}
+	got := variableStringSlice(t, source, "engineIntegrationCases")
+	if strings.Join(got, ",") != strings.Join(want, ",") {
+		t.Fatalf("closed engine case inventory changed: got %v, want %v", got, want)
 	}
 }
 
@@ -105,14 +138,22 @@ func TestEngineIntegrationUsesTheFocusedSourceGraph(t *testing.T) {
 	if got := selectorCount(engineContent, "WithSource"); got != 1 {
 		t.Fatalf("EngineContent must apply exactly one focused source boundary, got %d", got)
 	}
+	serviceBoundary := findFunction(t, source, "focusedService")
+	if got := selectorCount(serviceBoundary, "ServiceWithFocusedRustSdkcontent"); got != 1 {
+		t.Fatalf("focusedService must own exactly one focused engine-service construction, got %d", got)
+	}
 	for _, function := range []string{"Resolution", "EngineIntegration"} {
 		declaration := findFunction(t, source, function)
-		if got := selectorCount(declaration, "ServiceWithFocusedRustSdkcontent"); got != 1 {
-			t.Fatalf("%s must start exactly one focused Rust engine service, got %d", function, got)
+		if got := selectorCount(declaration, "focusedService"); got != 1 {
+			t.Fatalf("%s must request exactly one shared focused Rust engine service, got %d", function, got)
 		}
-		if got := selectorCount(declaration, "ServiceWithRustSdkcontent"); got != 0 {
-			t.Fatalf("%s must not fall back to the complete engine distribution", function)
+		if got := selectorCount(declaration, "ServiceWithFocusedRustSdkcontent"); got != 0 {
+			t.Fatalf("%s must not construct a second focused engine service", function)
 		}
+	}
+	integration := findFunction(t, source, "EngineIntegration")
+	if got := selectorCount(integration, "integrationRunner"); got != 1 {
+		t.Fatalf("EngineIntegration must construct one shared installed runner baseline, got %d", got)
 	}
 
 	baseImage := constantString(t, source, "focusedEngineBaseImage")
@@ -121,6 +162,26 @@ func TestEngineIntegrationUsesTheFocusedSourceGraph(t *testing.T) {
 	}
 	if revision := constantString(t, source, "focusedEngineBaseCommit"); len(revision) != 40 {
 		t.Fatalf("focused engine baseline must use a full commit, got %q", revision)
+	}
+}
+
+func TestOperationsFixtureSeparatesCheckedGenerationFromClientSchemaLoading(t *testing.T) {
+	t.Parallel()
+
+	source := parseGoFile(t, "../../main.go")
+	fixture := findFunction(t, source, "runEngineIntegrationCase")
+	for _, required := range []string{
+		"module = \".dagger/modules/client-schema\"\n",
+		"/work/.dagger/modules/client-schema/dagger.json",
+		"clients/rust/Cargo.toml",
+		".dagger/modules/operations/.dagger/rust/operation-manifest.json",
+	} {
+		if got := stringLiteralCount(fixture, required); got != 1 {
+			t.Fatalf("operations fixture must retain sequencing anchor %q exactly once, got %d", required, got)
+		}
+	}
+	if got := stringLiteralCount(fixture, "\n[[clients]]\n"); got != 0 {
+		t.Fatalf("operations fixture must not make the checked Rust module bootstrap its own client schema")
 	}
 }
 
@@ -162,6 +223,68 @@ func TestRuntimeSemanticDigestExcludesOnlyGeneratedRepresentations(t *testing.T)
 	}
 	if got := selectorCount(identity, "UpdatedConfigDirectory"); got != 1 {
 		t.Fatalf("semantic module digest must overlay normalized module config exactly once, got %d", got)
+	}
+}
+
+func TestRuntimeBuildAuditPreservesCrossSDKHygiene(t *testing.T) {
+	t.Parallel()
+
+	goRuntime := findFunction(t, parseGoFile(t, "../../../../core/sdk/go_sdk.go"), "Runtime")
+	for field, expected := range map[string]int{
+		"withEntrypoint": 1,
+		"withWorkdir":    1,
+		"withoutMount":   2,
+	} {
+		if got := stringLiteralCount(goRuntime, field); got != expected {
+			t.Fatalf("definitive Go runtime audit anchor %s changed: got %d, want %d", field, got, expected)
+		}
+	}
+
+	pythonTrusted := findFunction(t, parseGoFile(t, "../../../../sdk/python/runtime/main.go"), "moduleRuntimeTrusted")
+	for call := range map[string]struct{}{
+		"requireGeneratedFiles": {},
+		"WithInstall":           {},
+	} {
+		if got := selectorCount(pythonTrusted, call); got != 1 {
+			t.Fatalf("Python checked-generation audit anchor %s changed: got %d", call, got)
+		}
+	}
+
+	typescriptRuntime := findFunction(t, parseGoFile(t, "../../../../sdk/typescript/runtime/main.go"), "ModuleRuntime")
+	if got := selectorCount(typescriptRuntime, "SetupContainer"); got != 3 {
+		t.Fatalf("TypeScript runtime variants changed: got %d SetupContainer branches", got)
+	}
+
+	javaRuntime := findFunction(t, parseGoFile(t, "../../../../sdk/java/runtime/main.go"), "ModuleRuntime")
+	for call := range map[string]struct{}{
+		"jreContainer":   {},
+		"WithFile":       {},
+		"WithEntrypoint": {},
+	} {
+		if got := selectorCount(javaRuntime, call); got != 1 {
+			t.Fatalf("Java promoted-runtime audit anchor %s changed: got %d", call, got)
+		}
+	}
+
+	rustRuntime := findFunction(t, parseGoFile(t, "../../../../sdk/rust/runtime/runtime.go"), "ModuleRuntime")
+	for call, expected := range map[string]int{
+		"From":               2,
+		"WithMountedCache":   3,
+		"WithoutDefaultArgs": 1,
+		"WithEntrypoint":     1,
+	} {
+		if got := selectorCount(rustRuntime, call); got != expected {
+			t.Fatalf("Rust runtime must preserve audited %s count: got %d, want %d", call, got, expected)
+		}
+	}
+	for path := range map[string]struct{}{
+		"/usr/local/cargo/registry": {},
+		"/usr/local/cargo/git":      {},
+		"/scratch":                  {},
+	} {
+		if got := stringLiteralCount(rustRuntime, path); got != 1 {
+			t.Fatalf("Rust runtime audit path %q changed: got %d", path, got)
+		}
 	}
 }
 
@@ -263,4 +386,40 @@ func constantString(t *testing.T, file *ast.File, name string) string {
 	}
 	t.Fatalf("constant %s not found", name)
 	return ""
+}
+
+func variableStringSlice(t *testing.T, file *ast.File, name string) []string {
+	t.Helper()
+
+	for _, declaration := range file.Decls {
+		general, ok := declaration.(*ast.GenDecl)
+		if !ok || general.Tok != token.VAR {
+			continue
+		}
+		for _, specification := range general.Specs {
+			value, ok := specification.(*ast.ValueSpec)
+			if !ok || len(value.Names) != 1 || value.Names[0].Name != name || len(value.Values) != 1 {
+				continue
+			}
+			composite, ok := value.Values[0].(*ast.CompositeLit)
+			if !ok {
+				t.Fatalf("variable %s is not a composite literal", name)
+			}
+			values := make([]string, 0, len(composite.Elts))
+			for _, element := range composite.Elts {
+				literal, ok := element.(*ast.BasicLit)
+				if !ok || literal.Kind != token.STRING {
+					t.Fatalf("variable %s contains a non-string case", name)
+				}
+				decoded, err := strconv.Unquote(literal.Value)
+				if err != nil {
+					t.Fatalf("decode variable %s: %v", name, err)
+				}
+				values = append(values, decoded)
+			}
+			return values
+		}
+	}
+	t.Fatalf("variable %s not found", name)
+	return nil
 }

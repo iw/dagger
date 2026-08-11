@@ -330,9 +330,10 @@ func (dev *EngineDev) configureContainer(
 
 // RustEngineContent is one reusable OCI layout and its exact engine manifest identity.
 type RustEngineContent struct {
-	Content          *dagger.Directory
-	ManifestDigest   string
-	DescriptorDigest string
+	Content              *dagger.Directory
+	ManifestDigest       string
+	DescriptorDigest     string
+	DependencyDescriptor string
 }
 
 // RustSDKContent builds the Rust SDK integration once so focused engine cases can reuse
@@ -355,10 +356,15 @@ func (dev *EngineDev) RustSDKContent(
 	if err != nil {
 		return nil, err
 	}
+	dependencyDescriptor, err := content.DependencyDescriptor()
+	if err != nil {
+		return nil, err
+	}
 	return &RustEngineContent{
-		Content:          content.Directory(),
-		ManifestDigest:   content.ManifestDigest(),
-		DescriptorDigest: content.DescriptorDigest(),
+		Content:              content.Directory(),
+		ManifestDigest:       content.ManifestDigest(),
+		DescriptorDigest:     content.DescriptorDigest(),
+		DependencyDescriptor: dependencyDescriptor,
 	}, nil
 }
 
