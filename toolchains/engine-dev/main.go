@@ -344,6 +344,12 @@ func (dev *EngineDev) RustSDKContent(
 	platform dagger.Platform,
 	// +optional
 	version string,
+	// Credential-free repository containing the public dagger-sdk package.
+	// +optional
+	dependencyRepository string,
+	// Full reachable revision whose public dagger-sdk package matches this build.
+	// +optional
+	dependencyRevision string,
 ) (*RustEngineContent, error) {
 	builder, err := build.NewBuilder(ctx, dev.Source, dev.VCSRepository, version, dev.VCSCommit, dev.VCSDirty, dev.Ws)
 	if err != nil {
@@ -352,7 +358,7 @@ func (dev *EngineDev) RustSDKContent(
 	if platform != "" {
 		builder = builder.WithPlatform(platform)
 	}
-	content, err := builder.RustSDKContent(ctx)
+	content, err := builder.RustSDKContent(ctx, dependencyRepository, dependencyRevision)
 	if err != nil {
 		return nil, err
 	}

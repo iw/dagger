@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/url"
 	"runtime"
 	"strings"
 
@@ -88,7 +89,11 @@ type rustTargetDescriptor struct {
 
 // RustSDKContent builds and seals the module-backed Rust SDK content used by the
 // built-in loader. Private source and Cargo target state remain build inputs only.
-func (build *Builder) RustSDKContent(ctx context.Context) (*sdkContent, error) {
+func (build *Builder) RustSDKContent(
+	ctx context.Context,
+	dependencyRepository string,
+	dependencyRevision string,
+) (*sdkContent, error) {
 	if err := validateDigestPinnedImage(rustSDKBuildImage); err != nil {
 		return nil, err
 	}
@@ -127,6 +132,40 @@ func (build *Builder) RustSDKContent(ctx context.Context) (*sdkContent, error) {
 		rustTarget,
 	)
 
+	dependencyKind := "registry"
+	dependencyValue := target.RustSDKVersion
+	sdkDependency := sdkDependencyCoordinates{
+		Source:       dependencyKind,
+		Registry:     "crates-io",
+		PackageName:  "dagger-sdk",
+		ExactVersion: dependencyValue,
+	}
+	switch {
+	case dependencyRepository == "" && dependencyRevision == "" && repository == canonicalDaggerRepository:
+	case dependencyRepository == "" || dependencyRevision == "":
+		return nil, fmt.Errorf("Rust SDK Git dependency requires both repository and full revision")
+	case dependencyRepository != "" && dependencyRevision != "":
+		dependencyRepository, err = validateRustSDKGitDependency(
+			ctx,
+			build.source.Directory("sdk/rust/crates/dagger-sdk"),
+			dependencyRepository,
+			dependencyRevision,
+		)
+		if err != nil {
+			return nil, err
+		}
+		dependencyKind = "git"
+		dependencyValue = dependencyRevision
+		sdkDependency = sdkDependencyCoordinates{
+			Source:      dependencyKind,
+			PackageName: "dagger-sdk",
+			URL:         dependencyRepository,
+			Revision:    dependencyRevision,
+		}
+	default:
+		return nil, fmt.Errorf("fork-backed Rust SDK content requires an explicit reachable dependency revision")
+	}
+
 	rustWorkspace := build.source.Directory("sdk/rust").Filter(dagger.DirectoryFilterOpts{
 		Include: []string{
 			"Cargo.toml", "Cargo.lock", "rust-toolchain.toml",
@@ -159,24 +198,6 @@ func (build *Builder) RustSDKContent(ctx context.Context) (*sdkContent, error) {
 		WithFile("dist/runtime-policy.json", build.source.File("sdk/rust/runtime/assets/runtime-policy.json")).
 		WithFile("LICENSE", build.source.File("LICENSE"))
 
-	dependencyKind := "registry"
-	dependencyValue := target.RustSDKVersion
-	sdkDependency := sdkDependencyCoordinates{
-		Source:       dependencyKind,
-		Registry:     "crates-io",
-		PackageName:  "dagger-sdk",
-		ExactVersion: dependencyValue,
-	}
-	if repository != canonicalDaggerRepository {
-		dependencyKind = "git"
-		dependencyValue = build.vcsCommit
-		sdkDependency = sdkDependencyCoordinates{
-			Source:      dependencyKind,
-			PackageName: "dagger-sdk",
-			URL:         repository,
-			Revision:    dependencyValue,
-		}
-	}
 	packageArgs := []string{
 		"/src/target/release/dagger-rust-engine", "package-content",
 		"--root", "/content",
@@ -192,7 +213,7 @@ func (build *Builder) RustSDKContent(ctx context.Context) (*sdkContent, error) {
 	if dependencyKind == "git" {
 		// Fork provenance belongs to the generated public dependency. The
 		// private compiler target remains the reviewed canonical target.
-		packageArgs = append(packageArgs, "--dependency-repository", repository)
+		packageArgs = append(packageArgs, "--dependency-repository", dependencyRepository)
 	}
 	sealedCtr := buildCtr.
 		// A scratch mount makes the package tool's writes available as a clean
@@ -234,6 +255,63 @@ func (build *Builder) RustSDKContent(ctx context.Context) (*sdkContent, error) {
 			distconsts.RustSDKDescriptorDigestEnvName: descriptorDigest,
 		},
 	}, nil
+}
+
+func validateRustSDKGitDependency(
+	ctx context.Context,
+	localPackage *dagger.Directory,
+	repository string,
+	revision string,
+) (string, error) {
+	repository = canonicalEngineRepository(repository)
+	parsed, err := url.Parse(repository)
+	if err != nil || parsed.Scheme != "https" || parsed.Host == "" || parsed.User != nil ||
+		parsed.RawQuery != "" || parsed.Fragment != "" {
+		return "", fmt.Errorf("Rust SDK dependency repository must be a credential-free HTTPS URL")
+	}
+	if len(revision) != 40 {
+		return "", fmt.Errorf("Rust SDK dependency revision must be one full commit")
+	}
+	for _, character := range revision {
+		if !strings.ContainsRune("0123456789abcdef", character) {
+			return "", fmt.Errorf("Rust SDK dependency revision must be lowercase hexadecimal")
+		}
+	}
+
+	// Examples, tests, and crate prose stay outside the focused engine source so
+	// editing them cannot rebuild packaged toolchain content. The manifest,
+	// source, and assets are the closed input set Cargo can compile or embed.
+	dependencySourceFilter := dagger.DirectoryFilterOpts{Include: []string{
+		"Cargo.toml",
+		"src/**",
+		"assets/**",
+	}}
+	localPackage = localPackage.Filter(dependencySourceFilter)
+	remotePackage := dag.Git(repository).
+		Commit(revision).
+		Tree(dagger.GitRefTreeOpts{DiscardGitDir: true}).
+		Directory("sdk/rust/crates/dagger-sdk").
+		Filter(dependencySourceFilter)
+	// Directory digests include source-root metadata, so a Git tree and an
+	// identical workspace directory need not share one digest. Bidirectional
+	// diffs compare the package entries themselves and expose both additions and
+	// removals without weakening the immutable-revision check.
+	localChanges, err := remotePackage.Diff(localPackage).Entries(ctx)
+	if err != nil {
+		return "", fmt.Errorf("compare local public Rust SDK package: %w", err)
+	}
+	remoteChanges, err := localPackage.Diff(remotePackage).Entries(ctx)
+	if err != nil {
+		return "", fmt.Errorf("compare remote public Rust SDK package: %w", err)
+	}
+	if len(localChanges) != 0 || len(remoteChanges) != 0 {
+		return "", fmt.Errorf(
+			"Rust SDK dependency revision does not match the public dagger-sdk package being built (local changes: %q; remote changes: %q)",
+			localChanges,
+			remoteChanges,
+		)
+	}
+	return repository, nil
 }
 
 func rustSDKTargetTriple(architecture string) (string, error) {

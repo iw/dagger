@@ -44,7 +44,7 @@ func (r *DaggerEngine) ClientDockerConfig() *Secret { // dagger-engine (../../..
 
 // Generate the json schema for a dagger config file
 // Currently supported: "dagger.json", "dagger-module.toml", "dagger.toml", "engine.json"
-func (r *DaggerEngine) ConfigSchema(filename string) *File { // dagger-engine (../../../../toolchains/engine-dev/main.go:758:1)
+func (r *DaggerEngine) ConfigSchema(filename string) *File { // dagger-engine (../../../../toolchains/engine-dev/main.go:764:1)
 	q := r.query.Select("configSchema")
 	q = q.Arg("filename", filename)
 
@@ -122,7 +122,7 @@ func (r *DaggerEngine) ContainerWithRustSdkcontent(rustSdkcontent *DaggerEngineR
 
 // Generate any engine-related files
 // Note: this is codegen of the 'go generate' variety, not 'dagger develop'
-func (r *DaggerEngine) Generate() *Changeset { // dagger-engine (../../../../toolchains/engine-dev/main.go:773:1)
+func (r *DaggerEngine) Generate() *Changeset { // dagger-engine (../../../../toolchains/engine-dev/main.go:779:1)
 	q := r.query.Select("generate")
 
 	return &Changeset{
@@ -132,11 +132,11 @@ func (r *DaggerEngine) Generate() *Changeset { // dagger-engine (../../../../too
 
 // DaggerEngineGraphqlSchemaOpts contains options for DaggerEngine.GraphqlSchema
 type DaggerEngineGraphqlSchemaOpts struct {
-	Version string // dagger-engine (../../../../toolchains/engine-dev/main.go:732:2)
+	Version string // dagger-engine (../../../../toolchains/engine-dev/main.go:738:2)
 }
 
 // Introspect the engine API schema, and return it as a graphql schema
-func (r *DaggerEngine) GraphqlSchema(opts ...DaggerEngineGraphqlSchemaOpts) *File { // dagger-engine (../../../../toolchains/engine-dev/main.go:729:1)
+func (r *DaggerEngine) GraphqlSchema(opts ...DaggerEngineGraphqlSchemaOpts) *File { // dagger-engine (../../../../toolchains/engine-dev/main.go:735:1)
 	q := r.query.Select("graphqlSchema")
 	for i := len(opts) - 1; i >= 0; i-- {
 		// `version` optional argument
@@ -212,13 +212,13 @@ type DaggerEngineInstallClientOpts struct {
 	//
 	// The engine service to bind
 	//
-	Service *Service // dagger-engine (../../../../toolchains/engine-dev/main.go:674:2)
+	Service *Service // dagger-engine (../../../../toolchains/engine-dev/main.go:680:2)
 
-	Version string // dagger-engine (../../../../toolchains/engine-dev/main.go:676:2)
+	Version string // dagger-engine (../../../../toolchains/engine-dev/main.go:682:2)
 }
 
 // Configure the given client container so that it can connect to the given engine service
-func (r *DaggerEngine) InstallClient(client *Container, opts ...DaggerEngineInstallClientOpts) *Container { // dagger-engine (../../../../toolchains/engine-dev/main.go:668:1)
+func (r *DaggerEngine) InstallClient(client *Container, opts ...DaggerEngineInstallClientOpts) *Container { // dagger-engine (../../../../toolchains/engine-dev/main.go:674:1)
 	assertNotNil("client", client)
 	q := r.query.Select("installClient")
 	for i := len(opts) - 1; i >= 0; i-- {
@@ -240,7 +240,7 @@ func (r *DaggerEngine) InstallClient(client *Container, opts ...DaggerEngineInst
 
 // Introspect the engine API schema, and return it as a json-encoded file.
 // This file is used by SDKs to generate clients.
-func (r *DaggerEngine) IntrospectionJSON() *File { // dagger-engine (../../../../toolchains/engine-dev/main.go:716:1)
+func (r *DaggerEngine) IntrospectionJSON() *File { // dagger-engine (../../../../toolchains/engine-dev/main.go:722:1)
 	q := r.query.Select("introspectionJson")
 
 	return &File{
@@ -249,7 +249,7 @@ func (r *DaggerEngine) IntrospectionJSON() *File { // dagger-engine (../../../..
 }
 
 // Build the `introspect` tool which introspects the engine API
-func (r *DaggerEngine) IntrospectionTool() *File { // dagger-engine (../../../../toolchains/engine-dev/main.go:750:1)
+func (r *DaggerEngine) IntrospectionTool() *File { // dagger-engine (../../../../toolchains/engine-dev/main.go:756:1)
 	q := r.query.Select("introspectionTool")
 
 	return &File{
@@ -365,17 +365,17 @@ type DaggerEnginePublishOpts struct {
 	//
 	//
 	// Default: "ghcr.io/dagger/engine"
-	Image string // dagger-engine (../../../../toolchains/engine-dev/main.go:858:2)
+	Image string // dagger-engine (../../../../toolchains/engine-dev/main.go:864:2)
 
-	DryRun bool // dagger-engine (../../../../toolchains/engine-dev/main.go:863:2)
+	DryRun bool // dagger-engine (../../../../toolchains/engine-dev/main.go:869:2)
 
-	RegistryUsername string // dagger-engine (../../../../toolchains/engine-dev/main.go:866:2)
+	RegistryUsername string // dagger-engine (../../../../toolchains/engine-dev/main.go:872:2)
 
-	RegistryPassword *Secret // dagger-engine (../../../../toolchains/engine-dev/main.go:868:2)
+	RegistryPassword *Secret // dagger-engine (../../../../toolchains/engine-dev/main.go:874:2)
 }
 
 // Publish all engine images to a registry
-func (r *DaggerEngine) Publish(ctx context.Context, tag []string, opts ...DaggerEnginePublishOpts) error { // dagger-engine (../../../../toolchains/engine-dev/main.go:853:1)
+func (r *DaggerEngine) Publish(ctx context.Context, tag []string, opts ...DaggerEnginePublishOpts) error { // dagger-engine (../../../../toolchains/engine-dev/main.go:859:1)
 	if r.publish != nil {
 		return nil
 	}
@@ -403,7 +403,7 @@ func (r *DaggerEngine) Publish(ctx context.Context, tag []string, opts ...Dagger
 	return q.Execute(ctx)
 }
 
-func (r *DaggerEngine) ReleaseDryRun(ctx context.Context) error { // dagger-engine (../../../../toolchains/engine-dev/main.go:839:1)
+func (r *DaggerEngine) ReleaseDryRun(ctx context.Context) error { // dagger-engine (../../../../toolchains/engine-dev/main.go:845:1)
 	if r.releaseDryRun != nil {
 		return nil
 	}
@@ -417,6 +417,14 @@ type DaggerEngineRustSdkcontentOpts struct {
 	Platform Platform // dagger-engine (../../../../toolchains/engine-dev/main.go:344:2)
 
 	Version string // dagger-engine (../../../../toolchains/engine-dev/main.go:346:2)
+	//
+	// Credential-free repository containing the public dagger-sdk package.
+	//
+	DependencyRepository string // dagger-engine (../../../../toolchains/engine-dev/main.go:349:2)
+	//
+	// Full reachable revision whose public dagger-sdk package matches this build.
+	//
+	DependencyRevision string // dagger-engine (../../../../toolchains/engine-dev/main.go:352:2)
 }
 
 // RustSDKContent builds the Rust SDK integration once so focused engine cases can reuse
@@ -432,6 +440,14 @@ func (r *DaggerEngine) RustSdkcontent(opts ...DaggerEngineRustSdkcontentOpts) *D
 		if !querybuilder.IsZeroValue(opts[i].Version) {
 			q = q.Arg("version", opts[i].Version)
 		}
+		// `dependencyRepository` optional argument
+		if !querybuilder.IsZeroValue(opts[i].DependencyRepository) {
+			q = q.Arg("dependencyRepository", opts[i].DependencyRepository)
+		}
+		// `dependencyRevision` optional argument
+		if !querybuilder.IsZeroValue(opts[i].DependencyRevision) {
+			q = q.Arg("dependencyRevision", opts[i].DependencyRevision)
+		}
 	}
 
 	return &DaggerEngineRustEngineContent{
@@ -441,17 +457,17 @@ func (r *DaggerEngine) RustSdkcontent(opts ...DaggerEngineRustSdkcontentOpts) *D
 
 // DaggerEngineServiceOpts contains options for DaggerEngine.Service
 type DaggerEngineServiceOpts struct {
-	GpuSupport bool // dagger-engine (../../../../toolchains/engine-dev/main.go:496:2)
+	GpuSupport bool // dagger-engine (../../../../toolchains/engine-dev/main.go:502:2)
 
-	SharedCache bool // dagger-engine (../../../../toolchains/engine-dev/main.go:498:2)
+	SharedCache bool // dagger-engine (../../../../toolchains/engine-dev/main.go:504:2)
 
-	Metrics bool // dagger-engine (../../../../toolchains/engine-dev/main.go:500:2)
+	Metrics bool // dagger-engine (../../../../toolchains/engine-dev/main.go:506:2)
 
-	Version string // dagger-engine (../../../../toolchains/engine-dev/main.go:502:2)
+	Version string // dagger-engine (../../../../toolchains/engine-dev/main.go:508:2)
 }
 
 // Create a test engine service
-func (r *DaggerEngine) Service(name string, opts ...DaggerEngineServiceOpts) *Service { // dagger-engine (../../../../toolchains/engine-dev/main.go:492:1)
+func (r *DaggerEngine) Service(name string, opts ...DaggerEngineServiceOpts) *Service { // dagger-engine (../../../../toolchains/engine-dev/main.go:498:1)
 	q := r.query.Select("service")
 	for i := len(opts) - 1; i >= 0; i-- {
 		// `gpuSupport` optional argument
@@ -480,18 +496,18 @@ func (r *DaggerEngine) Service(name string, opts ...DaggerEngineServiceOpts) *Se
 
 // DaggerEngineServiceWithFocusedRustSdkcontentOpts contains options for DaggerEngine.ServiceWithFocusedRustSdkcontent
 type DaggerEngineServiceWithFocusedRustSdkcontentOpts struct {
-	SharedCache bool // dagger-engine (../../../../toolchains/engine-dev/main.go:541:2)
+	SharedCache bool // dagger-engine (../../../../toolchains/engine-dev/main.go:547:2)
 
-	Metrics bool // dagger-engine (../../../../toolchains/engine-dev/main.go:543:2)
+	Metrics bool // dagger-engine (../../../../toolchains/engine-dev/main.go:549:2)
 
-	Version string // dagger-engine (../../../../toolchains/engine-dev/main.go:545:2)
+	Version string // dagger-engine (../../../../toolchains/engine-dev/main.go:551:2)
 }
 
 // ServiceWithFocusedRustSDKContent starts a development engine by overlaying the
 // current engine binary, exact-target Go SDK, and reusable Rust SDK content onto a
 // digest-pinned baseline whose support slice is proven equal to the target revision.
 // The complete release builder remains the authority outside this focused test path.
-func (r *DaggerEngine) ServiceWithFocusedRustSdkcontent(rustSdkcontent *DaggerEngineRustEngineContent, name string, baseImage string, baseRevision string, targetRepository string, targetRevision string, opts ...DaggerEngineServiceWithFocusedRustSdkcontentOpts) *Service { // dagger-engine (../../../../toolchains/engine-dev/main.go:532:1)
+func (r *DaggerEngine) ServiceWithFocusedRustSdkcontent(rustSdkcontent *DaggerEngineRustEngineContent, name string, baseImage string, baseRevision string, targetRepository string, targetRevision string, opts ...DaggerEngineServiceWithFocusedRustSdkcontentOpts) *Service { // dagger-engine (../../../../toolchains/engine-dev/main.go:538:1)
 	assertNotNil("rustSdkcontent", rustSdkcontent)
 	q := r.query.Select("serviceWithFocusedRustSdkcontent")
 	for i := len(opts) - 1; i >= 0; i-- {
@@ -522,18 +538,18 @@ func (r *DaggerEngine) ServiceWithFocusedRustSdkcontent(rustSdkcontent *DaggerEn
 
 // DaggerEngineServiceWithRustSdkcontentOpts contains options for DaggerEngine.ServiceWithRustSdkcontent
 type DaggerEngineServiceWithRustSdkcontentOpts struct {
-	GpuSupport bool // dagger-engine (../../../../toolchains/engine-dev/main.go:514:2)
+	GpuSupport bool // dagger-engine (../../../../toolchains/engine-dev/main.go:520:2)
 
-	SharedCache bool // dagger-engine (../../../../toolchains/engine-dev/main.go:516:2)
+	SharedCache bool // dagger-engine (../../../../toolchains/engine-dev/main.go:522:2)
 
-	Metrics bool // dagger-engine (../../../../toolchains/engine-dev/main.go:518:2)
+	Metrics bool // dagger-engine (../../../../toolchains/engine-dev/main.go:524:2)
 
-	Version string // dagger-engine (../../../../toolchains/engine-dev/main.go:520:2)
+	Version string // dagger-engine (../../../../toolchains/engine-dev/main.go:526:2)
 }
 
 // ServiceWithRustSDKContent starts an engine from one previously built Rust SDK
 // content object, preserving its manifest and descriptor identities unchanged.
-func (r *DaggerEngine) ServiceWithRustSdkcontent(rustSdkcontent *DaggerEngineRustEngineContent, name string, opts ...DaggerEngineServiceWithRustSdkcontentOpts) *Service { // dagger-engine (../../../../toolchains/engine-dev/main.go:509:1)
+func (r *DaggerEngine) ServiceWithRustSdkcontent(rustSdkcontent *DaggerEngineRustEngineContent, name string, opts ...DaggerEngineServiceWithRustSdkcontentOpts) *Service { // dagger-engine (../../../../toolchains/engine-dev/main.go:515:1)
 	assertNotNil("rustSdkcontent", rustSdkcontent)
 	q := r.query.Select("serviceWithRustSdkcontent")
 	for i := len(opts) - 1; i >= 0; i-- {

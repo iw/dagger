@@ -51,6 +51,19 @@ func TestEngineUnitGeneratedAdapterIsWired(t *testing.T) {
 	}
 }
 
+func TestEngineUnitCoversTheBoundedPackagedRustInitializerSurface(t *testing.T) {
+	t.Parallel()
+
+	engineUnit := findFunction(t, parseGoFile(t, "../../main.go"), "EngineUnit")
+	pattern := "^(TestSDKResolveInstall|TestPackagedRustSDKRegistersOnlyImplementedInitializer)$"
+	if got := stringLiteralCount(engineUnit, pattern); got != 1 {
+		t.Fatalf("engine-unit must select the exact packaged Rust CLI boundaries once, got %d", got)
+	}
+	if got := stringLiteralCount(engineUnit, "./core/sdk"); got != 1 {
+		t.Fatalf("engine-unit must retain the reflected SDK hook-surface tests, got %d", got)
+	}
+}
+
 func TestReusableEngineContentBoundaryIsGenerated(t *testing.T) {
 	t.Parallel()
 
@@ -168,20 +181,66 @@ func TestEngineIntegrationUsesTheFocusedSourceGraph(t *testing.T) {
 func TestOperationsFixtureSeparatesCheckedGenerationFromClientSchemaLoading(t *testing.T) {
 	t.Parallel()
 
-	source := parseGoFile(t, "../../main.go")
-	fixture := findFunction(t, source, "runEngineIntegrationCase")
-	for _, required := range []string{
-		"module = \".dagger/modules/client-schema\"\n",
-		"/work/.dagger/modules/client-schema/dagger.json",
-		"clients/rust/Cargo.toml",
-		".dagger/modules/operations/.dagger/rust/operation-manifest.json",
+	fixtureSource := parseGoFile(t, "../enginefixture/operations.go")
+	for name, expected := range map[string]string{
+		"operationsSchemaModule":   ".dagger/modules/client-schema",
+		"operationsSchemaConfig":   "/work/.dagger/modules/client-schema/dagger.json",
+		"operationsModuleManifest": ".dagger/modules/operations/.dagger/rust/operation-manifest.json",
+		"operationsClientRoot":     ".dagger/modules/client-schema/clients/rust",
 	} {
-		if got := stringLiteralCount(fixture, required); got != 1 {
-			t.Fatalf("operations fixture must retain sequencing anchor %q exactly once, got %d", required, got)
+		if got := constantString(t, fixtureSource, name); got != expected {
+			t.Fatalf("operations fixture anchor %s: got %q, want %q", name, got, expected)
 		}
 	}
-	if got := stringLiteralCount(fixture, "\n[[clients]]\n"); got != 0 {
-		t.Fatalf("operations fixture must not make the checked Rust module bootstrap its own client schema")
+	if got := stringLiteralCount(fixtureSource, "generated-context-changeset"); got != 1 {
+		t.Fatalf("operations fixture must traverse the schema module generated context exactly once")
+	}
+	if got := stringLiteralCount(fixtureSource, "--auto-apply"); got != 0 {
+		t.Fatalf("operations fixture must not claim the deliberately absent client initializer")
+	}
+	if got := stringLiteralCount(fixtureSource, "dagger-rust-sdk:generate-clients"); got != 0 {
+		t.Fatalf("operations fixture must invoke the ClientGenerator hook rather than its workspace wrapper")
+	}
+
+	integration := findFunction(t, parseGoFile(t, "../../main.go"), "runEngineIntegrationCase")
+	if got := selectorCount(integration, "NewOperationsPlan"); got != 1 {
+		t.Fatalf("operations case must consume the validated engine-free plan exactly once, got %d", got)
+	}
+}
+
+func TestForkSDKDependencyRevisionIsExplicitAndContentChecked(t *testing.T) {
+	t.Parallel()
+
+	engineContent := findFunction(t, parseGoFile(t, "../../main.go"), "EngineContent")
+	if got := selectorCount(engineContent, "SDKDependencyRevision"); got != 2 {
+		t.Fatalf("EngineContent must test and forward the explicit SDK dependency revision, got %d references", got)
+	}
+
+	generatedClient := findFunction(t, parseGoFile(t, "../dagger/dagger-engine.gen.go"), "RustSdkcontent")
+	for _, argument := range []string{"dependencyRepository", "dependencyRevision"} {
+		if got := stringLiteralCount(generatedClient, argument); got != 1 {
+			t.Fatalf("generated engine client must forward %s exactly once, got %d", argument, got)
+		}
+	}
+
+	builderSource := parseGoFile(t, "../../../engine-dev/build/sdk.go")
+	builder := findFunction(t, builderSource, "RustSDKContent")
+	if got := identifierCount(builder, "validateRustSDKGitDependency"); got != 1 {
+		t.Fatalf("Rust SDK content must validate its Git dependency exactly once, got %d", got)
+	}
+	validator := findFunction(t, builderSource, "validateRustSDKGitDependency")
+	if got := selectorCount(validator, "Filter"); got != 2 {
+		t.Fatalf("Git dependency validation must compare the same focused source closure, got %d filters", got)
+	}
+	if got := selectorCount(validator, "Diff"); got != 2 {
+		t.Fatalf("Git dependency validation must compare local and remote package entries bidirectionally, got %d diffs", got)
+	}
+	rawBuilder, err := os.ReadFile("../../../engine-dev/build/sdk.go")
+	if err != nil {
+		t.Fatalf("read engine Rust SDK builder: %v", err)
+	}
+	if strings.Contains(string(rawBuilder), "dependencyValue = build.vcsCommit") {
+		t.Fatalf("local engine provenance must not become the public SDK dependency revision")
 	}
 }
 

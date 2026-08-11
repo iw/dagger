@@ -10,10 +10,10 @@ use dagger_sdk_completeness::{
     AllowedTerminalStatus, Architecture, CanonicalSet, CaseId, CaseObservation, CheckOutcome,
     CommandSpec, Digest, DigestDomain, EngineEvidenceDomain, EngineIntegrationEvidenceArtifact,
     EngineIntegrationMappings, EngineIntegrationObservation, EvidenceId, EvidenceKind,
-    EvidenceReference, EvidenceRegistry, ExecutableId, ExpectedOutcome,
-    NonEmptyText, OperatingSystem, Platform, RepositoryRelativePath, ResolvedLedger,
-    SourceLocator, TargetDescriptor, TargetDigest, assemble_engine_integration_manifest,
-    canonical_bytes, canonical_digest, decode_canonical, engine_integration_contract,
+    EvidenceReference, EvidenceRegistry, ExecutableId, ExpectedOutcome, NonEmptyText,
+    OperatingSystem, Platform, RepositoryRelativePath, ResolvedLedger, SourceLocator,
+    TargetDescriptor, TargetDigest, assemble_engine_integration_manifest, canonical_bytes,
+    canonical_digest, decode_canonical, engine_integration_contract,
     validate_engine_integration_mappings, verify_engine_integration_evidence,
 };
 use dagger_sdk_engine::{
@@ -94,28 +94,21 @@ fn run() -> Result<(), &'static str> {
     let mapping_bytes = fs::read(&mapping_path).map_err(|_| "mapping bytes are unavailable")?;
     let mappings: EngineIntegrationMappings =
         decode_canonical(&mapping_bytes).map_err(|_| "mappings are not canonical")?;
-    let raw: RawEngineEvidence = serde_json::from_slice(
-        &fs::read(run_path).map_err(|_| "engine run is unavailable")?,
-    )
-    .map_err(|_| "engine run is malformed")?;
+    let raw: RawEngineEvidence =
+        serde_json::from_slice(&fs::read(run_path).map_err(|_| "engine run is unavailable")?)
+            .map_err(|_| "engine run is malformed")?;
 
     let target_digest = TargetDigest::new(
         canonical_digest(DigestDomain::Target, &target).map_err(|_| "target digest failed")?,
     );
     validate_raw_subject(&raw, &target, &target_digest, &mapping_bytes)?;
     let policy = engine_integration_contract().scope;
-    let validated = validate_engine_integration_mappings(
-        &mappings,
-        &ledger,
-        &policy,
-        &target_digest,
-    )
-    .map_err(|_| "engine mappings do not match the current ledger")?;
+    let validated =
+        validate_engine_integration_mappings(&mappings, &ledger, &policy, &target_digest)
+            .map_err(|_| "engine mappings do not match the current ledger")?;
 
-    let implementation_id =
-        EvidenceId::new("implementation/feature-5-engine-integration").unwrap();
-    let decision_id =
-        EvidenceId::new("decision/feature-5-engine-idiomatic-equivalences").unwrap();
+    let implementation_id = EvidenceId::new("implementation/feature-5-engine-integration").unwrap();
+    let decision_id = EvidenceId::new("decision/feature-5-engine-idiomatic-equivalences").unwrap();
     let implementation_evidence = validated
         .mappings()
         .keys()
@@ -125,13 +118,13 @@ fn run() -> Result<(), &'static str> {
     let decision_evidence = validated
         .mappings()
         .iter()
-        .filter_map(|(capability_id, mapping)| {
+        .filter(|(_, mapping)| {
             matches!(
                 mapping.allowed_terminal_status,
                 AllowedTerminalStatus::IdiomaticEquivalent
             )
-            .then(|| (capability_id.clone(), decision_id.clone()))
         })
+        .map(|(capability_id, _)| (capability_id.clone(), decision_id.clone()))
         .collect();
     let cases = raw_cases(&raw)?;
     let subject = evidence_subject(&raw, &target)?;
@@ -152,14 +145,13 @@ fn run() -> Result<(), &'static str> {
     let observations = domains
         .into_iter()
         .map(|domain| {
-            let proved_capabilities = CanonicalSet::new(validated.mappings().iter().filter_map(
-                |(capability_id, mapping)| {
-                    mapping
-                        .evidence_domains
-                        .contains(&domain)
-                        .then(|| capability_id.clone())
-                },
-            ));
+            let proved_capabilities = CanonicalSet::new(
+                validated
+                    .mappings()
+                    .iter()
+                    .filter(|(_, mapping)| mapping.evidence_domains.contains(&domain))
+                    .map(|(capability_id, _)| capability_id.clone()),
+            );
             EngineIntegrationObservation {
                 format_version: 1,
                 evidence_id: verification_id(&domain),
@@ -215,9 +207,7 @@ fn validate_raw_subject(
     Ok(())
 }
 
-fn raw_cases(
-    raw: &RawEngineEvidence,
-) -> Result<BTreeMap<CaseId, CaseObservation>, &'static str> {
+fn raw_cases(raw: &RawEngineEvidence) -> Result<BTreeMap<CaseId, CaseObservation>, &'static str> {
     const REQUIRED: [&str; 10] = [
         "resolution",
         "init-empty",
@@ -288,7 +278,11 @@ fn evidence_subject(
     let operation_input_digests = raw
         .operation_input_digests
         .iter()
-        .map(|digest| digest.parse().map_err(|_| "operation input digest is invalid"))
+        .map(|digest| {
+            digest
+                .parse()
+                .map_err(|_| "operation input digest is invalid")
+        })
         .collect::<Result<BTreeSet<_>, _>>()?;
     let operation_manifest_digests = raw
         .operation_manifest_digests
@@ -331,15 +325,19 @@ fn evidence_registry(
     artifact: &EngineIntegrationEvidenceArtifact,
 ) -> Result<EvidenceRegistry, &'static str> {
     let all_capabilities = CanonicalSet::new(artifact.manifest.mappings.keys().cloned());
-    let idiomatic_capabilities = CanonicalSet::new(artifact.manifest.mappings.iter().filter_map(
-        |(capability_id, mapping)| {
-            matches!(
-                mapping.allowed_terminal_status,
-                AllowedTerminalStatus::IdiomaticEquivalent
-            )
-            .then(|| capability_id.clone())
-        },
-    ));
+    let idiomatic_capabilities = CanonicalSet::new(
+        artifact
+            .manifest
+            .mappings
+            .iter()
+            .filter(|(_, mapping)| {
+                matches!(
+                    mapping.allowed_terminal_status,
+                    AllowedTerminalStatus::IdiomaticEquivalent
+                )
+            })
+            .map(|(capability_id, _)| capability_id.clone()),
+    );
     let mut evidence = BTreeMap::new();
     evidence.insert(
         implementation_id.clone(),

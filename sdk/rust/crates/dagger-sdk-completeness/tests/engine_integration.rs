@@ -400,17 +400,17 @@ fn engine_manifest() -> EngineIntegrationManifest {
         .mappings()
         .iter()
         .enumerate()
-        .filter_map(|(index, (capability_id, mapping))| {
+        .filter(|(_, (_, mapping))| {
             matches!(
                 mapping.allowed_terminal_status,
                 AllowedTerminalStatus::IdiomaticEquivalent
             )
-            .then(|| {
-                (
-                    capability_id.clone(),
-                    EvidenceId::new(format!("engine/decision/{index:02}")).unwrap(),
-                )
-            })
+        })
+        .map(|(index, (capability_id, _))| {
+            (
+                capability_id.clone(),
+                EvidenceId::new(format!("engine/decision/{index:02}")).unwrap(),
+            )
         })
         .collect();
     assemble_engine_integration_manifest(

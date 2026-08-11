@@ -10,6 +10,7 @@ import (
 	"strings"
 	"sync"
 
+	"dagger/rust-sdk-dev/internal/enginefixture"
 	"github.com/BurntSushi/toml"
 	"golang.org/x/mod/semver"
 
@@ -69,13 +70,14 @@ type operationCaseEvidence struct {
 
 // Develop and verify the Dagger Rust SDK.
 type RustSdkDev struct {
-	OriginalWorkspace  *dagger.Directory // +private
-	Workspace          *dagger.Directory // +private
-	SourcePath         string            // +private
-	BaseContainer      *dagger.Container
-	Ws                 *dagger.Workspace // +private
-	ClientDockerConfig *dagger.Secret    // +private
-	EngineRepository   string            // +private
+	OriginalWorkspace     *dagger.Directory // +private
+	Workspace             *dagger.Directory // +private
+	SourcePath            string            // +private
+	BaseContainer         *dagger.Container
+	Ws                    *dagger.Workspace // +private
+	ClientDockerConfig    *dagger.Secret    // +private
+	EngineRepository      string            // +private
+	SDKDependencyRevision string            // +private
 }
 
 func New(
@@ -90,6 +92,9 @@ func New(
 	// Credential-free HTTPS repository that owns the engine source revision.
 	// +default="https://github.com/dagger/dagger"
 	engineRepository string,
+	// Full reachable revision in the engine repository containing the public dagger-sdk package.
+	// +optional
+	sdkDependencyRevision string,
 ) *RustSdkDev {
 	if engineRepository == "" {
 		engineRepository = defaultEngineRepository
@@ -142,13 +147,14 @@ func New(
 	})
 
 	return &RustSdkDev{
-		OriginalWorkspace:  rustSrc,
-		Workspace:          rustSrc,
-		SourcePath:         sourcePath,
-		BaseContainer:      rustBaseContainer(),
-		Ws:                 workspace,
-		ClientDockerConfig: clientDockerConfig,
-		EngineRepository:   engineRepository,
+		OriginalWorkspace:     rustSrc,
+		Workspace:             rustSrc,
+		SourcePath:            sourcePath,
+		BaseContainer:         rustBaseContainer(),
+		Ws:                    workspace,
+		ClientDockerConfig:    clientDockerConfig,
+		EngineRepository:      engineRepository,
+		SDKDependencyRevision: sdkDependencyRevision,
 	}
 }
 
@@ -371,9 +377,12 @@ func (t *RustSdkDev) EngineUnit(ctx context.Context) error {
 		WithWorkdir("/src").
 		WithExec([]string{"go", "test", "./core/sdk", "./core/sdk/sdkmeta", "./core/schema"}).
 		// The full CLI package suite provisions the released CLI. Rust adapter validation
-		// owns only SDK install resolution, so keep it deterministic and offline by selecting
-		// the production resolver table directly.
-		WithExec([]string{"go", "test", "./internal/cmd/dagger", "-run", "^TestSDKResolveInstall$"}).
+		// owns only SDK resolution and its deliberately bounded initializer surface, so keep
+		// it deterministic and offline by selecting those production boundaries directly.
+		WithExec([]string{
+			"go", "test", "./internal/cmd/dagger", "-run",
+			"^(TestSDKResolveInstall|TestPackagedRustSDKRegistersOnlyImplementedInitializer)$",
+		}).
 		WithWorkdir("/src/sdk/rust/runtime").
 		WithExec([]string{"go", "test", "./internal/metadata"}).
 		WithWorkdir("/src/toolchains/rust-sdk-dev").
@@ -405,9 +414,12 @@ func (t *RustSdkDev) EngineContent(ctx context.Context) (*RustEngineContent, err
 		Ws:                 t.Ws,
 		VcsRepository:      t.EngineRepository,
 	}).WithSource(t.focusedEngineSource())
-	built := engine.RustSdkcontent(dagger.DaggerEngineRustSdkcontentOpts{
-		Version: coreTargetVersion,
-	})
+	contentOptions := dagger.DaggerEngineRustSdkcontentOpts{Version: coreTargetVersion}
+	if t.SDKDependencyRevision != "" {
+		contentOptions.DependencyRepository = t.EngineRepository
+		contentOptions.DependencyRevision = t.SDKDependencyRevision
+	}
+	built := engine.RustSdkcontent(contentOptions)
 	manifestDigest, err := built.ManifestDigest(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("resolve Rust SDK OCI manifest identity: %w", err)
@@ -801,30 +813,15 @@ func (content *RustEngineContent) runEngineIntegrationCase(
 		if err != nil {
 			return "", fmt.Errorf("read operations workspace config: %w", err)
 		}
-		// A client generator consumes a loaded module schema. Keeping that schema
-		// fixture on the legacy runtime path avoids making the checked Rust probe
-		// bootstrap its own committed bindings while they are still being generated.
-		workspaceConfig += "\n[[modules.dagger-rust-sdk.as-sdk.clients]]\n" +
-			"path = \"clients/rust\"\n" +
-			"module = \".dagger/modules/client-schema\"\n"
-		result = result.
-			WithNewFile("/work/dagger.toml", workspaceConfig).
-			WithNewFile("/work/.dagger/modules/client-schema/dagger.json", `{
-  "name": "client-schema",
-  "engineVersion": "v1.0.0-beta.10",
-  "sdk": {"source": "go"},
-  "source": "."
-}
-`).
-			WithNewFile("/work/.dagger/modules/client-schema/go.mod", "module client-schema\n\ngo 1.23.0\n").
-			WithNewFile("/work/.dagger/modules/client-schema/main.go", "package main\n\ntype ClientSchema struct{}\n\nfunc (*ClientSchema) Probe() string { return \"ok\" }\n").
-			WithExec([]string{"dagger", "-y", "generate"})
-		if err := requirePaths(ctx, result.Directory("/work"), []string{
-			".dagger/modules/operations/.dagger/rust/operation-manifest.json",
-			".dagger/modules/operations/src/dagger_generated/mod.rs",
-			"clients/rust/Cargo.toml", "clients/rust/src/lib.rs",
-			"clients/rust/src/dagger_generated/mod.rs",
-		}); err != nil {
+		fixture, err := enginefixture.NewOperationsPlan(workspaceConfig, coreTargetVersion)
+		if err != nil {
+			return "", fmt.Errorf("plan operations fixture: %w", err)
+		}
+		for _, file := range fixture.Files {
+			result = result.WithNewFile(file.Path, file.Contents)
+		}
+		result = result.WithExec(fixture.GenerateClientArgs)
+		if err := requirePaths(ctx, result.Directory("/work"), fixture.RequiredPaths); err != nil {
 			return "", err
 		}
 		return collectOperationCaseEvidence(ctx, result)
@@ -1143,7 +1140,16 @@ func requirePaths(ctx context.Context, root *dagger.Directory, paths []string) e
 			if globErr != nil {
 				return fmt.Errorf("required path %s is absent; inspect operation manifests: %w", candidate, globErr)
 			}
-			return fmt.Errorf("required path %s is absent; operation manifests: %v", candidate, manifests)
+			cargoManifests, globErr := root.Glob(ctx, "**/Cargo.toml")
+			if globErr != nil {
+				return fmt.Errorf("required path %s is absent; inspect Cargo manifests: %w", candidate, globErr)
+			}
+			return fmt.Errorf(
+				"required path %s is absent; operation manifests: %v; Cargo manifests: %v",
+				candidate,
+				manifests,
+				cargoManifests,
+			)
 		}
 	}
 	return nil

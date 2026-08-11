@@ -499,15 +499,18 @@ pub fn assemble_engine_integration_manifest(
             "implementation evidence must cover every mapped capability exactly",
         ));
     }
-    let idiomatic_capabilities = CanonicalSet::new(mappings.mappings.iter().filter_map(
-        |(capability_id, mapping)| {
-            matches!(
-                mapping.allowed_terminal_status,
-                AllowedTerminalStatus::IdiomaticEquivalent
-            )
-            .then(|| capability_id.clone())
-        },
-    ));
+    let idiomatic_capabilities = CanonicalSet::new(
+        mappings
+            .mappings
+            .iter()
+            .filter(|(_, mapping)| {
+                matches!(
+                    mapping.allowed_terminal_status,
+                    AllowedTerminalStatus::IdiomaticEquivalent
+                )
+            })
+            .map(|(capability_id, _)| capability_id.clone()),
+    );
     if CanonicalSet::new(decision_evidence.keys().cloned()) != idiomatic_capabilities {
         diagnostics.push(evidence_error(
             "decision_evidence",
@@ -761,15 +764,18 @@ fn validate_manifest_integrity(
     }
     let mapped = CanonicalSet::new(manifest.mappings.keys().cloned());
     let implemented = CanonicalSet::new(manifest.implementation_evidence.keys().cloned());
-    let idiomatic = CanonicalSet::new(manifest.mappings.iter().filter_map(
-        |(capability_id, mapping)| {
-            matches!(
-                mapping.allowed_terminal_status,
-                AllowedTerminalStatus::IdiomaticEquivalent
-            )
-            .then(|| capability_id.clone())
-        },
-    ));
+    let idiomatic = CanonicalSet::new(
+        manifest
+            .mappings
+            .iter()
+            .filter(|(_, mapping)| {
+                matches!(
+                    mapping.allowed_terminal_status,
+                    AllowedTerminalStatus::IdiomaticEquivalent
+                )
+            })
+            .map(|(capability_id, _)| capability_id.clone()),
+    );
     let decided = CanonicalSet::new(manifest.decision_evidence.keys().cloned());
     if mapped != implemented || idiomatic != decided || manifest.required_cases.is_empty() {
         diagnostics.push(evidence_error(

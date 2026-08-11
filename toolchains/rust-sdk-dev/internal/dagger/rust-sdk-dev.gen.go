@@ -21,6 +21,8 @@ type RustSDKDevOpts struct {
 	//
 	// Default: "https://github.com/dagger/dagger"
 	EngineRepository string
+	// Full reachable revision in the engine repository containing the public dagger-sdk package.
+	SDKDependencyRevision string
 }
 
 func (r *Query) RustSDKDev(workspace *Workspace, opts ...RustSDKDevOpts) *RustSDKDev { // rust-sdk-dev (../../../../:0:0)
@@ -38,6 +40,10 @@ func (r *Query) RustSDKDev(workspace *Workspace, opts ...RustSDKDevOpts) *RustSD
 		// `engineRepository` optional argument
 		if !querybuilder.IsZeroValue(opts[i].EngineRepository) {
 			q = q.Arg("engineRepository", opts[i].EngineRepository)
+		}
+		// `sdkDependencyRevision` optional argument
+		if !querybuilder.IsZeroValue(opts[i].SDKDependencyRevision) {
+			q = q.Arg("sdkDependencyRevision", opts[i].SDKDependencyRevision)
 		}
 	}
 	q = q.Arg("workspace", workspace)

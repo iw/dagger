@@ -942,7 +942,7 @@
       ],
       "repository": "github.com/dagger/dagger",
       "revision": "25300124ca110612edc09c43f89cb5fad6028170",
-      "source_digest": "sha256:5119f43ef12d4901d5bd7427f2e81dffd6cad29e2b1817ecf3045f732d5a44dc"
+      "source_digest": "sha256:915305bb727d50813c9e161078e54c6f2c8f78851f298c4a808f0a7d31c18290"
     },
     "sdk-contract-harness": {
       "authority_class": "sdk-contract-harness",

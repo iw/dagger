@@ -114267,7 +114267,7 @@
           "claim": "Pinned authority source defines this reviewed capability",
           "evidence_id": "authority/policy/rust-policy/engine-bare-sdk-resolution/source%2Frust-policy%2Frust-policy%2Fengine-bare-sdk-resolution",
           "evidence_kind": "authority",
-          "locator": ".kiro/specs/rust-sdk-engine-integration/requirements.md:467",
+          "locator": ".kiro/specs/rust-sdk-engine-integration/requirements.md:489",
           "path": ".kiro/specs/rust-sdk-engine-integration/requirements.md",
           "proved_capability_ids": [
             "policy/rust-policy/engine-bare-sdk-resolution"
@@ -114330,7 +114330,7 @@
           "claim": "Pinned authority source defines this reviewed capability",
           "evidence_id": "authority/policy/rust-policy/engine-build-provenance-selection/source%2Frust-policy%2Frust-policy%2Fengine-build-provenance-selection",
           "evidence_kind": "authority",
-          "locator": ".kiro/specs/rust-sdk-engine-integration/requirements.md:473",
+          "locator": ".kiro/specs/rust-sdk-engine-integration/requirements.md:495",
           "path": ".kiro/specs/rust-sdk-engine-integration/requirements.md",
           "proved_capability_ids": [
             "policy/rust-policy/engine-build-provenance-selection"
@@ -114369,7 +114369,7 @@
           "claim": "Pinned authority source defines this reviewed capability",
           "evidence_id": "authority/policy/rust-policy/engine-committed-generated-runtime/source%2Frust-policy%2Frust-policy%2Fengine-committed-generated-runtime",
           "evidence_kind": "authority",
-          "locator": ".kiro/specs/rust-sdk-engine-integration/requirements.md:756",
+          "locator": ".kiro/specs/rust-sdk-engine-integration/requirements.md:784",
           "path": ".kiro/specs/rust-sdk-engine-integration/requirements.md",
           "proved_capability_ids": [
             "policy/rust-policy/engine-committed-generated-runtime"
@@ -114420,7 +114420,7 @@
           "claim": "Pinned authority source defines this reviewed capability",
           "evidence_id": "authority/policy/rust-policy/engine-credential-safe-diagnostics/source%2Frust-policy%2Frust-policy%2Fengine-credential-safe-diagnostics",
           "evidence_kind": "authority",
-          "locator": ".kiro/specs/rust-sdk-engine-integration/requirements.md:894",
+          "locator": ".kiro/specs/rust-sdk-engine-integration/requirements.md:922",
           "path": ".kiro/specs/rust-sdk-engine-integration/requirements.md",
           "proved_capability_ids": [
             "policy/rust-policy/engine-credential-safe-diagnostics"
@@ -114471,7 +114471,7 @@
           "claim": "Pinned authority source defines this reviewed capability",
           "evidence_id": "authority/policy/rust-policy/engine-exact-target-integration-evidence/source%2Frust-policy%2Frust-policy%2Fengine-exact-target-integration-evidence",
           "evidence_kind": "authority",
-          "locator": ".kiro/specs/rust-sdk-engine-integration/requirements.md:943",
+          "locator": ".kiro/specs/rust-sdk-engine-integration/requirements.md:972",
           "path": ".kiro/specs/rust-sdk-engine-integration/requirements.md",
           "proved_capability_ids": [
             "policy/rust-policy/engine-exact-target-integration-evidence"
@@ -114522,7 +114522,7 @@
           "claim": "Pinned authority source defines this reviewed capability",
           "evidence_id": "authority/policy/rust-policy/engine-existing-project-preservation/source%2Frust-policy%2Frust-policy%2Fengine-existing-project-preservation",
           "evidence_kind": "authority",
-          "locator": ".kiro/specs/rust-sdk-engine-integration/requirements.md:542",
+          "locator": ".kiro/specs/rust-sdk-engine-integration/requirements.md:564",
           "path": ".kiro/specs/rust-sdk-engine-integration/requirements.md",
           "proved_capability_ids": [
             "policy/rust-policy/engine-existing-project-preservation"
@@ -114585,7 +114585,7 @@
           "claim": "Pinned authority source defines this reviewed capability",
           "evidence_id": "authority/policy/rust-policy/engine-immutable-sdk-dependency-source/source%2Frust-policy%2Frust-policy%2Fengine-immutable-sdk-dependency-source",
           "evidence_kind": "authority",
-          "locator": ".kiro/specs/rust-sdk-engine-integration/requirements.md:835",
+          "locator": ".kiro/specs/rust-sdk-engine-integration/requirements.md:863",
           "path": ".kiro/specs/rust-sdk-engine-integration/requirements.md",
           "proved_capability_ids": [
             "policy/rust-policy/engine-immutable-sdk-dependency-source"
@@ -114624,7 +114624,7 @@
           "claim": "Pinned authority source defines this reviewed capability",
           "evidence_id": "authority/policy/rust-policy/engine-init-changeset-confinement/source%2Frust-policy%2Frust-policy%2Fengine-init-changeset-confinement",
           "evidence_kind": "authority",
-          "locator": ".kiro/specs/rust-sdk-engine-integration/requirements.md:511",
+          "locator": ".kiro/specs/rust-sdk-engine-integration/requirements.md:533",
           "path": ".kiro/specs/rust-sdk-engine-integration/requirements.md",
           "proved_capability_ids": [
             "policy/rust-policy/engine-init-changeset-confinement"
@@ -114675,7 +114675,7 @@
           "claim": "Pinned authority source defines this reviewed capability",
           "evidence_id": "authority/policy/rust-policy/engine-legacy-runtime-codegen-isolation/source%2Frust-policy%2Frust-policy%2Fengine-legacy-runtime-codegen-isolation",
           "evidence_kind": "authority",
-          "locator": ".kiro/specs/rust-sdk-engine-integration/requirements.md:766",
+          "locator": ".kiro/specs/rust-sdk-engine-integration/requirements.md:794",
           "path": ".kiro/specs/rust-sdk-engine-integration/requirements.md",
           "proved_capability_ids": [
             "policy/rust-policy/engine-legacy-runtime-codegen-isolation"
@@ -114726,7 +114726,7 @@
           "claim": "Pinned authority source defines this reviewed capability",
           "evidence_id": "authority/policy/rust-policy/engine-locked-dependency-closure/source%2Frust-policy%2Frust-policy%2Fengine-locked-dependency-closure",
           "evidence_kind": "authority",
-          "locator": ".kiro/specs/rust-sdk-engine-integration/requirements.md:733",
+          "locator": ".kiro/specs/rust-sdk-engine-integration/requirements.md:761",
           "path": ".kiro/specs/rust-sdk-engine-integration/requirements.md",
           "proved_capability_ids": [
             "policy/rust-policy/engine-locked-dependency-closure"
@@ -114777,7 +114777,7 @@
           "claim": "Pinned authority source defines this reviewed capability",
           "evidence_id": "authority/policy/rust-policy/engine-operation-determinism/source%2Frust-policy%2Frust-policy%2Fengine-operation-determinism",
           "evidence_kind": "authority",
-          "locator": ".kiro/specs/rust-sdk-engine-integration/requirements.md:650",
+          "locator": ".kiro/specs/rust-sdk-engine-integration/requirements.md:678",
           "path": ".kiro/specs/rust-sdk-engine-integration/requirements.md",
           "proved_capability_ids": [
             "policy/rust-policy/engine-operation-determinism"
@@ -114828,7 +114828,7 @@
           "claim": "Pinned authority source defines this reviewed capability",
           "evidence_id": "authority/policy/rust-policy/engine-operation-input-completeness/source%2Frust-policy%2Frust-policy%2Fengine-operation-input-completeness",
           "evidence_kind": "authority",
-          "locator": ".kiro/specs/rust-sdk-engine-integration/requirements.md:605",
+          "locator": ".kiro/specs/rust-sdk-engine-integration/requirements.md:627",
           "path": ".kiro/specs/rust-sdk-engine-integration/requirements.md",
           "proved_capability_ids": [
             "policy/rust-policy/engine-operation-input-completeness"
@@ -114879,7 +114879,7 @@
           "claim": "Pinned authority source defines this reviewed capability",
           "evidence_id": "authority/policy/rust-policy/engine-operation-output-confinement/source%2Frust-policy%2Frust-policy%2Fengine-operation-output-confinement",
           "evidence_kind": "authority",
-          "locator": ".kiro/specs/rust-sdk-engine-integration/requirements.md:611",
+          "locator": ".kiro/specs/rust-sdk-engine-integration/requirements.md:633",
           "path": ".kiro/specs/rust-sdk-engine-integration/requirements.md",
           "proved_capability_ids": [
             "policy/rust-policy/engine-operation-output-confinement"
@@ -114942,7 +114942,7 @@
           "claim": "Pinned authority source defines this reviewed capability",
           "evidence_id": "authority/policy/rust-policy/engine-packaged-asset-provenance/source%2Frust-policy%2Frust-policy%2Fengine-packaged-asset-provenance",
           "evidence_kind": "authority",
-          "locator": ".kiro/specs/rust-sdk-engine-integration/requirements.md:828",
+          "locator": ".kiro/specs/rust-sdk-engine-integration/requirements.md:856",
           "path": ".kiro/specs/rust-sdk-engine-integration/requirements.md",
           "proved_capability_ids": [
             "policy/rust-policy/engine-packaged-asset-provenance"
@@ -114981,7 +114981,7 @@
           "claim": "Pinned authority source defines this reviewed capability",
           "evidence_id": "authority/policy/rust-policy/engine-runtime-cache-isolation/source%2Frust-policy%2Frust-policy%2Fengine-runtime-cache-isolation",
           "evidence_kind": "authority",
-          "locator": ".kiro/specs/rust-sdk-engine-integration/requirements.md:848",
+          "locator": ".kiro/specs/rust-sdk-engine-integration/requirements.md:876",
           "path": ".kiro/specs/rust-sdk-engine-integration/requirements.md",
           "proved_capability_ids": [
             "policy/rust-policy/engine-runtime-cache-isolation"
@@ -115032,7 +115032,7 @@
           "claim": "Pinned authority source defines this reviewed capability",
           "evidence_id": "authority/policy/rust-policy/engine-runtime-protocol-boundary/source%2Frust-policy%2Frust-policy%2Fengine-runtime-protocol-boundary",
           "evidence_kind": "authority",
-          "locator": ".kiro/specs/rust-sdk-engine-integration/requirements.md:789",
+          "locator": ".kiro/specs/rust-sdk-engine-integration/requirements.md:817",
           "path": ".kiro/specs/rust-sdk-engine-integration/requirements.md",
           "proved_capability_ids": [
             "policy/rust-policy/engine-runtime-protocol-boundary"
@@ -115083,7 +115083,7 @@
           "claim": "Pinned authority source defines this reviewed capability",
           "evidence_id": "authority/policy/rust-policy/engine-runtime-toolchain-selection/source%2Frust-policy%2Frust-policy%2Fengine-runtime-toolchain-selection",
           "evidence_kind": "authority",
-          "locator": ".kiro/specs/rust-sdk-engine-integration/requirements.md:725",
+          "locator": ".kiro/specs/rust-sdk-engine-integration/requirements.md:753",
           "path": ".kiro/specs/rust-sdk-engine-integration/requirements.md",
           "proved_capability_ids": [
             "policy/rust-policy/engine-runtime-toolchain-selection"
@@ -115134,7 +115134,7 @@
           "claim": "Pinned authority source defines this reviewed capability",
           "evidence_id": "authority/policy/rust-policy/engine-scope-drift-closure/source%2Frust-policy%2Frust-policy%2Fengine-scope-drift-closure",
           "evidence_kind": "authority",
-          "locator": ".kiro/specs/rust-sdk-engine-integration/requirements.md:448",
+          "locator": ".kiro/specs/rust-sdk-engine-integration/requirements.md:470",
           "path": ".kiro/specs/rust-sdk-engine-integration/requirements.md",
           "proved_capability_ids": [
             "policy/rust-policy/engine-scope-drift-closure"
@@ -115185,7 +115185,7 @@
           "claim": "Pinned authority source defines this reviewed capability",
           "evidence_id": "authority/policy/rust-policy/engine-user-generated-file-ownership/source%2Frust-policy%2Frust-policy%2Fengine-user-generated-file-ownership",
           "evidence_kind": "authority",
-          "locator": ".kiro/specs/rust-sdk-engine-integration/requirements.md:564",
+          "locator": ".kiro/specs/rust-sdk-engine-integration/requirements.md:586",
           "path": ".kiro/specs/rust-sdk-engine-integration/requirements.md",
           "proved_capability_ids": [
             "policy/rust-policy/engine-user-generated-file-ownership"
@@ -115236,7 +115236,7 @@
           "claim": "Pinned authority source defines this reviewed capability",
           "evidence_id": "authority/policy/rust-policy/engine-version-shorthand-rejection/source%2Frust-policy%2Frust-policy%2Fengine-version-shorthand-rejection",
           "evidence_kind": "authority",
-          "locator": ".kiro/specs/rust-sdk-engine-integration/requirements.md:478",
+          "locator": ".kiro/specs/rust-sdk-engine-integration/requirements.md:500",
           "path": ".kiro/specs/rust-sdk-engine-integration/requirements.md",
           "proved_capability_ids": [
             "policy/rust-policy/engine-version-shorthand-rejection"
@@ -115287,7 +115287,7 @@
           "claim": "Pinned authority source defines this reviewed capability",
           "evidence_id": "authority/policy/rust-policy/engine-visible-schema-core-compatibility/source%2Frust-policy%2Frust-policy%2Fengine-visible-schema-core-compatibility",
           "evidence_kind": "authority",
-          "locator": ".kiro/specs/rust-sdk-engine-integration/requirements.md:589",
+          "locator": ".kiro/specs/rust-sdk-engine-integration/requirements.md:611",
           "path": ".kiro/specs/rust-sdk-engine-integration/requirements.md",
           "proved_capability_ids": [
             "policy/rust-policy/engine-visible-schema-core-compatibility"
@@ -115338,7 +115338,7 @@
           "claim": "Pinned authority source defines this reviewed capability",
           "evidence_id": "authority/policy/rust-policy/engine-workspace-sdk-installation/source%2Frust-policy%2Frust-policy%2Fengine-workspace-sdk-installation",
           "evidence_kind": "authority",
-          "locator": ".kiro/specs/rust-sdk-engine-integration/requirements.md:499",
+          "locator": ".kiro/specs/rust-sdk-engine-integration/requirements.md:521",
           "path": ".kiro/specs/rust-sdk-engine-integration/requirements.md",
           "proved_capability_ids": [
             "policy/rust-policy/engine-workspace-sdk-installation"
