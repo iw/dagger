@@ -99,6 +99,16 @@ The Dagger engine is used only by the later exact-target SDK sign-off matrix unl
 separately documented and approved exception proves that a contract cannot be modeled
 locally.
 
+`MChorfa/dagger-zig` commit `1ae0304f173fc2f617960cd67a7daad1729357bb`
+provides comparative—not authoritative—evidence for this split. Its
+`tests/module_e2e.zig` invokes production TypeDef, dispatch, serde, and method shims
+without an engine; `.github/workflows/ci.yml` and `ci/pipeline/dagger.json` then use the
+repository SDK from a Zig-authored Dagger module; and `sdk/main.go` retains a narrow Go
+bootstrap. The v0.3.4 failure recorded in
+`docs/blog/v0.3.4-community-update.md` also demonstrates why a real sign-off consumer
+must resolve only packaged SDK contents. Zig reflection and API decisions do not alter
+the Rust authoring design.
+
 ## Dependencies and Non-Goals
 
 ### Owning relationships
@@ -118,11 +128,13 @@ locally.
   authoring experience. Feature 6 emits the self and dependency types already present
   in the operation's `VisibleSchema`; it does not claim standalone-client closure.
 - Feature 8 owns the exhaustive engine-backed, cross-SDK, and cross-platform
-  conformance matrix. Feature 6 defines only the representative exact-target sign-off
-  cases needed to admit its capabilities.
+  conformance matrix, including promotion of the bounded packaged self-consumer into a
+  complete consumer workflow. Feature 6 defines only the representative exact-target
+  sign-off cases needed to admit its capabilities.
 - Feature 9 owns crates.io publication, migration guidance, compatibility policy, and
-  stable-release presentation. It consumes the packageable two-crate public graph
-  established here.
+  stable-release presentation, including any claim that the Rust SDK builds, tests,
+  and releases itself. It consumes the packageable two-crate public graph established
+  here.
 - `dagger-codegen` remains the pure compiler. `dagger-sdk-engine` owns filesystem,
   Cargo-project, process, publication, and engine-operation boundaries.
 - `dagger-sdk` owns public runtime types, call-scoped lifecycle, codecs, query
@@ -1748,6 +1760,7 @@ digests. Representative cases prove:
 | `handles-context` | Core, self, and dependency handles plus current-call/current-node/context operations reuse the nested session |
 | `negative-dispatch` | Unknown parent/function, malformed parent/input, application error, and publication failure retain typed distinctions |
 | `concurrency-cancellation` | Overlapping calls and cancellation isolate state and publish at most one result each |
+| `packaged-self-consumer` | A Rust-authored Dagger module resolves only the engine-packaged Rust SDK, uses its generated Core surface to run a bounded Rust SDK build-and-test workflow, and fails if any repository-relative or unpackaged SDK dependency is required |
 | `common-harness` | Applicable pinned sdk-sdk lifecycle checks pass without being used as authoring-content proof |
 
 The real engine adapter is exercised here because registration query execution,
@@ -1755,6 +1768,12 @@ The real engine adapter is exercised here because registration query execution,
 contracts the pure harness deliberately does not claim. A smoke observation closes only
 the enumerated engine capabilities; it cannot replace the exhaustive compiler,
 dispatch, fixture, hygiene, or security evidence.
+
+The packaged self-consumer is a bounded Feature 6 sign-off observation, not the local
+checkpoint runner and not a complete self-hosting claim. Feature 8 expands it into the
+full initialization, development, generation, execution, dependency, and platform
+matrix. Feature 9 owns published-package installation, release rehearsal, signing, and
+stable-release automation.
 
 ### Documentation and review gates
 

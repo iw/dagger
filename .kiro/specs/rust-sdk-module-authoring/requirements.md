@@ -50,6 +50,15 @@ entrypoint generation, and engine dispatch can be connected. Its provisional mac
 surface, Go-authored runtime, repository path mounts, global state, and old Cargo
 defaults do not define this specification.
 
+`MChorfa/dagger-zig` commit `1ae0304f173fc2f617960cd67a7daad1729357bb`
+is comparative implementation evidence that a native-language Dagger module can use
+its repository SDK to build and test that SDK, while an offline production-dispatch
+harness remains separate from live-engine verification. Its Zig comptime reflection,
+implicit public-method exports, positional arguments, raw defaults, Go code generator,
+and target version are not authorities for Rust behaviour or API shape. Its documented
+v0.3.4 packaging failure is evidence that SDK sign-off must exercise only packaged SDK
+contents rather than accidentally succeeding through repository-relative paths.
+
 ## Glossary
 
 - **Active_Call:** The one engine `FunctionCall` currently owned by a generated Rust
@@ -102,6 +111,9 @@ defaults do not define this specification.
   `FunctionCall.parent` and returned when a function produces a local object.
 - **Normalization:** The deterministic mapping from Rust identifiers or explicit names
   to Dagger wire names and namespaced GraphQL type names.
+- **Packaged_Self_Consumer:** A Rust-authored Dagger module fixture that resolves the
+  Rust SDK only from the exact engine-packaged contents and uses that SDK to run a
+  bounded Rust SDK build-and-test workflow without repository-relative dependencies.
 - **Pure_Rust_Module_Harness:** Engine-free Rust fixtures that exercise production
   authoring analysis, descriptor projection, generated entrypoints, Dispatch_Registry,
   codecs, module context, concurrency, and failures through Call_Envelopes.
@@ -170,7 +182,10 @@ remains mandatory at SDK_Signoff, not at Feature 6 Implementation_Closure.
 Feature 6 does not redesign Feature 5's engine SDK ABI or runtime-container builder,
 generate complete standalone clients, publish crates, or claim full platform
 conformance. It supplies the public module model and the general dispatcher those
-later gates consume.
+later gates consume. SDK_Signoff additionally runs one Packaged_Self_Consumer to prove
+the packaged authoring/runtime boundary. Feature 8 owns promotion of that bounded case
+into exhaustive engine-backed consumer conformance; Feature 9 owns any claim that the
+Rust SDK builds, tests, and releases itself.
 
 ## Evidence From Current Code
 
@@ -253,6 +268,15 @@ Rust citations describe `main` after Feature 5.
 - **Historical evidence only:** pull request #12229 proposes module support through a
   provisional procedural-macro API and Go-authored runtime. It is not merged at the
   Target_Revision and is not an authority for public syntax or structure.
+- **Comparative self-hosting evidence only:** `MChorfa/dagger-zig` commit
+  `1ae0304f173fc2f617960cd67a7daad1729357bb` routes its GitHub CI through the
+  repository SDK via `.github/workflows/ci.yml` and `ci/pipeline/dagger.json`; its
+  `tests/module_e2e.zig` exercises production TypeDef, dispatch, serde, and invocation
+  plumbing without an engine; and `sdk/main.go` retains the Go bootstrap boundary.
+  `docs/blog/v0.3.4-community-update.md` records how repository-relative SDK placement
+  let offline work coexist with a completely broken packaged module runtime. These
+  sources inform the Packaged_Self_Consumer and harness separation but do not change
+  the engine, definitive Go SDK, sdk-sdk, or Rust-policy authority order.
 
 ## Completeness Contract Policy
 
@@ -1028,9 +1052,9 @@ nor misrepresented as end-to-end conformance.
 9. THE SDK_Signoff suite SHALL build an engine from the exact Target_Revision.
 10. THE SDK_Signoff suite SHALL register the complete Feature 6 TypeDef_Projection
     through the real Feature 5 adapter.
-11. THE SDK_Signoff suite SHALL invoke representative constructor, sync, async,
-    stateful, core, self, dependency, interface, enum, default, error, panic,
-    cancellation, and concurrent-call cases.
+11. THE SDK_Signoff suite SHALL invoke the Packaged_Self_Consumer plus representative
+    constructor, sync, async, stateful, core, self, dependency, interface, enum,
+    default, error, panic, cancellation, and concurrent-call cases.
 12. THE SDK_Signoff suite SHALL execute the applicable pinned sdk-sdk checks without
     treating them as exhaustive authoring coverage.
 13. WHEN SDK_Signoff observations pass, THE evidence producer SHALL bind them to the
@@ -1057,6 +1081,9 @@ nor misrepresented as end-to-end conformance.
   versions; those are Feature 8 responsibilities.
 - Publishing crates, selecting final stable package versions, writing migration
   material, or cutting the `1.0.0` release; those are Feature 9 responsibilities.
+- Running ordinary Feature 6 checkpoints through a self-hosted Dagger pipeline or
+  claiming complete build, test, conformance, and release self-hosting; Features 8 and
+  9 own those engine-backed and release-wide gates.
 - Copying Go package globals, pointer optionality, reflection, variadic option structs,
   generated panic conventions, or PR #12229's provisional public API into Rust.
 - Starting a Dagger engine during ordinary Feature 6 development or checkpoints.
@@ -1077,6 +1104,10 @@ nor misrepresented as end-to-end conformance.
   behavioural evidence only where required by the engine wire contract.
 - Feature 5's fixed protocol probe is a proven seam, not a foundation for a second
   dispatcher. Feature 6 generalizes the same operation and runtime boundary.
+- The dagger-zig self-consumer and offline module test validate the selected separation
+  as comparative evidence. Feature 6 adds only a bounded packaged consumer case at
+  SDK_Signoff; it does not move an engine into local checkpoints or claim release
+  self-hosting.
 - Local checkpoints are deliberately engine-free and change-triggered. Exact-engine
   execution remains mandatory at SDK_Signoff and cannot be replaced by unit evidence.
 - Design remains consent-gated. It must select the precise attribute, derive,

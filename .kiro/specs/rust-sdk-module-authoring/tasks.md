@@ -657,9 +657,14 @@
 - [ ] 22. Implement the deferred exact-target SDK-sign-off suite and claim boundary
   - [ ] 22.1 Define the reusable one-engine sign-off case inventory
     - Add code for registration, constructor/state, execution shapes, types,
-      handles/context, negative dispatch, concurrency/cancellation, and applicable
-      pinned common-harness cases against engine revision
+      handles/context, negative dispatch, concurrency/cancellation, a packaged
+      self-consumer, and applicable pinned common-harness cases against engine revision
       `25300124ca110612edc09c43f89cb5fad6028170`.
+    - Make the packaged self-consumer a Rust-authored Dagger module that resolves only
+      the exact engine-packaged Rust SDK, uses the generated Core surface to run a
+      bounded Rust SDK build-and-test workflow, and fails on every repository-relative
+      or unpackaged SDK dependency. Keep full consumer/platform conformance in Feature
+      8 and release self-hosting in Feature 9.
     - Build one exact engine content object for later fan-out, bind every case to target,
       implementation, generated-assets, runtime, and case digests, and keep the suite
       outside all local checkpoint selectors.
@@ -744,9 +749,12 @@
 The code and pure admission policy for Requirements 17.9-17.18 are implemented by Task
 22, but execution is deliberately outside Feature 6 Implementation_Closure. SDK
 sign-off builds the exact Target Revision once, fans the one reusable engine content
-object across the complete case inventory, executes the applicable pinned common
-harness, admits only passed exact-target observations, regenerates derived reports, and
-verifies the clean result. No engine-dependent row may move before that gate passes.
+object across the complete case inventory, runs the bounded packaged self-consumer,
+executes the applicable pinned common harness, admits only passed exact-target
+observations, regenerates derived reports, and verifies the clean result. No
+engine-dependent row may move before that gate passes. Feature 8 owns expanding the
+self-consumer into exhaustive engine/platform conformance; Feature 9 owns published
+release self-hosting.
 
 ## Task Dependency Graph
 
