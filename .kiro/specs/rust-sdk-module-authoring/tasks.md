@@ -631,6 +631,18 @@
       engine process, module build, network graph, other SDK build, Core regeneration,
       credential-bearing diagnostic, duplicate outcome, leaked task, or unowned path
       change occurred.
+    - PR security CI subsequently found that this checkpoint's production changes had
+      advanced the selected Rust artifact while its 18 harness subject bindings and
+      exact-baseline constant still named the prior digest. The bindings were
+      reconciled to
+      `sha256:88206e34c6c619e184e9cf695cd18ac473653e78f0370002b0f2a4f78285aa82`
+      without changing any capability status, evidence outcome, target, dependency,
+      publication rule, or security policy. `cargo test -p
+      dagger-sdk-completeness --test engine_integration --locked` then passed all eight
+      tests in 27.13s, and the corresponding `initial_baseline` target passed both
+      tests in 35.60s. The read-only locked `verify --gate integrity` command completed
+      in 22.09s with `Integrity: PASS` and no integrity diagnostics; its expected
+      feature-progress completeness verdict remained incomplete.
 
 - [ ] 17. Replace the fixed probe with the general registration/invocation adapter
   - [ ] 17.1 Generalize Feature 5 operation inputs behind the stable ABI
