@@ -629,6 +629,13 @@
       parser dependency of `dagger-sdk-engine`. Offline `cargo deny check` passed all
       advisory, ban, license, and source policies; its configured duplicate/no-license
       warnings remain non-fatal and unchanged in policy.
+    - The retained harness artifact identity advanced once from
+      `sha256:25acf6a666f6788d3f4d282f0e562b90b31c05b7f3d686b9b3368204e991b3d1`
+      to `sha256:813abc498ccc7b025c2fb2a059d0109608bfce89ccf051748451de00c53c30a2`;
+      all 18 mappings were reconciled without changing check scope, expected outcomes,
+      capability bindings, CLI identity, or evidence claims. The locked offline
+      `dagger-sdk-completeness --test engine_integration` guard passed all 8 tests in
+      27.49 seconds after compilation.
     - No Dagger command, engine process, module invocation, other SDK, network access,
       generation refresh, complete generated-client Cargo fixture, distribution build,
       or repository-wide build ran. Every checkpoint Cargo phase was locked and offline;
