@@ -11,9 +11,11 @@ use proptest::prelude::*;
 use crate::config::ClientConfig;
 use crate::connection::{EngineConnection, EngineConnectionError};
 use crate::connector::{ConnectionRequest, Connector, DefaultConnector};
+#[cfg(unix)]
+use crate::discovery::resolve_explicit_cli;
 use crate::discovery::{
     ExecutableLease, NativeContextError, NativeDiscoveryInputs, NativePathSemantics,
-    TestDiscoveryFileSystem, resolve_compatibility_path_cli_for_test, resolve_explicit_cli,
+    TestDiscoveryFileSystem, resolve_compatibility_path_cli_for_test,
     resolve_explicit_cli_for_test,
 };
 use crate::errors::{

@@ -6,7 +6,6 @@
 use std::{
     fs::File,
     io::{Write, copy},
-    os::unix::prelude::PermissionsExt,
     path::{Path, PathBuf},
 };
 
@@ -168,10 +167,7 @@ impl Downloader {
         }
 
         let mut file = std::fs::File::create(&path)?;
-        let meta = file.metadata()?;
-        let mut perm = meta.permissions();
-        perm.set_mode(0o700);
-        file.set_permissions(perm)?;
+        set_executable_permissions(&file)?;
         file.write_all(bytes.as_slice())?;
 
         Ok(path)
@@ -247,6 +243,19 @@ impl Downloader {
 
         eyre::bail!("could not find a matching file")
     }
+}
+
+#[cfg(unix)]
+fn set_executable_permissions(file: &File) -> std::io::Result<()> {
+    use std::os::unix::fs::PermissionsExt;
+
+    file.set_permissions(std::fs::Permissions::from_mode(0o700))
+}
+
+#[cfg(not(unix))]
+fn set_executable_permissions(_file: &File) -> std::io::Result<()> {
+    // Windows decides executability from the file type rather than POSIX mode bits.
+    Ok(())
 }
 
 #[derive(Debug, Error)]
