@@ -7,7 +7,9 @@ on:
       - main
     paths:
       - ".github/dependabot.yml"
+      - ".github/workflows/rust-sdk-platform.yml"
       - ".github/workflows/rust-sdk-security.yml"
+      - ".github/workflows/rust-sdk-windows-preflight.yml"
       - "dagger.toml"
       - "core/schema/workspace_install.go"
       - "core/sdk/**"
@@ -38,6 +40,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
       - name: Install cargo-deny
         run: cargo install --locked cargo-deny@0.19.9
       - name: Resolve every supported Rust root with committed lockfiles

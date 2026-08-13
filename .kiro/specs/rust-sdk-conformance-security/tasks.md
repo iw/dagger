@@ -428,13 +428,13 @@
       or unsafe identity must reject the whole observation.
     - _Requirements: 10.1-10.17_
 
-- [x] 16. Checkpoint: native-platform and security policy are green
+- [x] 16. Checkpoint: development native-platform and security policy are green
   - Run formatting; locked platform, security, provenance, exception, and canary tests;
     Properties 16–20; Cargo Deny when dependency/security inputs changed; source-policy
     tests; and focused warning-denied Clippy/rustdoc.
-  - Run the native job locally only for the current OS as a fixture producer; validate
-    complete three-OS aggregation against checked/CI observations rather than
-    simulating missing native jobs.
+  - Run the native job locally only for the current OS as a fixture producer. Ordinary
+    fork CI may exercise Linux and macOS independently but SHALL NOT aggregate or claim
+    a complete portable matrix without an exact current Windows observation.
   - Record commands, timings, Cargo counts, provenance/security artifact decisions,
     and platform/security digests. Keep canary values out of the record.
   - Require no Dagger, engine, module, another SDK, target artifact build, unscoped
@@ -445,9 +445,10 @@
     subprocess-helper test ignored by their owning parent cases,
     Properties 16–20, all locked Cargo roots, current Cargo Deny, checked Aqua Security
     provenance, and zero Dagger, Docker, engine, module, foreign-SDK, target-artifact, or
-    distribution work. The three-OS matrix is aggregated by the new native CI workflow;
-    the local checkpoint retains only the current native observation and does not simulate
-    Linux or Windows.
+    distribution work. The local checkpoint retains only the current native observation
+    and does not simulate Linux or Windows. The `PortablePlatformMatrix` remains
+    deliberately unadmitted: ultimate SDK sign-off must expressly run Linux, macOS, and
+    Windows and aggregate their exact current observations before closing Requirement 8.
 
 - [ ] 17. Implement the exact-target artifact manifest and state machine
   - [ ] 17.1 Add every artifact manifest, component, and provenance field
