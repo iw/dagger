@@ -42,16 +42,12 @@ jobs:
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
-      - name: Build the fixed native producer
-        run: cargo build -p dagger-sdk-completeness --bin dagger-rust-sdk-platform --locked
-      - name: Exercise the native Rust SDK and record its observation
+      - name: Build and exercise the fixed native producer
         env:
           OBSERVATION_OS: ${{ matrix.os-name }}
-          PRODUCER_SUFFIX: ${{ runner.os == 'Windows' && '.exe' || '' }}
         run: >-
-          ./target/debug/dagger-rust-sdk-platform"$PRODUCER_SUFFIX"
-          native
-          --output "platform-observation-$OBSERVATION_OS.json"
+          ./scripts/ci-platform-preflight.sh
+          "platform-observation-$OBSERVATION_OS.json"
       - name: Publish the bounded development observation
         env:
           OBSERVATION_OS: ${{ matrix.os-name }}

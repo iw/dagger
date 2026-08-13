@@ -94,6 +94,30 @@ standalone-client fixture materializes one SDK baseline and fans out isolated Ca
 projects from it; investigate fixture sequencing and its owning input before a broader
 rerun.
 
+Treat GitHub Actions as confirmation, not as the diagnostic loop. Before the first
+push of a checkpoint, replay every affected required job against the exact candidate
+tree: run the native macOS slice locally, run the Linux workflow commands on the
+dedicated development host, and run workflow/security source policy locally. Keep the
+pull request in draft until those results agree. If a hosted-only boundary cannot be
+reproduced, record that fact and the smallest intentional hosted check rather than
+discovering ordinary build, lint, packaging, or policy failures through repeated
+whole-matrix reruns. Windows remains outside the ordinary development gate until the
+explicit ultimate sign-off matrix described below.
+
+The checked-in entry points are the CI contract and the preflight interface. Run
+`./scripts/ci-platform-preflight.sh platform-observation-linux.json` on the dedicated
+Linux host, use `platform-observation-macos.json` for the native macOS run, and run
+`./scripts/ci-security-preflight.sh all` on Linux after installing the same pinned
+`cargo-deny` version as CI. GitHub invokes the individual security phases from that
+same script, so a successful exact-tree devbox run covers the commands the hosted job
+will execute rather than a hand-maintained approximation.
+
+An unpushed macOS candidate transferred to Linux must not acquire AppleDouble sidecar
+files. Create archive input with `COPYFILE_DISABLE=1`, exclude build and VCS metadata,
+and reject the extracted candidate if it contains any `._*` file before running the
+shared scripts. Those sidecars are real extra inputs to recursive source hashing even
+though they are invisible in the macOS checkout.
+
 An engine is not a local checkpoint fallback. If a contract cannot be represented by
 the direct production harness, document the precise model gap and smallest proposed
 sign-off case for maintainer approval. Exact-engine cases run only through the bounded
