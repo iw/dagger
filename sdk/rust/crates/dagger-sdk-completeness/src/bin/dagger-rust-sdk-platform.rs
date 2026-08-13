@@ -299,6 +299,9 @@ fn digest_files(root: &Path, mut paths: Vec<PathBuf>) -> Result<Digest, &'static
         .join("../..")
         .canonicalize()
         .map_err(|_| "could not resolve the repository root")?;
+    let physical_rust_root = root
+        .canonicalize()
+        .map_err(|_| "could not resolve the Rust workspace root")?;
     let mut bytes = Vec::new();
     for path in paths {
         // Windows may add a verbatim prefix while canonicalizing the root. Resolve both
@@ -311,14 +314,21 @@ fn digest_files(root: &Path, mut paths: Vec<PathBuf>) -> Result<Digest, &'static
             .map_err(|_| "native suite source escaped the repository root")?
             .to_string_lossy()
             .replace('\\', "/");
+        let rust_relative = physical
+            .strip_prefix(&physical_rust_root)
+            .map_err(|_| "native suite source escaped the Rust workspace")?;
         let object = Command::new("git")
             .arg("-C")
-            .arg(&repository_root)
+            // The lexical Rust root is already accepted by Cargo on this host and avoids
+            // passing Git for Windows the canonical root's verbatim path representation.
+            .arg(root)
             .arg("hash-object")
             // Applying the path's Git attributes makes the identity independent of checkout
             // line endings while still hashing dirty working-tree bytes.
             .arg(format!("--path={relative}"))
-            .arg(&physical)
+            // Canonical paths prove containment; Git opens the same file relative to the
+            // Rust root so neither its working directory nor input uses a verbatim path.
+            .arg(rust_relative)
             .stdin(Stdio::null())
             .stderr(Stdio::null())
             .output()

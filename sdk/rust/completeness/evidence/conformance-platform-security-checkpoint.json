@@ -46,7 +46,7 @@
     },
     {
       "command": "dagger-rust-sdk-platform native --output <ephemeral-platform-observation>",
-      "elapsed_millis": 23709,
+      "elapsed_millis": 11675,
       "outcome": "passed"
     },
     {
