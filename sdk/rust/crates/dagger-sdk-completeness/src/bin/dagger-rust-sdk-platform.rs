@@ -301,7 +301,12 @@ fn digest_files(root: &Path, mut paths: Vec<PathBuf>) -> Result<Digest, &'static
         .map_err(|_| "could not resolve the repository root")?;
     let mut bytes = Vec::new();
     for path in paths {
-        let relative = path
+        // Windows may add a verbatim prefix while canonicalizing the root. Resolve both
+        // sides so containment remains fail-closed without rejecting an equivalent path.
+        let physical = path
+            .canonicalize()
+            .map_err(|_| "could not resolve native suite source")?;
+        let relative = physical
             .strip_prefix(&repository_root)
             .map_err(|_| "native suite source escaped the repository root")?
             .to_string_lossy()
@@ -313,7 +318,7 @@ fn digest_files(root: &Path, mut paths: Vec<PathBuf>) -> Result<Digest, &'static
             // Applying the path's Git attributes makes the identity independent of checkout
             // line endings while still hashing dirty working-tree bytes.
             .arg(format!("--path={relative}"))
-            .arg(&path)
+            .arg(&physical)
             .stdin(Stdio::null())
             .stderr(Stdio::null())
             .output()

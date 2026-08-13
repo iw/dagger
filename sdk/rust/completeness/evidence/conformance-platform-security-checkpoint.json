@@ -46,7 +46,7 @@
     },
     {
       "command": "dagger-rust-sdk-platform native --output <ephemeral-platform-observation>",
-      "elapsed_millis": 9421,
+      "elapsed_millis": 23709,
       "outcome": "passed"
     },
     {
@@ -85,7 +85,7 @@
     "ignored_exact_engine_tests": 1,
     "ignored_subprocess_helper_tests": 1,
     "native_non_engine_tests_passed": 156,
-    "observation_digest": "sha256:0dec8642701ab2dc4d5024d7a294b4d49c7f50b3e4e1cb0b66a44c8820356ef7",
+    "observation_digest": "sha256:769a76b05e697b0af7e799818e78ead457777ea40566bbec880d36bc052a93ab",
     "operating_system": "macos",
     "other_sdk_invocations": 0,
     "rust_version": "1.97.1"
