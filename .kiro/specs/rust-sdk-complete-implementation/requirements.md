@@ -277,10 +277,13 @@ All repository citations in this document refer to Target_Revision
   [immutable-release](https://docs.github.com/en/code-security/concepts/supply-chain-security/immutable-releases)
   documentation defines OIDC/Sigstore-backed attestations, immutable tags/assets, and
   the draft-assemble-verify-publish sequence used by Feature 9.
-- **Current fork release controls:** a read-only repository-settings observation on
-  2026-08-13 found immutable releases disabled and no repository rulesets in
-  `iw/dagger`. Feature 9 must enable immutable releases and protect `main` plus release
-  tags before public publication; this specification does not mutate those settings.
+- **Current fork release controls:** repository-settings observations on 2026-08-13
+  confirmed that legacy branch protection already guards `main` with strict Rust
+  security status, linear history, resolved conversations, admin enforcement, and no
+  force-push or deletion. Immutable releases were then enabled, and active repository
+  ruleset `20817649` was added without bypass actors to prevent update or deletion of
+  `refs/tags/rust-sdk/v*` after creation. Feature 9 must reverify these controls before
+  public publication and fail closed if they have weakened.
 - **Apple distribution authority:** Apple
   [Developer ID](https://developer.apple.com/developer-id/) and
   [notarization](https://developer.apple.com/documentation/security/notarizing-macos-software-before-distribution)
