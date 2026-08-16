@@ -1,7 +1,7 @@
 use rand::Rng;
 
 #[tokio::main]
-async fn main() -> eyre::Result<()> {
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut rng = rand::thread_rng();
 
     let owned = dagger_sdk::connect().await?;

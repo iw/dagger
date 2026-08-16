@@ -178,6 +178,7 @@ impl LaunchExecutable {
         &self.path
     }
 
+    #[cfg_attr(not(test), expect(dead_code, reason = "cloned only by teardown tests; production moves the selected executable"))]
     pub(crate) fn lease(&self) -> ExecutableLease {
         self.lease.clone()
     }

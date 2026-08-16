@@ -150,13 +150,11 @@ mod config;
 mod connection;
 mod connector;
 mod diagnostic;
-#[allow(dead_code)]
 mod discovery;
 mod errors;
 mod graphql;
 mod id_input;
 mod module;
-#[allow(dead_code)]
 mod target;
 mod target_generated;
 
@@ -164,7 +162,6 @@ mod client;
 mod lifecycle;
 // Plans carry native environment values and owned connection resources. Keeping the
 // type private prevents callers from manufacturing a state which bypasses preflight.
-#[allow(dead_code)]
 mod preflight;
 mod query;
 mod runtime_errors;
@@ -172,19 +169,12 @@ mod scalar;
 mod session;
 mod transport;
 
-#[allow(dead_code)]
 mod archive;
-#[allow(dead_code)]
 mod launch;
-#[allow(dead_code)]
 mod propagation;
-#[allow(dead_code)]
 mod provision;
-#[allow(dead_code)]
 mod provisioning_control;
-#[allow(dead_code)]
 mod provisioning_error;
-#[allow(dead_code)]
 mod session_startup;
 
 pub use config::{ClientConfig, ClientConfigBuilder};

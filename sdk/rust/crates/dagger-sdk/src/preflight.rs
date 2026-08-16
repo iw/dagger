@@ -447,6 +447,7 @@ pub(crate) enum CliSourcePlan {
 }
 
 pub(crate) struct ExistingConnectionRequest {
+    #[cfg_attr(not(test), expect(dead_code, reason = "read only through test-observation accessors"))]
     pub(crate) diagnostics: Arc<DiagnosticDispatcher>,
     pub(crate) propagation: PropagationEnvironment,
     pub(crate) allow_unverified_compatibility: bool,
@@ -480,6 +481,7 @@ impl CliLaunchRequest {
         &self.ambient
     }
 
+    #[cfg_attr(not(test), expect(dead_code, reason = "deterministic comparison aid for launch tests"))]
     pub(crate) fn encoded_projection(&self) -> Vec<u8> {
         // Length-prefixing prevents adjacent native values from sharing a byte stream
         // representation, so this is a deterministic comparison aid rather than a
@@ -496,6 +498,7 @@ impl CliLaunchRequest {
     }
 }
 
+#[cfg_attr(not(test), expect(dead_code, reason = "deterministic comparison aid for launch tests"))]
 fn append_native(encoded: &mut Vec<u8>, value: &OsStr) {
     let bytes = value.as_encoded_bytes();
     encoded.extend_from_slice(&bytes.len().to_le_bytes());

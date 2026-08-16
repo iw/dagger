@@ -2,7 +2,7 @@ use dagger_sdk::HostDirectoryOpts;
 use rand::Rng;
 
 #[tokio::main]
-async fn main() -> eyre::Result<()> {
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let owned = dagger_sdk::connect().await?;
     let client = owned.query();
     let host_source_dir = client.host().directory_opts(

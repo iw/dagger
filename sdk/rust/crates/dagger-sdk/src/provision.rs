@@ -182,6 +182,7 @@ impl<H> DefaultCliProvisioner<H, NoopProvisioningObserver> {
 }
 
 impl<H, O> DefaultCliProvisioner<H, O, SystemRetentionRemover> {
+    #[cfg_attr(not(test), expect(dead_code, reason = "test constructor for cache-root injection"))]
     pub(crate) fn with_cache_root(http: H, cache_root: PathBuf, observer: O) -> Self {
         Self {
             http,
