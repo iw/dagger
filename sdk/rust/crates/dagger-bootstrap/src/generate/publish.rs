@@ -1088,7 +1088,7 @@ fn acquire_lock(workspace: &Path) -> Result<File, DiagnosticSet> {
             "publication lock could not be opened",
         )
     })?;
-    fs4::FileExt::lock(&file).map_err(|_| {
+    file.lock().map_err(|_| {
         publication_error(
             DiagnosticCode::GeneratedPublicationFailed,
             "publication-lock",

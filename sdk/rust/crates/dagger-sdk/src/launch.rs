@@ -43,8 +43,8 @@ pub(crate) trait CliProvisioner: Send + Sync {
 impl<H, O, R> CliProvisioner for DefaultCliProvisioner<H, O, R>
 where
     H: ProvisioningHttp,
-    O: ProvisioningObserver,
-    R: RetentionRemover,
+    O: ProvisioningObserver + Clone + 'static,
+    R: RetentionRemover + Clone + 'static,
 {
     async fn acquire(
         &self,

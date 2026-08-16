@@ -26,7 +26,6 @@ serde_json = { workspace = true }
 tempfile.workspace = true
 clap.workspace = true
 flate2.workspace = true
-fs4.workspace = true
 sha2.workspace = true
 tar.workspace = true
 thiserror.workspace = true

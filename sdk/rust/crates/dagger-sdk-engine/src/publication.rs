@@ -704,7 +704,7 @@ pub fn publish_with(
     observer: &impl PublicationObserver,
 ) -> Result<PublicationOutcome, EngineDiagnostic> {
     let lock = File::open(root.absolute()).map_err(|_| publication("publication-lock"))?;
-    fs4::FileExt::lock(&lock).map_err(|_| publication("publication-lock"))?;
+    lock.lock().map_err(|_| publication("publication-lock"))?;
     let manifest_changed =
         !root.exists(&plan.manifest_path) || root.read(&plan.manifest_path)? != plan.manifest_bytes;
     // An identical replay must not manufacture a filesystem change merely to
