@@ -780,11 +780,11 @@ harnesses precede closure and final hygiene.
   approval; uncertainty or convenience is not sufficient.
 - The Go runtime layer remains an ABI shim. Rust owns source discovery, authoring
   grammar, descriptor, TypeDef/introspection projection, codecs, dispatch, context,
-  diagnostics, generated ownership, security policy, and evidence admission.
+  diagnostics, generated ownership, and security policy.
 - Checkpoints are preferred commit/review boundaries. Keep commits coherent at the
   independently compiling layer; do not stack unverified implementation merely to
   postpone review, and do not rerun a broader graph merely to create a checkpoint.
-- Implementation_Closure and SDK_Signoff are separate evidence states. Green local
-  compiler/dispatcher/harness results cannot close engine registration or runtime
-  claims; a later engine smoke cannot replace exhaustive local authoring/dispatch
-  evidence.
+- Implementation_Closure and the Exact_Target_Matrix are separate claims. Green
+  local compiler/dispatcher/harness results cannot prove engine registration or
+  runtime claims; a later engine smoke cannot replace exhaustive local
+  authoring/dispatch coverage.
