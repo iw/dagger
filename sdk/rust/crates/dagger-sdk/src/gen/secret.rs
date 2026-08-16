@@ -37,22 +37,22 @@ impl From<Secret> for crate::IdInput<super::NodeClient> {
     }
 }
 impl Secret {
-    #[doc = "A unique identifier for this Secret.\n\nSelects GraphQL Wire_Name `id` on `Secret`."]
+    #[doc = "A unique identifier for this Secret.\n\nSelects GraphQL field `id` on `Secret`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "The name of this secret.\n\nSelects GraphQL Wire_Name `name` on `Secret`."]
+    #[doc = "The name of this secret.\n\nSelects GraphQL field `name` on `Secret`."]
     pub async fn name(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("name");
         query.execute(&self.session).await
     }
-    #[doc = "The value of this secret.\n\nSelects GraphQL Wire_Name `plaintext` on `Secret`."]
+    #[doc = "The value of this secret.\n\nSelects GraphQL field `plaintext` on `Secret`."]
     pub async fn plaintext(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("plaintext");
         query.execute(&self.session).await
     }
-    #[doc = "The URI of this secret.\n\nSelects GraphQL Wire_Name `uri` on `Secret`."]
+    #[doc = "The URI of this secret.\n\nSelects GraphQL field `uri` on `Secret`."]
     pub async fn uri(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("uri");
         query.execute(&self.session).await

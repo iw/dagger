@@ -10,9 +10,9 @@ pub struct TypeDef {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct TypeDefWithEnumOpts {
-    #[doc = "A doc string for the enum, if any\n\n`None` omits GraphQL Wire_Name `description` and preserves engine default `String(\"\")`."]
+    #[doc = "A doc string for the enum, if any\n\n`None` omits GraphQL field `description` and preserves engine default `String(\"\")`."]
     pub description: Option<String>,
-    #[doc = "The source map for the enum definition.\n\n`None` omits GraphQL Wire_Name `sourceMap`."]
+    #[doc = "The source map for the enum definition.\n\n`None` omits GraphQL field `sourceMap`."]
     pub source_map: Option<crate::IdInput<super::SourceMap>>,
 }
 impl TypeDefWithEnumOpts {
@@ -33,13 +33,13 @@ impl TypeDefWithEnumOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct TypeDefWithEnumMemberOpts {
-    #[doc = "If deprecated, the reason or migration path.\n\n`None` omits GraphQL Wire_Name `deprecated`."]
+    #[doc = "If deprecated, the reason or migration path.\n\n`None` omits GraphQL field `deprecated`."]
     pub deprecated: Option<String>,
-    #[doc = "A doc string for the member, if any\n\n`None` omits GraphQL Wire_Name `description` and preserves engine default `String(\"\")`."]
+    #[doc = "A doc string for the member, if any\n\n`None` omits GraphQL field `description` and preserves engine default `String(\"\")`."]
     pub description: Option<String>,
-    #[doc = "The source map for the enum member definition.\n\n`None` omits GraphQL Wire_Name `sourceMap`."]
+    #[doc = "The source map for the enum member definition.\n\n`None` omits GraphQL field `sourceMap`."]
     pub source_map: Option<crate::IdInput<super::SourceMap>>,
-    #[doc = "The value of the member in the enum\n\n`None` omits GraphQL Wire_Name `value` and preserves engine default `String(\"\")`."]
+    #[doc = "The value of the member in the enum\n\n`None` omits GraphQL field `value` and preserves engine default `String(\"\")`."]
     pub value: Option<String>,
 }
 impl TypeDefWithEnumMemberOpts {
@@ -72,11 +72,11 @@ impl TypeDefWithEnumMemberOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct TypeDefWithEnumValueOpts {
-    #[doc = "If deprecated, the reason or migration path.\n\n`None` omits GraphQL Wire_Name `deprecated`."]
+    #[doc = "If deprecated, the reason or migration path.\n\n`None` omits GraphQL field `deprecated`."]
     pub deprecated: Option<String>,
-    #[doc = "A doc string for the value, if any\n\n`None` omits GraphQL Wire_Name `description` and preserves engine default `String(\"\")`."]
+    #[doc = "A doc string for the value, if any\n\n`None` omits GraphQL field `description` and preserves engine default `String(\"\")`."]
     pub description: Option<String>,
-    #[doc = "The source map for the enum value definition.\n\n`None` omits GraphQL Wire_Name `sourceMap`."]
+    #[doc = "The source map for the enum value definition.\n\n`None` omits GraphQL field `sourceMap`."]
     pub source_map: Option<crate::IdInput<super::SourceMap>>,
 }
 impl TypeDefWithEnumValueOpts {
@@ -103,11 +103,11 @@ impl TypeDefWithEnumValueOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct TypeDefWithFieldOpts {
-    #[doc = "If deprecated, the reason or migration path.\n\n`None` omits GraphQL Wire_Name `deprecated`."]
+    #[doc = "If deprecated, the reason or migration path.\n\n`None` omits GraphQL field `deprecated`."]
     pub deprecated: Option<String>,
-    #[doc = "A doc string for the field, if any\n\n`None` omits GraphQL Wire_Name `description` and preserves engine default `String(\"\")`."]
+    #[doc = "A doc string for the field, if any\n\n`None` omits GraphQL field `description` and preserves engine default `String(\"\")`."]
     pub description: Option<String>,
-    #[doc = "The source map for the field definition.\n\n`None` omits GraphQL Wire_Name `sourceMap`."]
+    #[doc = "The source map for the field definition.\n\n`None` omits GraphQL field `sourceMap`."]
     pub source_map: Option<crate::IdInput<super::SourceMap>>,
 }
 impl TypeDefWithFieldOpts {
@@ -134,9 +134,9 @@ impl TypeDefWithFieldOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct TypeDefWithInterfaceOpts {
-    #[doc = "`None` omits GraphQL Wire_Name `description` and preserves engine default `String(\"\")`."]
+    #[doc = "`None` omits GraphQL field `description` and preserves engine default `String(\"\")`."]
     pub description: Option<String>,
-    #[doc = "`None` omits GraphQL Wire_Name `sourceMap`."]
+    #[doc = "`None` omits GraphQL field `sourceMap`."]
     pub source_map: Option<crate::IdInput<super::SourceMap>>,
 }
 impl TypeDefWithInterfaceOpts {
@@ -157,11 +157,11 @@ impl TypeDefWithInterfaceOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct TypeDefWithObjectOpts {
-    #[doc = "`None` omits GraphQL Wire_Name `deprecated`."]
+    #[doc = "`None` omits GraphQL field `deprecated`."]
     pub deprecated: Option<String>,
-    #[doc = "`None` omits GraphQL Wire_Name `description` and preserves engine default `String(\"\")`."]
+    #[doc = "`None` omits GraphQL field `description` and preserves engine default `String(\"\")`."]
     pub description: Option<String>,
-    #[doc = "`None` omits GraphQL Wire_Name `sourceMap`."]
+    #[doc = "`None` omits GraphQL field `sourceMap`."]
     pub source_map: Option<crate::IdInput<super::SourceMap>>,
 }
 impl TypeDefWithObjectOpts {
@@ -188,7 +188,7 @@ impl TypeDefWithObjectOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct TypeDefWithScalarOpts {
-    #[doc = "`None` omits GraphQL Wire_Name `description` and preserves engine default `String(\"\")`."]
+    #[doc = "`None` omits GraphQL field `description` and preserves engine default `String(\"\")`."]
     pub description: Option<String>,
 }
 impl TypeDefWithScalarOpts {
@@ -230,7 +230,7 @@ impl From<TypeDef> for crate::IdInput<super::NodeClient> {
     }
 }
 impl TypeDef {
-    #[doc = "If kind is ENUM, the enum-specific type definition. If kind is not ENUM, this will be null.\n\nSelects GraphQL Wire_Name `asEnum` on `TypeDef`."]
+    #[doc = "If kind is ENUM, the enum-specific type definition. If kind is not ENUM, this will be null.\n\nSelects GraphQL field `asEnum` on `TypeDef`."]
     pub async fn as_enum(&self) -> Result<Option<super::EnumTypeDef>, crate::QueryError> {
         let query = self.selection.select("asEnum");
         let query = query.select("id");
@@ -238,7 +238,7 @@ impl TypeDef {
             .execute_reentry::<super::EnumTypeDef, Option<crate::Id>>(&self.session, "EnumTypeDef")
             .await
     }
-    #[doc = "If kind is INPUT, the input-specific type definition. If kind is not INPUT, this will be null.\n\nSelects GraphQL Wire_Name `asInput` on `TypeDef`."]
+    #[doc = "If kind is INPUT, the input-specific type definition. If kind is not INPUT, this will be null.\n\nSelects GraphQL field `asInput` on `TypeDef`."]
     pub async fn as_input(&self) -> Result<Option<super::InputTypeDef>, crate::QueryError> {
         let query = self.selection.select("asInput");
         let query = query.select("id");
@@ -249,7 +249,7 @@ impl TypeDef {
             )
             .await
     }
-    #[doc = "If kind is INTERFACE, the interface-specific type definition. If kind is not INTERFACE, this will be null.\n\nSelects GraphQL Wire_Name `asInterface` on `TypeDef`."]
+    #[doc = "If kind is INTERFACE, the interface-specific type definition. If kind is not INTERFACE, this will be null.\n\nSelects GraphQL field `asInterface` on `TypeDef`."]
     pub async fn as_interface(&self) -> Result<Option<super::InterfaceTypeDef>, crate::QueryError> {
         let query = self.selection.select("asInterface");
         let query = query.select("id");
@@ -260,7 +260,7 @@ impl TypeDef {
             )
             .await
     }
-    #[doc = "If kind is LIST, the list-specific type definition. If kind is not LIST, this will be null.\n\nSelects GraphQL Wire_Name `asList` on `TypeDef`."]
+    #[doc = "If kind is LIST, the list-specific type definition. If kind is not LIST, this will be null.\n\nSelects GraphQL field `asList` on `TypeDef`."]
     pub async fn as_list(&self) -> Result<Option<super::ListTypeDef>, crate::QueryError> {
         let query = self.selection.select("asList");
         let query = query.select("id");
@@ -268,7 +268,7 @@ impl TypeDef {
             .execute_reentry::<super::ListTypeDef, Option<crate::Id>>(&self.session, "ListTypeDef")
             .await
     }
-    #[doc = "If kind is OBJECT, the object-specific type definition. If kind is not OBJECT, this will be null.\n\nSelects GraphQL Wire_Name `asObject` on `TypeDef`."]
+    #[doc = "If kind is OBJECT, the object-specific type definition. If kind is not OBJECT, this will be null.\n\nSelects GraphQL field `asObject` on `TypeDef`."]
     pub async fn as_object(&self) -> Result<Option<super::ObjectTypeDef>, crate::QueryError> {
         let query = self.selection.select("asObject");
         let query = query.select("id");
@@ -279,7 +279,7 @@ impl TypeDef {
             )
             .await
     }
-    #[doc = "If kind is SCALAR, the scalar-specific type definition. If kind is not SCALAR, this will be null.\n\nSelects GraphQL Wire_Name `asScalar` on `TypeDef`."]
+    #[doc = "If kind is SCALAR, the scalar-specific type definition. If kind is not SCALAR, this will be null.\n\nSelects GraphQL field `asScalar` on `TypeDef`."]
     pub async fn as_scalar(&self) -> Result<Option<super::ScalarTypeDef>, crate::QueryError> {
         let query = self.selection.select("asScalar");
         let query = query.select("id");
@@ -290,27 +290,27 @@ impl TypeDef {
             )
             .await
     }
-    #[doc = "A unique identifier for this TypeDef.\n\nSelects GraphQL Wire_Name `id` on `TypeDef`."]
+    #[doc = "A unique identifier for this TypeDef.\n\nSelects GraphQL field `id` on `TypeDef`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "The kind of type this is (e.g. primitive, list, object).\n\nSelects GraphQL Wire_Name `kind` on `TypeDef`."]
+    #[doc = "The kind of type this is (e.g. primitive, list, object).\n\nSelects GraphQL field `kind` on `TypeDef`."]
     pub async fn kind(&self) -> Result<super::TypeDefKind, crate::QueryError> {
         let query = self.selection.select("kind");
         query.execute(&self.session).await
     }
-    #[doc = "The canonical non-optional name of the type.\n\nSelects GraphQL Wire_Name `name` on `TypeDef`."]
+    #[doc = "The canonical non-optional name of the type.\n\nSelects GraphQL field `name` on `TypeDef`."]
     pub async fn name(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("name");
         query.execute(&self.session).await
     }
-    #[doc = "Whether this type can be set to null. Defaults to false.\n\nSelects GraphQL Wire_Name `optional` on `TypeDef`."]
+    #[doc = "Whether this type can be set to null. Defaults to false.\n\nSelects GraphQL field `optional` on `TypeDef`."]
     pub async fn optional(&self) -> Result<bool, crate::QueryError> {
         let query = self.selection.select("optional");
         query.execute(&self.session).await
     }
-    #[doc = "Adds a function for constructing a new instance of an Object TypeDef, failing if the type is not an object.\n\nSelects GraphQL Wire_Name `withConstructor` on `TypeDef`."]
+    #[doc = "Adds a function for constructing a new instance of an Object TypeDef, failing if the type is not an object.\n\nSelects GraphQL field `withConstructor` on `TypeDef`."]
     #[must_use]
     pub fn with_constructor(
         &self,
@@ -323,7 +323,7 @@ impl TypeDef {
             selection: query,
         }
     }
-    #[doc = "Returns a TypeDef of kind Enum with the provided name.\n\nNote that an enum's values may be omitted if the intent is only to refer to an enum. This is how functions are able to return their own, or any other circular reference.\n\nSelects GraphQL Wire_Name `withEnum` on `TypeDef`."]
+    #[doc = "Returns a TypeDef of kind Enum with the provided name.\n\nNote that an enum's values may be omitted if the intent is only to refer to an enum. This is how functions are able to return their own, or any other circular reference.\n\nSelects GraphQL field `withEnum` on `TypeDef`."]
     #[must_use]
     pub fn with_enum(&self, name: impl Into<String>) -> super::TypeDef {
         let query = self.selection.select("withEnum");
@@ -357,7 +357,7 @@ impl TypeDef {
             selection: query,
         }
     }
-    #[doc = "Adds a static value for an Enum TypeDef, failing if the type is not an enum.\n\nSelects GraphQL Wire_Name `withEnumMember` on `TypeDef`."]
+    #[doc = "Adds a static value for an Enum TypeDef, failing if the type is not an enum.\n\nSelects GraphQL field `withEnumMember` on `TypeDef`."]
     #[must_use]
     pub fn with_enum_member(&self, name: impl Into<String>) -> super::TypeDef {
         let query = self.selection.select("withEnumMember");
@@ -401,7 +401,7 @@ impl TypeDef {
             selection: query,
         }
     }
-    #[doc = "Adds a static value for an Enum TypeDef, failing if the type is not an enum.\n\nSelects GraphQL Wire_Name `withEnumValue` on `TypeDef`.\n\n**Deprecated:** Use `withEnumMember` instead"]
+    #[doc = "Adds a static value for an Enum TypeDef, failing if the type is not an enum.\n\nSelects GraphQL field `withEnumValue` on `TypeDef`.\n\n**Deprecated:** Use `withEnumMember` instead"]
     #[deprecated(note = "Use `withEnumMember` instead")]
     #[must_use]
     pub fn with_enum_value(&self, value: impl Into<String>) -> super::TypeDef {
@@ -442,7 +442,7 @@ impl TypeDef {
             selection: query,
         }
     }
-    #[doc = "Adds a static field for an Object TypeDef, failing if the type is not an object.\n\nSelects GraphQL Wire_Name `withField` on `TypeDef`."]
+    #[doc = "Adds a static field for an Object TypeDef, failing if the type is not an object.\n\nSelects GraphQL field `withField` on `TypeDef`."]
     #[must_use]
     pub fn with_field(
         &self,
@@ -488,7 +488,7 @@ impl TypeDef {
             selection: query,
         }
     }
-    #[doc = "Adds a function for an Object or Interface TypeDef, failing if the type is not one of those kinds.\n\nSelects GraphQL Wire_Name `withFunction` on `TypeDef`."]
+    #[doc = "Adds a function for an Object or Interface TypeDef, failing if the type is not one of those kinds.\n\nSelects GraphQL field `withFunction` on `TypeDef`."]
     #[must_use]
     pub fn with_function(
         &self,
@@ -501,7 +501,7 @@ impl TypeDef {
             selection: query,
         }
     }
-    #[doc = "Returns a TypeDef of kind Interface with the provided name.\n\nSelects GraphQL Wire_Name `withInterface` on `TypeDef`."]
+    #[doc = "Returns a TypeDef of kind Interface with the provided name.\n\nSelects GraphQL field `withInterface` on `TypeDef`."]
     #[must_use]
     pub fn with_interface(&self, name: impl Into<String>) -> super::TypeDef {
         let query = self.selection.select("withInterface");
@@ -535,7 +535,7 @@ impl TypeDef {
             selection: query,
         }
     }
-    #[doc = "Sets the kind of the type.\n\nSelects GraphQL Wire_Name `withKind` on `TypeDef`."]
+    #[doc = "Sets the kind of the type.\n\nSelects GraphQL field `withKind` on `TypeDef`."]
     #[must_use]
     pub fn with_kind(&self, kind: super::TypeDefKind) -> super::TypeDef {
         let query = self.selection.select("withKind");
@@ -545,7 +545,7 @@ impl TypeDef {
             selection: query,
         }
     }
-    #[doc = "Returns a TypeDef of kind List with the provided type for its elements.\n\nSelects GraphQL Wire_Name `withListOf` on `TypeDef`."]
+    #[doc = "Returns a TypeDef of kind List with the provided type for its elements.\n\nSelects GraphQL field `withListOf` on `TypeDef`."]
     #[must_use]
     pub fn with_list_of(
         &self,
@@ -558,7 +558,7 @@ impl TypeDef {
             selection: query,
         }
     }
-    #[doc = "Returns a TypeDef of kind Object with the provided name.\n\nNote that an object's fields and functions may be omitted if the intent is only to refer to an object. This is how functions are able to return their own object, or any other circular reference.\n\nSelects GraphQL Wire_Name `withObject` on `TypeDef`."]
+    #[doc = "Returns a TypeDef of kind Object with the provided name.\n\nNote that an object's fields and functions may be omitted if the intent is only to refer to an object. This is how functions are able to return their own object, or any other circular reference.\n\nSelects GraphQL field `withObject` on `TypeDef`."]
     #[must_use]
     pub fn with_object(&self, name: impl Into<String>) -> super::TypeDef {
         let query = self.selection.select("withObject");
@@ -597,7 +597,7 @@ impl TypeDef {
             selection: query,
         }
     }
-    #[doc = "Sets whether this type can be set to null.\n\nSelects GraphQL Wire_Name `withOptional` on `TypeDef`."]
+    #[doc = "Sets whether this type can be set to null.\n\nSelects GraphQL field `withOptional` on `TypeDef`."]
     #[must_use]
     pub fn with_optional(&self, optional: bool) -> super::TypeDef {
         let query = self.selection.select("withOptional");
@@ -607,7 +607,7 @@ impl TypeDef {
             selection: query,
         }
     }
-    #[doc = "Returns a TypeDef of kind Scalar with the provided name.\n\nSelects GraphQL Wire_Name `withScalar` on `TypeDef`."]
+    #[doc = "Returns a TypeDef of kind Scalar with the provided name.\n\nSelects GraphQL field `withScalar` on `TypeDef`."]
     #[must_use]
     pub fn with_scalar(&self, name: impl Into<String>) -> super::TypeDef {
         let query = self.selection.select("withScalar");

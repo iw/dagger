@@ -62,15 +62,15 @@ impl GeneratedVerification {
 pub struct QueryProjectionCase {
     /// Exact field coordinate.
     pub coordinate: SchemaCoordinate,
-    /// Owning GraphQL type Wire_Name.
+    /// Owning GraphQL type wire name.
     pub owner_wire_name: String,
-    /// Exact selected field Wire_Name.
+    /// Exact selected field wire name.
     pub field_wire_name: String,
     /// Generated Rust method identifier.
     pub rust_method_name: String,
     /// Complete field execution strategy.
     pub strategy: FieldStrategy,
-    /// Exact arguments in deterministic Wire_Name order.
+    /// Exact arguments in deterministic wire name order.
     pub arguments: Vec<QueryArgumentCase>,
 }
 
@@ -79,9 +79,9 @@ pub struct QueryProjectionCase {
 pub struct QueryArgumentCase {
     /// Exact argument coordinate.
     pub coordinate: SchemaCoordinate,
-    /// GraphQL argument Wire_Name emitted into documents.
+    /// GraphQL argument wire name emitted into documents.
     pub wire_name: String,
-    /// Generated Rust identifier, retained independently from the Wire_Name.
+    /// Generated Rust identifier, retained independently from the wire name.
     pub rust_name: String,
     /// Required direct input or options-carried omission policy.
     pub presence: ArgumentPresence,

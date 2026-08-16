@@ -37,32 +37,32 @@ impl From<DiffStat> for crate::IdInput<super::NodeClient> {
     }
 }
 impl DiffStat {
-    #[doc = "Number of added lines for this path.\n\nSelects GraphQL Wire_Name `addedLines` on `DiffStat`."]
+    #[doc = "Number of added lines for this path.\n\nSelects GraphQL field `addedLines` on `DiffStat`."]
     pub async fn added_lines(&self) -> Result<i64, crate::QueryError> {
         let query = self.selection.select("addedLines");
         query.execute(&self.session).await
     }
-    #[doc = "A unique identifier for this DiffStat.\n\nSelects GraphQL Wire_Name `id` on `DiffStat`."]
+    #[doc = "A unique identifier for this DiffStat.\n\nSelects GraphQL field `id` on `DiffStat`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "Type of change.\n\nSelects GraphQL Wire_Name `kind` on `DiffStat`."]
+    #[doc = "Type of change.\n\nSelects GraphQL field `kind` on `DiffStat`."]
     pub async fn kind(&self) -> Result<super::DiffStatKind, crate::QueryError> {
         let query = self.selection.select("kind");
         query.execute(&self.session).await
     }
-    #[doc = "Previous path of the file, set only for renames.\n\nSelects GraphQL Wire_Name `oldPath` on `DiffStat`."]
+    #[doc = "Previous path of the file, set only for renames.\n\nSelects GraphQL field `oldPath` on `DiffStat`."]
     pub async fn old_path(&self) -> Result<Option<String>, crate::QueryError> {
         let query = self.selection.select("oldPath");
         query.execute(&self.session).await
     }
-    #[doc = "Path of the changed file or directory.\n\nSelects GraphQL Wire_Name `path` on `DiffStat`."]
+    #[doc = "Path of the changed file or directory.\n\nSelects GraphQL field `path` on `DiffStat`."]
     pub async fn path(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("path");
         query.execute(&self.session).await
     }
-    #[doc = "Number of removed lines for this path.\n\nSelects GraphQL Wire_Name `removedLines` on `DiffStat`."]
+    #[doc = "Number of removed lines for this path.\n\nSelects GraphQL field `removedLines` on `DiffStat`."]
     pub async fn removed_lines(&self) -> Result<i64, crate::QueryError> {
         let query = self.selection.select("removedLines");
         query.execute(&self.session).await

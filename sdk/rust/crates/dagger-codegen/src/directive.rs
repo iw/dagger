@@ -49,7 +49,7 @@ pub enum DirectiveApplicationPolicy {
     Deprecated { reason: String },
     /// Engine-authored experimental stability note.
     Experimental { reason: String },
-    /// Canonical enum value selected by an alias Wire_Name.
+    /// Canonical enum value selected by an alias wire name.
     EnumValueAlias { canonical: SchemaName },
     /// Module identity attached by the engine's dynamic schema merger.
     SourceMap { module: String },
@@ -58,7 +58,7 @@ pub enum DirectiveApplicationPolicy {
 /// One definition and all of its validated target applications.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct DirectivePolicyRecord {
-    /// Exact directive Wire_Name.
+    /// Exact directive wire name.
     pub name: SchemaName,
     /// Exact definition coordinate.
     pub coordinate: SchemaCoordinate,
@@ -78,7 +78,7 @@ pub struct DirectiveProjection {
 }
 
 impl DirectiveProjection {
-    /// Borrows all directive records in Wire_Name order.
+    /// Borrows all directive records in wire name order.
     #[must_use]
     pub const fn records(&self) -> &BTreeMap<SchemaName, DirectivePolicyRecord> {
         &self.records
@@ -312,7 +312,7 @@ fn project_application(
                 diagnostic(
                     DiagnosticCode::ExpectedTypeInvalid,
                     &site.coordinate,
-                    "expectedType target is not a valid Wire_Name",
+                    "expectedType target is not a valid wire name",
                 )
             })?;
             if !matches!(
@@ -354,7 +354,7 @@ fn project_application(
                 diagnostic(
                     DiagnosticCode::SchemaDirectiveArgumentInvalid,
                     &site.coordinate,
-                    "enumValue target is not a valid Wire_Name",
+                    "enumValue target is not a valid wire name",
                 )
             })?;
             let Some(enumeration) = site.enum_definition else {
@@ -368,7 +368,7 @@ fn project_application(
                 return Err(diagnostic(
                     DiagnosticCode::SchemaDirectiveArgumentInvalid,
                     &site.coordinate,
-                    "enumValue target is not a sibling enum Wire_Name",
+                    "enumValue target is not a sibling enum wire name",
                 ));
             }
             let target = &enumeration.values[&canonical];

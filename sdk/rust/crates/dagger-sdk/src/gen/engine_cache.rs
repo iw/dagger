@@ -10,7 +10,7 @@ pub struct EngineCache {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct EngineCacheEntrySetOpts {
-    #[doc = "`None` omits GraphQL Wire_Name `key` and preserves engine default `String(\"\")`."]
+    #[doc = "`None` omits GraphQL field `key` and preserves engine default `String(\"\")`."]
     pub key: Option<String>,
 }
 impl EngineCacheEntrySetOpts {
@@ -25,15 +25,15 @@ impl EngineCacheEntrySetOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct EngineCachePruneOpts {
-    #[doc = "Override the maximum disk space to keep before pruning (e.g. \"200GB\" or \"80%\").\n\n`None` omits GraphQL Wire_Name `maxUsedSpace` and preserves engine default `String(\"\")`."]
+    #[doc = "Override the maximum disk space to keep before pruning (e.g. \"200GB\" or \"80%\").\n\n`None` omits GraphQL field `maxUsedSpace` and preserves engine default `String(\"\")`."]
     pub max_used_space: Option<String>,
-    #[doc = "Override the minimum free disk space target during pruning (e.g. \"20GB\" or \"20%\").\n\n`None` omits GraphQL Wire_Name `minFreeSpace` and preserves engine default `String(\"\")`."]
+    #[doc = "Override the minimum free disk space target during pruning (e.g. \"20GB\" or \"20%\").\n\n`None` omits GraphQL field `minFreeSpace` and preserves engine default `String(\"\")`."]
     pub min_free_space: Option<String>,
-    #[doc = "Override the minimum disk space to retain during pruning (e.g. \"500GB\" or \"10%\").\n\n`None` omits GraphQL Wire_Name `reservedSpace` and preserves engine default `String(\"\")`."]
+    #[doc = "Override the minimum disk space to retain during pruning (e.g. \"500GB\" or \"10%\").\n\n`None` omits GraphQL field `reservedSpace` and preserves engine default `String(\"\")`."]
     pub reserved_space: Option<String>,
-    #[doc = "Override the target disk space to keep after pruning (e.g. \"200GB\" or \"50%\").\n\n`None` omits GraphQL Wire_Name `targetSpace` and preserves engine default `String(\"\")`."]
+    #[doc = "Override the target disk space to keep after pruning (e.g. \"200GB\" or \"50%\").\n\n`None` omits GraphQL field `targetSpace` and preserves engine default `String(\"\")`."]
     pub target_space: Option<String>,
-    #[doc = "Use the engine-wide default pruning policy if true, otherwise prune the whole cache of any releasable entries.\n\n`None` omits GraphQL Wire_Name `useDefaultPolicy` and preserves engine default `Boolean(false)`."]
+    #[doc = "Use the engine-wide default pruning policy if true, otherwise prune the whole cache of any releasable entries.\n\n`None` omits GraphQL field `useDefaultPolicy` and preserves engine default `Boolean(false)`."]
     pub use_default_policy: Option<bool>,
 }
 impl EngineCachePruneOpts {
@@ -99,7 +99,7 @@ impl From<EngineCache> for crate::IdInput<super::NodeClient> {
     }
 }
 impl EngineCache {
-    #[doc = "The current set of entries in the cache\n\nSelects GraphQL Wire_Name `entrySet` on `EngineCache`."]
+    #[doc = "The current set of entries in the cache\n\nSelects GraphQL field `entrySet` on `EngineCache`."]
     #[must_use]
     pub fn entry_set(&self) -> super::EngineCacheEntrySet {
         let query = self.selection.select("entrySet");
@@ -122,22 +122,22 @@ impl EngineCache {
             selection: query,
         }
     }
-    #[doc = "A unique identifier for this EngineCache.\n\nSelects GraphQL Wire_Name `id` on `EngineCache`."]
+    #[doc = "A unique identifier for this EngineCache.\n\nSelects GraphQL field `id` on `EngineCache`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "The maximum bytes to keep in the cache without pruning.\n\nSelects GraphQL Wire_Name `maxUsedSpace` on `EngineCache`."]
+    #[doc = "The maximum bytes to keep in the cache without pruning.\n\nSelects GraphQL field `maxUsedSpace` on `EngineCache`."]
     pub async fn max_used_space(&self) -> Result<i64, crate::QueryError> {
         let query = self.selection.select("maxUsedSpace");
         query.execute(&self.session).await
     }
-    #[doc = "The target amount of free disk space the garbage collector will attempt to leave.\n\nSelects GraphQL Wire_Name `minFreeSpace` on `EngineCache`."]
+    #[doc = "The target amount of free disk space the garbage collector will attempt to leave.\n\nSelects GraphQL field `minFreeSpace` on `EngineCache`."]
     pub async fn min_free_space(&self) -> Result<i64, crate::QueryError> {
         let query = self.selection.select("minFreeSpace");
         query.execute(&self.session).await
     }
-    #[doc = "Prune the cache of releaseable entries\n\nSelects GraphQL Wire_Name `prune` on `EngineCache`."]
+    #[doc = "Prune the cache of releaseable entries\n\nSelects GraphQL field `prune` on `EngineCache`."]
     pub async fn prune(&self) -> Result<(), crate::QueryError> {
         let query = self.selection.select("prune");
         query.execute(&self.session).await
@@ -172,12 +172,12 @@ impl EngineCache {
         };
         query.execute(&self.session).await
     }
-    #[doc = "The minimum amount of disk space this policy is guaranteed to retain.\n\nSelects GraphQL Wire_Name `reservedSpace` on `EngineCache`."]
+    #[doc = "The minimum amount of disk space this policy is guaranteed to retain.\n\nSelects GraphQL field `reservedSpace` on `EngineCache`."]
     pub async fn reserved_space(&self) -> Result<i64, crate::QueryError> {
         let query = self.selection.select("reservedSpace");
         query.execute(&self.session).await
     }
-    #[doc = "The target number of bytes to keep when pruning.\n\nSelects GraphQL Wire_Name `targetSpace` on `EngineCache`."]
+    #[doc = "The target number of bytes to keep when pruning.\n\nSelects GraphQL field `targetSpace` on `EngineCache`."]
     pub async fn target_space(&self) -> Result<i64, crate::QueryError> {
         let query = self.selection.select("targetSpace");
         query.execute(&self.session).await

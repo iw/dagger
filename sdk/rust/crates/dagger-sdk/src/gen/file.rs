@@ -10,7 +10,7 @@ pub struct File {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct FileAsEnvFileOpts {
-    #[doc = "Replace \"${VAR}\" or \"$VAR\" with the value of other vars\n\n`None` omits GraphQL Wire_Name `expand`.\n\n**Deprecated:** Variable expansion is now enabled by default"]
+    #[doc = "Replace \"${VAR}\" or \"$VAR\" with the value of other vars\n\n`None` omits GraphQL field `expand`.\n\n**Deprecated:** Variable expansion is now enabled by default"]
     pub expand: Option<bool>,
 }
 impl FileAsEnvFileOpts {
@@ -25,9 +25,9 @@ impl FileAsEnvFileOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct FileContentsOpts {
-    #[doc = "Maximum number of lines to read\n\n`None` omits GraphQL Wire_Name `limitLines`."]
+    #[doc = "Maximum number of lines to read\n\n`None` omits GraphQL field `limitLines`."]
     pub limit_lines: Option<i64>,
-    #[doc = "Start reading after this line\n\n`None` omits GraphQL Wire_Name `offsetLines`."]
+    #[doc = "Start reading after this line\n\n`None` omits GraphQL field `offsetLines`."]
     pub offset_lines: Option<i64>,
 }
 impl FileContentsOpts {
@@ -48,7 +48,7 @@ impl FileContentsOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct FileDigestOpts {
-    #[doc = "If true, exclude metadata from the digest.\n\n`None` omits GraphQL Wire_Name `excludeMetadata` and preserves engine default `Boolean(false)`."]
+    #[doc = "If true, exclude metadata from the digest.\n\n`None` omits GraphQL field `excludeMetadata` and preserves engine default `Boolean(false)`."]
     pub exclude_metadata: Option<bool>,
 }
 impl FileDigestOpts {
@@ -63,7 +63,7 @@ impl FileDigestOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct FileExportOpts {
-    #[doc = "If allowParentDirPath is true, the path argument can be a directory path, in which case the file will be created in that directory.\n\n`None` omits GraphQL Wire_Name `allowParentDirPath` and preserves engine default `Boolean(false)`."]
+    #[doc = "If allowParentDirPath is true, the path argument can be a directory path, in which case the file will be created in that directory.\n\n`None` omits GraphQL field `allowParentDirPath` and preserves engine default `Boolean(false)`."]
     pub allow_parent_dir_path: Option<bool>,
 }
 impl FileExportOpts {
@@ -78,25 +78,25 @@ impl FileExportOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct FileSearchOpts {
-    #[doc = "Allow the . pattern to match newlines in multiline mode.\n\n`None` omits GraphQL Wire_Name `dotall` and preserves engine default `Boolean(false)`."]
+    #[doc = "Allow the . pattern to match newlines in multiline mode.\n\n`None` omits GraphQL field `dotall` and preserves engine default `Boolean(false)`."]
     pub dotall: Option<bool>,
-    #[doc = "Only return matching files, not lines and content\n\n`None` omits GraphQL Wire_Name `filesOnly` and preserves engine default `Boolean(false)`."]
+    #[doc = "Only return matching files, not lines and content\n\n`None` omits GraphQL field `filesOnly` and preserves engine default `Boolean(false)`."]
     pub files_only: Option<bool>,
-    #[doc = "`None` omits GraphQL Wire_Name `globs` and preserves engine default `List(\\[\\])`."]
+    #[doc = "`None` omits GraphQL field `globs` and preserves engine default `List(\\[\\])`."]
     pub globs: Option<Vec<String>>,
-    #[doc = "Enable case-insensitive matching.\n\n`None` omits GraphQL Wire_Name `insensitive` and preserves engine default `Boolean(false)`."]
+    #[doc = "Enable case-insensitive matching.\n\n`None` omits GraphQL field `insensitive` and preserves engine default `Boolean(false)`."]
     pub insensitive: Option<bool>,
-    #[doc = "Limit the number of results to return\n\n`None` omits GraphQL Wire_Name `limit`."]
+    #[doc = "Limit the number of results to return\n\n`None` omits GraphQL field `limit`."]
     pub limit: Option<i64>,
-    #[doc = "Interpret the pattern as a literal string instead of a regular expression.\n\n`None` omits GraphQL Wire_Name `literal` and preserves engine default `Boolean(false)`."]
+    #[doc = "Interpret the pattern as a literal string instead of a regular expression.\n\n`None` omits GraphQL field `literal` and preserves engine default `Boolean(false)`."]
     pub literal: Option<bool>,
-    #[doc = "Enable searching across multiple lines.\n\n`None` omits GraphQL Wire_Name `multiline` and preserves engine default `Boolean(false)`."]
+    #[doc = "Enable searching across multiple lines.\n\n`None` omits GraphQL field `multiline` and preserves engine default `Boolean(false)`."]
     pub multiline: Option<bool>,
-    #[doc = "`None` omits GraphQL Wire_Name `paths` and preserves engine default `List(\\[\\])`."]
+    #[doc = "`None` omits GraphQL field `paths` and preserves engine default `List(\\[\\])`."]
     pub paths: Option<Vec<String>>,
-    #[doc = "Skip hidden files (files starting with .).\n\n`None` omits GraphQL Wire_Name `skipHidden` and preserves engine default `Boolean(false)`."]
+    #[doc = "Skip hidden files (files starting with .).\n\n`None` omits GraphQL field `skipHidden` and preserves engine default `Boolean(false)`."]
     pub skip_hidden: Option<bool>,
-    #[doc = "Honor .gitignore, .ignore, and .rgignore files.\n\n`None` omits GraphQL Wire_Name `skipIgnored` and preserves engine default `Boolean(false)`."]
+    #[doc = "Honor .gitignore, .ignore, and .rgignore files.\n\n`None` omits GraphQL field `skipIgnored` and preserves engine default `Boolean(false)`."]
     pub skip_ignored: Option<bool>,
 }
 impl FileSearchOpts {
@@ -165,9 +165,9 @@ impl FileSearchOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct FileWithReplacedOpts {
-    #[doc = "Replace all occurrences of the pattern.\n\n`None` omits GraphQL Wire_Name `all` and preserves engine default `Boolean(false)`."]
+    #[doc = "Replace all occurrences of the pattern.\n\n`None` omits GraphQL field `all` and preserves engine default `Boolean(false)`."]
     pub all: Option<bool>,
-    #[doc = "Replace the first match starting from the specified line.\n\n`None` omits GraphQL Wire_Name `firstFrom`."]
+    #[doc = "Replace the first match starting from the specified line.\n\n`None` omits GraphQL field `firstFrom`."]
     pub first_from: Option<i64>,
 }
 impl FileWithReplacedOpts {
@@ -225,7 +225,7 @@ impl From<File> for crate::IdInput<super::SyncerClient> {
     }
 }
 impl File {
-    #[doc = "Parse as an env file\n\nSelects GraphQL Wire_Name `asEnvFile` on `File`."]
+    #[doc = "Parse as an env file\n\nSelects GraphQL field `asEnvFile` on `File`."]
     #[must_use]
     pub fn as_env_file(&self) -> super::EnvFile {
         let query = self.selection.select("asEnvFile");
@@ -248,7 +248,7 @@ impl File {
             selection: query,
         }
     }
-    #[doc = "Parse the file contents as JSON.\n\nSelects GraphQL Wire_Name `asJSON` on `File`."]
+    #[doc = "Parse the file contents as JSON.\n\nSelects GraphQL field `asJSON` on `File`."]
     #[must_use]
     pub fn as_json(&self) -> super::JsonValue {
         let query = self.selection.select("asJSON");
@@ -257,7 +257,7 @@ impl File {
             selection: query,
         }
     }
-    #[doc = "Change the owner of the file recursively.\n\nSelects GraphQL Wire_Name `chown` on `File`."]
+    #[doc = "Change the owner of the file recursively.\n\nSelects GraphQL field `chown` on `File`."]
     #[must_use]
     pub fn chown(&self, owner: impl Into<String>) -> super::File {
         let query = self.selection.select("chown");
@@ -267,7 +267,7 @@ impl File {
             selection: query,
         }
     }
-    #[doc = "Retrieves the contents of the file.\n\nSelects GraphQL Wire_Name `contents` on `File`."]
+    #[doc = "Retrieves the contents of the file.\n\nSelects GraphQL field `contents` on `File`."]
     pub async fn contents(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("contents");
         query.execute(&self.session).await
@@ -290,7 +290,7 @@ impl File {
         };
         query.execute(&self.session).await
     }
-    #[doc = "Return the file's digest. The format of the digest is not guaranteed to be stable between releases of Dagger. It is guaranteed to be stable between invocations of the same Dagger engine.\n\nSelects GraphQL Wire_Name `digest` on `File`."]
+    #[doc = "Return the file's digest. The format of the digest is not guaranteed to be stable between releases of Dagger. It is guaranteed to be stable between invocations of the same Dagger engine.\n\nSelects GraphQL field `digest` on `File`."]
     pub async fn digest(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("digest");
         query.execute(&self.session).await
@@ -305,7 +305,7 @@ impl File {
         };
         query.execute(&self.session).await
     }
-    #[doc = "Writes the file to a file path on the host.\n\nSelects GraphQL Wire_Name `export` on `File`."]
+    #[doc = "Writes the file to a file path on the host.\n\nSelects GraphQL field `export` on `File`."]
     pub async fn export(&self, path: impl Into<String>) -> Result<String, crate::QueryError> {
         let query = self.selection.select("export");
         let query = query.arg("path", path.into());
@@ -326,17 +326,17 @@ impl File {
         let query = query.arg("path", path.into());
         query.execute(&self.session).await
     }
-    #[doc = "A unique identifier for this File.\n\nSelects GraphQL Wire_Name `id` on `File`."]
+    #[doc = "A unique identifier for this File.\n\nSelects GraphQL field `id` on `File`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "Retrieves the name of the file.\n\nSelects GraphQL Wire_Name `name` on `File`."]
+    #[doc = "Retrieves the name of the file.\n\nSelects GraphQL field `name` on `File`."]
     pub async fn name(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("name");
         query.execute(&self.session).await
     }
-    #[doc = "Searches for content matching the given regular expression or literal string.\n\nUses Rust regex syntax; escape literal ., \\[, \\], {, }, | with backslashes.\n\nSelects GraphQL Wire_Name `search` on `File`."]
+    #[doc = "Searches for content matching the given regular expression or literal string.\n\nUses Rust regex syntax; escape literal ., \\[, \\], {, }, | with backslashes.\n\nSelects GraphQL field `search` on `File`."]
     pub async fn search(
         &self,
         pattern: impl Into<String>,
@@ -411,12 +411,12 @@ impl File {
             .execute_reentry::<super::SearchResult, Vec<crate::Id>>(&self.session, "SearchResult")
             .await
     }
-    #[doc = "Retrieves the size of the file, in bytes.\n\nSelects GraphQL Wire_Name `size` on `File`."]
+    #[doc = "Retrieves the size of the file, in bytes.\n\nSelects GraphQL field `size` on `File`."]
     pub async fn size(&self) -> Result<i64, crate::QueryError> {
         let query = self.selection.select("size");
         query.execute(&self.session).await
     }
-    #[doc = "Return file status\n\nSelects GraphQL Wire_Name `stat` on `File`."]
+    #[doc = "Return file status\n\nSelects GraphQL field `stat` on `File`."]
     pub async fn stat(&self) -> Result<Option<super::Stat>, crate::QueryError> {
         let query = self.selection.select("stat");
         let query = query.select("id");
@@ -424,7 +424,7 @@ impl File {
             .execute_reentry::<super::Stat, Option<crate::Id>>(&self.session, "Stat")
             .await
     }
-    #[doc = "Force evaluation in the engine.\n\nSelects GraphQL Wire_Name `sync` on `File`."]
+    #[doc = "Force evaluation in the engine.\n\nSelects GraphQL field `sync` on `File`."]
     pub async fn sync(&self) -> Result<super::File, crate::QueryError> {
         let query = self.selection.select("sync");
         let id: crate::Id = query.execute(&self.session).await?;
@@ -434,7 +434,7 @@ impl File {
             "File",
         ))
     }
-    #[doc = "Retrieves this file with its name set to the given name.\n\nSelects GraphQL Wire_Name `withName` on `File`."]
+    #[doc = "Retrieves this file with its name set to the given name.\n\nSelects GraphQL field `withName` on `File`."]
     #[must_use]
     pub fn with_name(&self, name: impl Into<String>) -> super::File {
         let query = self.selection.select("withName");
@@ -444,7 +444,7 @@ impl File {
             selection: query,
         }
     }
-    #[doc = "Retrieves the file with content replaced with the given text.\n\nIf 'all' is true, all occurrences of the pattern will be replaced.\n\nIf 'firstAfter' is specified, only the first match starting at the specified line will be replaced.\n\nIf neither are specified, and there are multiple matches for the pattern, this will error.\n\nIf there are no matches for the pattern, this will error.\n\nSelects GraphQL Wire_Name `withReplaced` on `File`."]
+    #[doc = "Retrieves the file with content replaced with the given text.\n\nIf 'all' is true, all occurrences of the pattern will be replaced.\n\nIf 'firstAfter' is specified, only the first match starting at the specified line will be replaced.\n\nIf neither are specified, and there are multiple matches for the pattern, this will error.\n\nIf there are no matches for the pattern, this will error.\n\nSelects GraphQL field `withReplaced` on `File`."]
     #[must_use]
     pub fn with_replaced(
         &self,
@@ -485,7 +485,7 @@ impl File {
             selection: query,
         }
     }
-    #[doc = "Retrieves this file with its created/modified timestamps set to the given time.\n\nSelects GraphQL Wire_Name `withTimestamps` on `File`."]
+    #[doc = "Retrieves this file with its created/modified timestamps set to the given time.\n\nSelects GraphQL field `withTimestamps` on `File`."]
     #[must_use]
     pub fn with_timestamps(&self, timestamp: i64) -> super::File {
         let query = self.selection.select("withTimestamps");

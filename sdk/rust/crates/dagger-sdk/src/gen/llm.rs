@@ -10,9 +10,9 @@ pub struct Llm {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct LlmLoopOpts {
-    #[doc = "Cap the number of steps. The loop fails if the cap is reached before the model ends its turn.\n\n`None` omits GraphQL Wire_Name `maxSteps`."]
+    #[doc = "Cap the number of steps. The loop fails if the cap is reached before the model ends its turn.\n\n`None` omits GraphQL field `maxSteps`."]
     pub max_steps: Option<i64>,
-    #[doc = "Cap the model's output tokens on each step. Defaults to the model's maximum.\n\n`None` omits GraphQL Wire_Name `maxTokens`."]
+    #[doc = "Cap the model's output tokens on each step. Defaults to the model's maximum.\n\n`None` omits GraphQL field `maxTokens`."]
     pub max_tokens: Option<i64>,
 }
 impl LlmLoopOpts {
@@ -33,7 +33,7 @@ impl LlmLoopOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct LlmStepOpts {
-    #[doc = "Cap the model's output tokens for this step. Defaults to the model's maximum.\n\n`None` omits GraphQL Wire_Name `maxTokens`."]
+    #[doc = "Cap the model's output tokens for this step. Defaults to the model's maximum.\n\n`None` omits GraphQL field `maxTokens`."]
     pub max_tokens: Option<i64>,
 }
 impl LlmStepOpts {
@@ -48,7 +48,7 @@ impl LlmStepOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct LlmWithModelOpts {
-    #[doc = "The provider serving the model, e.g. \"openai\". Overrides the provider otherwise inferred from the model name — useful when the name matches no known pattern (e.g. a fine-tune), or matches the wrong one.\n\n`None` omits GraphQL Wire_Name `provider`."]
+    #[doc = "The provider serving the model, e.g. \"openai\". Overrides the provider otherwise inferred from the model name — useful when the name matches no known pattern (e.g. a fine-tune), or matches the wrong one.\n\n`None` omits GraphQL field `provider`."]
     pub provider: Option<String>,
 }
 impl LlmWithModelOpts {
@@ -63,15 +63,15 @@ impl LlmWithModelOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct LlmWithResponseOpts {
-    #[doc = "Cached input tokens read\n\n`None` omits GraphQL Wire_Name `cachedTokenReads` and preserves engine default `Int(0)`."]
+    #[doc = "Cached input tokens read\n\n`None` omits GraphQL field `cachedTokenReads` and preserves engine default `Int(0)`."]
     pub cached_token_reads: Option<i64>,
-    #[doc = "Cached input tokens written\n\n`None` omits GraphQL Wire_Name `cachedTokenWrites` and preserves engine default `Int(0)`."]
+    #[doc = "Cached input tokens written\n\n`None` omits GraphQL field `cachedTokenWrites` and preserves engine default `Int(0)`."]
     pub cached_token_writes: Option<i64>,
-    #[doc = "Uncached input tokens sent\n\n`None` omits GraphQL Wire_Name `inputTokens` and preserves engine default `Int(0)`."]
+    #[doc = "Uncached input tokens sent\n\n`None` omits GraphQL field `inputTokens` and preserves engine default `Int(0)`."]
     pub input_tokens: Option<i64>,
-    #[doc = "Tokens received from the model, including text and tool calls\n\n`None` omits GraphQL Wire_Name `outputTokens` and preserves engine default `Int(0)`."]
+    #[doc = "Tokens received from the model, including text and tool calls\n\n`None` omits GraphQL field `outputTokens` and preserves engine default `Int(0)`."]
     pub output_tokens: Option<i64>,
-    #[doc = "Total tokens consumed by this response\n\n`None` omits GraphQL Wire_Name `totalTokens` and preserves engine default `Int(0)`."]
+    #[doc = "Total tokens consumed by this response\n\n`None` omits GraphQL field `totalTokens` and preserves engine default `Int(0)`."]
     pub total_tokens: Option<i64>,
 }
 impl LlmWithResponseOpts {
@@ -110,7 +110,7 @@ impl LlmWithResponseOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct LlmWithToolsOpts {
-    #[doc = "Method names to exclude from the toolset (e.g. constructors, entrypoints).\n\n`None` omits GraphQL Wire_Name `except` and preserves engine default `List(\\[\\])`."]
+    #[doc = "Method names to exclude from the toolset (e.g. constructors, entrypoints).\n\n`None` omits GraphQL field `except` and preserves engine default `List(\\[\\])`."]
     pub except: Option<Vec<String>>,
 }
 impl LlmWithToolsOpts {
@@ -157,17 +157,17 @@ impl From<Llm> for crate::IdInput<super::SyncerClient> {
     }
 }
 impl Llm {
-    #[doc = "estimated number of tokens currently occupying the context window; unlike tokenUsage this is not cumulative over the session\n\nSelects GraphQL Wire_Name `contextTokens` on `LLM`."]
+    #[doc = "estimated number of tokens currently occupying the context window; unlike tokenUsage this is not cumulative over the session\n\nSelects GraphQL field `contextTokens` on `LLM`."]
     pub async fn context_tokens(&self) -> Result<i64, crate::QueryError> {
         let query = self.selection.select("contextTokens");
         query.execute(&self.session).await
     }
-    #[doc = "The model's total context window in tokens, or null if unknown (e.g. a local or uncatalogued model).\n\nSelects GraphQL Wire_Name `contextWindow` on `LLM`."]
+    #[doc = "The model's total context window in tokens, or null if unknown (e.g. a local or uncatalogued model).\n\nSelects GraphQL field `contextWindow` on `LLM`."]
     pub async fn context_window(&self) -> Result<Option<i64>, crate::QueryError> {
         let query = self.selection.select("contextWindow");
         query.execute(&self.session).await
     }
-    #[doc = "Fork the conversation, so that otherwise-identical follow-ups evaluate independently instead of deduplicating to a single cached result.\n\nSelects GraphQL Wire_Name `fork` on `LLM`."]
+    #[doc = "Fork the conversation, so that otherwise-identical follow-ups evaluate independently instead of deduplicating to a single cached result.\n\nSelects GraphQL field `fork` on `LLM`."]
     #[must_use]
     pub fn fork(&self, label: impl Into<String>) -> super::Llm {
         let query = self.selection.select("fork");
@@ -177,22 +177,22 @@ impl Llm {
             selection: query,
         }
     }
-    #[doc = "Report whether anything is queued to send to the model: an unsent prompt or unevaluated tool results. When true, another step will do work; when false, the turn is complete.\n\nSelects GraphQL Wire_Name `hasPending` on `LLM`."]
+    #[doc = "Report whether anything is queued to send to the model: an unsent prompt or unevaluated tool results. When true, another step will do work; when false, the turn is complete.\n\nSelects GraphQL field `hasPending` on `LLM`."]
     pub async fn has_pending(&self) -> Result<bool, crate::QueryError> {
         let query = self.selection.select("hasPending");
         query.execute(&self.session).await
     }
-    #[doc = "A unique identifier for this LLM.\n\nSelects GraphQL Wire_Name `id` on `LLM`."]
+    #[doc = "A unique identifier for this LLM.\n\nSelects GraphQL field `id` on `LLM`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "The text of the model's most recent reply.\n\nSelects GraphQL Wire_Name `lastReply` on `LLM`."]
+    #[doc = "The text of the model's most recent reply.\n\nSelects GraphQL field `lastReply` on `LLM`."]
     pub async fn last_reply(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("lastReply");
         query.execute(&self.session).await
     }
-    #[doc = "Send the queued prompt and step the model against the available tools, until it ends its turn: a reply with no tool calls and nothing left queued.\n\nSelects GraphQL Wire_Name `loop` on `LLM`."]
+    #[doc = "Send the queued prompt and step the model against the available tools, until it ends its turn: a reply with no tool calls and nothing left queued.\n\nSelects GraphQL field `loop` on `LLM`."]
     #[must_use]
     pub fn r#loop(&self) -> super::Llm {
         let query = self.selection.select("loop");
@@ -220,7 +220,7 @@ impl Llm {
             selection: query,
         }
     }
-    #[doc = "The full message history, as structured messages.\n\nSelects GraphQL Wire_Name `messages` on `LLM`."]
+    #[doc = "The full message history, as structured messages.\n\nSelects GraphQL field `messages` on `LLM`."]
     pub async fn messages(&self) -> Result<Vec<super::LlmMessage>, crate::QueryError> {
         let query = self.selection.select("messages");
         let query = query.select("id");
@@ -228,22 +228,22 @@ impl Llm {
             .execute_reentry::<super::LlmMessage, Vec<crate::Id>>(&self.session, "LLMMessage")
             .await
     }
-    #[doc = "The model the conversation is running against, after resolving any configured default.\n\nSelects GraphQL Wire_Name `model` on `LLM`."]
+    #[doc = "The model the conversation is running against, after resolving any configured default.\n\nSelects GraphQL field `model` on `LLM`."]
     pub async fn model(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("model");
         query.execute(&self.session).await
     }
-    #[doc = "A portable, self-contained ID for the conversation that node() can resolve in any session. Unlike id, which may return an engine-local runtime handle valid only within the current session, this returns the recipe form suitable for persisting and later restoring the conversation.\n\nSelects GraphQL Wire_Name `portableID` on `LLM`."]
+    #[doc = "A portable, self-contained ID for the conversation that node() can resolve in any session. Unlike id, which may return an engine-local runtime handle valid only within the current session, this returns the recipe form suitable for persisting and later restoring the conversation.\n\nSelects GraphQL field `portableID` on `LLM`."]
     pub async fn portable_id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("portableID");
         query.execute(&self.session).await
     }
-    #[doc = "The provider serving the model, e.g. \"anthropic\", \"openai\", \"google\", or \"local\".\n\nSelects GraphQL Wire_Name `provider` on `LLM`."]
+    #[doc = "The provider serving the model, e.g. \"anthropic\", \"openai\", \"google\", or \"local\".\n\nSelects GraphQL field `provider` on `LLM`."]
     pub async fn provider(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("provider");
         query.execute(&self.session).await
     }
-    #[doc = "Re-emit telemetry spans for the full message history, so a loaded conversation displays in the TUI.\n\nSelects GraphQL Wire_Name `replay` on `LLM`."]
+    #[doc = "Re-emit telemetry spans for the full message history, so a loaded conversation displays in the TUI.\n\nSelects GraphQL field `replay` on `LLM`."]
     pub async fn replay(&self) -> Result<super::Llm, crate::QueryError> {
         let query = self.selection.select("replay");
         let id: crate::Id = query.execute(&self.session).await?;
@@ -253,7 +253,7 @@ impl Llm {
             "LLM",
         ))
     }
-    #[doc = "Advance the conversation by a single step: send the queued prompt or tool results to the model, evaluate any tool calls it makes, and queue their results. Use loop to step until the model ends its turn.\n\nSelects GraphQL Wire_Name `step` on `LLM`."]
+    #[doc = "Advance the conversation by a single step: send the queued prompt or tool results to the model, evaluate any tool calls it makes, and queue their results. Use loop to step until the model ends its turn.\n\nSelects GraphQL field `step` on `LLM`."]
     #[must_use]
     pub fn step(&self) -> super::Llm {
         let query = self.selection.select("step");
@@ -276,7 +276,7 @@ impl Llm {
             selection: query,
         }
     }
-    #[doc = "Force evaluation of the conversation's pending operations (prompts, steps, loops) in the engine.\n\nSelects GraphQL Wire_Name `sync` on `LLM`."]
+    #[doc = "Force evaluation of the conversation's pending operations (prompts, steps, loops) in the engine.\n\nSelects GraphQL field `sync` on `LLM`."]
     pub async fn sync(&self) -> Result<super::Llm, crate::QueryError> {
         let query = self.selection.select("sync");
         let id: crate::Id = query.execute(&self.session).await?;
@@ -286,7 +286,7 @@ impl Llm {
             "LLM",
         ))
     }
-    #[doc = "The cumulative token usage, summed across every API call in the conversation.\n\nSelects GraphQL Wire_Name `tokenUsage` on `LLM`."]
+    #[doc = "The cumulative token usage, summed across every API call in the conversation.\n\nSelects GraphQL field `tokenUsage` on `LLM`."]
     #[must_use]
     pub fn token_usage(&self) -> super::LlmTokenUsage {
         let query = self.selection.select("tokenUsage");
@@ -295,17 +295,17 @@ impl Llm {
             selection: query,
         }
     }
-    #[doc = "Render documentation for the tools currently exposed to the model.\n\nSelects GraphQL Wire_Name `tools` on `LLM`."]
+    #[doc = "Render documentation for the tools currently exposed to the model.\n\nSelects GraphQL field `tools` on `LLM`."]
     pub async fn tools(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("tools");
         query.execute(&self.session).await
     }
-    #[doc = "The message history rendered as a plain-text transcript, suitable for feeding back to an LLM (e.g. for summarization).\n\nSelects GraphQL Wire_Name `transcript` on `LLM`."]
+    #[doc = "The message history rendered as a plain-text transcript, suitable for feeding back to an LLM (e.g. for summarization).\n\nSelects GraphQL field `transcript` on `LLM`."]
     pub async fn transcript(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("transcript");
         query.execute(&self.session).await
     }
-    #[doc = "Add an external MCP server to the LLM\n\nSelects GraphQL Wire_Name `withMCPServer` on `LLM`."]
+    #[doc = "Add an external MCP server to the LLM\n\nSelects GraphQL field `withMCPServer` on `LLM`."]
     #[must_use]
     pub fn with_mcp_server(
         &self,
@@ -320,7 +320,7 @@ impl Llm {
             selection: query,
         }
     }
-    #[doc = "Change the model for the rest of the conversation. The message history is preserved; the new model takes effect on the next step.\n\nSelects GraphQL Wire_Name `withModel` on `LLM`."]
+    #[doc = "Change the model for the rest of the conversation. The message history is preserved; the new model takes effect on the next step.\n\nSelects GraphQL field `withModel` on `LLM`."]
     #[must_use]
     pub fn with_model(&self, model: impl Into<String>) -> super::Llm {
         let query = self.selection.select("withModel");
@@ -345,7 +345,7 @@ impl Llm {
             selection: query,
         }
     }
-    #[doc = "Queue a user prompt, to be sent to the model on the next step or loop.\n\nSelects GraphQL Wire_Name `withPrompt` on `LLM`."]
+    #[doc = "Queue a user prompt, to be sent to the model on the next step or loop.\n\nSelects GraphQL field `withPrompt` on `LLM`."]
     #[must_use]
     pub fn with_prompt(&self, prompt: impl Into<String>) -> super::Llm {
         let query = self.selection.select("withPrompt");
@@ -355,7 +355,7 @@ impl Llm {
             selection: query,
         }
     }
-    #[doc = "Queue a file's contents as a user prompt, like withPrompt.\n\nSelects GraphQL Wire_Name `withPromptFile` on `LLM`."]
+    #[doc = "Queue a file's contents as a user prompt, like withPrompt.\n\nSelects GraphQL field `withPromptFile` on `LLM`."]
     #[must_use]
     pub fn with_prompt_file(&self, file: impl Into<crate::IdInput<super::File>>) -> super::Llm {
         let query = self.selection.select("withPromptFile");
@@ -365,7 +365,7 @@ impl Llm {
             selection: query,
         }
     }
-    #[doc = "Append an assistant response to the message history without calling the model, e.g. to reconstruct a conversation from another source.\n\nSelects GraphQL Wire_Name `withResponse` on `LLM`."]
+    #[doc = "Append an assistant response to the message history without calling the model, e.g. to reconstruct a conversation from another source.\n\nSelects GraphQL field `withResponse` on `LLM`."]
     #[must_use]
     pub fn with_response(&self, content: Vec<super::LlmContentBlockInput>) -> super::Llm {
         let query = self.selection.select("withResponse");
@@ -414,7 +414,7 @@ impl Llm {
             selection: query,
         }
     }
-    #[doc = "Add a system prompt, instructing the model across the whole conversation.\n\nSelects GraphQL Wire_Name `withSystemPrompt` on `LLM`."]
+    #[doc = "Add a system prompt, instructing the model across the whole conversation.\n\nSelects GraphQL field `withSystemPrompt` on `LLM`."]
     #[must_use]
     pub fn with_system_prompt(&self, prompt: impl Into<String>) -> super::Llm {
         let query = self.selection.select("withSystemPrompt");
@@ -424,7 +424,7 @@ impl Llm {
             selection: query,
         }
     }
-    #[doc = "Append the result of a tool call to the message history.\n\nSelects GraphQL Wire_Name `withToolResult` on `LLM`."]
+    #[doc = "Append the result of a tool call to the message history.\n\nSelects GraphQL field `withToolResult` on `LLM`."]
     #[must_use]
     pub fn with_tool_result(
         &self,
@@ -441,7 +441,7 @@ impl Llm {
             selection: query,
         }
     }
-    #[doc = "Expose an object's methods as tools. Every eligible method of the bound object becomes a tool; a tool that returns this object's own type replaces it as the new state. Repeatable to bind several objects.\n\nSelects GraphQL Wire_Name `withTools` on `LLM`."]
+    #[doc = "Expose an object's methods as tools. Every eligible method of the bound object becomes a tool; a tool that returns this object's own type replaces it as the new state. Repeatable to bind several objects.\n\nSelects GraphQL field `withTools` on `LLM`."]
     #[must_use]
     pub fn with_tools(&self, object: impl Into<crate::IdInput<super::NodeClient>>) -> super::Llm {
         let query = self.selection.select("withTools");
@@ -470,7 +470,7 @@ impl Llm {
             selection: query,
         }
     }
-    #[doc = "Bind the LLM to a workspace, exposing its modules as tools exactly as the Dagger CLI would serve them for that workspace.\n\nSelects GraphQL Wire_Name `withWorkspace` on `LLM`."]
+    #[doc = "Bind the LLM to a workspace, exposing its modules as tools exactly as the Dagger CLI would serve them for that workspace.\n\nSelects GraphQL field `withWorkspace` on `LLM`."]
     #[must_use]
     pub fn with_workspace(
         &self,
@@ -483,7 +483,7 @@ impl Llm {
             selection: query,
         }
     }
-    #[doc = "Disable the default system prompt\n\nSelects GraphQL Wire_Name `withoutDefaultSystemPrompt` on `LLM`."]
+    #[doc = "Disable the default system prompt\n\nSelects GraphQL field `withoutDefaultSystemPrompt` on `LLM`."]
     #[must_use]
     pub fn without_default_system_prompt(&self) -> super::Llm {
         let query = self.selection.select("withoutDefaultSystemPrompt");
@@ -492,7 +492,7 @@ impl Llm {
             selection: query,
         }
     }
-    #[doc = "Clear the message history, keeping only the system prompts.\n\nSelects GraphQL Wire_Name `withoutMessageHistory` on `LLM`."]
+    #[doc = "Clear the message history, keeping only the system prompts.\n\nSelects GraphQL field `withoutMessageHistory` on `LLM`."]
     #[must_use]
     pub fn without_message_history(&self) -> super::Llm {
         let query = self.selection.select("withoutMessageHistory");
@@ -501,7 +501,7 @@ impl Llm {
             selection: query,
         }
     }
-    #[doc = "Clear the user-added system prompts, keeping only the default system prompt.\n\nSelects GraphQL Wire_Name `withoutSystemPrompts` on `LLM`."]
+    #[doc = "Clear the user-added system prompts, keeping only the default system prompt.\n\nSelects GraphQL field `withoutSystemPrompts` on `LLM`."]
     #[must_use]
     pub fn without_system_prompts(&self) -> super::Llm {
         let query = self.selection.select("withoutSystemPrompts");
@@ -510,7 +510,7 @@ impl Llm {
             selection: query,
         }
     }
-    #[doc = "Return the workspace the LLM is bound to.\n\nSelects GraphQL Wire_Name `workspace` on `LLM`."]
+    #[doc = "Return the workspace the LLM is bound to.\n\nSelects GraphQL field `workspace` on `LLM`."]
     #[must_use]
     pub fn workspace(&self) -> super::Workspace {
         let query = self.selection.select("workspace");

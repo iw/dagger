@@ -10,17 +10,17 @@ pub struct Container {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ContainerAsServiceOpts {
-    #[doc = "Command to run instead of the container's default command (e.g., \\[\"go\", \"run\", \"main.go\"\\]).\n\nIf empty, the container's default command is used.\n\n`None` omits GraphQL Wire_Name `args` and preserves engine default `List(\\[\\])`."]
+    #[doc = "Command to run instead of the container's default command (e.g., \\[\"go\", \"run\", \"main.go\"\\]).\n\nIf empty, the container's default command is used.\n\n`None` omits GraphQL field `args` and preserves engine default `List(\\[\\])`."]
     pub args: Option<Vec<String>>,
-    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the args according to the current environment variables defined in the container (e.g. \"/$VAR/foo\").\n\n`None` omits GraphQL Wire_Name `expand` and preserves engine default `Boolean(false)`."]
+    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the args according to the current environment variables defined in the container (e.g. \"/$VAR/foo\").\n\n`None` omits GraphQL field `expand` and preserves engine default `Boolean(false)`."]
     pub expand: Option<bool>,
-    #[doc = "Provides Dagger access to the executed command.\n\n`None` omits GraphQL Wire_Name `experimentalPrivilegedNesting` and preserves engine default `Boolean(false)`."]
+    #[doc = "Provides Dagger access to the executed command.\n\n`None` omits GraphQL field `experimentalPrivilegedNesting` and preserves engine default `Boolean(false)`."]
     pub experimental_privileged_nesting: Option<bool>,
-    #[doc = "Execute the command with all root capabilities. This is similar to running a command with \"sudo\" or executing \"docker run\" with the \"--privileged\" flag. Containerization does not provide any security guarantees when using this option. It should only be used when absolutely necessary and only with trusted commands.\n\n`None` omits GraphQL Wire_Name `insecureRootCapabilities` and preserves engine default `Boolean(false)`."]
+    #[doc = "Execute the command with all root capabilities. This is similar to running a command with \"sudo\" or executing \"docker run\" with the \"--privileged\" flag. Containerization does not provide any security guarantees when using this option. It should only be used when absolutely necessary and only with trusted commands.\n\n`None` omits GraphQL field `insecureRootCapabilities` and preserves engine default `Boolean(false)`."]
     pub insecure_root_capabilities: Option<bool>,
-    #[doc = "If set, skip the automatic init process injected into containers by default.\n\nThis should only be used if the user requires that their exec process be the pid 1 process in the container. Otherwise it may result in unexpected behavior.\n\n`None` omits GraphQL Wire_Name `noInit` and preserves engine default `Boolean(false)`."]
+    #[doc = "If set, skip the automatic init process injected into containers by default.\n\nThis should only be used if the user requires that their exec process be the pid 1 process in the container. Otherwise it may result in unexpected behavior.\n\n`None` omits GraphQL field `noInit` and preserves engine default `Boolean(false)`."]
     pub no_init: Option<bool>,
-    #[doc = "If the container has an entrypoint, prepend it to the args.\n\n`None` omits GraphQL Wire_Name `useEntrypoint` and preserves engine default `Boolean(false)`."]
+    #[doc = "If the container has an entrypoint, prepend it to the args.\n\n`None` omits GraphQL field `useEntrypoint` and preserves engine default `Boolean(false)`."]
     pub use_entrypoint: Option<bool>,
 }
 impl ContainerAsServiceOpts {
@@ -65,11 +65,11 @@ impl ContainerAsServiceOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ContainerAsTarballOpts {
-    #[doc = "Force each layer of the image to use the specified compression algorithm.\n\nIf this is unset, then if a layer already has a compressed blob in the engine's cache, that will be used (this can result in a mix of compression algorithms for different layers). If this is unset and a layer has no compressed blob in the engine's cache, then it will be compressed using Gzip.\n\n`None` omits GraphQL Wire_Name `forcedCompression`."]
+    #[doc = "Force each layer of the image to use the specified compression algorithm.\n\nIf this is unset, then if a layer already has a compressed blob in the engine's cache, that will be used (this can result in a mix of compression algorithms for different layers). If this is unset and a layer has no compressed blob in the engine's cache, then it will be compressed using Gzip.\n\n`None` omits GraphQL field `forcedCompression`."]
     pub forced_compression: Option<super::ImageLayerCompression>,
-    #[doc = "Use the specified media types for the image's layers.\n\nDefaults to OCI, which is largely compatible with most recent container runtimes, but Docker may be needed for older runtimes without OCI support.\n\n`None` omits GraphQL Wire_Name `mediaTypes` and preserves engine default `Enum(SchemaName(\"OCIMediaTypes\"))`."]
+    #[doc = "Use the specified media types for the image's layers.\n\nDefaults to OCI, which is largely compatible with most recent container runtimes, but Docker may be needed for older runtimes without OCI support.\n\n`None` omits GraphQL field `mediaTypes` and preserves engine default `Enum(SchemaName(\"OCIMediaTypes\"))`."]
     pub media_types: Option<super::ImageMediaTypes>,
-    #[doc = "Identifiers for other platform specific containers.\n\nUsed for multi-platform images.\n\n`None` omits GraphQL Wire_Name `platformVariants` and preserves engine default `List(\\[\\])`."]
+    #[doc = "Identifiers for other platform specific containers.\n\nUsed for multi-platform images.\n\n`None` omits GraphQL field `platformVariants` and preserves engine default `List(\\[\\])`."]
     pub platform_variants: Option<Vec<crate::IdInput<super::Container>>>,
 }
 impl ContainerAsTarballOpts {
@@ -96,7 +96,7 @@ impl ContainerAsTarballOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ContainerDirectoryOpts {
-    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the value of path according to the current environment variables defined in the container (e.g. \"/$VAR/foo\").\n\n`None` omits GraphQL Wire_Name `expand` and preserves engine default `Boolean(false)`."]
+    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the value of path according to the current environment variables defined in the container (e.g. \"/$VAR/foo\").\n\n`None` omits GraphQL field `expand` and preserves engine default `Boolean(false)`."]
     pub expand: Option<bool>,
 }
 impl ContainerDirectoryOpts {
@@ -111,11 +111,11 @@ impl ContainerDirectoryOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ContainerExistsOpts {
-    #[doc = "If specified, do not follow symlinks.\n\n`None` omits GraphQL Wire_Name `doNotFollowSymlinks` and preserves engine default `Boolean(false)`."]
+    #[doc = "If specified, do not follow symlinks.\n\n`None` omits GraphQL field `doNotFollowSymlinks` and preserves engine default `Boolean(false)`."]
     pub do_not_follow_symlinks: Option<bool>,
-    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the value of path according to the current environment variables defined in the container (e.g. \"/$VAR/foo\").\n\n`None` omits GraphQL Wire_Name `expand` and preserves engine default `Boolean(false)`."]
+    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the value of path according to the current environment variables defined in the container (e.g. \"/$VAR/foo\").\n\n`None` omits GraphQL field `expand` and preserves engine default `Boolean(false)`."]
     pub expand: Option<bool>,
-    #[doc = "If specified, also validate the type of file (e.g. \"REGULAR_TYPE\", \"DIRECTORY_TYPE\", or \"SYMLINK_TYPE\").\n\n`None` omits GraphQL Wire_Name `expectedType`."]
+    #[doc = "If specified, also validate the type of file (e.g. \"REGULAR_TYPE\", \"DIRECTORY_TYPE\", or \"SYMLINK_TYPE\").\n\n`None` omits GraphQL field `expectedType`."]
     pub expected_type: Option<super::ExistsType>,
 }
 impl ContainerExistsOpts {
@@ -142,13 +142,13 @@ impl ContainerExistsOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ContainerExportOpts {
-    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the value of path according to the current environment variables defined in the container (e.g. \"/$VAR/foo\").\n\n`None` omits GraphQL Wire_Name `expand` and preserves engine default `Boolean(false)`."]
+    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the value of path according to the current environment variables defined in the container (e.g. \"/$VAR/foo\").\n\n`None` omits GraphQL field `expand` and preserves engine default `Boolean(false)`."]
     pub expand: Option<bool>,
-    #[doc = "Force each layer of the exported image to use the specified compression algorithm.\n\nIf this is unset, then if a layer already has a compressed blob in the engine's cache, that will be used (this can result in a mix of compression algorithms for different layers). If this is unset and a layer has no compressed blob in the engine's cache, then it will be compressed using Gzip.\n\n`None` omits GraphQL Wire_Name `forcedCompression`."]
+    #[doc = "Force each layer of the exported image to use the specified compression algorithm.\n\nIf this is unset, then if a layer already has a compressed blob in the engine's cache, that will be used (this can result in a mix of compression algorithms for different layers). If this is unset and a layer has no compressed blob in the engine's cache, then it will be compressed using Gzip.\n\n`None` omits GraphQL field `forcedCompression`."]
     pub forced_compression: Option<super::ImageLayerCompression>,
-    #[doc = "Use the specified media types for the exported image's layers.\n\nDefaults to OCI, which is largely compatible with most recent container runtimes, but Docker may be needed for older runtimes without OCI support.\n\n`None` omits GraphQL Wire_Name `mediaTypes` and preserves engine default `Enum(SchemaName(\"OCIMediaTypes\"))`."]
+    #[doc = "Use the specified media types for the exported image's layers.\n\nDefaults to OCI, which is largely compatible with most recent container runtimes, but Docker may be needed for older runtimes without OCI support.\n\n`None` omits GraphQL field `mediaTypes` and preserves engine default `Enum(SchemaName(\"OCIMediaTypes\"))`."]
     pub media_types: Option<super::ImageMediaTypes>,
-    #[doc = "Identifiers for other platform specific containers.\n\nUsed for multi-platform image.\n\n`None` omits GraphQL Wire_Name `platformVariants` and preserves engine default `List(\\[\\])`."]
+    #[doc = "Identifiers for other platform specific containers.\n\nUsed for multi-platform image.\n\n`None` omits GraphQL field `platformVariants` and preserves engine default `List(\\[\\])`."]
     pub platform_variants: Option<Vec<crate::IdInput<super::Container>>>,
 }
 impl ContainerExportOpts {
@@ -181,11 +181,11 @@ impl ContainerExportOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ContainerExportImageOpts {
-    #[doc = "Force each layer of the exported image to use the specified compression algorithm.\n\nIf this is unset, then if a layer already has a compressed blob in the engine's cache, that will be used (this can result in a mix of compression algorithms for different layers). If this is unset and a layer has no compressed blob in the engine's cache, then it will be compressed using Gzip.\n\n`None` omits GraphQL Wire_Name `forcedCompression`."]
+    #[doc = "Force each layer of the exported image to use the specified compression algorithm.\n\nIf this is unset, then if a layer already has a compressed blob in the engine's cache, that will be used (this can result in a mix of compression algorithms for different layers). If this is unset and a layer has no compressed blob in the engine's cache, then it will be compressed using Gzip.\n\n`None` omits GraphQL field `forcedCompression`."]
     pub forced_compression: Option<super::ImageLayerCompression>,
-    #[doc = "Use the specified media types for the exported image's layers.\n\nDefaults to OCI, which is largely compatible with most recent container runtimes, but Docker may be needed for older runtimes without OCI support.\n\n`None` omits GraphQL Wire_Name `mediaTypes` and preserves engine default `Enum(SchemaName(\"OCIMediaTypes\"))`."]
+    #[doc = "Use the specified media types for the exported image's layers.\n\nDefaults to OCI, which is largely compatible with most recent container runtimes, but Docker may be needed for older runtimes without OCI support.\n\n`None` omits GraphQL field `mediaTypes` and preserves engine default `Enum(SchemaName(\"OCIMediaTypes\"))`."]
     pub media_types: Option<super::ImageMediaTypes>,
-    #[doc = "Identifiers for other platform specific containers.\n\nUsed for multi-platform image.\n\n`None` omits GraphQL Wire_Name `platformVariants` and preserves engine default `List(\\[\\])`."]
+    #[doc = "Identifiers for other platform specific containers.\n\nUsed for multi-platform image.\n\n`None` omits GraphQL field `platformVariants` and preserves engine default `List(\\[\\])`."]
     pub platform_variants: Option<Vec<crate::IdInput<super::Container>>>,
 }
 impl ContainerExportImageOpts {
@@ -212,7 +212,7 @@ impl ContainerExportImageOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ContainerFileOpts {
-    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the value of path according to the current environment variables defined in the container (e.g. \"/$VAR/foo.txt\").\n\n`None` omits GraphQL Wire_Name `expand` and preserves engine default `Boolean(false)`."]
+    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the value of path according to the current environment variables defined in the container (e.g. \"/$VAR/foo.txt\").\n\n`None` omits GraphQL field `expand` and preserves engine default `Boolean(false)`."]
     pub expand: Option<bool>,
 }
 impl ContainerFileOpts {
@@ -227,11 +227,11 @@ impl ContainerFileOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ContainerFromOpts {
-    #[doc = "Allow HTTPS registry communication without verifying the server certificate.\n\n`None` omits GraphQL Wire_Name `insecureSkipTLSVerify` and preserves engine default `Boolean(false)`."]
+    #[doc = "Allow HTTPS registry communication without verifying the server certificate.\n\n`None` omits GraphQL field `insecureSkipTLSVerify` and preserves engine default `Boolean(false)`."]
     pub insecure_skip_tls_verify: Option<bool>,
-    #[doc = "Protocol to use for registry communication.\n\nDefaults to \"HTTPS\". Use \"HTTP\" only for plain HTTP registries.\n\n`None` omits GraphQL Wire_Name `protocol`."]
+    #[doc = "Protocol to use for registry communication.\n\nDefaults to \"HTTPS\". Use \"HTTP\" only for plain HTTP registries.\n\n`None` omits GraphQL field `protocol`."]
     pub protocol: Option<super::RegistryProtocol>,
-    #[doc = "Service to use as the registry endpoint for the image address.\n\nThe service will be started only for this pull.\n\n`None` omits GraphQL Wire_Name `registryService`."]
+    #[doc = "Service to use as the registry endpoint for the image address.\n\nThe service will be started only for this pull.\n\n`None` omits GraphQL field `registryService`."]
     pub registry_service: Option<crate::IdInput<super::Service>>,
 }
 impl ContainerFromOpts {
@@ -258,7 +258,7 @@ impl ContainerFromOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ContainerImportOpts {
-    #[doc = "Identifies the tag to import from the archive, if the archive bundles multiple tags.\n\n`None` omits GraphQL Wire_Name `tag` and preserves engine default `String(\"\")`."]
+    #[doc = "Identifies the tag to import from the archive, if the archive bundles multiple tags.\n\n`None` omits GraphQL field `tag` and preserves engine default `String(\"\")`."]
     pub tag: Option<String>,
 }
 impl ContainerImportOpts {
@@ -273,9 +273,9 @@ impl ContainerImportOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ContainerLayerOpts {
-    #[doc = "Force each layer of the image to use the specified compression algorithm.\n\nIf this is unset, then if a layer already has a compressed blob in the engine's cache, that will be used (this can result in a mix of compression algorithms for different layers). If this is unset and a layer has no compressed blob in the engine's cache, then it will be compressed using Gzip.\n\n`None` omits GraphQL Wire_Name `forcedCompression`."]
+    #[doc = "Force each layer of the image to use the specified compression algorithm.\n\nIf this is unset, then if a layer already has a compressed blob in the engine's cache, that will be used (this can result in a mix of compression algorithms for different layers). If this is unset and a layer has no compressed blob in the engine's cache, then it will be compressed using Gzip.\n\n`None` omits GraphQL field `forcedCompression`."]
     pub forced_compression: Option<super::ImageLayerCompression>,
-    #[doc = "Media types to use for image layers. Defaults to OCI.\n\n`None` omits GraphQL Wire_Name `mediaTypes` and preserves engine default `Enum(SchemaName(\"OCIMediaTypes\"))`."]
+    #[doc = "Media types to use for image layers. Defaults to OCI.\n\n`None` omits GraphQL field `mediaTypes` and preserves engine default `Enum(SchemaName(\"OCIMediaTypes\"))`."]
     pub media_types: Option<super::ImageMediaTypes>,
 }
 impl ContainerLayerOpts {
@@ -296,9 +296,9 @@ impl ContainerLayerOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ContainerManifestOpts {
-    #[doc = "Force each layer of the image to use the specified compression algorithm.\n\nIf this is unset, then if a layer already has a compressed blob in the engine's cache, that will be used (this can result in a mix of compression algorithms for different layers). If this is unset and a layer has no compressed blob in the engine's cache, then it will be compressed using Gzip.\n\n`None` omits GraphQL Wire_Name `forcedCompression`."]
+    #[doc = "Force each layer of the image to use the specified compression algorithm.\n\nIf this is unset, then if a layer already has a compressed blob in the engine's cache, that will be used (this can result in a mix of compression algorithms for different layers). If this is unset and a layer has no compressed blob in the engine's cache, then it will be compressed using Gzip.\n\n`None` omits GraphQL field `forcedCompression`."]
     pub forced_compression: Option<super::ImageLayerCompression>,
-    #[doc = "Media types to use for image layers. Defaults to OCI.\n\n`None` omits GraphQL Wire_Name `mediaTypes` and preserves engine default `Enum(SchemaName(\"OCIMediaTypes\"))`."]
+    #[doc = "Media types to use for image layers. Defaults to OCI.\n\n`None` omits GraphQL field `mediaTypes` and preserves engine default `Enum(SchemaName(\"OCIMediaTypes\"))`."]
     pub media_types: Option<super::ImageMediaTypes>,
 }
 impl ContainerManifestOpts {
@@ -319,17 +319,17 @@ impl ContainerManifestOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ContainerPublishOpts {
-    #[doc = "Force each layer of the published image to use the specified compression algorithm.\n\nIf this is unset, then if a layer already has a compressed blob in the engine's cache, that will be used (this can result in a mix of compression algorithms for different layers). If this is unset and a layer has no compressed blob in the engine's cache, then it will be compressed using Gzip.\n\n`None` omits GraphQL Wire_Name `forcedCompression`."]
+    #[doc = "Force each layer of the published image to use the specified compression algorithm.\n\nIf this is unset, then if a layer already has a compressed blob in the engine's cache, that will be used (this can result in a mix of compression algorithms for different layers). If this is unset and a layer has no compressed blob in the engine's cache, then it will be compressed using Gzip.\n\n`None` omits GraphQL field `forcedCompression`."]
     pub forced_compression: Option<super::ImageLayerCompression>,
-    #[doc = "Allow HTTPS registry communication without verifying the server certificate.\n\n`None` omits GraphQL Wire_Name `insecureSkipTLSVerify` and preserves engine default `Boolean(false)`."]
+    #[doc = "Allow HTTPS registry communication without verifying the server certificate.\n\n`None` omits GraphQL field `insecureSkipTLSVerify` and preserves engine default `Boolean(false)`."]
     pub insecure_skip_tls_verify: Option<bool>,
-    #[doc = "Use the specified media types for the published image's layers.\n\nDefaults to \"OCI\", which is compatible with most recent registries, but \"Docker\" may be needed for older registries without OCI support.\n\n`None` omits GraphQL Wire_Name `mediaTypes` and preserves engine default `Enum(SchemaName(\"OCIMediaTypes\"))`."]
+    #[doc = "Use the specified media types for the published image's layers.\n\nDefaults to \"OCI\", which is compatible with most recent registries, but \"Docker\" may be needed for older registries without OCI support.\n\n`None` omits GraphQL field `mediaTypes` and preserves engine default `Enum(SchemaName(\"OCIMediaTypes\"))`."]
     pub media_types: Option<super::ImageMediaTypes>,
-    #[doc = "Identifiers for other platform specific containers.\n\nUsed for multi-platform image.\n\n`None` omits GraphQL Wire_Name `platformVariants` and preserves engine default `List(\\[\\])`."]
+    #[doc = "Identifiers for other platform specific containers.\n\nUsed for multi-platform image.\n\n`None` omits GraphQL field `platformVariants` and preserves engine default `List(\\[\\])`."]
     pub platform_variants: Option<Vec<crate::IdInput<super::Container>>>,
-    #[doc = "Protocol to use for registry communication.\n\nDefaults to \"HTTPS\". Use \"HTTP\" only for plain HTTP registries.\n\n`None` omits GraphQL Wire_Name `protocol`."]
+    #[doc = "Protocol to use for registry communication.\n\nDefaults to \"HTTPS\". Use \"HTTP\" only for plain HTTP registries.\n\n`None` omits GraphQL field `protocol`."]
     pub protocol: Option<super::RegistryProtocol>,
-    #[doc = "Service to use as the registry endpoint for the image address.\n\nThe service will be started only for this push.\n\n`None` omits GraphQL Wire_Name `registryService`."]
+    #[doc = "Service to use as the registry endpoint for the image address.\n\nThe service will be started only for this push.\n\n`None` omits GraphQL field `registryService`."]
     pub registry_service: Option<crate::IdInput<super::Service>>,
 }
 impl ContainerPublishOpts {
@@ -374,7 +374,7 @@ impl ContainerPublishOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ContainerStatOpts {
-    #[doc = "If specified, do not follow symlinks.\n\n`None` omits GraphQL Wire_Name `doNotFollowSymlinks` and preserves engine default `Boolean(false)`."]
+    #[doc = "If specified, do not follow symlinks.\n\n`None` omits GraphQL field `doNotFollowSymlinks` and preserves engine default `Boolean(false)`."]
     pub do_not_follow_symlinks: Option<bool>,
 }
 impl ContainerStatOpts {
@@ -389,11 +389,11 @@ impl ContainerStatOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ContainerTerminalOpts {
-    #[doc = "If set, override the container's default terminal command and invoke these command arguments instead.\n\n`None` omits GraphQL Wire_Name `cmd` and preserves engine default `List(\\[\\])`."]
+    #[doc = "If set, override the container's default terminal command and invoke these command arguments instead.\n\n`None` omits GraphQL field `cmd` and preserves engine default `List(\\[\\])`."]
     pub cmd: Option<Vec<String>>,
-    #[doc = "Provides Dagger access to the executed command.\n\n`None` omits GraphQL Wire_Name `experimentalPrivilegedNesting` and preserves engine default `Boolean(false)`."]
+    #[doc = "Provides Dagger access to the executed command.\n\n`None` omits GraphQL field `experimentalPrivilegedNesting` and preserves engine default `Boolean(false)`."]
     pub experimental_privileged_nesting: Option<bool>,
-    #[doc = "Execute the command with all root capabilities. This is similar to running a command with \"sudo\" or executing \"docker run\" with the \"--privileged\" flag. Containerization does not provide any security guarantees when using this option. It should only be used when absolutely necessary and only with trusted commands.\n\n`None` omits GraphQL Wire_Name `insecureRootCapabilities` and preserves engine default `Boolean(false)`."]
+    #[doc = "Execute the command with all root capabilities. This is similar to running a command with \"sudo\" or executing \"docker run\" with the \"--privileged\" flag. Containerization does not provide any security guarantees when using this option. It should only be used when absolutely necessary and only with trusted commands.\n\n`None` omits GraphQL field `insecureRootCapabilities` and preserves engine default `Boolean(false)`."]
     pub insecure_root_capabilities: Option<bool>,
 }
 impl ContainerTerminalOpts {
@@ -420,21 +420,21 @@ impl ContainerTerminalOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ContainerUpOpts {
-    #[doc = "Command to run instead of the container's default command (e.g., \\[\"go\", \"run\", \"main.go\"\\]).\n\nIf empty, the container's default command is used.\n\n`None` omits GraphQL Wire_Name `args` and preserves engine default `List(\\[\\])`."]
+    #[doc = "Command to run instead of the container's default command (e.g., \\[\"go\", \"run\", \"main.go\"\\]).\n\nIf empty, the container's default command is used.\n\n`None` omits GraphQL field `args` and preserves engine default `List(\\[\\])`."]
     pub args: Option<Vec<String>>,
-    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the args according to the current environment variables defined in the container (e.g. \"/$VAR/foo\").\n\n`None` omits GraphQL Wire_Name `expand` and preserves engine default `Boolean(false)`."]
+    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the args according to the current environment variables defined in the container (e.g. \"/$VAR/foo\").\n\n`None` omits GraphQL field `expand` and preserves engine default `Boolean(false)`."]
     pub expand: Option<bool>,
-    #[doc = "Provides Dagger access to the executed command.\n\n`None` omits GraphQL Wire_Name `experimentalPrivilegedNesting` and preserves engine default `Boolean(false)`."]
+    #[doc = "Provides Dagger access to the executed command.\n\n`None` omits GraphQL field `experimentalPrivilegedNesting` and preserves engine default `Boolean(false)`."]
     pub experimental_privileged_nesting: Option<bool>,
-    #[doc = "Execute the command with all root capabilities. This is similar to running a command with \"sudo\" or executing \"docker run\" with the \"--privileged\" flag. Containerization does not provide any security guarantees when using this option. It should only be used when absolutely necessary and only with trusted commands.\n\n`None` omits GraphQL Wire_Name `insecureRootCapabilities` and preserves engine default `Boolean(false)`."]
+    #[doc = "Execute the command with all root capabilities. This is similar to running a command with \"sudo\" or executing \"docker run\" with the \"--privileged\" flag. Containerization does not provide any security guarantees when using this option. It should only be used when absolutely necessary and only with trusted commands.\n\n`None` omits GraphQL field `insecureRootCapabilities` and preserves engine default `Boolean(false)`."]
     pub insecure_root_capabilities: Option<bool>,
-    #[doc = "If set, skip the automatic init process injected into containers by default.\n\nThis should only be used if the user requires that their exec process be the pid 1 process in the container. Otherwise it may result in unexpected behavior.\n\n`None` omits GraphQL Wire_Name `noInit` and preserves engine default `Boolean(false)`."]
+    #[doc = "If set, skip the automatic init process injected into containers by default.\n\nThis should only be used if the user requires that their exec process be the pid 1 process in the container. Otherwise it may result in unexpected behavior.\n\n`None` omits GraphQL field `noInit` and preserves engine default `Boolean(false)`."]
     pub no_init: Option<bool>,
-    #[doc = "List of frontend/backend port mappings to forward.\n\nFrontend is the port accepting traffic on the host, backend is the service port.\n\n`None` omits GraphQL Wire_Name `ports` and preserves engine default `List(\\[\\])`."]
+    #[doc = "List of frontend/backend port mappings to forward.\n\nFrontend is the port accepting traffic on the host, backend is the service port.\n\n`None` omits GraphQL field `ports` and preserves engine default `List(\\[\\])`."]
     pub ports: Option<Vec<super::PortForward>>,
-    #[doc = "Bind each tunnel port to a random port on the host.\n\n`None` omits GraphQL Wire_Name `random` and preserves engine default `Boolean(false)`."]
+    #[doc = "Bind each tunnel port to a random port on the host.\n\n`None` omits GraphQL field `random` and preserves engine default `Boolean(false)`."]
     pub random: Option<bool>,
-    #[doc = "If the container has an entrypoint, prepend it to the args.\n\n`None` omits GraphQL Wire_Name `useEntrypoint` and preserves engine default `Boolean(false)`."]
+    #[doc = "If the container has an entrypoint, prepend it to the args.\n\n`None` omits GraphQL field `useEntrypoint` and preserves engine default `Boolean(false)`."]
     pub use_entrypoint: Option<bool>,
 }
 impl ContainerUpOpts {
@@ -491,9 +491,9 @@ impl ContainerUpOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ContainerWithDefaultTerminalCmdOpts {
-    #[doc = "Provides Dagger access to the executed command.\n\n`None` omits GraphQL Wire_Name `experimentalPrivilegedNesting` and preserves engine default `Boolean(false)`."]
+    #[doc = "Provides Dagger access to the executed command.\n\n`None` omits GraphQL field `experimentalPrivilegedNesting` and preserves engine default `Boolean(false)`."]
     pub experimental_privileged_nesting: Option<bool>,
-    #[doc = "Execute the command with all root capabilities. This is similar to running a command with \"sudo\" or executing \"docker run\" with the \"--privileged\" flag. Containerization does not provide any security guarantees when using this option. It should only be used when absolutely necessary and only with trusted commands.\n\n`None` omits GraphQL Wire_Name `insecureRootCapabilities` and preserves engine default `Boolean(false)`."]
+    #[doc = "Execute the command with all root capabilities. This is similar to running a command with \"sudo\" or executing \"docker run\" with the \"--privileged\" flag. Containerization does not provide any security guarantees when using this option. It should only be used when absolutely necessary and only with trusted commands.\n\n`None` omits GraphQL field `insecureRootCapabilities` and preserves engine default `Boolean(false)`."]
     pub insecure_root_capabilities: Option<bool>,
 }
 impl ContainerWithDefaultTerminalCmdOpts {
@@ -514,19 +514,19 @@ impl ContainerWithDefaultTerminalCmdOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ContainerWithDirectoryOpts {
-    #[doc = "Patterns to exclude in the written directory (e.g. \\[\"node_modules/**\", \".gitignore\", \".git/\"\\]).\n\n`None` omits GraphQL Wire_Name `exclude` and preserves engine default `List(\\[\\])`."]
+    #[doc = "Patterns to exclude in the written directory (e.g. \\[\"node_modules/**\", \".gitignore\", \".git/\"\\]).\n\n`None` omits GraphQL field `exclude` and preserves engine default `List(\\[\\])`."]
     pub exclude: Option<Vec<String>>,
-    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the value of path according to the current environment variables defined in the container (e.g. \"/$VAR/foo\").\n\n`None` omits GraphQL Wire_Name `expand` and preserves engine default `Boolean(false)`."]
+    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the value of path according to the current environment variables defined in the container (e.g. \"/$VAR/foo\").\n\n`None` omits GraphQL field `expand` and preserves engine default `Boolean(false)`."]
     pub expand: Option<bool>,
-    #[doc = "Apply .gitignore rules when writing the directory.\n\n`None` omits GraphQL Wire_Name `gitignore` and preserves engine default `Boolean(false)`."]
+    #[doc = "Apply .gitignore rules when writing the directory.\n\n`None` omits GraphQL field `gitignore` and preserves engine default `Boolean(false)`."]
     pub gitignore: Option<bool>,
-    #[doc = "Patterns to include in the written directory (e.g. \\[\"*.go\", \"go.mod\", \"go.sum\"\\]).\n\n`None` omits GraphQL Wire_Name `include` and preserves engine default `List(\\[\\])`."]
+    #[doc = "Patterns to include in the written directory (e.g. \\[\"*.go\", \"go.mod\", \"go.sum\"\\]).\n\n`None` omits GraphQL field `include` and preserves engine default `List(\\[\\])`."]
     pub include: Option<Vec<String>>,
-    #[doc = "Set the owner to the container's current user.\n\n`None` omits GraphQL Wire_Name `inheritOwner` and preserves engine default `Boolean(false)`."]
+    #[doc = "Set the owner to the container's current user.\n\n`None` omits GraphQL field `inheritOwner` and preserves engine default `Boolean(false)`."]
     pub inherit_owner: Option<bool>,
-    #[doc = "A user:group to set for the directory and its contents.\n\nThe user and group can either be an ID (1000:1000) or a name (foo:bar).\n\nIf the group is omitted, it defaults to the same as the user.\n\n`None` omits GraphQL Wire_Name `owner` and preserves engine default `String(\"\")`."]
+    #[doc = "A user:group to set for the directory and its contents.\n\nThe user and group can either be an ID (1000:1000) or a name (foo:bar).\n\nIf the group is omitted, it defaults to the same as the user.\n\n`None` omits GraphQL field `owner` and preserves engine default `String(\"\")`."]
     pub owner: Option<String>,
-    #[doc = "`None` omits GraphQL Wire_Name `permissions`."]
+    #[doc = "`None` omits GraphQL field `permissions`."]
     pub permissions: Option<i64>,
 }
 impl ContainerWithDirectoryOpts {
@@ -577,17 +577,17 @@ impl ContainerWithDirectoryOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ContainerWithDockerHealthcheckOpts {
-    #[doc = "Interval between running healthcheck. Example: \"30s\"\n\n`None` omits GraphQL Wire_Name `interval`."]
+    #[doc = "Interval between running healthcheck. Example: \"30s\"\n\n`None` omits GraphQL field `interval`."]
     pub interval: Option<String>,
-    #[doc = "The maximum number of consecutive failures before the container is marked as unhealthy. Example: \"3\"\n\n`None` omits GraphQL Wire_Name `retries`."]
+    #[doc = "The maximum number of consecutive failures before the container is marked as unhealthy. Example: \"3\"\n\n`None` omits GraphQL field `retries`."]
     pub retries: Option<i64>,
-    #[doc = "When true, command must be a single element, which is run using the container's shell\n\n`None` omits GraphQL Wire_Name `shell`."]
+    #[doc = "When true, command must be a single element, which is run using the container's shell\n\n`None` omits GraphQL field `shell`."]
     pub shell: Option<bool>,
-    #[doc = "StartInterval configures the duration between checks during the startup phase. Example: \"5s\"\n\n`None` omits GraphQL Wire_Name `startInterval`."]
+    #[doc = "StartInterval configures the duration between checks during the startup phase. Example: \"5s\"\n\n`None` omits GraphQL field `startInterval`."]
     pub start_interval: Option<String>,
-    #[doc = "StartPeriod allows for failures during this initial startup period which do not count towards maximum number of retries. Example: \"0s\"\n\n`None` omits GraphQL Wire_Name `startPeriod`."]
+    #[doc = "StartPeriod allows for failures during this initial startup period which do not count towards maximum number of retries. Example: \"0s\"\n\n`None` omits GraphQL field `startPeriod`."]
     pub start_period: Option<String>,
-    #[doc = "Healthcheck timeout. Example: \"3s\"\n\n`None` omits GraphQL Wire_Name `timeout`."]
+    #[doc = "Healthcheck timeout. Example: \"3s\"\n\n`None` omits GraphQL field `timeout`."]
     pub timeout: Option<String>,
 }
 impl ContainerWithDockerHealthcheckOpts {
@@ -632,7 +632,7 @@ impl ContainerWithDockerHealthcheckOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ContainerWithEntrypointOpts {
-    #[doc = "Don't reset the default arguments when setting the entrypoint. By default it is reset, since entrypoint and default args are often tightly coupled.\n\n`None` omits GraphQL Wire_Name `keepDefaultArgs` and preserves engine default `Boolean(false)`."]
+    #[doc = "Don't reset the default arguments when setting the entrypoint. By default it is reset, since entrypoint and default args are often tightly coupled.\n\n`None` omits GraphQL field `keepDefaultArgs` and preserves engine default `Boolean(false)`."]
     pub keep_default_args: Option<bool>,
 }
 impl ContainerWithEntrypointOpts {
@@ -647,7 +647,7 @@ impl ContainerWithEntrypointOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ContainerWithEnvVariableOpts {
-    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the value according to the current environment variables defined in the container (e.g. \"/opt/bin:$PATH\").\n\n`None` omits GraphQL Wire_Name `expand` and preserves engine default `Boolean(false)`."]
+    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the value according to the current environment variables defined in the container (e.g. \"/opt/bin:$PATH\").\n\n`None` omits GraphQL field `expand` and preserves engine default `Boolean(false)`."]
     pub expand: Option<bool>,
 }
 impl ContainerWithEnvVariableOpts {
@@ -662,25 +662,25 @@ impl ContainerWithEnvVariableOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ContainerWithExecOpts {
-    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the args according to the current environment variables defined in the container (e.g. \"/$VAR/foo\").\n\n`None` omits GraphQL Wire_Name `expand` and preserves engine default `Boolean(false)`."]
+    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the args according to the current environment variables defined in the container (e.g. \"/$VAR/foo\").\n\n`None` omits GraphQL field `expand` and preserves engine default `Boolean(false)`."]
     pub expand: Option<bool>,
-    #[doc = "Exit codes this command is allowed to exit with without error\n\n`None` omits GraphQL Wire_Name `expect` and preserves engine default `Enum(SchemaName(\"SUCCESS\"))`."]
+    #[doc = "Exit codes this command is allowed to exit with without error\n\n`None` omits GraphQL field `expect` and preserves engine default `Enum(SchemaName(\"SUCCESS\"))`."]
     pub expect: Option<super::ReturnType>,
-    #[doc = "Provides Dagger access to the executed command.\n\n`None` omits GraphQL Wire_Name `experimentalPrivilegedNesting` and preserves engine default `Boolean(false)`."]
+    #[doc = "Provides Dagger access to the executed command.\n\n`None` omits GraphQL field `experimentalPrivilegedNesting` and preserves engine default `Boolean(false)`."]
     pub experimental_privileged_nesting: Option<bool>,
-    #[doc = "Execute the command with all root capabilities. Like --privileged in Docker\n\nDANGER: this grants the command full access to the host system. Only use when 1) you trust the command being executed and 2) you specifically need this level of access.\n\n`None` omits GraphQL Wire_Name `insecureRootCapabilities` and preserves engine default `Boolean(false)`."]
+    #[doc = "Execute the command with all root capabilities. Like --privileged in Docker\n\nDANGER: this grants the command full access to the host system. Only use when 1) you trust the command being executed and 2) you specifically need this level of access.\n\n`None` omits GraphQL field `insecureRootCapabilities` and preserves engine default `Boolean(false)`."]
     pub insecure_root_capabilities: Option<bool>,
-    #[doc = "Skip the automatic init process injected into containers by default.\n\nOnly use this if you specifically need the command to be pid 1 in the container. Otherwise it may result in unexpected behavior. If you're not sure, you don't need this.\n\n`None` omits GraphQL Wire_Name `noInit` and preserves engine default `Boolean(false)`."]
+    #[doc = "Skip the automatic init process injected into containers by default.\n\nOnly use this if you specifically need the command to be pid 1 in the container. Otherwise it may result in unexpected behavior. If you're not sure, you don't need this.\n\n`None` omits GraphQL field `noInit` and preserves engine default `Boolean(false)`."]
     pub no_init: Option<bool>,
-    #[doc = "Redirect the command's standard error to a file in the container. Example: \"./stderr.txt\"\n\n`None` omits GraphQL Wire_Name `redirectStderr` and preserves engine default `String(\"\")`."]
+    #[doc = "Redirect the command's standard error to a file in the container. Example: \"./stderr.txt\"\n\n`None` omits GraphQL field `redirectStderr` and preserves engine default `String(\"\")`."]
     pub redirect_stderr: Option<String>,
-    #[doc = "Redirect the command's standard input from a file in the container. Example: \"./stdin.txt\"\n\n`None` omits GraphQL Wire_Name `redirectStdin` and preserves engine default `String(\"\")`."]
+    #[doc = "Redirect the command's standard input from a file in the container. Example: \"./stdin.txt\"\n\n`None` omits GraphQL field `redirectStdin` and preserves engine default `String(\"\")`."]
     pub redirect_stdin: Option<String>,
-    #[doc = "Redirect the command's standard output to a file in the container. Example: \"./stdout.txt\"\n\n`None` omits GraphQL Wire_Name `redirectStdout` and preserves engine default `String(\"\")`."]
+    #[doc = "Redirect the command's standard output to a file in the container. Example: \"./stdout.txt\"\n\n`None` omits GraphQL field `redirectStdout` and preserves engine default `String(\"\")`."]
     pub redirect_stdout: Option<String>,
-    #[doc = "Content to write to the command's standard input. Example: \"Hello world\")\n\n`None` omits GraphQL Wire_Name `stdin` and preserves engine default `String(\"\")`."]
+    #[doc = "Content to write to the command's standard input. Example: \"Hello world\")\n\n`None` omits GraphQL field `stdin` and preserves engine default `String(\"\")`."]
     pub stdin: Option<String>,
-    #[doc = "Apply the OCI entrypoint, if present, by prepending it to the args. Ignored by default.\n\n`None` omits GraphQL Wire_Name `useEntrypoint` and preserves engine default `Boolean(false)`."]
+    #[doc = "Apply the OCI entrypoint, if present, by prepending it to the args. Ignored by default.\n\n`None` omits GraphQL field `useEntrypoint` and preserves engine default `Boolean(false)`."]
     pub use_entrypoint: Option<bool>,
 }
 impl ContainerWithExecOpts {
@@ -749,11 +749,11 @@ impl ContainerWithExecOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ContainerWithExposedPortOpts {
-    #[doc = "Port description. Example: \"payment API endpoint\"\n\n`None` omits GraphQL Wire_Name `description`."]
+    #[doc = "Port description. Example: \"payment API endpoint\"\n\n`None` omits GraphQL field `description`."]
     pub description: Option<String>,
-    #[doc = "Skip the health check when run as a service.\n\n`None` omits GraphQL Wire_Name `experimentalSkipHealthcheck` and preserves engine default `Boolean(false)`."]
+    #[doc = "Skip the health check when run as a service.\n\n`None` omits GraphQL field `experimentalSkipHealthcheck` and preserves engine default `Boolean(false)`."]
     pub experimental_skip_healthcheck: Option<bool>,
-    #[doc = "Network protocol. Example: \"tcp\"\n\n`None` omits GraphQL Wire_Name `protocol` and preserves engine default `Enum(SchemaName(\"TCP\"))`."]
+    #[doc = "Network protocol. Example: \"tcp\"\n\n`None` omits GraphQL field `protocol` and preserves engine default `Enum(SchemaName(\"TCP\"))`."]
     pub protocol: Option<super::NetworkProtocol>,
 }
 impl ContainerWithExposedPortOpts {
@@ -780,13 +780,13 @@ impl ContainerWithExposedPortOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ContainerWithFileOpts {
-    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the value of path according to the current environment variables defined in the container (e.g. \"/$VAR/foo.txt\").\n\n`None` omits GraphQL Wire_Name `expand` and preserves engine default `Boolean(false)`."]
+    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the value of path according to the current environment variables defined in the container (e.g. \"/$VAR/foo.txt\").\n\n`None` omits GraphQL field `expand` and preserves engine default `Boolean(false)`."]
     pub expand: Option<bool>,
-    #[doc = "Set the owner to the container's current user.\n\n`None` omits GraphQL Wire_Name `inheritOwner` and preserves engine default `Boolean(false)`."]
+    #[doc = "Set the owner to the container's current user.\n\n`None` omits GraphQL field `inheritOwner` and preserves engine default `Boolean(false)`."]
     pub inherit_owner: Option<bool>,
-    #[doc = "A user:group to set for the file.\n\nThe user and group can either be an ID (1000:1000) or a name (foo:bar).\n\nIf the group is omitted, it defaults to the same as the user.\n\n`None` omits GraphQL Wire_Name `owner` and preserves engine default `String(\"\")`."]
+    #[doc = "A user:group to set for the file.\n\nThe user and group can either be an ID (1000:1000) or a name (foo:bar).\n\nIf the group is omitted, it defaults to the same as the user.\n\n`None` omits GraphQL field `owner` and preserves engine default `String(\"\")`."]
     pub owner: Option<String>,
-    #[doc = "Permissions of the new file. Example: 0600\n\n`None` omits GraphQL Wire_Name `permissions`."]
+    #[doc = "Permissions of the new file. Example: 0600\n\n`None` omits GraphQL field `permissions`."]
     pub permissions: Option<i64>,
 }
 impl ContainerWithFileOpts {
@@ -819,13 +819,13 @@ impl ContainerWithFileOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ContainerWithFilesOpts {
-    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the value of path according to the current environment variables defined in the container (e.g. \"/$VAR/foo.txt\").\n\n`None` omits GraphQL Wire_Name `expand` and preserves engine default `Boolean(false)`."]
+    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the value of path according to the current environment variables defined in the container (e.g. \"/$VAR/foo.txt\").\n\n`None` omits GraphQL field `expand` and preserves engine default `Boolean(false)`."]
     pub expand: Option<bool>,
-    #[doc = "Set the owner to the container's current user.\n\n`None` omits GraphQL Wire_Name `inheritOwner` and preserves engine default `Boolean(false)`."]
+    #[doc = "Set the owner to the container's current user.\n\n`None` omits GraphQL field `inheritOwner` and preserves engine default `Boolean(false)`."]
     pub inherit_owner: Option<bool>,
-    #[doc = "A user:group to set for the files.\n\nThe user and group can either be an ID (1000:1000) or a name (foo:bar).\n\nIf the group is omitted, it defaults to the same as the user.\n\n`None` omits GraphQL Wire_Name `owner` and preserves engine default `String(\"\")`."]
+    #[doc = "A user:group to set for the files.\n\nThe user and group can either be an ID (1000:1000) or a name (foo:bar).\n\nIf the group is omitted, it defaults to the same as the user.\n\n`None` omits GraphQL field `owner` and preserves engine default `String(\"\")`."]
     pub owner: Option<String>,
-    #[doc = "Permission given to the copied files (e.g., 0600).\n\n`None` omits GraphQL Wire_Name `permissions`."]
+    #[doc = "Permission given to the copied files (e.g., 0600).\n\n`None` omits GraphQL field `permissions`."]
     pub permissions: Option<i64>,
 }
 impl ContainerWithFilesOpts {
@@ -858,15 +858,15 @@ impl ContainerWithFilesOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ContainerWithMountedCacheOpts {
-    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the value of path according to the current environment variables defined in the container (e.g. \"/$VAR/foo\").\n\n`None` omits GraphQL Wire_Name `expand` and preserves engine default `Boolean(false)`."]
+    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the value of path according to the current environment variables defined in the container (e.g. \"/$VAR/foo\").\n\n`None` omits GraphQL field `expand` and preserves engine default `Boolean(false)`."]
     pub expand: Option<bool>,
-    #[doc = "Set the owner to the container's current user.\n\n`None` omits GraphQL Wire_Name `inheritOwner` and preserves engine default `Boolean(false)`."]
+    #[doc = "Set the owner to the container's current user.\n\n`None` omits GraphQL field `inheritOwner` and preserves engine default `Boolean(false)`."]
     pub inherit_owner: Option<bool>,
-    #[doc = "A user:group to set for the mounted cache directory.\n\nNote that this changes the ownership of the specified mount along with the initial filesystem provided by source (if any). It does not have any effect if/when the cache has already been created.\n\nThe user and group can either be an ID (1000:1000) or a name (foo:bar).\n\nIf the group is omitted, it defaults to the same as the user.\n\n`None` omits GraphQL Wire_Name `owner` and preserves engine default `String(\"\")`."]
+    #[doc = "A user:group to set for the mounted cache directory.\n\nNote that this changes the ownership of the specified mount along with the initial filesystem provided by source (if any). It does not have any effect if/when the cache has already been created.\n\nThe user and group can either be an ID (1000:1000) or a name (foo:bar).\n\nIf the group is omitted, it defaults to the same as the user.\n\n`None` omits GraphQL field `owner` and preserves engine default `String(\"\")`."]
     pub owner: Option<String>,
-    #[doc = "Sharing mode of the cache volume.\n\n`None` omits GraphQL Wire_Name `sharing` and preserves engine default `Enum(SchemaName(\"SHARED\"))`."]
+    #[doc = "Sharing mode of the cache volume.\n\n`None` omits GraphQL field `sharing` and preserves engine default `Enum(SchemaName(\"SHARED\"))`."]
     pub sharing: Option<super::CacheSharingMode>,
-    #[doc = "Identifier of the directory to use as the cache volume's root.\n\n`None` omits GraphQL Wire_Name `source`."]
+    #[doc = "Identifier of the directory to use as the cache volume's root.\n\n`None` omits GraphQL field `source`."]
     pub source: Option<crate::IdInput<super::Directory>>,
 }
 impl ContainerWithMountedCacheOpts {
@@ -905,13 +905,13 @@ impl ContainerWithMountedCacheOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ContainerWithMountedDirectoryOpts {
-    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the value of path according to the current environment variables defined in the container (e.g. \"/$VAR/foo\").\n\n`None` omits GraphQL Wire_Name `expand` and preserves engine default `Boolean(false)`."]
+    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the value of path according to the current environment variables defined in the container (e.g. \"/$VAR/foo\").\n\n`None` omits GraphQL field `expand` and preserves engine default `Boolean(false)`."]
     pub expand: Option<bool>,
-    #[doc = "Set the owner to the container's current user.\n\n`None` omits GraphQL Wire_Name `inheritOwner` and preserves engine default `Boolean(false)`."]
+    #[doc = "Set the owner to the container's current user.\n\n`None` omits GraphQL field `inheritOwner` and preserves engine default `Boolean(false)`."]
     pub inherit_owner: Option<bool>,
-    #[doc = "A user:group to set for the mounted directory and its contents.\n\nThe user and group can either be an ID (1000:1000) or a name (foo:bar).\n\nIf the group is omitted, it defaults to the same as the user.\n\n`None` omits GraphQL Wire_Name `owner` and preserves engine default `String(\"\")`."]
+    #[doc = "A user:group to set for the mounted directory and its contents.\n\nThe user and group can either be an ID (1000:1000) or a name (foo:bar).\n\nIf the group is omitted, it defaults to the same as the user.\n\n`None` omits GraphQL field `owner` and preserves engine default `String(\"\")`."]
     pub owner: Option<String>,
-    #[doc = "Mount the directory read-only.\n\n`None` omits GraphQL Wire_Name `readOnly` and preserves engine default `Boolean(false)`."]
+    #[doc = "Mount the directory read-only.\n\n`None` omits GraphQL field `readOnly` and preserves engine default `Boolean(false)`."]
     pub read_only: Option<bool>,
 }
 impl ContainerWithMountedDirectoryOpts {
@@ -944,11 +944,11 @@ impl ContainerWithMountedDirectoryOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ContainerWithMountedFileOpts {
-    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the value of path according to the current environment variables defined in the container (e.g. \"/$VAR/foo.txt\").\n\n`None` omits GraphQL Wire_Name `expand` and preserves engine default `Boolean(false)`."]
+    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the value of path according to the current environment variables defined in the container (e.g. \"/$VAR/foo.txt\").\n\n`None` omits GraphQL field `expand` and preserves engine default `Boolean(false)`."]
     pub expand: Option<bool>,
-    #[doc = "Set the owner to the container's current user.\n\n`None` omits GraphQL Wire_Name `inheritOwner` and preserves engine default `Boolean(false)`."]
+    #[doc = "Set the owner to the container's current user.\n\n`None` omits GraphQL field `inheritOwner` and preserves engine default `Boolean(false)`."]
     pub inherit_owner: Option<bool>,
-    #[doc = "A user or user:group to set for the mounted file.\n\nThe user and group can either be an ID (1000:1000) or a name (foo:bar).\n\nIf the group is omitted, it defaults to the same as the user.\n\n`None` omits GraphQL Wire_Name `owner` and preserves engine default `String(\"\")`."]
+    #[doc = "A user or user:group to set for the mounted file.\n\nThe user and group can either be an ID (1000:1000) or a name (foo:bar).\n\nIf the group is omitted, it defaults to the same as the user.\n\n`None` omits GraphQL field `owner` and preserves engine default `String(\"\")`."]
     pub owner: Option<String>,
 }
 impl ContainerWithMountedFileOpts {
@@ -975,13 +975,13 @@ impl ContainerWithMountedFileOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ContainerWithMountedSecretOpts {
-    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the value of path according to the current environment variables defined in the container (e.g. \"/$VAR/foo\").\n\n`None` omits GraphQL Wire_Name `expand` and preserves engine default `Boolean(false)`."]
+    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the value of path according to the current environment variables defined in the container (e.g. \"/$VAR/foo\").\n\n`None` omits GraphQL field `expand` and preserves engine default `Boolean(false)`."]
     pub expand: Option<bool>,
-    #[doc = "Set the owner to the container's current user.\n\n`None` omits GraphQL Wire_Name `inheritOwner` and preserves engine default `Boolean(false)`."]
+    #[doc = "Set the owner to the container's current user.\n\n`None` omits GraphQL field `inheritOwner` and preserves engine default `Boolean(false)`."]
     pub inherit_owner: Option<bool>,
-    #[doc = "Permission given to the mounted secret (e.g., 0600).\n\nThis option requires an owner to be set to be active.\n\n`None` omits GraphQL Wire_Name `mode` and preserves engine default `Int(256)`."]
+    #[doc = "Permission given to the mounted secret (e.g., 0600).\n\nThis option requires an owner to be set to be active.\n\n`None` omits GraphQL field `mode` and preserves engine default `Int(256)`."]
     pub mode: Option<i64>,
-    #[doc = "A user:group to set for the mounted secret.\n\nThe user and group can either be an ID (1000:1000) or a name (foo:bar).\n\nIf the group is omitted, it defaults to the same as the user.\n\n`None` omits GraphQL Wire_Name `owner` and preserves engine default `String(\"\")`."]
+    #[doc = "A user:group to set for the mounted secret.\n\nThe user and group can either be an ID (1000:1000) or a name (foo:bar).\n\nIf the group is omitted, it defaults to the same as the user.\n\n`None` omits GraphQL field `owner` and preserves engine default `String(\"\")`."]
     pub owner: Option<String>,
 }
 impl ContainerWithMountedSecretOpts {
@@ -1014,9 +1014,9 @@ impl ContainerWithMountedSecretOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ContainerWithMountedTempOpts {
-    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the value of path according to the current environment variables defined in the container (e.g. \"/$VAR/foo\").\n\n`None` omits GraphQL Wire_Name `expand` and preserves engine default `Boolean(false)`."]
+    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the value of path according to the current environment variables defined in the container (e.g. \"/$VAR/foo\").\n\n`None` omits GraphQL field `expand` and preserves engine default `Boolean(false)`."]
     pub expand: Option<bool>,
-    #[doc = "Size of the temporary directory in bytes.\n\n`None` omits GraphQL Wire_Name `size`."]
+    #[doc = "Size of the temporary directory in bytes.\n\n`None` omits GraphQL field `size`."]
     pub size: Option<i64>,
 }
 impl ContainerWithMountedTempOpts {
@@ -1037,9 +1037,9 @@ impl ContainerWithMountedTempOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ContainerWithMountedVolumeOpts {
-    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the value of path according to the current environment variables defined in the container (e.g. \"/$VAR/foo\").\n\n`None` omits GraphQL Wire_Name `expand` and preserves engine default `Boolean(false)`."]
+    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the value of path according to the current environment variables defined in the container (e.g. \"/$VAR/foo\").\n\n`None` omits GraphQL field `expand` and preserves engine default `Boolean(false)`."]
     pub expand: Option<bool>,
-    #[doc = "Mount the volume read-only.\n\n`None` omits GraphQL Wire_Name `readOnly` and preserves engine default `Boolean(false)`."]
+    #[doc = "Mount the volume read-only.\n\n`None` omits GraphQL field `readOnly` and preserves engine default `Boolean(false)`."]
     pub read_only: Option<bool>,
 }
 impl ContainerWithMountedVolumeOpts {
@@ -1060,13 +1060,13 @@ impl ContainerWithMountedVolumeOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ContainerWithNewFileOpts {
-    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the value of path according to the current environment variables defined in the container (e.g. \"/$VAR/foo.txt\").\n\n`None` omits GraphQL Wire_Name `expand` and preserves engine default `Boolean(false)`."]
+    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the value of path according to the current environment variables defined in the container (e.g. \"/$VAR/foo.txt\").\n\n`None` omits GraphQL field `expand` and preserves engine default `Boolean(false)`."]
     pub expand: Option<bool>,
-    #[doc = "Set the owner to the container's current user.\n\n`None` omits GraphQL Wire_Name `inheritOwner` and preserves engine default `Boolean(false)`."]
+    #[doc = "Set the owner to the container's current user.\n\n`None` omits GraphQL field `inheritOwner` and preserves engine default `Boolean(false)`."]
     pub inherit_owner: Option<bool>,
-    #[doc = "A user:group to set for the file.\n\nThe user and group can either be an ID (1000:1000) or a name (foo:bar).\n\nIf the group is omitted, it defaults to the same as the user.\n\n`None` omits GraphQL Wire_Name `owner` and preserves engine default `String(\"\")`."]
+    #[doc = "A user:group to set for the file.\n\nThe user and group can either be an ID (1000:1000) or a name (foo:bar).\n\nIf the group is omitted, it defaults to the same as the user.\n\n`None` omits GraphQL field `owner` and preserves engine default `String(\"\")`."]
     pub owner: Option<String>,
-    #[doc = "Permissions of the new file. Example: 0600\n\n`None` omits GraphQL Wire_Name `permissions` and preserves engine default `Int(420)`."]
+    #[doc = "Permissions of the new file. Example: 0600\n\n`None` omits GraphQL field `permissions` and preserves engine default `Int(420)`."]
     pub permissions: Option<i64>,
 }
 impl ContainerWithNewFileOpts {
@@ -1099,7 +1099,7 @@ impl ContainerWithNewFileOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ContainerWithSymlinkOpts {
-    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the value of path according to the current environment variables defined in the container (e.g. \"/$VAR/foo.txt\").\n\n`None` omits GraphQL Wire_Name `expand` and preserves engine default `Boolean(false)`."]
+    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the value of path according to the current environment variables defined in the container (e.g. \"/$VAR/foo.txt\").\n\n`None` omits GraphQL field `expand` and preserves engine default `Boolean(false)`."]
     pub expand: Option<bool>,
 }
 impl ContainerWithSymlinkOpts {
@@ -1114,11 +1114,11 @@ impl ContainerWithSymlinkOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ContainerWithUnixSocketOpts {
-    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the value of path according to the current environment variables defined in the container (e.g. \"/$VAR/foo\").\n\n`None` omits GraphQL Wire_Name `expand` and preserves engine default `Boolean(false)`."]
+    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the value of path according to the current environment variables defined in the container (e.g. \"/$VAR/foo\").\n\n`None` omits GraphQL field `expand` and preserves engine default `Boolean(false)`."]
     pub expand: Option<bool>,
-    #[doc = "Set the owner to the container's current user.\n\n`None` omits GraphQL Wire_Name `inheritOwner` and preserves engine default `Boolean(false)`."]
+    #[doc = "Set the owner to the container's current user.\n\n`None` omits GraphQL field `inheritOwner` and preserves engine default `Boolean(false)`."]
     pub inherit_owner: Option<bool>,
-    #[doc = "A user:group to set for the mounted socket.\n\nThe user and group can either be an ID (1000:1000) or a name (foo:bar).\n\nIf the group is omitted, it defaults to the same as the user.\n\n`None` omits GraphQL Wire_Name `owner` and preserves engine default `String(\"\")`."]
+    #[doc = "A user:group to set for the mounted socket.\n\nThe user and group can either be an ID (1000:1000) or a name (foo:bar).\n\nIf the group is omitted, it defaults to the same as the user.\n\n`None` omits GraphQL field `owner` and preserves engine default `String(\"\")`."]
     pub owner: Option<String>,
 }
 impl ContainerWithUnixSocketOpts {
@@ -1145,7 +1145,7 @@ impl ContainerWithUnixSocketOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ContainerWithWorkdirOpts {
-    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the value of path according to the current environment variables defined in the container (e.g. \"/$VAR/foo\").\n\n`None` omits GraphQL Wire_Name `expand` and preserves engine default `Boolean(false)`."]
+    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the value of path according to the current environment variables defined in the container (e.g. \"/$VAR/foo\").\n\n`None` omits GraphQL field `expand` and preserves engine default `Boolean(false)`."]
     pub expand: Option<bool>,
 }
 impl ContainerWithWorkdirOpts {
@@ -1160,7 +1160,7 @@ impl ContainerWithWorkdirOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ContainerWithoutDirectoryOpts {
-    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the value of path according to the current environment variables defined in the container (e.g. \"/$VAR/foo\").\n\n`None` omits GraphQL Wire_Name `expand` and preserves engine default `Boolean(false)`."]
+    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the value of path according to the current environment variables defined in the container (e.g. \"/$VAR/foo\").\n\n`None` omits GraphQL field `expand` and preserves engine default `Boolean(false)`."]
     pub expand: Option<bool>,
 }
 impl ContainerWithoutDirectoryOpts {
@@ -1175,7 +1175,7 @@ impl ContainerWithoutDirectoryOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ContainerWithoutEntrypointOpts {
-    #[doc = "Don't remove the default arguments when unsetting the entrypoint.\n\n`None` omits GraphQL Wire_Name `keepDefaultArgs` and preserves engine default `Boolean(false)`."]
+    #[doc = "Don't remove the default arguments when unsetting the entrypoint.\n\n`None` omits GraphQL field `keepDefaultArgs` and preserves engine default `Boolean(false)`."]
     pub keep_default_args: Option<bool>,
 }
 impl ContainerWithoutEntrypointOpts {
@@ -1190,7 +1190,7 @@ impl ContainerWithoutEntrypointOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ContainerWithoutExposedPortOpts {
-    #[doc = "Port protocol to unexpose\n\n`None` omits GraphQL Wire_Name `protocol` and preserves engine default `Enum(SchemaName(\"TCP\"))`."]
+    #[doc = "Port protocol to unexpose\n\n`None` omits GraphQL field `protocol` and preserves engine default `Enum(SchemaName(\"TCP\"))`."]
     pub protocol: Option<super::NetworkProtocol>,
 }
 impl ContainerWithoutExposedPortOpts {
@@ -1205,7 +1205,7 @@ impl ContainerWithoutExposedPortOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ContainerWithoutFileOpts {
-    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the value of path according to the current environment variables defined in the container (e.g. \"/$VAR/foo.txt\").\n\n`None` omits GraphQL Wire_Name `expand` and preserves engine default `Boolean(false)`."]
+    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the value of path according to the current environment variables defined in the container (e.g. \"/$VAR/foo.txt\").\n\n`None` omits GraphQL field `expand` and preserves engine default `Boolean(false)`."]
     pub expand: Option<bool>,
 }
 impl ContainerWithoutFileOpts {
@@ -1220,7 +1220,7 @@ impl ContainerWithoutFileOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ContainerWithoutFilesOpts {
-    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the value of paths according to the current environment variables defined in the container (e.g. \"/$VAR/foo.txt\").\n\n`None` omits GraphQL Wire_Name `expand` and preserves engine default `Boolean(false)`."]
+    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the value of paths according to the current environment variables defined in the container (e.g. \"/$VAR/foo.txt\").\n\n`None` omits GraphQL field `expand` and preserves engine default `Boolean(false)`."]
     pub expand: Option<bool>,
 }
 impl ContainerWithoutFilesOpts {
@@ -1235,7 +1235,7 @@ impl ContainerWithoutFilesOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ContainerWithoutMountOpts {
-    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the value of path according to the current environment variables defined in the container (e.g. \"/$VAR/foo\").\n\n`None` omits GraphQL Wire_Name `expand` and preserves engine default `Boolean(false)`."]
+    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the value of path according to the current environment variables defined in the container (e.g. \"/$VAR/foo\").\n\n`None` omits GraphQL field `expand` and preserves engine default `Boolean(false)`."]
     pub expand: Option<bool>,
 }
 impl ContainerWithoutMountOpts {
@@ -1250,7 +1250,7 @@ impl ContainerWithoutMountOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ContainerWithoutUnixSocketOpts {
-    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the value of path according to the current environment variables defined in the container (e.g. \"/$VAR/foo\").\n\n`None` omits GraphQL Wire_Name `expand` and preserves engine default `Boolean(false)`."]
+    #[doc = "Replace \"${VAR}\" or \"$VAR\" in the value of path according to the current environment variables defined in the container (e.g. \"/$VAR/foo\").\n\n`None` omits GraphQL field `expand` and preserves engine default `Boolean(false)`."]
     pub expand: Option<bool>,
 }
 impl ContainerWithoutUnixSocketOpts {
@@ -1302,7 +1302,7 @@ impl From<Container> for crate::IdInput<super::SyncerClient> {
     }
 }
 impl Container {
-    #[doc = "Turn the container into a Service.\n\nBe sure to set any exposed ports before this conversion.\n\nSelects GraphQL Wire_Name `asService` on `Container`."]
+    #[doc = "Turn the container into a Service.\n\nBe sure to set any exposed ports before this conversion.\n\nSelects GraphQL field `asService` on `Container`."]
     #[must_use]
     pub fn as_service(&self) -> super::Service {
         let query = self.selection.select("asService");
@@ -1350,7 +1350,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Package the container state as an OCI image, and return it as a tar archive\n\nSelects GraphQL Wire_Name `asTarball` on `Container`."]
+    #[doc = "Package the container state as an OCI image, and return it as a tar archive\n\nSelects GraphQL field `asTarball` on `Container`."]
     #[must_use]
     pub fn as_tarball(&self) -> super::File {
         let query = self.selection.select("asTarball");
@@ -1383,17 +1383,17 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "The combined buffered standard output and standard error stream of the last executed command\n\nReturns an error if no command was executed\n\nSelects GraphQL Wire_Name `combinedOutput` on `Container`."]
+    #[doc = "The combined buffered standard output and standard error stream of the last executed command\n\nReturns an error if no command was executed\n\nSelects GraphQL field `combinedOutput` on `Container`."]
     pub async fn combined_output(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("combinedOutput");
         query.execute(&self.session).await
     }
-    #[doc = "Return the container's default arguments.\n\nSelects GraphQL Wire_Name `defaultArgs` on `Container`."]
+    #[doc = "Return the container's default arguments.\n\nSelects GraphQL field `defaultArgs` on `Container`."]
     pub async fn default_args(&self) -> Result<Vec<String>, crate::QueryError> {
         let query = self.selection.select("defaultArgs");
         query.execute(&self.session).await
     }
-    #[doc = "Retrieve a directory from the container's root filesystem\n\nMounts are included.\n\nSelects GraphQL Wire_Name `directory` on `Container`."]
+    #[doc = "Retrieve a directory from the container's root filesystem\n\nMounts are included.\n\nSelects GraphQL field `directory` on `Container`."]
     #[must_use]
     pub fn directory(&self, path: impl Into<String>) -> super::Directory {
         let query = self.selection.select("directory");
@@ -1422,7 +1422,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Retrieves this container's configured docker healthcheck.\n\nSelects GraphQL Wire_Name `dockerHealthcheck` on `Container`."]
+    #[doc = "Retrieves this container's configured docker healthcheck.\n\nSelects GraphQL field `dockerHealthcheck` on `Container`."]
     pub async fn docker_healthcheck(
         &self,
     ) -> Result<Option<super::HealthcheckConfig>, crate::QueryError> {
@@ -1435,12 +1435,12 @@ impl Container {
             )
             .await
     }
-    #[doc = "Return the container's OCI entrypoint.\n\nSelects GraphQL Wire_Name `entrypoint` on `Container`."]
+    #[doc = "Return the container's OCI entrypoint.\n\nSelects GraphQL field `entrypoint` on `Container`."]
     pub async fn entrypoint(&self) -> Result<Vec<String>, crate::QueryError> {
         let query = self.selection.select("entrypoint");
         query.execute(&self.session).await
     }
-    #[doc = "Retrieves the value of the specified persistent environment variable.\n\nSelects GraphQL Wire_Name `envVariable` on `Container`."]
+    #[doc = "Retrieves the value of the specified persistent environment variable.\n\nSelects GraphQL field `envVariable` on `Container`."]
     pub async fn env_variable(
         &self,
         name: impl Into<String>,
@@ -1449,7 +1449,7 @@ impl Container {
         let query = query.arg("name", name.into());
         query.execute(&self.session).await
     }
-    #[doc = "Retrieves the list of persistent environment variables configured on the container.\n\nSelects GraphQL Wire_Name `envVariables` on `Container`."]
+    #[doc = "Retrieves the list of persistent environment variables configured on the container.\n\nSelects GraphQL field `envVariables` on `Container`."]
     pub async fn env_variables(&self) -> Result<Vec<super::EnvVariable>, crate::QueryError> {
         let query = self.selection.select("envVariables");
         let query = query.select("id");
@@ -1457,7 +1457,7 @@ impl Container {
             .execute_reentry::<super::EnvVariable, Vec<crate::Id>>(&self.session, "EnvVariable")
             .await
     }
-    #[doc = "check if a file or directory exists\n\nSelects GraphQL Wire_Name `exists` on `Container`."]
+    #[doc = "check if a file or directory exists\n\nSelects GraphQL field `exists` on `Container`."]
     pub async fn exists(&self, path: impl Into<String>) -> Result<bool, crate::QueryError> {
         let query = self.selection.select("exists");
         let query = query.arg("path", path.into());
@@ -1488,12 +1488,12 @@ impl Container {
         let query = query.arg("path", path.into());
         query.execute(&self.session).await
     }
-    #[doc = "The exit code of the last executed command\n\nReturns an error if no command was executed\n\nSelects GraphQL Wire_Name `exitCode` on `Container`."]
+    #[doc = "The exit code of the last executed command\n\nReturns an error if no command was executed\n\nSelects GraphQL field `exitCode` on `Container`."]
     pub async fn exit_code(&self) -> Result<i64, crate::QueryError> {
         let query = self.selection.select("exitCode");
         query.execute(&self.session).await
     }
-    #[doc = "EXPERIMENTAL API! Subject to change/removal at any time.\n\nConfigures all available GPUs on the host to be accessible to this container.\n\nThis currently works for Nvidia devices only.\n\nSelects GraphQL Wire_Name `experimentalWithAllGPUs` on `Container`."]
+    #[doc = "EXPERIMENTAL API! Subject to change/removal at any time.\n\nConfigures all available GPUs on the host to be accessible to this container.\n\nThis currently works for Nvidia devices only.\n\nSelects GraphQL field `experimentalWithAllGPUs` on `Container`."]
     #[must_use]
     pub fn experimental_with_all_gp_us(&self) -> super::Container {
         let query = self.selection.select("experimentalWithAllGPUs");
@@ -1502,7 +1502,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "EXPERIMENTAL API! Subject to change/removal at any time.\n\nConfigures the provided list of devices to be accessible to this container.\n\nThis currently works for Nvidia devices only.\n\nSelects GraphQL Wire_Name `experimentalWithGPU` on `Container`."]
+    #[doc = "EXPERIMENTAL API! Subject to change/removal at any time.\n\nConfigures the provided list of devices to be accessible to this container.\n\nThis currently works for Nvidia devices only.\n\nSelects GraphQL field `experimentalWithGPU` on `Container`."]
     #[must_use]
     pub fn experimental_with_gpu(&self, devices: Vec<impl Into<String>>) -> super::Container {
         let query = self.selection.select("experimentalWithGPU");
@@ -1513,7 +1513,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Writes the container as an OCI tarball to the destination file path on the host.\n\nIt can also export platform variants.\n\nSelects GraphQL Wire_Name `export` on `Container`."]
+    #[doc = "Writes the container as an OCI tarball to the destination file path on the host.\n\nIt can also export platform variants.\n\nSelects GraphQL field `export` on `Container`."]
     pub async fn export(&self, path: impl Into<String>) -> Result<String, crate::QueryError> {
         let query = self.selection.select("export");
         let query = query.arg("path", path.into());
@@ -1549,7 +1549,7 @@ impl Container {
         };
         query.execute(&self.session).await
     }
-    #[doc = "Exports the container as an image to the host's container image store.\n\nSelects GraphQL Wire_Name `exportImage` on `Container`."]
+    #[doc = "Exports the container as an image to the host's container image store.\n\nSelects GraphQL field `exportImage` on `Container`."]
     pub async fn export_image(&self, name: impl Into<String>) -> Result<(), crate::QueryError> {
         let query = self.selection.select("exportImage");
         let query = query.arg("name", name.into());
@@ -1580,7 +1580,7 @@ impl Container {
         };
         query.execute(&self.session).await
     }
-    #[doc = "Retrieves the list of exposed ports.\n\nThis includes ports already exposed by the image, even if not explicitly added with dagger.\n\nSelects GraphQL Wire_Name `exposedPorts` on `Container`."]
+    #[doc = "Retrieves the list of exposed ports.\n\nThis includes ports already exposed by the image, even if not explicitly added with dagger.\n\nSelects GraphQL field `exposedPorts` on `Container`."]
     pub async fn exposed_ports(&self) -> Result<Vec<super::Port>, crate::QueryError> {
         let query = self.selection.select("exposedPorts");
         let query = query.select("id");
@@ -1588,7 +1588,7 @@ impl Container {
             .execute_reentry::<super::Port, Vec<crate::Id>>(&self.session, "Port")
             .await
     }
-    #[doc = "Retrieves a file at the given path.\n\nMounts are included.\n\nSelects GraphQL Wire_Name `file` on `Container`."]
+    #[doc = "Retrieves a file at the given path.\n\nMounts are included.\n\nSelects GraphQL field `file` on `Container`."]
     #[must_use]
     pub fn file(&self, path: impl Into<String>) -> super::File {
         let query = self.selection.select("file");
@@ -1613,7 +1613,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Download a container image, and apply it to the container state. All previous state will be lost.\n\nSelects GraphQL Wire_Name `from` on `Container`."]
+    #[doc = "Download a container image, and apply it to the container state. All previous state will be lost.\n\nSelects GraphQL field `from` on `Container`."]
     #[must_use]
     pub fn from(&self, address: impl Into<String>) -> super::Container {
         let query = self.selection.select("from");
@@ -1652,17 +1652,17 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "A unique identifier for this Container.\n\nSelects GraphQL Wire_Name `id` on `Container`."]
+    #[doc = "A unique identifier for this Container.\n\nSelects GraphQL field `id` on `Container`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "The unique image reference which can only be retrieved immediately after the 'Container.From' call.\n\nSelects GraphQL Wire_Name `imageRef` on `Container`."]
+    #[doc = "The unique image reference which can only be retrieved immediately after the 'Container.From' call.\n\nSelects GraphQL field `imageRef` on `Container`."]
     pub async fn image_ref(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("imageRef");
         query.execute(&self.session).await
     }
-    #[doc = "Reads the container from an OCI tarball.\n\nSelects GraphQL Wire_Name `import` on `Container`."]
+    #[doc = "Reads the container from an OCI tarball.\n\nSelects GraphQL field `import` on `Container`."]
     #[must_use]
     pub fn import(&self, source: impl Into<crate::IdInput<super::File>>) -> super::Container {
         let query = self.selection.select("import");
@@ -1691,7 +1691,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Retrieves the value of the specified label.\n\nSelects GraphQL Wire_Name `label` on `Container`."]
+    #[doc = "Retrieves the value of the specified label.\n\nSelects GraphQL field `label` on `Container`."]
     pub async fn label(
         &self,
         name: impl Into<String>,
@@ -1700,7 +1700,7 @@ impl Container {
         let query = query.arg("name", name.into());
         query.execute(&self.session).await
     }
-    #[doc = "Retrieves the list of labels passed to container.\n\nSelects GraphQL Wire_Name `labels` on `Container`."]
+    #[doc = "Retrieves the list of labels passed to container.\n\nSelects GraphQL field `labels` on `Container`."]
     pub async fn labels(&self) -> Result<Vec<super::Label>, crate::QueryError> {
         let query = self.selection.select("labels");
         let query = query.select("id");
@@ -1708,7 +1708,7 @@ impl Container {
             .execute_reentry::<super::Label, Vec<crate::Id>>(&self.session, "Label")
             .await
     }
-    #[doc = "Returns the image layer or configuration blob with the given digest as a File.\n\nSelects GraphQL Wire_Name `layer` on `Container`."]
+    #[doc = "Returns the image layer or configuration blob with the given digest as a File.\n\nSelects GraphQL field `layer` on `Container`."]
     #[must_use]
     pub fn layer(&self, id: impl Into<String>) -> super::File {
         let query = self.selection.select("layer");
@@ -1738,7 +1738,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Computes and returns the manifest for this container as a File.\n\nSelects GraphQL Wire_Name `manifest` on `Container`."]
+    #[doc = "Computes and returns the manifest for this container as a File.\n\nSelects GraphQL field `manifest` on `Container`."]
     #[must_use]
     pub fn manifest(&self) -> super::File {
         let query = self.selection.select("manifest");
@@ -1766,17 +1766,17 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Retrieves the list of paths where a directory is mounted.\n\nSelects GraphQL Wire_Name `mounts` on `Container`."]
+    #[doc = "Retrieves the list of paths where a directory is mounted.\n\nSelects GraphQL field `mounts` on `Container`."]
     pub async fn mounts(&self) -> Result<Vec<String>, crate::QueryError> {
         let query = self.selection.select("mounts");
         query.execute(&self.session).await
     }
-    #[doc = "The platform this container executes and publishes as.\n\nSelects GraphQL Wire_Name `platform` on `Container`."]
+    #[doc = "The platform this container executes and publishes as.\n\nSelects GraphQL field `platform` on `Container`."]
     pub async fn platform(&self) -> Result<crate::Platform, crate::QueryError> {
         let query = self.selection.select("platform");
         query.execute(&self.session).await
     }
-    #[doc = "Package the container state as an OCI image, and publish it to a registry\n\nReturns the fully qualified address of the published image, with digest\n\nSelects GraphQL Wire_Name `publish` on `Container`."]
+    #[doc = "Package the container state as an OCI image, and publish it to a registry\n\nReturns the fully qualified address of the published image, with digest\n\nSelects GraphQL field `publish` on `Container`."]
     pub async fn publish(&self, address: impl Into<String>) -> Result<String, crate::QueryError> {
         let query = self.selection.select("publish");
         let query = query.arg("address", address.into());
@@ -1822,7 +1822,7 @@ impl Container {
         };
         query.execute(&self.session).await
     }
-    #[doc = "Return a snapshot of the container's root filesystem. The snapshot can be modified then written back using withRootfs. Use that method for filesystem modifications.\n\nSelects GraphQL Wire_Name `rootfs` on `Container`."]
+    #[doc = "Return a snapshot of the container's root filesystem. The snapshot can be modified then written back using withRootfs. Use that method for filesystem modifications.\n\nSelects GraphQL field `rootfs` on `Container`."]
     #[must_use]
     pub fn rootfs(&self) -> super::Directory {
         let query = self.selection.select("rootfs");
@@ -1831,7 +1831,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Return file status\n\nSelects GraphQL Wire_Name `stat` on `Container`."]
+    #[doc = "Return file status\n\nSelects GraphQL field `stat` on `Container`."]
     pub async fn stat(
         &self,
         path: impl Into<String>,
@@ -1861,17 +1861,17 @@ impl Container {
             .execute_reentry::<super::Stat, Option<crate::Id>>(&self.session, "Stat")
             .await
     }
-    #[doc = "The buffered standard error stream of the last executed command\n\nReturns an error if no command was executed\n\nSelects GraphQL Wire_Name `stderr` on `Container`."]
+    #[doc = "The buffered standard error stream of the last executed command\n\nReturns an error if no command was executed\n\nSelects GraphQL field `stderr` on `Container`."]
     pub async fn stderr(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("stderr");
         query.execute(&self.session).await
     }
-    #[doc = "The buffered standard output stream of the last executed command\n\nReturns an error if no command was executed\n\nSelects GraphQL Wire_Name `stdout` on `Container`."]
+    #[doc = "The buffered standard output stream of the last executed command\n\nReturns an error if no command was executed\n\nSelects GraphQL field `stdout` on `Container`."]
     pub async fn stdout(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("stdout");
         query.execute(&self.session).await
     }
-    #[doc = "Forces evaluation of the pipeline in the engine.\n\nIt doesn't run the default command if no exec has been set.\n\nSelects GraphQL Wire_Name `sync` on `Container`."]
+    #[doc = "Forces evaluation of the pipeline in the engine.\n\nIt doesn't run the default command if no exec has been set.\n\nSelects GraphQL field `sync` on `Container`."]
     pub async fn sync(&self) -> Result<super::Container, crate::QueryError> {
         let query = self.selection.select("sync");
         let id: crate::Id = query.execute(&self.session).await?;
@@ -1881,7 +1881,7 @@ impl Container {
             "Container",
         ))
     }
-    #[doc = "Opens an interactive terminal for this container using its configured default terminal command if not overridden by args (or sh as a fallback default).\n\nSelects GraphQL Wire_Name `terminal` on `Container`."]
+    #[doc = "Opens an interactive terminal for this container using its configured default terminal command if not overridden by args (or sh as a fallback default).\n\nSelects GraphQL field `terminal` on `Container`."]
     #[must_use]
     pub fn terminal(&self) -> super::Container {
         let query = self.selection.select("terminal");
@@ -1914,7 +1914,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Starts a Service and creates a tunnel that forwards traffic from the caller's network to that service.\n\nBe sure to set any exposed ports before calling this api.\n\nSelects GraphQL Wire_Name `up` on `Container`."]
+    #[doc = "Starts a Service and creates a tunnel that forwards traffic from the caller's network to that service.\n\nBe sure to set any exposed ports before calling this api.\n\nSelects GraphQL field `up` on `Container`."]
     pub async fn up(&self) -> Result<(), crate::QueryError> {
         let query = self.selection.select("up");
         query.execute(&self.session).await
@@ -1964,12 +1964,12 @@ impl Container {
         };
         query.execute(&self.session).await
     }
-    #[doc = "Retrieves the user to be set for all commands.\n\nSelects GraphQL Wire_Name `user` on `Container`."]
+    #[doc = "Retrieves the user to be set for all commands.\n\nSelects GraphQL field `user` on `Container`."]
     pub async fn user(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("user");
         query.execute(&self.session).await
     }
-    #[doc = "Retrieves this container plus the given OCI annotation.\n\nSelects GraphQL Wire_Name `withAnnotation` on `Container`."]
+    #[doc = "Retrieves this container plus the given OCI annotation.\n\nSelects GraphQL field `withAnnotation` on `Container`."]
     #[must_use]
     pub fn with_annotation(
         &self,
@@ -1984,7 +1984,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Configures default arguments for future commands. Like CMD in Dockerfile.\n\nSelects GraphQL Wire_Name `withDefaultArgs` on `Container`."]
+    #[doc = "Configures default arguments for future commands. Like CMD in Dockerfile.\n\nSelects GraphQL field `withDefaultArgs` on `Container`."]
     #[must_use]
     pub fn with_default_args(&self, args: Vec<impl Into<String>>) -> super::Container {
         let query = self.selection.select("withDefaultArgs");
@@ -1995,7 +1995,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Set the default command to invoke for the container's terminal API.\n\nSelects GraphQL Wire_Name `withDefaultTerminalCmd` on `Container`."]
+    #[doc = "Set the default command to invoke for the container's terminal API.\n\nSelects GraphQL field `withDefaultTerminalCmd` on `Container`."]
     #[must_use]
     pub fn with_default_terminal_cmd(&self, args: Vec<impl Into<String>>) -> super::Container {
         let query = self.selection.select("withDefaultTerminalCmd");
@@ -2031,7 +2031,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Return a new container snapshot, with a directory added to its filesystem\n\nSelects GraphQL Wire_Name `withDirectory` on `Container`."]
+    #[doc = "Return a new container snapshot, with a directory added to its filesystem\n\nSelects GraphQL field `withDirectory` on `Container`."]
     #[must_use]
     pub fn with_directory(
         &self,
@@ -2097,7 +2097,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Retrieves this container with the specificed docker healtcheck command set.\n\nSelects GraphQL Wire_Name `withDockerHealthcheck` on `Container`."]
+    #[doc = "Retrieves this container with the specificed docker healtcheck command set.\n\nSelects GraphQL field `withDockerHealthcheck` on `Container`."]
     #[must_use]
     pub fn with_docker_healthcheck(&self, args: Vec<impl Into<String>>) -> super::Container {
         let query = self.selection.select("withDockerHealthcheck");
@@ -2153,7 +2153,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Set an OCI-style entrypoint. It will be included in the container's OCI configuration. Note, withExec ignores the entrypoint by default.\n\nSelects GraphQL Wire_Name `withEntrypoint` on `Container`."]
+    #[doc = "Set an OCI-style entrypoint. It will be included in the container's OCI configuration. Note, withExec ignores the entrypoint by default.\n\nSelects GraphQL field `withEntrypoint` on `Container`."]
     #[must_use]
     pub fn with_entrypoint(&self, args: Vec<impl Into<String>>) -> super::Container {
         let query = self.selection.select("withEntrypoint");
@@ -2184,7 +2184,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Export environment variables from an env-file to the container.\n\nSelects GraphQL Wire_Name `withEnvFileVariables` on `Container`."]
+    #[doc = "Export environment variables from an env-file to the container.\n\nSelects GraphQL field `withEnvFileVariables` on `Container`."]
     #[must_use]
     pub fn with_env_file_variables(
         &self,
@@ -2197,7 +2197,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Set a new environment variable in the container.\n\nSelects GraphQL Wire_Name `withEnvVariable` on `Container`."]
+    #[doc = "Set a new environment variable in the container.\n\nSelects GraphQL field `withEnvVariable` on `Container`."]
     #[must_use]
     pub fn with_env_variable(
         &self,
@@ -2233,7 +2233,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Raise an error.\n\nSelects GraphQL Wire_Name `withError` on `Container`."]
+    #[doc = "Raise an error.\n\nSelects GraphQL field `withError` on `Container`."]
     #[must_use]
     pub fn with_error(&self, err: impl Into<String>) -> super::Container {
         let query = self.selection.select("withError");
@@ -2243,7 +2243,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Execute a command in the container, and return a new snapshot of the container state after execution.\n\nSelects GraphQL Wire_Name `withExec` on `Container`."]
+    #[doc = "Execute a command in the container, and return a new snapshot of the container state after execution.\n\nSelects GraphQL field `withExec` on `Container`."]
     #[must_use]
     pub fn with_exec(&self, args: Vec<impl Into<String>>) -> super::Container {
         let query = self.selection.select("withExec");
@@ -2319,7 +2319,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Expose a network port. Like EXPOSE in Dockerfile (but with healthcheck support)\n\nExposed ports serve two purposes:\n\n- For health checks and introspection, when running services\n\n- For setting the EXPOSE OCI field when publishing the container\n\nSelects GraphQL Wire_Name `withExposedPort` on `Container`."]
+    #[doc = "Expose a network port. Like EXPOSE in Dockerfile (but with healthcheck support)\n\nExposed ports serve two purposes:\n\n- For health checks and introspection, when running services\n\n- For setting the EXPOSE OCI field when publishing the container\n\nSelects GraphQL field `withExposedPort` on `Container`."]
     #[must_use]
     pub fn with_exposed_port(&self, port: i64) -> super::Container {
         let query = self.selection.select("withExposedPort");
@@ -2358,7 +2358,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Return a container snapshot with a file added\n\nSelects GraphQL Wire_Name `withFile` on `Container`."]
+    #[doc = "Return a container snapshot with a file added\n\nSelects GraphQL field `withFile` on `Container`."]
     #[must_use]
     pub fn with_file(
         &self,
@@ -2409,7 +2409,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Retrieves this container plus the contents of the given files copied to the given path.\n\nSelects GraphQL Wire_Name `withFiles` on `Container`."]
+    #[doc = "Retrieves this container plus the contents of the given files copied to the given path.\n\nSelects GraphQL field `withFiles` on `Container`."]
     #[must_use]
     pub fn with_files(
         &self,
@@ -2460,7 +2460,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Retrieves this container plus the given label.\n\nSelects GraphQL Wire_Name `withLabel` on `Container`."]
+    #[doc = "Retrieves this container plus the given label.\n\nSelects GraphQL field `withLabel` on `Container`."]
     #[must_use]
     pub fn with_label(
         &self,
@@ -2475,7 +2475,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Retrieves this container plus a cache volume mounted at the given path.\n\nSelects GraphQL Wire_Name `withMountedCache` on `Container`."]
+    #[doc = "Retrieves this container plus a cache volume mounted at the given path.\n\nSelects GraphQL field `withMountedCache` on `Container`."]
     #[must_use]
     pub fn with_mounted_cache(
         &self,
@@ -2531,7 +2531,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Retrieves this container plus a directory mounted at the given path.\n\nSelects GraphQL Wire_Name `withMountedDirectory` on `Container`."]
+    #[doc = "Retrieves this container plus a directory mounted at the given path.\n\nSelects GraphQL field `withMountedDirectory` on `Container`."]
     #[must_use]
     pub fn with_mounted_directory(
         &self,
@@ -2582,7 +2582,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Retrieves this container plus a file mounted at the given path.\n\nSelects GraphQL Wire_Name `withMountedFile` on `Container`."]
+    #[doc = "Retrieves this container plus a file mounted at the given path.\n\nSelects GraphQL field `withMountedFile` on `Container`."]
     #[must_use]
     pub fn with_mounted_file(
         &self,
@@ -2628,7 +2628,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Retrieves this container plus a secret mounted into a file at the given path.\n\nSelects GraphQL Wire_Name `withMountedSecret` on `Container`."]
+    #[doc = "Retrieves this container plus a secret mounted into a file at the given path.\n\nSelects GraphQL field `withMountedSecret` on `Container`."]
     #[must_use]
     pub fn with_mounted_secret(
         &self,
@@ -2679,7 +2679,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Retrieves this container plus a temporary directory mounted at the given path. Any writes will be ephemeral to a single withExec call; they will not be persisted to subsequent withExecs.\n\nSelects GraphQL Wire_Name `withMountedTemp` on `Container`."]
+    #[doc = "Retrieves this container plus a temporary directory mounted at the given path. Any writes will be ephemeral to a single withExec call; they will not be persisted to subsequent withExecs.\n\nSelects GraphQL field `withMountedTemp` on `Container`."]
     #[must_use]
     pub fn with_mounted_temp(&self, path: impl Into<String>) -> super::Container {
         let query = self.selection.select("withMountedTemp");
@@ -2713,7 +2713,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Retrieves this container plus a volume mounted at the given path.\n\nSelects GraphQL Wire_Name `withMountedVolume` on `Container`."]
+    #[doc = "Retrieves this container plus a volume mounted at the given path.\n\nSelects GraphQL field `withMountedVolume` on `Container`."]
     #[must_use]
     pub fn with_mounted_volume(
         &self,
@@ -2754,7 +2754,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Return a new container snapshot, with a file added to its filesystem with text content\n\nSelects GraphQL Wire_Name `withNewFile` on `Container`."]
+    #[doc = "Return a new container snapshot, with a file added to its filesystem with text content\n\nSelects GraphQL field `withNewFile` on `Container`."]
     #[must_use]
     pub fn with_new_file(
         &self,
@@ -2805,7 +2805,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Attach credentials for future publishing to a registry. Use in combination with publish\n\nSelects GraphQL Wire_Name `withRegistryAuth` on `Container`."]
+    #[doc = "Attach credentials for future publishing to a registry. Use in combination with publish\n\nSelects GraphQL field `withRegistryAuth` on `Container`."]
     #[must_use]
     pub fn with_registry_auth(
         &self,
@@ -2822,7 +2822,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Change the container's root filesystem. The previous root filesystem will be lost.\n\nSelects GraphQL Wire_Name `withRootfs` on `Container`."]
+    #[doc = "Change the container's root filesystem. The previous root filesystem will be lost.\n\nSelects GraphQL field `withRootfs` on `Container`."]
     #[must_use]
     pub fn with_rootfs(
         &self,
@@ -2835,7 +2835,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Set a new environment variable, using a secret value\n\nSelects GraphQL Wire_Name `withSecretVariable` on `Container`."]
+    #[doc = "Set a new environment variable, using a secret value\n\nSelects GraphQL field `withSecretVariable` on `Container`."]
     #[must_use]
     pub fn with_secret_variable(
         &self,
@@ -2850,7 +2850,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Establish a runtime dependency from a container to a network service.\n\nThe service will be started automatically when needed and detached when it is no longer needed, executing the default command if none is set.\n\nThe service will be reachable from the container via the provided hostname alias.\n\nThe service dependency will also convey to any files or directories produced by the container.\n\nSelects GraphQL Wire_Name `withServiceBinding` on `Container`."]
+    #[doc = "Establish a runtime dependency from a container to a network service.\n\nThe service will be started automatically when needed and detached when it is no longer needed, executing the default command if none is set.\n\nThe service will be reachable from the container via the provided hostname alias.\n\nThe service dependency will also convey to any files or directories produced by the container.\n\nSelects GraphQL field `withServiceBinding` on `Container`."]
     #[must_use]
     pub fn with_service_binding(
         &self,
@@ -2865,7 +2865,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Return a snapshot with a symlink\n\nSelects GraphQL Wire_Name `withSymlink` on `Container`."]
+    #[doc = "Return a snapshot with a symlink\n\nSelects GraphQL field `withSymlink` on `Container`."]
     #[must_use]
     pub fn with_symlink(
         &self,
@@ -2901,7 +2901,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Retrieves this container plus a socket forwarded to the given Unix socket path.\n\nSelects GraphQL Wire_Name `withUnixSocket` on `Container`."]
+    #[doc = "Retrieves this container plus a socket forwarded to the given Unix socket path.\n\nSelects GraphQL field `withUnixSocket` on `Container`."]
     #[must_use]
     pub fn with_unix_socket(
         &self,
@@ -2947,7 +2947,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Retrieves this container with a different command user.\n\nSelects GraphQL Wire_Name `withUser` on `Container`."]
+    #[doc = "Retrieves this container with a different command user.\n\nSelects GraphQL field `withUser` on `Container`."]
     #[must_use]
     pub fn with_user(&self, name: impl Into<String>) -> super::Container {
         let query = self.selection.select("withUser");
@@ -2957,7 +2957,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Set a new non-secret environment variable for future execs without invalidating exec cache when only its value changes.\n\nThis is an expert-only escape hatch. If a volatile value affects observable exec results, stale cached results may be reused.\n\nSelects GraphQL Wire_Name `withVolatileVariable` on `Container`."]
+    #[doc = "Set a new non-secret environment variable for future execs without invalidating exec cache when only its value changes.\n\nThis is an expert-only escape hatch. If a volatile value affects observable exec results, stale cached results may be reused.\n\nSelects GraphQL field `withVolatileVariable` on `Container`."]
     #[must_use]
     pub fn with_volatile_variable(
         &self,
@@ -2972,7 +2972,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Change the container's working directory. Like WORKDIR in Dockerfile.\n\nSelects GraphQL Wire_Name `withWorkdir` on `Container`."]
+    #[doc = "Change the container's working directory. Like WORKDIR in Dockerfile.\n\nSelects GraphQL field `withWorkdir` on `Container`."]
     #[must_use]
     pub fn with_workdir(&self, path: impl Into<String>) -> super::Container {
         let query = self.selection.select("withWorkdir");
@@ -3001,7 +3001,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Retrieves this container minus the given OCI annotation.\n\nSelects GraphQL Wire_Name `withoutAnnotation` on `Container`."]
+    #[doc = "Retrieves this container minus the given OCI annotation.\n\nSelects GraphQL field `withoutAnnotation` on `Container`."]
     #[must_use]
     pub fn without_annotation(&self, name: impl Into<String>) -> super::Container {
         let query = self.selection.select("withoutAnnotation");
@@ -3011,7 +3011,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Remove the container's default arguments.\n\nSelects GraphQL Wire_Name `withoutDefaultArgs` on `Container`."]
+    #[doc = "Remove the container's default arguments.\n\nSelects GraphQL field `withoutDefaultArgs` on `Container`."]
     #[must_use]
     pub fn without_default_args(&self) -> super::Container {
         let query = self.selection.select("withoutDefaultArgs");
@@ -3020,7 +3020,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Return a new container snapshot, with a directory removed from its filesystem\n\nSelects GraphQL Wire_Name `withoutDirectory` on `Container`."]
+    #[doc = "Return a new container snapshot, with a directory removed from its filesystem\n\nSelects GraphQL field `withoutDirectory` on `Container`."]
     #[must_use]
     pub fn without_directory(&self, path: impl Into<String>) -> super::Container {
         let query = self.selection.select("withoutDirectory");
@@ -3049,7 +3049,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Retrieves this container without a configured docker healtcheck command.\n\nSelects GraphQL Wire_Name `withoutDockerHealthcheck` on `Container`."]
+    #[doc = "Retrieves this container without a configured docker healtcheck command.\n\nSelects GraphQL field `withoutDockerHealthcheck` on `Container`."]
     #[must_use]
     pub fn without_docker_healthcheck(&self) -> super::Container {
         let query = self.selection.select("withoutDockerHealthcheck");
@@ -3058,7 +3058,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Reset the container's OCI entrypoint.\n\nSelects GraphQL Wire_Name `withoutEntrypoint` on `Container`."]
+    #[doc = "Reset the container's OCI entrypoint.\n\nSelects GraphQL field `withoutEntrypoint` on `Container`."]
     #[must_use]
     pub fn without_entrypoint(&self) -> super::Container {
         let query = self.selection.select("withoutEntrypoint");
@@ -3084,7 +3084,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Retrieves this container minus the given environment variable.\n\nSelects GraphQL Wire_Name `withoutEnvVariable` on `Container`."]
+    #[doc = "Retrieves this container minus the given environment variable.\n\nSelects GraphQL field `withoutEnvVariable` on `Container`."]
     #[must_use]
     pub fn without_env_variable(&self, name: impl Into<String>) -> super::Container {
         let query = self.selection.select("withoutEnvVariable");
@@ -3094,7 +3094,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Unexpose a previously exposed port.\n\nSelects GraphQL Wire_Name `withoutExposedPort` on `Container`."]
+    #[doc = "Unexpose a previously exposed port.\n\nSelects GraphQL field `withoutExposedPort` on `Container`."]
     #[must_use]
     pub fn without_exposed_port(&self, port: i64) -> super::Container {
         let query = self.selection.select("withoutExposedPort");
@@ -3123,7 +3123,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Retrieves this container with the file at the given path removed.\n\nSelects GraphQL Wire_Name `withoutFile` on `Container`."]
+    #[doc = "Retrieves this container with the file at the given path removed.\n\nSelects GraphQL field `withoutFile` on `Container`."]
     #[must_use]
     pub fn without_file(&self, path: impl Into<String>) -> super::Container {
         let query = self.selection.select("withoutFile");
@@ -3152,7 +3152,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Return a new container spanshot with specified files removed\n\nSelects GraphQL Wire_Name `withoutFiles` on `Container`."]
+    #[doc = "Return a new container spanshot with specified files removed\n\nSelects GraphQL field `withoutFiles` on `Container`."]
     #[must_use]
     pub fn without_files(&self, paths: Vec<impl Into<String>>) -> super::Container {
         let query = self.selection.select("withoutFiles");
@@ -3183,7 +3183,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Retrieves this container minus the given environment label.\n\nSelects GraphQL Wire_Name `withoutLabel` on `Container`."]
+    #[doc = "Retrieves this container minus the given environment label.\n\nSelects GraphQL field `withoutLabel` on `Container`."]
     #[must_use]
     pub fn without_label(&self, name: impl Into<String>) -> super::Container {
         let query = self.selection.select("withoutLabel");
@@ -3193,7 +3193,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Retrieves this container after unmounting everything at the given path.\n\nSelects GraphQL Wire_Name `withoutMount` on `Container`."]
+    #[doc = "Retrieves this container after unmounting everything at the given path.\n\nSelects GraphQL field `withoutMount` on `Container`."]
     #[must_use]
     pub fn without_mount(&self, path: impl Into<String>) -> super::Container {
         let query = self.selection.select("withoutMount");
@@ -3222,7 +3222,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Retrieves this container without the registry authentication of a given address.\n\nSelects GraphQL Wire_Name `withoutRegistryAuth` on `Container`."]
+    #[doc = "Retrieves this container without the registry authentication of a given address.\n\nSelects GraphQL field `withoutRegistryAuth` on `Container`."]
     #[must_use]
     pub fn without_registry_auth(&self, address: impl Into<String>) -> super::Container {
         let query = self.selection.select("withoutRegistryAuth");
@@ -3232,7 +3232,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Retrieves this container minus the given environment variable containing the secret.\n\nSelects GraphQL Wire_Name `withoutSecretVariable` on `Container`."]
+    #[doc = "Retrieves this container minus the given environment variable containing the secret.\n\nSelects GraphQL field `withoutSecretVariable` on `Container`."]
     #[must_use]
     pub fn without_secret_variable(&self, name: impl Into<String>) -> super::Container {
         let query = self.selection.select("withoutSecretVariable");
@@ -3242,7 +3242,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Retrieves this container with a previously added Unix socket removed.\n\nSelects GraphQL Wire_Name `withoutUnixSocket` on `Container`."]
+    #[doc = "Retrieves this container with a previously added Unix socket removed.\n\nSelects GraphQL field `withoutUnixSocket` on `Container`."]
     #[must_use]
     pub fn without_unix_socket(&self, path: impl Into<String>) -> super::Container {
         let query = self.selection.select("withoutUnixSocket");
@@ -3271,7 +3271,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Retrieves this container with an unset command user.\n\nShould default to root.\n\nSelects GraphQL Wire_Name `withoutUser` on `Container`."]
+    #[doc = "Retrieves this container with an unset command user.\n\nShould default to root.\n\nSelects GraphQL field `withoutUser` on `Container`."]
     #[must_use]
     pub fn without_user(&self) -> super::Container {
         let query = self.selection.select("withoutUser");
@@ -3280,7 +3280,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Retrieves this container minus the given volatile environment variable.\n\nSelects GraphQL Wire_Name `withoutVolatileVariable` on `Container`."]
+    #[doc = "Retrieves this container minus the given volatile environment variable.\n\nSelects GraphQL field `withoutVolatileVariable` on `Container`."]
     #[must_use]
     pub fn without_volatile_variable(&self, name: impl Into<String>) -> super::Container {
         let query = self.selection.select("withoutVolatileVariable");
@@ -3290,7 +3290,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Unset the container's working directory.\n\nShould default to \"/\".\n\nSelects GraphQL Wire_Name `withoutWorkdir` on `Container`."]
+    #[doc = "Unset the container's working directory.\n\nShould default to \"/\".\n\nSelects GraphQL field `withoutWorkdir` on `Container`."]
     #[must_use]
     pub fn without_workdir(&self) -> super::Container {
         let query = self.selection.select("withoutWorkdir");
@@ -3299,7 +3299,7 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Retrieves the working directory for all commands.\n\nSelects GraphQL Wire_Name `workdir` on `Container`."]
+    #[doc = "Retrieves the working directory for all commands.\n\nSelects GraphQL field `workdir` on `Container`."]
     pub async fn workdir(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("workdir");
         query.execute(&self.session).await

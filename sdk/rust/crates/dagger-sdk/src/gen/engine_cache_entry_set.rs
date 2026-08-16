@@ -37,12 +37,12 @@ impl From<EngineCacheEntrySet> for crate::IdInput<super::NodeClient> {
     }
 }
 impl EngineCacheEntrySet {
-    #[doc = "The total disk space used by the cache entries in this set.\n\nSelects GraphQL Wire_Name `diskSpaceBytes` on `EngineCacheEntrySet`."]
+    #[doc = "The total disk space used by the cache entries in this set.\n\nSelects GraphQL field `diskSpaceBytes` on `EngineCacheEntrySet`."]
     pub async fn disk_space_bytes(&self) -> Result<i64, crate::QueryError> {
         let query = self.selection.select("diskSpaceBytes");
         query.execute(&self.session).await
     }
-    #[doc = "The list of individual cache entries in the set\n\nSelects GraphQL Wire_Name `entries` on `EngineCacheEntrySet`."]
+    #[doc = "The list of individual cache entries in the set\n\nSelects GraphQL field `entries` on `EngineCacheEntrySet`."]
     pub async fn entries(&self) -> Result<Vec<super::EngineCacheEntry>, crate::QueryError> {
         let query = self.selection.select("entries");
         let query = query.select("id");
@@ -53,12 +53,12 @@ impl EngineCacheEntrySet {
             )
             .await
     }
-    #[doc = "The number of cache entries in this set.\n\nSelects GraphQL Wire_Name `entryCount` on `EngineCacheEntrySet`."]
+    #[doc = "The number of cache entries in this set.\n\nSelects GraphQL field `entryCount` on `EngineCacheEntrySet`."]
     pub async fn entry_count(&self) -> Result<i64, crate::QueryError> {
         let query = self.selection.select("entryCount");
         query.execute(&self.session).await
     }
-    #[doc = "A unique identifier for this EngineCacheEntrySet.\n\nSelects GraphQL Wire_Name `id` on `EngineCacheEntrySet`."]
+    #[doc = "A unique identifier for this EngineCacheEntrySet.\n\nSelects GraphQL field `id` on `EngineCacheEntrySet`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await

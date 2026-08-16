@@ -37,12 +37,12 @@ impl From<FunctionCall> for crate::IdInput<super::NodeClient> {
     }
 }
 impl FunctionCall {
-    #[doc = "A unique identifier for this FunctionCall.\n\nSelects GraphQL Wire_Name `id` on `FunctionCall`."]
+    #[doc = "A unique identifier for this FunctionCall.\n\nSelects GraphQL field `id` on `FunctionCall`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "The argument values the function is being invoked with.\n\nSelects GraphQL Wire_Name `inputArgs` on `FunctionCall`."]
+    #[doc = "The argument values the function is being invoked with.\n\nSelects GraphQL field `inputArgs` on `FunctionCall`."]
     pub async fn input_args(&self) -> Result<Vec<super::FunctionCallArgValue>, crate::QueryError> {
         let query = self.selection.select("inputArgs");
         let query = query.select("id");
@@ -53,22 +53,22 @@ impl FunctionCall {
             )
             .await
     }
-    #[doc = "The name of the function being called.\n\nSelects GraphQL Wire_Name `name` on `FunctionCall`."]
+    #[doc = "The name of the function being called.\n\nSelects GraphQL field `name` on `FunctionCall`."]
     pub async fn name(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("name");
         query.execute(&self.session).await
     }
-    #[doc = "The value of the parent object of the function being called. If the function is top-level to the module, this is always an empty object.\n\nSelects GraphQL Wire_Name `parent` on `FunctionCall`."]
+    #[doc = "The value of the parent object of the function being called. If the function is top-level to the module, this is always an empty object.\n\nSelects GraphQL field `parent` on `FunctionCall`."]
     pub async fn parent(&self) -> Result<crate::Json, crate::QueryError> {
         let query = self.selection.select("parent");
         query.execute(&self.session).await
     }
-    #[doc = "The name of the parent object of the function being called. If the function is top-level to the module, this is the name of the module.\n\nSelects GraphQL Wire_Name `parentName` on `FunctionCall`."]
+    #[doc = "The name of the parent object of the function being called. If the function is top-level to the module, this is the name of the module.\n\nSelects GraphQL field `parentName` on `FunctionCall`."]
     pub async fn parent_name(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("parentName");
         query.execute(&self.session).await
     }
-    #[doc = "Return an error from the function.\n\nSelects GraphQL Wire_Name `returnError` on `FunctionCall`."]
+    #[doc = "Return an error from the function.\n\nSelects GraphQL field `returnError` on `FunctionCall`."]
     pub async fn return_error(
         &self,
         error: impl Into<crate::IdInput<super::Error>>,
@@ -77,7 +77,7 @@ impl FunctionCall {
         let query = query.arg_id_input("error", error.into());
         query.execute(&self.session).await
     }
-    #[doc = "Set the return value of the function call to the provided value.\n\nSelects GraphQL Wire_Name `returnValue` on `FunctionCall`."]
+    #[doc = "Set the return value of the function call to the provided value.\n\nSelects GraphQL field `returnValue` on `FunctionCall`."]
     pub async fn return_value(&self, value: crate::Json) -> Result<(), crate::QueryError> {
         let query = self.selection.select("returnValue");
         let query = query.arg("value", value);

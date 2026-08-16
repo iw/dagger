@@ -75,7 +75,7 @@ pub enum BindingKind {
     Enum,
     /// A canonical enum variant.
     EnumVariant,
-    /// An enum Wire_Name accepted as an alias.
+    /// An enum wire name accepted as an alias.
     EnumAlias,
     /// A generated input-object type.
     InputObject,

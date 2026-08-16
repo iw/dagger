@@ -37,47 +37,47 @@ impl From<FunctionArg> for crate::IdInput<super::NodeClient> {
     }
 }
 impl FunctionArg {
-    #[doc = "Only applies to arguments of type Container. If the argument is not set, load it from the given address (e.g. alpine:latest)\n\nSelects GraphQL Wire_Name `defaultAddress` on `FunctionArg`."]
+    #[doc = "Only applies to arguments of type Container. If the argument is not set, load it from the given address (e.g. alpine:latest)\n\nSelects GraphQL field `defaultAddress` on `FunctionArg`."]
     pub async fn default_address(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("defaultAddress");
         query.execute(&self.session).await
     }
-    #[doc = "Only applies to arguments of type File or Directory. If the argument is not set, load it from the given path in the context directory\n\nSelects GraphQL Wire_Name `defaultPath` on `FunctionArg`."]
+    #[doc = "Only applies to arguments of type File or Directory. If the argument is not set, load it from the given path in the context directory\n\nSelects GraphQL field `defaultPath` on `FunctionArg`."]
     pub async fn default_path(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("defaultPath");
         query.execute(&self.session).await
     }
-    #[doc = "A default value to use for this argument when not explicitly set by the caller, if any.\n\nSelects GraphQL Wire_Name `defaultValue` on `FunctionArg`."]
+    #[doc = "A default value to use for this argument when not explicitly set by the caller, if any.\n\nSelects GraphQL field `defaultValue` on `FunctionArg`."]
     pub async fn default_value(&self) -> Result<crate::Json, crate::QueryError> {
         let query = self.selection.select("defaultValue");
         query.execute(&self.session).await
     }
-    #[doc = "The reason this function is deprecated, if any.\n\nSelects GraphQL Wire_Name `deprecated` on `FunctionArg`."]
+    #[doc = "The reason this function is deprecated, if any.\n\nSelects GraphQL field `deprecated` on `FunctionArg`."]
     pub async fn deprecated(&self) -> Result<Option<String>, crate::QueryError> {
         let query = self.selection.select("deprecated");
         query.execute(&self.session).await
     }
-    #[doc = "A doc string for the argument, if any.\n\nSelects GraphQL Wire_Name `description` on `FunctionArg`."]
+    #[doc = "A doc string for the argument, if any.\n\nSelects GraphQL field `description` on `FunctionArg`."]
     pub async fn description(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("description");
         query.execute(&self.session).await
     }
-    #[doc = "A unique identifier for this FunctionArg.\n\nSelects GraphQL Wire_Name `id` on `FunctionArg`."]
+    #[doc = "A unique identifier for this FunctionArg.\n\nSelects GraphQL field `id` on `FunctionArg`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "Only applies to arguments of type Directory. The ignore patterns are applied to the input directory, and matching entries are filtered out, in a cache-efficient manner.\n\nSelects GraphQL Wire_Name `ignore` on `FunctionArg`."]
+    #[doc = "Only applies to arguments of type Directory. The ignore patterns are applied to the input directory, and matching entries are filtered out, in a cache-efficient manner.\n\nSelects GraphQL field `ignore` on `FunctionArg`."]
     pub async fn ignore(&self) -> Result<Vec<String>, crate::QueryError> {
         let query = self.selection.select("ignore");
         query.execute(&self.session).await
     }
-    #[doc = "The name of the argument in lowerCamelCase format.\n\nSelects GraphQL Wire_Name `name` on `FunctionArg`."]
+    #[doc = "The name of the argument in lowerCamelCase format.\n\nSelects GraphQL field `name` on `FunctionArg`."]
     pub async fn name(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("name");
         query.execute(&self.session).await
     }
-    #[doc = "The location of this arg declaration.\n\nSelects GraphQL Wire_Name `sourceMap` on `FunctionArg`."]
+    #[doc = "The location of this arg declaration.\n\nSelects GraphQL field `sourceMap` on `FunctionArg`."]
     pub async fn source_map(&self) -> Result<Option<super::SourceMap>, crate::QueryError> {
         let query = self.selection.select("sourceMap");
         let query = query.select("id");
@@ -85,7 +85,7 @@ impl FunctionArg {
             .execute_reentry::<super::SourceMap, Option<crate::Id>>(&self.session, "SourceMap")
             .await
     }
-    #[doc = "The type of the argument.\n\nSelects GraphQL Wire_Name `typeDef` on `FunctionArg`."]
+    #[doc = "The type of the argument.\n\nSelects GraphQL field `typeDef` on `FunctionArg`."]
     #[must_use]
     pub fn type_def(&self) -> super::TypeDef {
         let query = self.selection.select("typeDef");

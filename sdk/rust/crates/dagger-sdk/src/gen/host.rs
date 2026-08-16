@@ -10,13 +10,13 @@ pub struct Host {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct HostDirectoryOpts {
-    #[doc = "Exclude artifacts that match the given pattern (e.g., \\[\"node_modules/\", \".git*\"\\]).\n\n`None` omits GraphQL Wire_Name `exclude` and preserves engine default `List(\\[\\])`."]
+    #[doc = "Exclude artifacts that match the given pattern (e.g., \\[\"node_modules/\", \".git*\"\\]).\n\n`None` omits GraphQL field `exclude` and preserves engine default `List(\\[\\])`."]
     pub exclude: Option<Vec<String>>,
-    #[doc = "Apply .gitignore filter rules inside the directory\n\n`None` omits GraphQL Wire_Name `gitignore` and preserves engine default `Boolean(false)`."]
+    #[doc = "Apply .gitignore filter rules inside the directory\n\n`None` omits GraphQL field `gitignore` and preserves engine default `Boolean(false)`."]
     pub gitignore: Option<bool>,
-    #[doc = "Include only artifacts that match the given pattern (e.g., \\[\"app/\", \"package.*\"\\]).\n\n`None` omits GraphQL Wire_Name `include` and preserves engine default `List(\\[\\])`."]
+    #[doc = "Include only artifacts that match the given pattern (e.g., \\[\"app/\", \"package.*\"\\]).\n\n`None` omits GraphQL field `include` and preserves engine default `List(\\[\\])`."]
     pub include: Option<Vec<String>>,
-    #[doc = "If true, the directory will always be reloaded from the host.\n\n`None` omits GraphQL Wire_Name `noCache` and preserves engine default `Boolean(false)`."]
+    #[doc = "If true, the directory will always be reloaded from the host.\n\n`None` omits GraphQL field `noCache` and preserves engine default `Boolean(false)`."]
     pub no_cache: Option<bool>,
 }
 impl HostDirectoryOpts {
@@ -49,7 +49,7 @@ impl HostDirectoryOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct HostFileOpts {
-    #[doc = "If true, the file will always be reloaded from the host.\n\n`None` omits GraphQL Wire_Name `noCache` and preserves engine default `Boolean(false)`."]
+    #[doc = "If true, the file will always be reloaded from the host.\n\n`None` omits GraphQL field `noCache` and preserves engine default `Boolean(false)`."]
     pub no_cache: Option<bool>,
 }
 impl HostFileOpts {
@@ -64,7 +64,7 @@ impl HostFileOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct HostFindUpOpts {
-    #[doc = "`None` omits GraphQL Wire_Name `noCache` and preserves engine default `Boolean(false)`."]
+    #[doc = "`None` omits GraphQL field `noCache` and preserves engine default `Boolean(false)`."]
     pub no_cache: Option<bool>,
 }
 impl HostFindUpOpts {
@@ -79,7 +79,7 @@ impl HostFindUpOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct HostServiceOpts {
-    #[doc = "Upstream host to forward traffic to.\n\n`None` omits GraphQL Wire_Name `host` and preserves engine default `String(\"localhost\")`."]
+    #[doc = "Upstream host to forward traffic to.\n\n`None` omits GraphQL field `host` and preserves engine default `String(\"localhost\")`."]
     pub host: Option<String>,
 }
 impl HostServiceOpts {
@@ -94,9 +94,9 @@ impl HostServiceOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct HostTunnelOpts {
-    #[doc = "Map each service port to the same port on the host, as if the service were running natively.\n\nNote: enabling may result in port conflicts.\n\n`None` omits GraphQL Wire_Name `native` and preserves engine default `Boolean(false)`."]
+    #[doc = "Map each service port to the same port on the host, as if the service were running natively.\n\nNote: enabling may result in port conflicts.\n\n`None` omits GraphQL field `native` and preserves engine default `Boolean(false)`."]
     pub native: Option<bool>,
-    #[doc = "Configure explicit port forwarding rules for the tunnel.\n\nIf a port's frontend is unspecified or 0, a random port will be chosen by the host.\n\nIf no ports are given, all of the service's ports are forwarded. If native is true, each port maps to the same port on the host. If native is false, each port maps to a random port chosen by the host.\n\nIf ports are given and native is true, the ports are additive.\n\n`None` omits GraphQL Wire_Name `ports` and preserves engine default `List(\\[\\])`."]
+    #[doc = "Configure explicit port forwarding rules for the tunnel.\n\nIf a port's frontend is unspecified or 0, a random port will be chosen by the host.\n\nIf no ports are given, all of the service's ports are forwarded. If native is true, each port maps to the same port on the host. If native is false, each port maps to a random port chosen by the host.\n\nIf ports are given and native is true, the ports are additive.\n\n`None` omits GraphQL field `ports` and preserves engine default `List(\\[\\])`."]
     pub ports: Option<Vec<super::PortForward>>,
 }
 impl HostTunnelOpts {
@@ -144,7 +144,7 @@ impl From<Host> for crate::IdInput<super::NodeClient> {
     }
 }
 impl Host {
-    #[doc = "Accesses a container image on the host.\n\nSelects GraphQL Wire_Name `containerImage` on `Host`."]
+    #[doc = "Accesses a container image on the host.\n\nSelects GraphQL field `containerImage` on `Host`."]
     #[must_use]
     pub fn container_image(&self, name: impl Into<String>) -> super::Container {
         let query = self.selection.select("containerImage");
@@ -154,7 +154,7 @@ impl Host {
             selection: query,
         }
     }
-    #[doc = "Accesses a directory on the host.\n\nSelects GraphQL Wire_Name `directory` on `Host`."]
+    #[doc = "Accesses a directory on the host.\n\nSelects GraphQL field `directory` on `Host`."]
     #[must_use]
     pub fn directory(&self, path: impl Into<String>) -> super::Directory {
         let query = self.selection.select("directory");
@@ -198,7 +198,7 @@ impl Host {
             selection: query,
         }
     }
-    #[doc = "Accesses a file on the host.\n\nSelects GraphQL Wire_Name `file` on `Host`."]
+    #[doc = "Accesses a file on the host.\n\nSelects GraphQL field `file` on `Host`."]
     #[must_use]
     pub fn file(&self, path: impl Into<String>) -> super::File {
         let query = self.selection.select("file");
@@ -223,7 +223,7 @@ impl Host {
             selection: query,
         }
     }
-    #[doc = "Search for a file or directory by walking up the tree from system workdir. Return its relative path. If no match, return null\n\nSelects GraphQL Wire_Name `findUp` on `Host`."]
+    #[doc = "Search for a file or directory by walking up the tree from system workdir. Return its relative path. If no match, return null\n\nSelects GraphQL field `findUp` on `Host`."]
     pub async fn find_up(
         &self,
         name: impl Into<String>,
@@ -247,12 +247,12 @@ impl Host {
         };
         query.execute(&self.session).await
     }
-    #[doc = "A unique identifier for this Host.\n\nSelects GraphQL Wire_Name `id` on `Host`."]
+    #[doc = "A unique identifier for this Host.\n\nSelects GraphQL field `id` on `Host`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "Creates a service that forwards traffic to a specified address via the host.\n\nSelects GraphQL Wire_Name `service` on `Host`."]
+    #[doc = "Creates a service that forwards traffic to a specified address via the host.\n\nSelects GraphQL field `service` on `Host`."]
     #[must_use]
     pub fn service(&self, ports: Vec<super::PortForward>) -> super::Service {
         let query = self.selection.select("service");
@@ -281,7 +281,7 @@ impl Host {
             selection: query,
         }
     }
-    #[doc = "Creates a tunnel that forwards traffic from the host to a service.\n\nSelects GraphQL Wire_Name `tunnel` on `Host`."]
+    #[doc = "Creates a tunnel that forwards traffic from the host to a service.\n\nSelects GraphQL field `tunnel` on `Host`."]
     #[must_use]
     pub fn tunnel(&self, service: impl Into<crate::IdInput<super::Service>>) -> super::Service {
         let query = self.selection.select("tunnel");
@@ -315,7 +315,7 @@ impl Host {
             selection: query,
         }
     }
-    #[doc = "Accesses a Unix socket on the host.\n\nSelects GraphQL Wire_Name `unixSocket` on `Host`."]
+    #[doc = "Accesses a Unix socket on the host.\n\nSelects GraphQL field `unixSocket` on `Host`."]
     #[must_use]
     pub fn unix_socket(&self, path: impl Into<String>) -> super::Socket {
         let query = self.selection.select("unixSocket");

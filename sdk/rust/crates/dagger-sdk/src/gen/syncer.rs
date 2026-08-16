@@ -2,10 +2,10 @@
 // @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:7d6f61426d0c65454a32059732deed8927471c92e906f4ac7b31dd8ff8214306","target_revision":"501b57e0476dee5881b99a064c3c04173134ecc7"}
 #[doc = "An object that can be force-evaluated.\n\nCalling sync ensures that the object's entire dependency DAG has been evaluated, returning the object's ID once complete."]
 pub trait Syncer: Clone + Send + Sync {
-    #[doc = "Selects GraphQL Wire_Name `id` on `Syncer`."]
+    #[doc = "Selects GraphQL field `id` on `Syncer`."]
     fn id(&self)
     -> impl core::future::Future<Output = Result<crate::Id, crate::QueryError>> + Send;
-    #[doc = "Selects GraphQL Wire_Name `sync` on `Syncer`."]
+    #[doc = "Selects GraphQL field `sync` on `Syncer`."]
     fn sync(
         &self,
     ) -> impl core::future::Future<Output = Result<super::SyncerClient, crate::QueryError>> + Send;
@@ -47,12 +47,12 @@ impl From<SyncerClient> for crate::IdInput<super::NodeClient> {
     }
 }
 impl SyncerClient {
-    #[doc = "Selects GraphQL Wire_Name `id` on `Syncer`."]
+    #[doc = "Selects GraphQL field `id` on `Syncer`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "Selects GraphQL Wire_Name `sync` on `Syncer`."]
+    #[doc = "Selects GraphQL field `sync` on `Syncer`."]
     pub async fn sync(&self) -> Result<super::SyncerClient, crate::QueryError> {
         let query = self.selection.select("sync");
         let id: crate::Id = query.execute(&self.session).await?;

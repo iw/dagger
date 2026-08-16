@@ -10,9 +10,9 @@ pub struct Module {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ModuleChecksOpts {
-    #[doc = "Only include checks matching the specified patterns\n\n`None` omits GraphQL Wire_Name `include`."]
+    #[doc = "Only include checks matching the specified patterns\n\n`None` omits GraphQL field `include`."]
     pub include: Option<Vec<String>>,
-    #[doc = "When true, only return annotated check functions; exclude generate-as-checks\n\n`None` omits GraphQL Wire_Name `noGenerate`."]
+    #[doc = "When true, only return annotated check functions; exclude generate-as-checks\n\n`None` omits GraphQL field `noGenerate`."]
     pub no_generate: Option<bool>,
 }
 impl ModuleChecksOpts {
@@ -33,7 +33,7 @@ impl ModuleChecksOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ModuleGeneratorsOpts {
-    #[doc = "Only include generators matching the specified patterns\n\n`None` omits GraphQL Wire_Name `include`."]
+    #[doc = "Only include generators matching the specified patterns\n\n`None` omits GraphQL field `include`."]
     pub include: Option<Vec<String>>,
 }
 impl ModuleGeneratorsOpts {
@@ -48,9 +48,9 @@ impl ModuleGeneratorsOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ModuleServeOpts {
-    #[doc = "Install the module as the entrypoint, promoting its main-object methods onto the Query root\n\n`None` omits GraphQL Wire_Name `entrypoint`."]
+    #[doc = "Install the module as the entrypoint, promoting its main-object methods onto the Query root\n\n`None` omits GraphQL field `entrypoint`."]
     pub entrypoint: Option<bool>,
-    #[doc = "Expose the dependencies of this module to the client\n\n`None` omits GraphQL Wire_Name `includeDependencies`."]
+    #[doc = "Expose the dependencies of this module to the client\n\n`None` omits GraphQL field `includeDependencies`."]
     pub include_dependencies: Option<bool>,
 }
 impl ModuleServeOpts {
@@ -71,7 +71,7 @@ impl ModuleServeOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ModuleServicesOpts {
-    #[doc = "Only include services matching the specified patterns\n\n`None` omits GraphQL Wire_Name `include`."]
+    #[doc = "Only include services matching the specified patterns\n\n`None` omits GraphQL field `include`."]
     pub include: Option<Vec<String>>,
 }
 impl ModuleServicesOpts {
@@ -118,7 +118,7 @@ impl From<Module> for crate::IdInput<super::SyncerClient> {
     }
 }
 impl Module {
-    #[doc = "Return the check defined by the module with the given name. Must match to exactly one check.\n\nSelects GraphQL Wire_Name `check` on `Module`.\n\n**Experimental:** This API is highly experimental and may be removed or replaced entirely."]
+    #[doc = "Return the check defined by the module with the given name. Must match to exactly one check.\n\nSelects GraphQL field `check` on `Module`.\n\n**Experimental:** This API is highly experimental and may be removed or replaced entirely."]
     #[must_use]
     pub fn check(&self, name: impl Into<String>) -> super::Check {
         let query = self.selection.select("check");
@@ -128,7 +128,7 @@ impl Module {
             selection: query,
         }
     }
-    #[doc = "Return all checks defined by the module\n\nSelects GraphQL Wire_Name `checks` on `Module`.\n\n**Experimental:** This API is highly experimental and may be removed or replaced entirely."]
+    #[doc = "Return all checks defined by the module\n\nSelects GraphQL field `checks` on `Module`.\n\n**Experimental:** This API is highly experimental and may be removed or replaced entirely."]
     #[must_use]
     pub fn checks(&self) -> super::CheckGroup {
         let query = self.selection.select("checks");
@@ -156,7 +156,7 @@ impl Module {
             selection: query,
         }
     }
-    #[doc = "The dependencies of the module.\n\nSelects GraphQL Wire_Name `dependencies` on `Module`."]
+    #[doc = "The dependencies of the module.\n\nSelects GraphQL field `dependencies` on `Module`."]
     pub async fn dependencies(&self) -> Result<Vec<super::Module>, crate::QueryError> {
         let query = self.selection.select("dependencies");
         let query = query.select("id");
@@ -164,12 +164,12 @@ impl Module {
             .execute_reentry::<super::Module, Vec<crate::Id>>(&self.session, "Module")
             .await
     }
-    #[doc = "The doc string of the module, if any\n\nSelects GraphQL Wire_Name `description` on `Module`."]
+    #[doc = "The doc string of the module, if any\n\nSelects GraphQL field `description` on `Module`."]
     pub async fn description(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("description");
         query.execute(&self.session).await
     }
-    #[doc = "Enumerations served by this module.\n\nSelects GraphQL Wire_Name `enums` on `Module`."]
+    #[doc = "Enumerations served by this module.\n\nSelects GraphQL field `enums` on `Module`."]
     pub async fn enums(&self) -> Result<Vec<super::TypeDef>, crate::QueryError> {
         let query = self.selection.select("enums");
         let query = query.select("id");
@@ -177,7 +177,7 @@ impl Module {
             .execute_reentry::<super::TypeDef, Vec<crate::Id>>(&self.session, "TypeDef")
             .await
     }
-    #[doc = "The generated files and directories made on top of the module source's context directory.\n\nSelects GraphQL Wire_Name `generatedContextDirectory` on `Module`."]
+    #[doc = "The generated files and directories made on top of the module source's context directory.\n\nSelects GraphQL field `generatedContextDirectory` on `Module`."]
     #[must_use]
     pub fn generated_context_directory(&self) -> super::Directory {
         let query = self.selection.select("generatedContextDirectory");
@@ -186,7 +186,7 @@ impl Module {
             selection: query,
         }
     }
-    #[doc = "Return the generator defined by the module with the given name. Must match to exactly one generator.\n\nSelects GraphQL Wire_Name `generator` on `Module`.\n\n**Experimental:** This API is highly experimental and may be removed or replaced entirely."]
+    #[doc = "Return the generator defined by the module with the given name. Must match to exactly one generator.\n\nSelects GraphQL field `generator` on `Module`.\n\n**Experimental:** This API is highly experimental and may be removed or replaced entirely."]
     #[must_use]
     pub fn generator(&self, name: impl Into<String>) -> super::Generator {
         let query = self.selection.select("generator");
@@ -196,7 +196,7 @@ impl Module {
             selection: query,
         }
     }
-    #[doc = "Return all generators defined by the module\n\nSelects GraphQL Wire_Name `generators` on `Module`.\n\n**Experimental:** This API is highly experimental and may be removed or replaced entirely."]
+    #[doc = "Return all generators defined by the module\n\nSelects GraphQL field `generators` on `Module`.\n\n**Experimental:** This API is highly experimental and may be removed or replaced entirely."]
     #[must_use]
     pub fn generators(&self) -> super::GeneratorGroup {
         let query = self.selection.select("generators");
@@ -219,12 +219,12 @@ impl Module {
             selection: query,
         }
     }
-    #[doc = "A unique identifier for this Module.\n\nSelects GraphQL Wire_Name `id` on `Module`."]
+    #[doc = "A unique identifier for this Module.\n\nSelects GraphQL field `id` on `Module`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "Interfaces served by this module.\n\nSelects GraphQL Wire_Name `interfaces` on `Module`."]
+    #[doc = "Interfaces served by this module.\n\nSelects GraphQL field `interfaces` on `Module`."]
     pub async fn interfaces(&self) -> Result<Vec<super::TypeDef>, crate::QueryError> {
         let query = self.selection.select("interfaces");
         let query = query.select("id");
@@ -232,7 +232,7 @@ impl Module {
             .execute_reentry::<super::TypeDef, Vec<crate::Id>>(&self.session, "TypeDef")
             .await
     }
-    #[doc = "The introspection schema JSON file for this module.\n\nThis file represents the schema visible to the module's source code, including all core types and those from the dependencies.\n\nNote: this is in the context of a module, so some core types may be hidden.\n\nSelects GraphQL Wire_Name `introspectionSchemaJSON` on `Module`."]
+    #[doc = "The introspection schema JSON file for this module.\n\nThis file represents the schema visible to the module's source code, including all core types and those from the dependencies.\n\nNote: this is in the context of a module, so some core types may be hidden.\n\nSelects GraphQL field `introspectionSchemaJSON` on `Module`."]
     #[must_use]
     pub fn introspection_schema_json(&self) -> super::File {
         let query = self.selection.select("introspectionSchemaJSON");
@@ -241,12 +241,12 @@ impl Module {
             selection: query,
         }
     }
-    #[doc = "The name of the module\n\nSelects GraphQL Wire_Name `name` on `Module`."]
+    #[doc = "The name of the module\n\nSelects GraphQL field `name` on `Module`."]
     pub async fn name(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("name");
         query.execute(&self.session).await
     }
-    #[doc = "Objects served by this module.\n\nSelects GraphQL Wire_Name `objects` on `Module`."]
+    #[doc = "Objects served by this module.\n\nSelects GraphQL field `objects` on `Module`."]
     pub async fn objects(&self) -> Result<Vec<super::TypeDef>, crate::QueryError> {
         let query = self.selection.select("objects");
         let query = query.select("id");
@@ -254,7 +254,7 @@ impl Module {
             .execute_reentry::<super::TypeDef, Vec<crate::Id>>(&self.session, "TypeDef")
             .await
     }
-    #[doc = "The container that runs the module's entrypoint. It will fail to execute if the module doesn't compile.\n\nSelects GraphQL Wire_Name `runtime` on `Module`."]
+    #[doc = "The container that runs the module's entrypoint. It will fail to execute if the module doesn't compile.\n\nSelects GraphQL field `runtime` on `Module`."]
     pub async fn runtime(&self) -> Result<Option<super::Container>, crate::QueryError> {
         let query = self.selection.select("runtime");
         let query = query.select("id");
@@ -262,7 +262,7 @@ impl Module {
             .execute_reentry::<super::Container, Option<crate::Id>>(&self.session, "Container")
             .await
     }
-    #[doc = "The SDK config used by this module.\n\nSelects GraphQL Wire_Name `sdk` on `Module`."]
+    #[doc = "The SDK config used by this module.\n\nSelects GraphQL field `sdk` on `Module`."]
     pub async fn sdk(&self) -> Result<Option<super::SdkConfig>, crate::QueryError> {
         let query = self.selection.select("sdk");
         let query = query.select("id");
@@ -270,7 +270,7 @@ impl Module {
             .execute_reentry::<super::SdkConfig, Option<crate::Id>>(&self.session, "SDKConfig")
             .await
     }
-    #[doc = "Serve a module's API in the current session.\n\nNote: this can only be called once per session. In the future, it could return a stream or service to remove the side effect.\n\nSelects GraphQL Wire_Name `serve` on `Module`."]
+    #[doc = "Serve a module's API in the current session.\n\nNote: this can only be called once per session. In the future, it could return a stream or service to remove the side effect.\n\nSelects GraphQL field `serve` on `Module`."]
     pub async fn serve(&self) -> Result<(), crate::QueryError> {
         let query = self.selection.select("serve");
         query.execute(&self.session).await
@@ -290,7 +290,7 @@ impl Module {
         };
         query.execute(&self.session).await
     }
-    #[doc = "Return all services defined by the module\n\nSelects GraphQL Wire_Name `services` on `Module`.\n\n**Experimental:** This API is highly experimental and may be removed or replaced entirely."]
+    #[doc = "Return all services defined by the module\n\nSelects GraphQL field `services` on `Module`.\n\n**Experimental:** This API is highly experimental and may be removed or replaced entirely."]
     #[must_use]
     pub fn services(&self) -> super::UpGroup {
         let query = self.selection.select("services");
@@ -313,7 +313,7 @@ impl Module {
             selection: query,
         }
     }
-    #[doc = "The source for the module.\n\nSelects GraphQL Wire_Name `source` on `Module`."]
+    #[doc = "The source for the module.\n\nSelects GraphQL field `source` on `Module`."]
     pub async fn source(&self) -> Result<Option<super::ModuleSource>, crate::QueryError> {
         let query = self.selection.select("source");
         let query = query.select("id");
@@ -324,7 +324,7 @@ impl Module {
             )
             .await
     }
-    #[doc = "Forces evaluation of the module, including any loading into the engine and associated validation.\n\nSelects GraphQL Wire_Name `sync` on `Module`."]
+    #[doc = "Forces evaluation of the module, including any loading into the engine and associated validation.\n\nSelects GraphQL field `sync` on `Module`."]
     pub async fn sync(&self) -> Result<super::Module, crate::QueryError> {
         let query = self.selection.select("sync");
         let id: crate::Id = query.execute(&self.session).await?;
@@ -334,7 +334,7 @@ impl Module {
             "Module",
         ))
     }
-    #[doc = "User-defined default values, loaded from local .env files.\n\nSelects GraphQL Wire_Name `userDefaults` on `Module`."]
+    #[doc = "User-defined default values, loaded from local .env files.\n\nSelects GraphQL field `userDefaults` on `Module`."]
     #[must_use]
     pub fn user_defaults(&self) -> super::EnvFile {
         let query = self.selection.select("userDefaults");
@@ -343,7 +343,7 @@ impl Module {
             selection: query,
         }
     }
-    #[doc = "Retrieves the module with the given description\n\nSelects GraphQL Wire_Name `withDescription` on `Module`."]
+    #[doc = "Retrieves the module with the given description\n\nSelects GraphQL field `withDescription` on `Module`."]
     #[must_use]
     pub fn with_description(&self, description: impl Into<String>) -> super::Module {
         let query = self.selection.select("withDescription");
@@ -353,7 +353,7 @@ impl Module {
             selection: query,
         }
     }
-    #[doc = "This module plus the given Enum type and associated values\n\nSelects GraphQL Wire_Name `withEnum` on `Module`."]
+    #[doc = "This module plus the given Enum type and associated values\n\nSelects GraphQL field `withEnum` on `Module`."]
     #[must_use]
     pub fn with_enum(&self, r#enum: impl Into<crate::IdInput<super::TypeDef>>) -> super::Module {
         let query = self.selection.select("withEnum");
@@ -363,7 +363,7 @@ impl Module {
             selection: query,
         }
     }
-    #[doc = "This module plus the given Interface type and associated functions\n\nSelects GraphQL Wire_Name `withInterface` on `Module`."]
+    #[doc = "This module plus the given Interface type and associated functions\n\nSelects GraphQL field `withInterface` on `Module`."]
     #[must_use]
     pub fn with_interface(
         &self,
@@ -376,7 +376,7 @@ impl Module {
             selection: query,
         }
     }
-    #[doc = "This module plus the given Object type and associated functions.\n\nSelects GraphQL Wire_Name `withObject` on `Module`."]
+    #[doc = "This module plus the given Object type and associated functions.\n\nSelects GraphQL field `withObject` on `Module`."]
     #[must_use]
     pub fn with_object(&self, object: impl Into<crate::IdInput<super::TypeDef>>) -> super::Module {
         let query = self.selection.select("withObject");

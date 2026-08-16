@@ -10,11 +10,11 @@ pub struct Query {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct QueryCacheVolumeOpts {
-    #[doc = "A user:group to set for the cache volume root.\n\nThe user and group can either be an ID (1000:1000) or a name (foo:bar).\n\nIf the group is omitted, it defaults to the same as the user.\n\n`None` omits GraphQL Wire_Name `owner` and preserves engine default `String(\"\")`."]
+    #[doc = "A user:group to set for the cache volume root.\n\nThe user and group can either be an ID (1000:1000) or a name (foo:bar).\n\nIf the group is omitted, it defaults to the same as the user.\n\n`None` omits GraphQL field `owner` and preserves engine default `String(\"\")`."]
     pub owner: Option<String>,
-    #[doc = "Sharing mode of the cache volume.\n\n`None` omits GraphQL Wire_Name `sharing` and preserves engine default `Enum(SchemaName(\"SHARED\"))`."]
+    #[doc = "Sharing mode of the cache volume.\n\n`None` omits GraphQL field `sharing` and preserves engine default `Enum(SchemaName(\"SHARED\"))`."]
     pub sharing: Option<super::CacheSharingMode>,
-    #[doc = "Identifier of the directory to use as the cache volume's root.\n\n`None` omits GraphQL Wire_Name `source`."]
+    #[doc = "Identifier of the directory to use as the cache volume's root.\n\n`None` omits GraphQL field `source`."]
     pub source: Option<crate::IdInput<super::Directory>>,
 }
 impl QueryCacheVolumeOpts {
@@ -41,7 +41,7 @@ impl QueryCacheVolumeOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct QueryContainerOpts {
-    #[doc = "Platform to initialize the container with. Defaults to the native platform of the current engine\n\n`None` omits GraphQL Wire_Name `platform`."]
+    #[doc = "Platform to initialize the container with. Defaults to the native platform of the current engine\n\n`None` omits GraphQL field `platform`."]
     pub platform: Option<crate::Platform>,
 }
 impl QueryContainerOpts {
@@ -56,9 +56,9 @@ impl QueryContainerOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct QueryCurrentTypeDefsOpts {
-    #[doc = "Strip core API functions from the Query type, leaving only module-sourced functions (constructors, entrypoint proxies, etc.).\n\nCore types (Container, Directory, etc.) are kept so return types and method chaining still work.\n\n`None` omits GraphQL Wire_Name `hideCore`."]
+    #[doc = "Strip core API functions from the Query type, leaving only module-sourced functions (constructors, entrypoint proxies, etc.).\n\nCore types (Container, Directory, etc.) are kept so return types and method chaining still work.\n\n`None` omits GraphQL field `hideCore`."]
     pub hide_core: Option<bool>,
-    #[doc = "Return the full referenced typedef closure instead of only top-level served typedefs.\n\n`None` omits GraphQL Wire_Name `returnAllTypes` and preserves engine default `Boolean(false)`."]
+    #[doc = "Return the full referenced typedef closure instead of only top-level served typedefs.\n\n`None` omits GraphQL field `returnAllTypes` and preserves engine default `Boolean(false)`."]
     pub return_all_types: Option<bool>,
 }
 impl QueryCurrentTypeDefsOpts {
@@ -79,7 +79,7 @@ impl QueryCurrentTypeDefsOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct QueryEngineVolumeOpts {
-    #[doc = "Optional existing subdirectory within the volume payload to mount.\n\n`None` omits GraphQL Wire_Name `subdir`."]
+    #[doc = "Optional existing subdirectory within the volume payload to mount.\n\n`None` omits GraphQL field `subdir`."]
     pub subdir: Option<String>,
 }
 impl QueryEngineVolumeOpts {
@@ -94,7 +94,7 @@ impl QueryEngineVolumeOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct QueryEnvFileOpts {
-    #[doc = "Replace \"${VAR}\" or \"$VAR\" with the value of other vars\n\n`None` omits GraphQL Wire_Name `expand`.\n\n**Deprecated:** Variable expansion is now enabled by default"]
+    #[doc = "Replace \"${VAR}\" or \"$VAR\" with the value of other vars\n\n`None` omits GraphQL field `expand`.\n\n**Deprecated:** Variable expansion is now enabled by default"]
     pub expand: Option<bool>,
 }
 impl QueryEnvFileOpts {
@@ -109,7 +109,7 @@ impl QueryEnvFileOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct QueryFileOpts {
-    #[doc = "Permissions of the new file. Example: 0600\n\n`None` omits GraphQL Wire_Name `permissions` and preserves engine default `Int(420)`."]
+    #[doc = "Permissions of the new file. Example: 0600\n\n`None` omits GraphQL field `permissions` and preserves engine default `Int(420)`."]
     pub permissions: Option<i64>,
 }
 impl QueryFileOpts {
@@ -124,19 +124,19 @@ impl QueryFileOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct QueryGitOpts {
-    #[doc = "A service which must be started before the repo is fetched.\n\n`None` omits GraphQL Wire_Name `experimentalServiceHost`."]
+    #[doc = "A service which must be started before the repo is fetched.\n\n`None` omits GraphQL field `experimentalServiceHost`."]
     pub experimental_service_host: Option<crate::IdInput<super::Service>>,
-    #[doc = "Secret used to populate the Authorization HTTP header\n\n`None` omits GraphQL Wire_Name `httpAuthHeader`."]
+    #[doc = "Secret used to populate the Authorization HTTP header\n\n`None` omits GraphQL field `httpAuthHeader`."]
     pub http_auth_header: Option<crate::IdInput<super::Secret>>,
-    #[doc = "Secret used to populate the password during basic HTTP Authorization\n\n`None` omits GraphQL Wire_Name `httpAuthToken`."]
+    #[doc = "Secret used to populate the password during basic HTTP Authorization\n\n`None` omits GraphQL field `httpAuthToken`."]
     pub http_auth_token: Option<crate::IdInput<super::Secret>>,
-    #[doc = "Username used to populate the password during basic HTTP Authorization\n\n`None` omits GraphQL Wire_Name `httpAuthUsername` and preserves engine default `String(\"\")`."]
+    #[doc = "Username used to populate the password during basic HTTP Authorization\n\n`None` omits GraphQL field `httpAuthUsername` and preserves engine default `String(\"\")`."]
     pub http_auth_username: Option<String>,
-    #[doc = "DEPRECATED: Set to true to keep .git directory.\n\n`None` omits GraphQL Wire_Name `keepGitDir` and preserves engine default `Boolean(true)`.\n\n**Deprecated:** Set to true to keep .git directory."]
+    #[doc = "DEPRECATED: Set to true to keep .git directory.\n\n`None` omits GraphQL field `keepGitDir` and preserves engine default `Boolean(true)`.\n\n**Deprecated:** Set to true to keep .git directory."]
     pub keep_git_dir: Option<bool>,
-    #[doc = "Set SSH auth socket\n\n`None` omits GraphQL Wire_Name `sshAuthSocket`."]
+    #[doc = "Set SSH auth socket\n\n`None` omits GraphQL field `sshAuthSocket`."]
     pub ssh_auth_socket: Option<crate::IdInput<super::Socket>>,
-    #[doc = "Set SSH known hosts\n\n`None` omits GraphQL Wire_Name `sshKnownHosts` and preserves engine default `String(\"\")`."]
+    #[doc = "Set SSH known hosts\n\n`None` omits GraphQL field `sshKnownHosts` and preserves engine default `String(\"\")`."]
     pub ssh_known_hosts: Option<String>,
 }
 impl QueryGitOpts {
@@ -187,15 +187,15 @@ impl QueryGitOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct QueryHttpOpts {
-    #[doc = "Secret used to populate the Authorization HTTP header\n\n`None` omits GraphQL Wire_Name `authHeader`."]
+    #[doc = "Secret used to populate the Authorization HTTP header\n\n`None` omits GraphQL field `authHeader`."]
     pub auth_header: Option<crate::IdInput<super::Secret>>,
-    #[doc = "Expected digest of the downloaded content (e.g., \"sha256:...\").\n\n`None` omits GraphQL Wire_Name `checksum`."]
+    #[doc = "Expected digest of the downloaded content (e.g., \"sha256:...\").\n\n`None` omits GraphQL field `checksum`."]
     pub checksum: Option<String>,
-    #[doc = "A service which must be started before the URL is fetched.\n\n`None` omits GraphQL Wire_Name `experimentalServiceHost`."]
+    #[doc = "A service which must be started before the URL is fetched.\n\n`None` omits GraphQL field `experimentalServiceHost`."]
     pub experimental_service_host: Option<crate::IdInput<super::Service>>,
-    #[doc = "File name to use for the file. Defaults to the last part of the URL.\n\n`None` omits GraphQL Wire_Name `name`."]
+    #[doc = "File name to use for the file. Defaults to the last part of the URL.\n\n`None` omits GraphQL field `name`."]
     pub name: Option<String>,
-    #[doc = "Permissions to set on the file.\n\n`None` omits GraphQL Wire_Name `permissions`."]
+    #[doc = "Permissions to set on the file.\n\n`None` omits GraphQL field `permissions`."]
     pub permissions: Option<i64>,
 }
 impl QueryHttpOpts {
@@ -234,9 +234,9 @@ impl QueryHttpOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct QueryLlmOpts {
-    #[doc = "The model to converse with, e.g. \"claude-sonnet-4-5\" or \"gpt-5.4\". Defaults to the configured default model.\n\n`None` omits GraphQL Wire_Name `model`."]
+    #[doc = "The model to converse with, e.g. \"claude-sonnet-4-5\" or \"gpt-5.4\". Defaults to the configured default model.\n\n`None` omits GraphQL field `model`."]
     pub model: Option<String>,
-    #[doc = "The provider serving the model, e.g. \"openai\". Overrides the provider otherwise inferred from the model name — useful when the name matches no known pattern (e.g. a fine-tune), or matches the wrong one.\n\n`None` omits GraphQL Wire_Name `provider`."]
+    #[doc = "The provider serving the model, e.g. \"openai\". Overrides the provider otherwise inferred from the model name — useful when the name matches no known pattern (e.g. a fine-tune), or matches the wrong one.\n\n`None` omits GraphQL field `provider`."]
     pub provider: Option<String>,
 }
 impl QueryLlmOpts {
@@ -257,13 +257,13 @@ impl QueryLlmOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct QueryModuleSourceOpts {
-    #[doc = "If true, do not error out if the provided ref string is a local path and does not exist yet. Useful when initializing new modules in directories that don't exist yet.\n\n`None` omits GraphQL Wire_Name `allowNotExists` and preserves engine default `Boolean(false)`."]
+    #[doc = "If true, do not error out if the provided ref string is a local path and does not exist yet. Useful when initializing new modules in directories that don't exist yet.\n\n`None` omits GraphQL field `allowNotExists` and preserves engine default `Boolean(false)`."]
     pub allow_not_exists: Option<bool>,
-    #[doc = "If true, do not attempt to find a module config file in a parent directory of the provided path. Only relevant for local module sources.\n\n`None` omits GraphQL Wire_Name `disableFindUp` and preserves engine default `Boolean(false)`."]
+    #[doc = "If true, do not attempt to find a module config file in a parent directory of the provided path. Only relevant for local module sources.\n\n`None` omits GraphQL field `disableFindUp` and preserves engine default `Boolean(false)`."]
     pub disable_find_up: Option<bool>,
-    #[doc = "The pinned version of the module source\n\n`None` omits GraphQL Wire_Name `refPin` and preserves engine default `String(\"\")`."]
+    #[doc = "The pinned version of the module source\n\n`None` omits GraphQL field `refPin` and preserves engine default `String(\"\")`."]
     pub ref_pin: Option<String>,
-    #[doc = "If set, error out if the ref string is not of the provided requireKind.\n\n`None` omits GraphQL Wire_Name `requireKind`."]
+    #[doc = "If set, error out if the ref string is not of the provided requireKind.\n\n`None` omits GraphQL field `requireKind`."]
     pub require_kind: Option<super::ModuleSourceKind>,
 }
 impl QueryModuleSourceOpts {
@@ -296,7 +296,7 @@ impl QueryModuleSourceOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct QuerySecretOpts {
-    #[doc = "If set, the given string will be used as the cache key for this secret. This means that any secrets with the same cache key will be considered equivalent in terms of cache lookups, even if they have different URIs or plaintext values.\n\nFor example, two secrets with the same cache key provided as secret env vars to other wise equivalent containers will result in the container withExecs hitting the cache for each other.\n\nIf not set, the cache key for the secret will be derived from its plaintext value as looked up when the secret is constructed.\n\n`None` omits GraphQL Wire_Name `cacheKey`."]
+    #[doc = "If set, the given string will be used as the cache key for this secret. This means that any secrets with the same cache key will be considered equivalent in terms of cache lookups, even if they have different URIs or plaintext values.\n\nFor example, two secrets with the same cache key provided as secret env vars to other wise equivalent containers will result in the container withExecs hitting the cache for each other.\n\nIf not set, the cache key for the secret will be derived from its plaintext value as looked up when the secret is constructed.\n\n`None` omits GraphQL field `cacheKey`."]
     pub cache_key: Option<String>,
 }
 impl QuerySecretOpts {
@@ -311,13 +311,13 @@ impl QuerySecretOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct QuerySshfsVolumeOpts {
-    #[doc = "Optional cache equivalence key. If set, volumes with the same cacheKey may be considered equivalent for cache lookups, still subject to their resource dependencies.\n\n`None` omits GraphQL Wire_Name `cacheKey`."]
+    #[doc = "Optional cache equivalence key. If set, volumes with the same cacheKey may be considered equivalent for cache lookups, still subject to their resource dependencies.\n\n`None` omits GraphQL field `cacheKey`."]
     pub cache_key: Option<String>,
-    #[doc = "Service to use as the SSHFS network endpoint while verifying the original host key.\n\n`None` omits GraphQL Wire_Name `experimentalServiceHost`."]
+    #[doc = "Service to use as the SSHFS network endpoint while verifying the original host key.\n\n`None` omits GraphQL field `experimentalServiceHost`."]
     pub experimental_service_host: Option<crate::IdInput<super::Service>>,
-    #[doc = "Disable SSH host key verification. This is insecure and must be explicitly opted into.\n\n`None` omits GraphQL Wire_Name `insecureSkipHostKeyCheck` and preserves engine default `Boolean(false)`."]
+    #[doc = "Disable SSH host key verification. This is insecure and must be explicitly opted into.\n\n`None` omits GraphQL field `insecureSkipHostKeyCheck` and preserves engine default `Boolean(false)`."]
     pub insecure_skip_host_key_check: Option<bool>,
-    #[doc = "known_hosts material used to verify the remote host key. Required unless insecureSkipHostKeyCheck is true.\n\n`None` omits GraphQL Wire_Name `knownHosts`."]
+    #[doc = "known_hosts material used to verify the remote host key. Required unless insecureSkipHostKeyCheck is true.\n\n`None` omits GraphQL field `knownHosts`."]
     pub known_hosts: Option<crate::IdInput<super::Secret>>,
 }
 impl QuerySshfsVolumeOpts {
@@ -377,7 +377,7 @@ impl From<Query> for crate::IdInput<super::NodeClient> {
     }
 }
 impl Query {
-    #[doc = "initialize an address to load directories, containers, secrets or other object types.\n\nSelects GraphQL Wire_Name `address` on `Query`."]
+    #[doc = "initialize an address to load directories, containers, secrets or other object types.\n\nSelects GraphQL field `address` on `Query`."]
     #[must_use]
     pub fn address(&self, value: impl Into<String>) -> super::Address {
         let query = self.selection.select("address");
@@ -387,7 +387,7 @@ impl Query {
             selection: query,
         }
     }
-    #[doc = "Constructs a cache volume for a given cache key.\n\nSelects GraphQL Wire_Name `cacheVolume` on `Query`."]
+    #[doc = "Constructs a cache volume for a given cache key.\n\nSelects GraphQL field `cacheVolume` on `Query`."]
     #[must_use]
     pub fn cache_volume(&self, key: impl Into<String>) -> super::CacheVolume {
         let query = self.selection.select("cacheVolume");
@@ -426,7 +426,7 @@ impl Query {
             selection: query,
         }
     }
-    #[doc = "Creates an empty changeset\n\nSelects GraphQL Wire_Name `changeset` on `Query`."]
+    #[doc = "Creates an empty changeset\n\nSelects GraphQL field `changeset` on `Query`."]
     #[must_use]
     pub fn changeset(&self) -> super::Changeset {
         let query = self.selection.select("changeset");
@@ -435,7 +435,7 @@ impl Query {
             selection: query,
         }
     }
-    #[doc = "Dagger Cloud configuration and state\n\nSelects GraphQL Wire_Name `cloud` on `Query`."]
+    #[doc = "Dagger Cloud configuration and state\n\nSelects GraphQL field `cloud` on `Query`."]
     #[must_use]
     pub fn cloud(&self) -> super::Cloud {
         let query = self.selection.select("cloud");
@@ -444,7 +444,7 @@ impl Query {
             selection: query,
         }
     }
-    #[doc = "Creates a scratch container, with no image or metadata.\n\nTo pull an image, follow up with the \"from\" function.\n\nSelects GraphQL Wire_Name `container` on `Query`."]
+    #[doc = "Creates a scratch container, with no image or metadata.\n\nTo pull an image, follow up with the \"from\" function.\n\nSelects GraphQL field `container` on `Query`."]
     #[must_use]
     pub fn container(&self) -> super::Container {
         let query = self.selection.select("container");
@@ -467,7 +467,7 @@ impl Query {
             selection: query,
         }
     }
-    #[doc = "The FunctionCall context that the SDK caller is currently executing in.\n\nIf the caller is not currently executing in a function, this will return an error.\n\nSelects GraphQL Wire_Name `currentFunctionCall` on `Query`."]
+    #[doc = "The FunctionCall context that the SDK caller is currently executing in.\n\nIf the caller is not currently executing in a function, this will return an error.\n\nSelects GraphQL field `currentFunctionCall` on `Query`."]
     #[must_use]
     pub fn current_function_call(&self) -> super::FunctionCall {
         let query = self.selection.select("currentFunctionCall");
@@ -476,7 +476,7 @@ impl Query {
             selection: query,
         }
     }
-    #[doc = "The module currently being served in the session, if any.\n\nSelects GraphQL Wire_Name `currentModule` on `Query`."]
+    #[doc = "The module currently being served in the session, if any.\n\nSelects GraphQL field `currentModule` on `Query`."]
     #[must_use]
     pub fn current_module(&self) -> super::CurrentModule {
         let query = self.selection.select("currentModule");
@@ -485,7 +485,7 @@ impl Query {
             selection: query,
         }
     }
-    #[doc = "The object that received the current module function call, as a Node. Errors when there is no current call, or the call is top-level (e.g. a module constructor).\n\nSelects GraphQL Wire_Name `currentNode` on `Query`."]
+    #[doc = "The object that received the current module function call, as a Node. Errors when there is no current call, or the call is top-level (e.g. a module constructor).\n\nSelects GraphQL field `currentNode` on `Query`."]
     #[must_use]
     pub fn current_node(&self) -> super::NodeClient {
         let query = self.selection.select("currentNode");
@@ -494,7 +494,7 @@ impl Query {
             selection: query,
         }
     }
-    #[doc = "The TypeDef representations of the objects currently being served in the session.\n\nSelects GraphQL Wire_Name `currentTypeDefs` on `Query`."]
+    #[doc = "The TypeDef representations of the objects currently being served in the session.\n\nSelects GraphQL field `currentTypeDefs` on `Query`."]
     pub async fn current_type_defs(&self) -> Result<Vec<super::TypeDef>, crate::QueryError> {
         let query = self.selection.select("currentTypeDefs");
         let query = query.select("id");
@@ -523,7 +523,7 @@ impl Query {
             .execute_reentry::<super::TypeDef, Vec<crate::Id>>(&self.session, "TypeDef")
             .await
     }
-    #[doc = "Detect and return the current workspace.\n\nSelects GraphQL Wire_Name `currentWorkspace` on `Query`.\n\n**Experimental:** Highly experimental API extracted from a more ambitious workspace implementation."]
+    #[doc = "Detect and return the current workspace.\n\nSelects GraphQL field `currentWorkspace` on `Query`.\n\n**Experimental:** Highly experimental API extracted from a more ambitious workspace implementation."]
     #[must_use]
     pub fn current_workspace(&self) -> super::Workspace {
         let query = self.selection.select("currentWorkspace");
@@ -532,12 +532,12 @@ impl Query {
             selection: query,
         }
     }
-    #[doc = "The default platform of the engine.\n\nSelects GraphQL Wire_Name `defaultPlatform` on `Query`."]
+    #[doc = "The default platform of the engine.\n\nSelects GraphQL field `defaultPlatform` on `Query`."]
     pub async fn default_platform(&self) -> Result<crate::Platform, crate::QueryError> {
         let query = self.selection.select("defaultPlatform");
         query.execute(&self.session).await
     }
-    #[doc = "Creates an empty directory.\n\nSelects GraphQL Wire_Name `directory` on `Query`."]
+    #[doc = "Creates an empty directory.\n\nSelects GraphQL field `directory` on `Query`."]
     #[must_use]
     pub fn directory(&self) -> super::Directory {
         let query = self.selection.select("directory");
@@ -546,7 +546,7 @@ impl Query {
             selection: query,
         }
     }
-    #[doc = "The Dagger engine container configuration and state\n\nSelects GraphQL Wire_Name `engine` on `Query`."]
+    #[doc = "The Dagger engine container configuration and state\n\nSelects GraphQL field `engine` on `Query`."]
     #[must_use]
     pub fn engine(&self) -> super::Engine {
         let query = self.selection.select("engine");
@@ -555,7 +555,7 @@ impl Query {
             selection: query,
         }
     }
-    #[doc = "Constructs an engine-managed volume backed by operator-provided storage beneath the configured engine state root.\n\nSelects GraphQL Wire_Name `engineVolume` on `Query`."]
+    #[doc = "Constructs an engine-managed volume backed by operator-provided storage beneath the configured engine state root.\n\nSelects GraphQL field `engineVolume` on `Query`."]
     #[must_use]
     pub fn engine_volume(&self, name: impl Into<String>) -> super::Volume {
         let query = self.selection.select("engineVolume");
@@ -584,7 +584,7 @@ impl Query {
             selection: query,
         }
     }
-    #[doc = "Initialize an environment file\n\nSelects GraphQL Wire_Name `envFile` on `Query`."]
+    #[doc = "Initialize an environment file\n\nSelects GraphQL field `envFile` on `Query`."]
     #[must_use]
     pub fn env_file(&self) -> super::EnvFile {
         let query = self.selection.select("envFile");
@@ -607,7 +607,7 @@ impl Query {
             selection: query,
         }
     }
-    #[doc = "Create a new error.\n\nSelects GraphQL Wire_Name `error` on `Query`."]
+    #[doc = "Create a new error.\n\nSelects GraphQL field `error` on `Query`."]
     #[must_use]
     pub fn error(&self, message: impl Into<String>) -> super::Error {
         let query = self.selection.select("error");
@@ -617,7 +617,7 @@ impl Query {
             selection: query,
         }
     }
-    #[doc = "Creates a file with the specified contents.\n\nSelects GraphQL Wire_Name `file` on `Query`."]
+    #[doc = "Creates a file with the specified contents.\n\nSelects GraphQL field `file` on `Query`."]
     #[must_use]
     pub fn file(&self, contents: impl Into<String>, name: impl Into<String>) -> super::File {
         let query = self.selection.select("file");
@@ -649,7 +649,7 @@ impl Query {
             selection: query,
         }
     }
-    #[doc = "Creates a function.\n\nSelects GraphQL Wire_Name `function` on `Query`."]
+    #[doc = "Creates a function.\n\nSelects GraphQL field `function` on `Query`."]
     #[must_use]
     pub fn function(
         &self,
@@ -664,7 +664,7 @@ impl Query {
             selection: query,
         }
     }
-    #[doc = "Create a code generation result, given a directory containing the generated code.\n\nSelects GraphQL Wire_Name `generatedCode` on `Query`."]
+    #[doc = "Create a code generation result, given a directory containing the generated code.\n\nSelects GraphQL field `generatedCode` on `Query`."]
     #[must_use]
     pub fn generated_code(
         &self,
@@ -677,7 +677,7 @@ impl Query {
             selection: query,
         }
     }
-    #[doc = "Queries a Git repository.\n\nSelects GraphQL Wire_Name `git` on `Query`."]
+    #[doc = "Queries a Git repository.\n\nSelects GraphQL field `git` on `Query`."]
     #[must_use]
     pub fn git(&self, url: impl Into<String>) -> super::GitRepository {
         let query = self.selection.select("git");
@@ -732,7 +732,7 @@ impl Query {
             selection: query,
         }
     }
-    #[doc = "Queries the host environment.\n\nSelects GraphQL Wire_Name `host` on `Query`."]
+    #[doc = "Queries the host environment.\n\nSelects GraphQL field `host` on `Query`."]
     #[must_use]
     pub fn host(&self) -> super::Host {
         let query = self.selection.select("host");
@@ -741,7 +741,7 @@ impl Query {
             selection: query,
         }
     }
-    #[doc = "Returns a file containing an http remote url content.\n\nSelects GraphQL Wire_Name `http` on `Query`."]
+    #[doc = "Returns a file containing an http remote url content.\n\nSelects GraphQL field `http` on `Query`."]
     #[must_use]
     pub fn http(&self, url: impl Into<String>) -> super::File {
         let query = self.selection.select("http");
@@ -786,12 +786,12 @@ impl Query {
             selection: query,
         }
     }
-    #[doc = "A unique identifier for this Query.\n\nSelects GraphQL Wire_Name `id` on `Query`."]
+    #[doc = "A unique identifier for this Query.\n\nSelects GraphQL field `id` on `Query`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "Initialize a JSON value\n\nSelects GraphQL Wire_Name `json` on `Query`."]
+    #[doc = "Initialize a JSON value\n\nSelects GraphQL field `json` on `Query`."]
     #[must_use]
     pub fn json(&self) -> super::JsonValue {
         let query = self.selection.select("json");
@@ -800,7 +800,7 @@ impl Query {
             selection: query,
         }
     }
-    #[doc = "Initialize a new LLM conversation.\n\nSelects GraphQL Wire_Name `llm` on `Query`.\n\n**Experimental:** LLM support is not yet stabilized"]
+    #[doc = "Initialize a new LLM conversation.\n\nSelects GraphQL field `llm` on `Query`.\n\n**Experimental:** LLM support is not yet stabilized"]
     #[must_use]
     pub fn llm(&self) -> super::Llm {
         let query = self.selection.select("llm");
@@ -828,7 +828,7 @@ impl Query {
             selection: query,
         }
     }
-    #[doc = "Create a new module.\n\nSelects GraphQL Wire_Name `module` on `Query`."]
+    #[doc = "Create a new module.\n\nSelects GraphQL field `module` on `Query`."]
     #[must_use]
     pub fn module(&self) -> super::Module {
         let query = self.selection.select("module");
@@ -837,7 +837,7 @@ impl Query {
             selection: query,
         }
     }
-    #[doc = "Create a new module source instance from a source ref string\n\nSelects GraphQL Wire_Name `moduleSource` on `Query`."]
+    #[doc = "Create a new module source instance from a source ref string\n\nSelects GraphQL field `moduleSource` on `Query`."]
     #[must_use]
     pub fn module_source(&self, ref_string: impl Into<String>) -> super::ModuleSource {
         let query = self.selection.select("moduleSource");
@@ -881,7 +881,7 @@ impl Query {
             selection: query,
         }
     }
-    #[doc = "Load any object by its ID.\n\nSelects GraphQL Wire_Name `node` on `Query`."]
+    #[doc = "Load any object by its ID.\n\nSelects GraphQL field `node` on `Query`."]
     pub async fn node(
         &self,
         id: crate::Id,
@@ -893,7 +893,7 @@ impl Query {
             .execute_reentry::<super::NodeClient, Option<crate::Id>>(&self.session, "Node")
             .await
     }
-    #[doc = "Load a GraphQL introspection schema for merging.\n\nSelects GraphQL Wire_Name `schema` on `Query`."]
+    #[doc = "Load a GraphQL introspection schema for merging.\n\nSelects GraphQL field `schema` on `Query`."]
     #[must_use]
     pub fn schema(&self, json: crate::Json) -> super::Schema {
         let query = self.selection.select("schema");
@@ -903,7 +903,7 @@ impl Query {
             selection: query,
         }
     }
-    #[doc = "Creates a new secret.\n\nSelects GraphQL Wire_Name `secret` on `Query`."]
+    #[doc = "Creates a new secret.\n\nSelects GraphQL field `secret` on `Query`."]
     #[must_use]
     pub fn secret(&self, uri: impl Into<String>) -> super::Secret {
         let query = self.selection.select("secret");
@@ -928,7 +928,7 @@ impl Query {
             selection: query,
         }
     }
-    #[doc = "Sets a secret given a user defined name to its plaintext and returns the secret.\n\nThe plaintext value is limited to a size of 128000 bytes.\n\nSelects GraphQL Wire_Name `setSecret` on `Query`."]
+    #[doc = "Sets a secret given a user defined name to its plaintext and returns the secret.\n\nThe plaintext value is limited to a size of 128000 bytes.\n\nSelects GraphQL field `setSecret` on `Query`."]
     #[must_use]
     pub fn set_secret(
         &self,
@@ -943,7 +943,7 @@ impl Query {
             selection: query,
         }
     }
-    #[doc = "Creates source map metadata.\n\nSelects GraphQL Wire_Name `sourceMap` on `Query`."]
+    #[doc = "Creates source map metadata.\n\nSelects GraphQL field `sourceMap` on `Query`."]
     #[must_use]
     pub fn source_map(
         &self,
@@ -960,7 +960,7 @@ impl Query {
             selection: query,
         }
     }
-    #[doc = "Constructs an SSHFS volume.\n\nSelects GraphQL Wire_Name `sshfsVolume` on `Query`."]
+    #[doc = "Constructs an SSHFS volume.\n\nSelects GraphQL field `sshfsVolume` on `Query`."]
     #[must_use]
     pub fn sshfs_volume(
         &self,
@@ -1011,7 +1011,7 @@ impl Query {
             selection: query,
         }
     }
-    #[doc = "Create a new TypeDef.\n\nSelects GraphQL Wire_Name `typeDef` on `Query`."]
+    #[doc = "Create a new TypeDef.\n\nSelects GraphQL field `typeDef` on `Query`."]
     #[must_use]
     pub fn type_def(&self) -> super::TypeDef {
         let query = self.selection.select("typeDef");
@@ -1020,7 +1020,7 @@ impl Query {
             selection: query,
         }
     }
-    #[doc = "Get the current Dagger Engine version.\n\nSelects GraphQL Wire_Name `version` on `Query`."]
+    #[doc = "Get the current Dagger Engine version.\n\nSelects GraphQL field `version` on `Query`."]
     pub async fn version(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("version");
         query.execute(&self.session).await

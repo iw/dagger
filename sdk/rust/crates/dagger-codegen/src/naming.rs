@@ -78,10 +78,10 @@ pub enum IdentifierToken {
     Suffixed,
 }
 
-/// One Rust identifier paired permanently with its exact GraphQL Wire_Name.
+/// One Rust identifier paired permanently with its exact GraphQL wire name.
 #[derive(Clone, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)]
 pub struct RustName {
-    /// Exact source Wire_Name used by selection or serialization.
+    /// Exact source wire name used by selection or serialization.
     pub source: SchemaName,
     /// Valid Rust 2024 spelling, including `r#` when required.
     pub identifier: String,

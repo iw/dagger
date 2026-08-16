@@ -10,7 +10,7 @@ pub struct CurrentModule {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct CurrentModuleAsSdkOpts {
-    #[doc = "The workspace to resolve SDK-role data against. Defaults to the current workspace.\n\n`None` omits GraphQL Wire_Name `workspace`."]
+    #[doc = "The workspace to resolve SDK-role data against. Defaults to the current workspace.\n\n`None` omits GraphQL field `workspace`."]
     pub workspace: Option<crate::IdInput<super::Workspace>>,
 }
 impl CurrentModuleAsSdkOpts {
@@ -25,7 +25,7 @@ impl CurrentModuleAsSdkOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct CurrentModuleGeneratorsOpts {
-    #[doc = "Only include generators matching the specified patterns\n\n`None` omits GraphQL Wire_Name `include`."]
+    #[doc = "Only include generators matching the specified patterns\n\n`None` omits GraphQL field `include`."]
     pub include: Option<Vec<String>>,
 }
 impl CurrentModuleGeneratorsOpts {
@@ -40,11 +40,11 @@ impl CurrentModuleGeneratorsOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct CurrentModuleWorkdirOpts {
-    #[doc = "Exclude artifacts that match the given pattern (e.g., \\[\"node_modules/\", \".git*\"\\]).\n\n`None` omits GraphQL Wire_Name `exclude` and preserves engine default `List(\\[\\])`."]
+    #[doc = "Exclude artifacts that match the given pattern (e.g., \\[\"node_modules/\", \".git*\"\\]).\n\n`None` omits GraphQL field `exclude` and preserves engine default `List(\\[\\])`."]
     pub exclude: Option<Vec<String>>,
-    #[doc = "Apply .gitignore filter rules inside the directory\n\n`None` omits GraphQL Wire_Name `gitignore` and preserves engine default `Boolean(false)`."]
+    #[doc = "Apply .gitignore filter rules inside the directory\n\n`None` omits GraphQL field `gitignore` and preserves engine default `Boolean(false)`."]
     pub gitignore: Option<bool>,
-    #[doc = "Include only artifacts that match the given pattern (e.g., \\[\"app/\", \"package.*\"\\]).\n\n`None` omits GraphQL Wire_Name `include` and preserves engine default `List(\\[\\])`."]
+    #[doc = "Include only artifacts that match the given pattern (e.g., \\[\"app/\", \"package.*\"\\]).\n\n`None` omits GraphQL field `include` and preserves engine default `List(\\[\\])`."]
     pub include: Option<Vec<String>>,
 }
 impl CurrentModuleWorkdirOpts {
@@ -98,7 +98,7 @@ impl From<CurrentModule> for crate::IdInput<super::NodeClient> {
     }
 }
 impl CurrentModule {
-    #[doc = "Treat the currently executing module as an SDK installed in the given workspace, exposing the modules and clients it manages.\n\nErrors if the current module is not installed as an SDK in this workspace.\n\nSelects GraphQL Wire_Name `asSDK` on `CurrentModule`."]
+    #[doc = "Treat the currently executing module as an SDK installed in the given workspace, exposing the modules and clients it manages.\n\nErrors if the current module is not installed as an SDK in this workspace.\n\nSelects GraphQL field `asSDK` on `CurrentModule`."]
     #[must_use]
     pub fn as_sdk(&self) -> super::CurrentModuleAsSdk {
         let query = self.selection.select("asSDK");
@@ -121,7 +121,7 @@ impl CurrentModule {
             selection: query,
         }
     }
-    #[doc = "The dependencies of the module.\n\nSelects GraphQL Wire_Name `dependencies` on `CurrentModule`."]
+    #[doc = "The dependencies of the module.\n\nSelects GraphQL field `dependencies` on `CurrentModule`."]
     pub async fn dependencies(&self) -> Result<Vec<super::Module>, crate::QueryError> {
         let query = self.selection.select("dependencies");
         let query = query.select("id");
@@ -129,7 +129,7 @@ impl CurrentModule {
             .execute_reentry::<super::Module, Vec<crate::Id>>(&self.session, "Module")
             .await
     }
-    #[doc = "The generated files and directories made on top of the module source's context directory.\n\nSelects GraphQL Wire_Name `generatedContextDirectory` on `CurrentModule`."]
+    #[doc = "The generated files and directories made on top of the module source's context directory.\n\nSelects GraphQL field `generatedContextDirectory` on `CurrentModule`."]
     #[must_use]
     pub fn generated_context_directory(&self) -> super::Directory {
         let query = self.selection.select("generatedContextDirectory");
@@ -138,7 +138,7 @@ impl CurrentModule {
             selection: query,
         }
     }
-    #[doc = "Return all generators defined by the module\n\nSelects GraphQL Wire_Name `generators` on `CurrentModule`.\n\n**Experimental:** This API is highly experimental and may be removed or replaced entirely."]
+    #[doc = "Return all generators defined by the module\n\nSelects GraphQL field `generators` on `CurrentModule`.\n\n**Experimental:** This API is highly experimental and may be removed or replaced entirely."]
     #[must_use]
     pub fn generators(&self) -> super::GeneratorGroup {
         let query = self.selection.select("generators");
@@ -161,17 +161,17 @@ impl CurrentModule {
             selection: query,
         }
     }
-    #[doc = "A unique identifier for this CurrentModule.\n\nSelects GraphQL Wire_Name `id` on `CurrentModule`."]
+    #[doc = "A unique identifier for this CurrentModule.\n\nSelects GraphQL field `id` on `CurrentModule`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "The name of the module being executed in\n\nSelects GraphQL Wire_Name `name` on `CurrentModule`."]
+    #[doc = "The name of the module being executed in\n\nSelects GraphQL field `name` on `CurrentModule`."]
     pub async fn name(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("name");
         query.execute(&self.session).await
     }
-    #[doc = "The directory containing the module's source code loaded into the engine (plus any generated code that may have been created).\n\nSelects GraphQL Wire_Name `source` on `CurrentModule`."]
+    #[doc = "The directory containing the module's source code loaded into the engine (plus any generated code that may have been created).\n\nSelects GraphQL field `source` on `CurrentModule`."]
     #[must_use]
     pub fn source(&self) -> super::Directory {
         let query = self.selection.select("source");
@@ -180,7 +180,7 @@ impl CurrentModule {
             selection: query,
         }
     }
-    #[doc = "Load a directory from the module's scratch working directory, including any changes that may have been made to it during module function execution.\n\nSelects GraphQL Wire_Name `workdir` on `CurrentModule`."]
+    #[doc = "Load a directory from the module's scratch working directory, including any changes that may have been made to it during module function execution.\n\nSelects GraphQL field `workdir` on `CurrentModule`."]
     #[must_use]
     pub fn workdir(&self, path: impl Into<String>) -> super::Directory {
         let query = self.selection.select("workdir");
@@ -219,7 +219,7 @@ impl CurrentModule {
             selection: query,
         }
     }
-    #[doc = "Load a file from the module's scratch working directory, including any changes that may have been made to it during module function execution.Load a file from the module's scratch working directory, including any changes that may have been made to it during module function execution.\n\nSelects GraphQL Wire_Name `workdirFile` on `CurrentModule`."]
+    #[doc = "Load a file from the module's scratch working directory, including any changes that may have been made to it during module function execution.Load a file from the module's scratch working directory, including any changes that may have been made to it during module function execution.\n\nSelects GraphQL field `workdirFile` on `CurrentModule`."]
     #[must_use]
     pub fn workdir_file(&self, path: impl Into<String>) -> super::File {
         let query = self.selection.select("workdirFile");

@@ -37,7 +37,7 @@ impl From<WorkspaceMigrationStep> for crate::IdInput<super::NodeClient> {
     }
 }
 impl WorkspaceMigrationStep {
-    #[doc = "Filesystem changes for this step.\n\nSelects GraphQL Wire_Name `changes` on `WorkspaceMigrationStep`."]
+    #[doc = "Filesystem changes for this step.\n\nSelects GraphQL field `changes` on `WorkspaceMigrationStep`."]
     #[must_use]
     pub fn changes(&self) -> super::Changeset {
         let query = self.selection.select("changes");
@@ -46,22 +46,22 @@ impl WorkspaceMigrationStep {
             selection: query,
         }
     }
-    #[doc = "Stable code identifying this logical migration step.\n\nSelects GraphQL Wire_Name `code` on `WorkspaceMigrationStep`."]
+    #[doc = "Stable code identifying this logical migration step.\n\nSelects GraphQL field `code` on `WorkspaceMigrationStep`."]
     pub async fn code(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("code");
         query.execute(&self.session).await
     }
-    #[doc = "Generic summary of this step's purpose and impact.\n\nSelects GraphQL Wire_Name `description` on `WorkspaceMigrationStep`."]
+    #[doc = "Generic summary of this step's purpose and impact.\n\nSelects GraphQL field `description` on `WorkspaceMigrationStep`."]
     pub async fn description(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("description");
         query.execute(&self.session).await
     }
-    #[doc = "A unique identifier for this WorkspaceMigrationStep.\n\nSelects GraphQL Wire_Name `id` on `WorkspaceMigrationStep`."]
+    #[doc = "A unique identifier for this WorkspaceMigrationStep.\n\nSelects GraphQL field `id` on `WorkspaceMigrationStep`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "Non-fatal warnings raised while planning this step.\n\nSelects GraphQL Wire_Name `warnings` on `WorkspaceMigrationStep`."]
+    #[doc = "Non-fatal warnings raised while planning this step.\n\nSelects GraphQL field `warnings` on `WorkspaceMigrationStep`."]
     pub async fn warnings(&self) -> Result<Vec<String>, crate::QueryError> {
         let query = self.selection.select("warnings");
         query.execute(&self.session).await

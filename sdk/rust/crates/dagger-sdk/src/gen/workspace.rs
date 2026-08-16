@@ -10,13 +10,13 @@ pub struct Workspace {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct WorkspaceChecksOpts {
-    #[doc = "Only include checks matching the specified patterns\n\n`None` omits GraphQL Wire_Name `include`."]
+    #[doc = "Only include checks matching the specified patterns\n\n`None` omits GraphQL field `include`."]
     pub include: Option<Vec<String>>,
-    #[doc = "When true, only return annotated check functions; exclude generate-as-checks\n\n`None` omits GraphQL Wire_Name `noGenerate`."]
+    #[doc = "When true, only return annotated check functions; exclude generate-as-checks\n\n`None` omits GraphQL field `noGenerate`."]
     pub no_generate: Option<bool>,
-    #[doc = "When true, only return generate-as-checks; exclude annotated check functions\n\n`None` omits GraphQL Wire_Name `onlyGenerate`."]
+    #[doc = "When true, only return generate-as-checks; exclude annotated check functions\n\n`None` omits GraphQL field `onlyGenerate`."]
     pub only_generate: Option<bool>,
-    #[doc = "Skip checks matching the specified patterns\n\n`None` omits GraphQL Wire_Name `skip`."]
+    #[doc = "Skip checks matching the specified patterns\n\n`None` omits GraphQL field `skip`."]
     pub skip: Option<Vec<String>>,
 }
 impl WorkspaceChecksOpts {
@@ -49,7 +49,7 @@ impl WorkspaceChecksOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct WorkspaceConfigReadOpts {
-    #[doc = "Dotted key path (e.g. modules.greeter.source). Empty for full config.\n\n`None` omits GraphQL Wire_Name `key` and preserves engine default `String(\"\")`."]
+    #[doc = "Dotted key path (e.g. modules.greeter.source). Empty for full config.\n\n`None` omits GraphQL field `key` and preserves engine default `String(\"\")`."]
     pub key: Option<String>,
 }
 impl WorkspaceConfigReadOpts {
@@ -64,11 +64,11 @@ impl WorkspaceConfigReadOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct WorkspaceDirectoryOpts {
-    #[doc = "Exclude artifacts that match the given pattern (e.g., \\[\"node_modules/\", \".git*\"\\]).\n\n`None` omits GraphQL Wire_Name `exclude` and preserves engine default `List(\\[\\])`."]
+    #[doc = "Exclude artifacts that match the given pattern (e.g., \\[\"node_modules/\", \".git*\"\\]).\n\n`None` omits GraphQL field `exclude` and preserves engine default `List(\\[\\])`."]
     pub exclude: Option<Vec<String>>,
-    #[doc = "Apply .gitignore filter rules inside the directory.\n\n`None` omits GraphQL Wire_Name `gitignore` and preserves engine default `Boolean(false)`."]
+    #[doc = "Apply .gitignore filter rules inside the directory.\n\n`None` omits GraphQL field `gitignore` and preserves engine default `Boolean(false)`."]
     pub gitignore: Option<bool>,
-    #[doc = "Include only artifacts that match the given pattern (e.g., \\[\"app/\", \"package.*\"\\]).\n\n`None` omits GraphQL Wire_Name `include` and preserves engine default `List(\\[\\])`."]
+    #[doc = "Include only artifacts that match the given pattern (e.g., \\[\"app/\", \"package.*\"\\]).\n\n`None` omits GraphQL field `include` and preserves engine default `List(\\[\\])`."]
     pub include: Option<Vec<String>>,
 }
 impl WorkspaceDirectoryOpts {
@@ -95,7 +95,7 @@ impl WorkspaceDirectoryOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct WorkspaceFindUpOpts {
-    #[doc = "Path to start the search from. Relative paths resolve from the workspace cwd; absolute paths resolve from the workspace root.\n\n`None` omits GraphQL Wire_Name `from` and preserves engine default `String(\".\")`."]
+    #[doc = "Path to start the search from. Relative paths resolve from the workspace cwd; absolute paths resolve from the workspace root.\n\n`None` omits GraphQL field `from` and preserves engine default `String(\".\")`."]
     pub from: Option<String>,
 }
 impl WorkspaceFindUpOpts {
@@ -110,7 +110,7 @@ impl WorkspaceFindUpOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct WorkspaceGeneratorsOpts {
-    #[doc = "Only include generators matching the specified patterns\n\n`None` omits GraphQL Wire_Name `include`."]
+    #[doc = "Only include generators matching the specified patterns\n\n`None` omits GraphQL field `include`."]
     pub include: Option<Vec<String>>,
 }
 impl WorkspaceGeneratorsOpts {
@@ -125,25 +125,25 @@ impl WorkspaceGeneratorsOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct WorkspaceSearchOpts {
-    #[doc = "Allow the . pattern to match newlines in multiline mode.\n\n`None` omits GraphQL Wire_Name `dotall` and preserves engine default `Boolean(false)`."]
+    #[doc = "Allow the . pattern to match newlines in multiline mode.\n\n`None` omits GraphQL field `dotall` and preserves engine default `Boolean(false)`."]
     pub dotall: Option<bool>,
-    #[doc = "Only return matching files, not lines and content\n\n`None` omits GraphQL Wire_Name `filesOnly` and preserves engine default `Boolean(false)`."]
+    #[doc = "Only return matching files, not lines and content\n\n`None` omits GraphQL field `filesOnly` and preserves engine default `Boolean(false)`."]
     pub files_only: Option<bool>,
-    #[doc = "Glob patterns to match (e.g., \"*.md\")\n\n`None` omits GraphQL Wire_Name `globs` and preserves engine default `List(\\[\\])`."]
+    #[doc = "Glob patterns to match (e.g., \"*.md\")\n\n`None` omits GraphQL field `globs` and preserves engine default `List(\\[\\])`."]
     pub globs: Option<Vec<String>>,
-    #[doc = "Enable case-insensitive matching.\n\n`None` omits GraphQL Wire_Name `insensitive` and preserves engine default `Boolean(false)`."]
+    #[doc = "Enable case-insensitive matching.\n\n`None` omits GraphQL field `insensitive` and preserves engine default `Boolean(false)`."]
     pub insensitive: Option<bool>,
-    #[doc = "Limit the number of results to return\n\n`None` omits GraphQL Wire_Name `limit`."]
+    #[doc = "Limit the number of results to return\n\n`None` omits GraphQL field `limit`."]
     pub limit: Option<i64>,
-    #[doc = "Interpret the pattern as a literal string instead of a regular expression.\n\n`None` omits GraphQL Wire_Name `literal` and preserves engine default `Boolean(false)`."]
+    #[doc = "Interpret the pattern as a literal string instead of a regular expression.\n\n`None` omits GraphQL field `literal` and preserves engine default `Boolean(false)`."]
     pub literal: Option<bool>,
-    #[doc = "Enable searching across multiple lines.\n\n`None` omits GraphQL Wire_Name `multiline` and preserves engine default `Boolean(false)`."]
+    #[doc = "Enable searching across multiple lines.\n\n`None` omits GraphQL field `multiline` and preserves engine default `Boolean(false)`."]
     pub multiline: Option<bool>,
-    #[doc = "Directory or file paths to search\n\n`None` omits GraphQL Wire_Name `paths` and preserves engine default `List(\\[\\])`."]
+    #[doc = "Directory or file paths to search\n\n`None` omits GraphQL field `paths` and preserves engine default `List(\\[\\])`."]
     pub paths: Option<Vec<String>>,
-    #[doc = "Skip hidden files (files starting with .).\n\n`None` omits GraphQL Wire_Name `skipHidden` and preserves engine default `Boolean(false)`."]
+    #[doc = "Skip hidden files (files starting with .).\n\n`None` omits GraphQL field `skipHidden` and preserves engine default `Boolean(false)`."]
     pub skip_hidden: Option<bool>,
-    #[doc = "Honor .gitignore, .ignore, and .rgignore files.\n\n`None` omits GraphQL Wire_Name `skipIgnored` and preserves engine default `Boolean(false)`."]
+    #[doc = "Honor .gitignore, .ignore, and .rgignore files.\n\n`None` omits GraphQL field `skipIgnored` and preserves engine default `Boolean(false)`."]
     pub skip_ignored: Option<bool>,
 }
 impl WorkspaceSearchOpts {
@@ -212,7 +212,7 @@ impl WorkspaceSearchOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct WorkspaceServicesOpts {
-    #[doc = "Only include services matching the specified patterns\n\n`None` omits GraphQL Wire_Name `include`."]
+    #[doc = "Only include services matching the specified patterns\n\n`None` omits GraphQL field `include`."]
     pub include: Option<Vec<String>>,
 }
 impl WorkspaceServicesOpts {
@@ -227,7 +227,7 @@ impl WorkspaceServicesOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct WorkspaceWithConfigEnvOpts {
-    #[doc = "Write to the workspace config directory at the workspace cwd.\n\n`None` omits GraphQL Wire_Name `here` and preserves engine default `Boolean(false)`."]
+    #[doc = "Write to the workspace config directory at the workspace cwd.\n\n`None` omits GraphQL field `here` and preserves engine default `Boolean(false)`."]
     pub here: Option<bool>,
 }
 impl WorkspaceWithConfigEnvOpts {
@@ -242,9 +242,9 @@ impl WorkspaceWithConfigEnvOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct WorkspaceWithConfigValueOpts {
-    #[doc = "Write to the workspace config directory at the workspace cwd.\n\n`None` omits GraphQL Wire_Name `here` and preserves engine default `Boolean(false)`."]
+    #[doc = "Write to the workspace config directory at the workspace cwd.\n\n`None` omits GraphQL field `here` and preserves engine default `Boolean(false)`."]
     pub here: Option<bool>,
-    #[doc = "List value to set. Elements are stored verbatim, with no auto-detection. Mutually exclusive with value.\n\n`None` omits GraphQL Wire_Name `values`."]
+    #[doc = "List value to set. Elements are stored verbatim, with no auto-detection. Mutually exclusive with value.\n\n`None` omits GraphQL field `values`."]
     pub values: Option<Vec<String>>,
 }
 impl WorkspaceWithConfigValueOpts {
@@ -265,11 +265,11 @@ impl WorkspaceWithConfigValueOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct WorkspaceWithInitClientOpts {
-    #[doc = "SDK-specific init arguments.\n\n`None` omits GraphQL Wire_Name `args`."]
+    #[doc = "SDK-specific init arguments.\n\n`None` omits GraphQL field `args`."]
     pub args: Option<crate::Json>,
-    #[doc = "Write to the workspace config directory at the workspace cwd.\n\n`None` omits GraphQL Wire_Name `here` and preserves engine default `Boolean(false)`."]
+    #[doc = "Write to the workspace config directory at the workspace cwd.\n\n`None` omits GraphQL field `here` and preserves engine default `Boolean(false)`."]
     pub here: Option<bool>,
-    #[doc = "Skip running the SDK's generators for the new client.\n\n`None` omits GraphQL Wire_Name `noGenerate` and preserves engine default `Boolean(false)`."]
+    #[doc = "Skip running the SDK's generators for the new client.\n\n`None` omits GraphQL field `noGenerate` and preserves engine default `Boolean(false)`."]
     pub no_generate: Option<bool>,
 }
 impl WorkspaceWithInitClientOpts {
@@ -296,17 +296,17 @@ impl WorkspaceWithInitClientOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct WorkspaceWithInitModuleOpts {
-    #[doc = "SDK-specific init arguments.\n\n`None` omits GraphQL Wire_Name `args`."]
+    #[doc = "SDK-specific init arguments.\n\n`None` omits GraphQL field `args`."]
     pub args: Option<crate::Json>,
-    #[doc = "Write to the workspace config directory at the workspace cwd.\n\n`None` omits GraphQL Wire_Name `here` and preserves engine default `Boolean(false)`."]
+    #[doc = "Write to the workspace config directory at the workspace cwd.\n\n`None` omits GraphQL field `here` and preserves engine default `Boolean(false)`."]
     pub here: Option<bool>,
-    #[doc = "Additional include patterns for the module.\n\n`None` omits GraphQL Wire_Name `include` and preserves engine default `List(\\[\\])`."]
+    #[doc = "Additional include patterns for the module.\n\n`None` omits GraphQL field `include` and preserves engine default `List(\\[\\])`."]
     pub include: Option<Vec<String>>,
-    #[doc = "Skip running the SDK's generators for the new module.\n\n`None` omits GraphQL Wire_Name `noGenerate` and preserves engine default `Boolean(false)`."]
+    #[doc = "Skip running the SDK's generators for the new module.\n\n`None` omits GraphQL field `noGenerate` and preserves engine default `Boolean(false)`."]
     pub no_generate: Option<bool>,
-    #[doc = "Workspace-relative path for the new module.\n\n`None` omits GraphQL Wire_Name `path` and preserves engine default `String(\"\")`."]
+    #[doc = "Workspace-relative path for the new module.\n\n`None` omits GraphQL field `path` and preserves engine default `String(\"\")`."]
     pub path: Option<String>,
-    #[doc = "Source subpath within the new module.\n\n`None` omits GraphQL Wire_Name `source` and preserves engine default `String(\"\")`."]
+    #[doc = "Source subpath within the new module.\n\n`None` omits GraphQL field `source` and preserves engine default `String(\"\")`."]
     pub source: Option<String>,
 }
 impl WorkspaceWithInitModuleOpts {
@@ -351,9 +351,9 @@ impl WorkspaceWithInitModuleOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct WorkspaceWithModuleOpts {
-    #[doc = "Write to the workspace config directory at the workspace cwd.\n\n`None` omits GraphQL Wire_Name `here` and preserves engine default `Boolean(false)`."]
+    #[doc = "Write to the workspace config directory at the workspace cwd.\n\n`None` omits GraphQL field `here` and preserves engine default `Boolean(false)`."]
     pub here: Option<bool>,
-    #[doc = "Override name for the installed module entry.\n\n`None` omits GraphQL Wire_Name `name` and preserves engine default `String(\"\")`."]
+    #[doc = "Override name for the installed module entry.\n\n`None` omits GraphQL field `name` and preserves engine default `String(\"\")`."]
     pub name: Option<String>,
 }
 impl WorkspaceWithModuleOpts {
@@ -374,7 +374,7 @@ impl WorkspaceWithModuleOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct WorkspaceWithNewFileOpts {
-    #[doc = "Permissions of the new file.\n\n`None` omits GraphQL Wire_Name `permissions` and preserves engine default `Int(420)`."]
+    #[doc = "Permissions of the new file.\n\n`None` omits GraphQL field `permissions` and preserves engine default `Int(420)`."]
     pub permissions: Option<i64>,
 }
 impl WorkspaceWithNewFileOpts {
@@ -389,11 +389,11 @@ impl WorkspaceWithNewFileOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct WorkspaceWithSdkOpts {
-    #[doc = "User-facing SDK name to persist under `\\[modules.&lt;name&gt;.as-sdk\\] name = ...`.\n\n`None` omits GraphQL Wire_Name `asSdkName` and preserves engine default `String(\"\")`."]
+    #[doc = "User-facing SDK name to persist under `\\[modules.&lt;name&gt;.as-sdk\\] name = ...`.\n\n`None` omits GraphQL field `asSdkName` and preserves engine default `String(\"\")`."]
     pub as_sdk_name: Option<String>,
-    #[doc = "Write to the workspace config directory at the workspace cwd.\n\n`None` omits GraphQL Wire_Name `here` and preserves engine default `Boolean(false)`."]
+    #[doc = "Write to the workspace config directory at the workspace cwd.\n\n`None` omits GraphQL field `here` and preserves engine default `Boolean(false)`."]
     pub here: Option<bool>,
-    #[doc = "Override name for the installed SDK entry.\n\n`None` omits GraphQL Wire_Name `name` and preserves engine default `String(\"\")`."]
+    #[doc = "Override name for the installed SDK entry.\n\n`None` omits GraphQL field `name` and preserves engine default `String(\"\")`."]
     pub name: Option<String>,
 }
 impl WorkspaceWithSdkOpts {
@@ -420,7 +420,7 @@ impl WorkspaceWithSdkOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct WorkspaceWithoutConfigEnvOpts {
-    #[doc = "Write to the workspace config directory at the workspace cwd.\n\n`None` omits GraphQL Wire_Name `here` and preserves engine default `Boolean(false)`."]
+    #[doc = "Write to the workspace config directory at the workspace cwd.\n\n`None` omits GraphQL field `here` and preserves engine default `Boolean(false)`."]
     pub here: Option<bool>,
 }
 impl WorkspaceWithoutConfigEnvOpts {
@@ -435,7 +435,7 @@ impl WorkspaceWithoutConfigEnvOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct WorkspaceWithoutConfigValueOpts {
-    #[doc = "Write to the workspace config directory at the workspace cwd.\n\n`None` omits GraphQL Wire_Name `here` and preserves engine default `Boolean(false)`."]
+    #[doc = "Write to the workspace config directory at the workspace cwd.\n\n`None` omits GraphQL field `here` and preserves engine default `Boolean(false)`."]
     pub here: Option<bool>,
 }
 impl WorkspaceWithoutConfigValueOpts {
@@ -450,7 +450,7 @@ impl WorkspaceWithoutConfigValueOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct WorkspaceWithoutModuleOpts {
-    #[doc = "Write to the workspace config directory at the workspace cwd.\n\n`None` omits GraphQL Wire_Name `here` and preserves engine default `Boolean(false)`."]
+    #[doc = "Write to the workspace config directory at the workspace cwd.\n\n`None` omits GraphQL field `here` and preserves engine default `Boolean(false)`."]
     pub here: Option<bool>,
 }
 impl WorkspaceWithoutModuleOpts {
@@ -465,7 +465,7 @@ impl WorkspaceWithoutModuleOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct WorkspaceWithoutSdkOpts {
-    #[doc = "Write to the workspace config directory at the workspace cwd.\n\n`None` omits GraphQL Wire_Name `here` and preserves engine default `Boolean(false)`."]
+    #[doc = "Write to the workspace config directory at the workspace cwd.\n\n`None` omits GraphQL field `here` and preserves engine default `Boolean(false)`."]
     pub here: Option<bool>,
 }
 impl WorkspaceWithoutSdkOpts {
@@ -507,12 +507,12 @@ impl From<Workspace> for crate::IdInput<super::NodeClient> {
     }
 }
 impl Workspace {
-    #[doc = "Canonical Dagger address of the workspace location, or an opaque identity for synthetic workspaces.\n\nSelects GraphQL Wire_Name `address` on `Workspace`."]
+    #[doc = "Canonical Dagger address of the workspace location, or an opaque identity for synthetic workspaces.\n\nSelects GraphQL field `address` on `Workspace`."]
     pub async fn address(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("address");
         query.execute(&self.session).await
     }
-    #[doc = "Return this workspace's pending overlay changes.\n\nSelects GraphQL Wire_Name `changes` on `Workspace`."]
+    #[doc = "Return this workspace's pending overlay changes.\n\nSelects GraphQL field `changes` on `Workspace`."]
     #[must_use]
     pub fn changes(&self) -> super::Changeset {
         let query = self.selection.select("changes");
@@ -521,7 +521,7 @@ impl Workspace {
             selection: query,
         }
     }
-    #[doc = "Return all checks from modules loaded in the workspace.\n\nSelects GraphQL Wire_Name `checks` on `Workspace`."]
+    #[doc = "Return all checks from modules loaded in the workspace.\n\nSelects GraphQL field `checks` on `Workspace`."]
     #[must_use]
     pub fn checks(&self) -> super::CheckGroup {
         let query = self.selection.select("checks");
@@ -559,12 +559,12 @@ impl Workspace {
             selection: query,
         }
     }
-    #[doc = "Selected native workspace config file relative to the workspace cwd, if any.\n\nSelects GraphQL Wire_Name `configFile` on `Workspace`."]
+    #[doc = "Selected native workspace config file relative to the workspace cwd, if any.\n\nSelects GraphQL field `configFile` on `Workspace`."]
     pub async fn config_file(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("configFile");
         query.execute(&self.session).await
     }
-    #[doc = "Read a configuration value from dagger.toml.\n\nIf key is empty, returns the full config.\n\nIf key points to a scalar, returns the value.\n\nIf key points to a table, returns flattened dotted-key output.\n\nSelects GraphQL Wire_Name `configRead` on `Workspace`."]
+    #[doc = "Read a configuration value from dagger.toml.\n\nIf key is empty, returns the full config.\n\nIf key points to a scalar, returns the value.\n\nIf key points to a table, returns flattened dotted-key output.\n\nSelects GraphQL field `configRead` on `Workspace`."]
     pub async fn config_read(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("configRead");
         query.execute(&self.session).await
@@ -582,12 +582,12 @@ impl Workspace {
         };
         query.execute(&self.session).await
     }
-    #[doc = "Current location within the workspace root.\n\nThe workspace root is returned as \"/\".\n\nRelative paths in workspace APIs resolve from here.\n\nSelects GraphQL Wire_Name `cwd` on `Workspace`."]
+    #[doc = "Current location within the workspace root.\n\nThe workspace root is returned as \"/\".\n\nRelative paths in workspace APIs resolve from here.\n\nSelects GraphQL field `cwd` on `Workspace`."]
     pub async fn cwd(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("cwd");
         query.execute(&self.session).await
     }
-    #[doc = "Returns a Directory from the workspace.\n\nRelative paths resolve from the workspace cwd. Absolute paths resolve from the workspace root.\n\nSelects GraphQL Wire_Name `directory` on `Workspace`."]
+    #[doc = "Returns a Directory from the workspace.\n\nRelative paths resolve from the workspace cwd. Absolute paths resolve from the workspace root.\n\nSelects GraphQL field `directory` on `Workspace`."]
     #[must_use]
     pub fn directory(&self, path: impl Into<String>) -> super::Directory {
         let query = self.selection.select("directory");
@@ -626,17 +626,17 @@ impl Workspace {
             selection: query,
         }
     }
-    #[doc = "List named environments defined in the workspace configuration.\n\nSelects GraphQL Wire_Name `envList` on `Workspace`."]
+    #[doc = "List named environments defined in the workspace configuration.\n\nSelects GraphQL field `envList` on `Workspace`."]
     pub async fn env_list(&self) -> Result<Vec<String>, crate::QueryError> {
         let query = self.selection.select("envList");
         query.execute(&self.session).await
     }
-    #[doc = "Write this workspace's pending changes to its local Git workspace.\n\nSelects GraphQL Wire_Name `export` on `Workspace`."]
+    #[doc = "Write this workspace's pending changes to its local Git workspace.\n\nSelects GraphQL field `export` on `Workspace`."]
     pub async fn export(&self) -> Result<(), crate::QueryError> {
         let query = self.selection.select("export");
         query.execute(&self.session).await
     }
-    #[doc = "Returns a File from the workspace.\n\nRelative paths resolve from the workspace cwd. Absolute paths resolve from the workspace root.\n\nSelects GraphQL Wire_Name `file` on `Workspace`."]
+    #[doc = "Returns a File from the workspace.\n\nRelative paths resolve from the workspace cwd. Absolute paths resolve from the workspace root.\n\nSelects GraphQL field `file` on `Workspace`."]
     #[must_use]
     pub fn file(&self, path: impl Into<String>) -> super::File {
         let query = self.selection.select("file");
@@ -646,7 +646,7 @@ impl Workspace {
             selection: query,
         }
     }
-    #[doc = "Search for a file or directory by walking up from the start path within the workspace.\n\nReturns the absolute workspace path if found, or null if not found.\n\nRelative start paths resolve from the workspace cwd.\n\nThe search stops at the workspace root and will not traverse above it.\n\nSelects GraphQL Wire_Name `findUp` on `Workspace`."]
+    #[doc = "Search for a file or directory by walking up from the start path within the workspace.\n\nReturns the absolute workspace path if found, or null if not found.\n\nRelative start paths resolve from the workspace cwd.\n\nThe search stops at the workspace root and will not traverse above it.\n\nSelects GraphQL field `findUp` on `Workspace`."]
     pub async fn find_up(
         &self,
         name: impl Into<String>,
@@ -670,7 +670,7 @@ impl Workspace {
         let query = query.arg("name", name.into());
         query.execute(&self.session).await
     }
-    #[doc = "Return all generators from modules loaded in the workspace.\n\nSelects GraphQL Wire_Name `generators` on `Workspace`."]
+    #[doc = "Return all generators from modules loaded in the workspace.\n\nSelects GraphQL field `generators` on `Workspace`."]
     #[must_use]
     pub fn generators(&self) -> super::GeneratorGroup {
         let query = self.selection.select("generators");
@@ -693,7 +693,7 @@ impl Workspace {
             selection: query,
         }
     }
-    #[doc = "Git state for this workspace. Errors if the workspace is not in a git repository.\n\nSelects GraphQL Wire_Name `git` on `Workspace`."]
+    #[doc = "Git state for this workspace. Errors if the workspace is not in a git repository.\n\nSelects GraphQL field `git` on `Workspace`."]
     #[must_use]
     pub fn git(&self) -> super::WorkspaceGit {
         let query = self.selection.select("git");
@@ -702,18 +702,18 @@ impl Workspace {
             selection: query,
         }
     }
-    #[doc = "Returns a list of files and directories that match the given pattern.\n\nPatterns match paths relative to the workspace root.\n\nSelects GraphQL Wire_Name `glob` on `Workspace`."]
+    #[doc = "Returns a list of files and directories that match the given pattern.\n\nPatterns match paths relative to the workspace root.\n\nSelects GraphQL field `glob` on `Workspace`."]
     pub async fn glob(&self, pattern: impl Into<String>) -> Result<Vec<String>, crate::QueryError> {
         let query = self.selection.select("glob");
         let query = query.arg("pattern", pattern.into());
         query.execute(&self.session).await
     }
-    #[doc = "A unique identifier for this Workspace.\n\nSelects GraphQL Wire_Name `id` on `Workspace`."]
+    #[doc = "A unique identifier for this Workspace.\n\nSelects GraphQL field `id` on `Workspace`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "Plan the explicit migration needed for the current workspace.\n\nThe returned plan has an empty changeset and no steps when no migration is needed.\n\nSelects GraphQL Wire_Name `migrate` on `Workspace`."]
+    #[doc = "Plan the explicit migration needed for the current workspace.\n\nThe returned plan has an empty changeset and no steps when no migration is needed.\n\nSelects GraphQL field `migrate` on `Workspace`."]
     #[must_use]
     pub fn migrate(&self) -> super::WorkspaceMigration {
         let query = self.selection.select("migrate");
@@ -722,7 +722,7 @@ impl Workspace {
             selection: query,
         }
     }
-    #[doc = "Return a module defined in the workspace configuration.\n\nSelects GraphQL Wire_Name `module` on `Workspace`."]
+    #[doc = "Return a module defined in the workspace configuration.\n\nSelects GraphQL field `module` on `Workspace`."]
     #[must_use]
     pub fn module(&self, name: impl Into<String>) -> super::WorkspaceModule {
         let query = self.selection.select("module");
@@ -732,7 +732,7 @@ impl Workspace {
             selection: query,
         }
     }
-    #[doc = "Load a module source from a path within the workspace.\n\nRelative paths (e.g., \"foo\") resolve from the workspace cwd; absolute paths (e.g., \"/foo\") resolve from the workspace root.\n\nFails if the path does not point to an initialized module.\n\nSelects GraphQL Wire_Name `moduleSource` on `Workspace`."]
+    #[doc = "Load a module source from a path within the workspace.\n\nRelative paths (e.g., \"foo\") resolve from the workspace cwd; absolute paths (e.g., \"/foo\") resolve from the workspace root.\n\nFails if the path does not point to an initialized module.\n\nSelects GraphQL field `moduleSource` on `Workspace`."]
     #[must_use]
     pub fn module_source(&self, path: impl Into<String>) -> super::ModuleSource {
         let query = self.selection.select("moduleSource");
@@ -742,7 +742,7 @@ impl Workspace {
             selection: query,
         }
     }
-    #[doc = "List modules defined in the workspace configuration.\n\nSelects GraphQL Wire_Name `modules` on `Workspace`."]
+    #[doc = "List modules defined in the workspace configuration.\n\nSelects GraphQL field `modules` on `Workspace`."]
     pub async fn modules(&self) -> Result<Vec<super::WorkspaceModule>, crate::QueryError> {
         let query = self.selection.select("modules");
         let query = query.select("id");
@@ -753,7 +753,7 @@ impl Workspace {
             )
             .await
     }
-    #[doc = "An installed SDK, by name.\n\nSelects GraphQL Wire_Name `sdk` on `Workspace`."]
+    #[doc = "An installed SDK, by name.\n\nSelects GraphQL field `sdk` on `Workspace`."]
     #[must_use]
     pub fn sdk(&self, name: impl Into<String>) -> super::WorkspaceSdk {
         let query = self.selection.select("sdk");
@@ -763,7 +763,7 @@ impl Workspace {
             selection: query,
         }
     }
-    #[doc = "Installed SDKs.\n\nSelects GraphQL Wire_Name `sdks` on `Workspace`."]
+    #[doc = "Installed SDKs.\n\nSelects GraphQL field `sdks` on `Workspace`."]
     pub async fn sdks(&self) -> Result<Vec<super::WorkspaceSdk>, crate::QueryError> {
         let query = self.selection.select("sdks");
         let query = query.select("id");
@@ -771,7 +771,7 @@ impl Workspace {
             .execute_reentry::<super::WorkspaceSdk, Vec<crate::Id>>(&self.session, "WorkspaceSDK")
             .await
     }
-    #[doc = "Searches for content matching the given regular expression or literal string.\n\nUses Rust regex syntax; escape literal ., \\[, \\], {, }, | with backslashes.\n\nRuns ripgrep on the client host, falling back to grep if unavailable.\n\nSelects GraphQL Wire_Name `search` on `Workspace`."]
+    #[doc = "Searches for content matching the given regular expression or literal string.\n\nUses Rust regex syntax; escape literal ., \\[, \\], {, }, | with backslashes.\n\nRuns ripgrep on the client host, falling back to grep if unavailable.\n\nSelects GraphQL field `search` on `Workspace`."]
     pub async fn search(
         &self,
         pattern: impl Into<String>,
@@ -846,7 +846,7 @@ impl Workspace {
             .execute_reentry::<super::SearchResult, Vec<crate::Id>>(&self.session, "SearchResult")
             .await
     }
-    #[doc = "Return all services from modules loaded in the workspace.\n\nSelects GraphQL Wire_Name `services` on `Workspace`."]
+    #[doc = "Return all services from modules loaded in the workspace.\n\nSelects GraphQL field `services` on `Workspace`."]
     #[must_use]
     pub fn services(&self) -> super::UpGroup {
         let query = self.selection.select("services");
@@ -869,7 +869,7 @@ impl Workspace {
             selection: query,
         }
     }
-    #[doc = "Return this workspace with a changeset applied, without mutating the source.\n\nSelects GraphQL Wire_Name `withChanges` on `Workspace`."]
+    #[doc = "Return this workspace with a changeset applied, without mutating the source.\n\nSelects GraphQL field `withChanges` on `Workspace`."]
     #[must_use]
     pub fn with_changes(
         &self,
@@ -882,7 +882,7 @@ impl Workspace {
             selection: query,
         }
     }
-    #[doc = "Return this workspace with a named config environment created.\n\nSelects GraphQL Wire_Name `withConfigEnv` on `Workspace`."]
+    #[doc = "Return this workspace with a named config environment created.\n\nSelects GraphQL field `withConfigEnv` on `Workspace`."]
     #[must_use]
     pub fn with_config_env(&self, name: impl Into<String>) -> super::Workspace {
         let query = self.selection.select("withConfigEnv");
@@ -911,7 +911,7 @@ impl Workspace {
             selection: query,
         }
     }
-    #[doc = "Return this workspace with a configuration value written.\n\nSelects GraphQL Wire_Name `withConfigValue` on `Workspace`."]
+    #[doc = "Return this workspace with a configuration value written.\n\nSelects GraphQL field `withConfigValue` on `Workspace`."]
     #[must_use]
     pub fn with_config_value(
         &self,
@@ -952,7 +952,7 @@ impl Workspace {
             selection: query,
         }
     }
-    #[doc = "Return this workspace with a generated API client initialized.\n\nThe SDK's generators run for the new client, so the returned workspace carries its generated bindings.\n\nSelects GraphQL Wire_Name `withInitClient` on `Workspace`."]
+    #[doc = "Return this workspace with a generated API client initialized.\n\nThe SDK's generators run for the new client, so the returned workspace carries its generated bindings.\n\nSelects GraphQL field `withInitClient` on `Workspace`."]
     #[must_use]
     pub fn with_init_client(
         &self,
@@ -1002,7 +1002,7 @@ impl Workspace {
             selection: query,
         }
     }
-    #[doc = "Return this workspace with a new module initialized.\n\nThe SDK's generators run for the new module, so the returned workspace carries the generated code it needs to be loadable.\n\nSelects GraphQL Wire_Name `withInitModule` on `Workspace`."]
+    #[doc = "Return this workspace with a new module initialized.\n\nThe SDK's generators run for the new module, so the returned workspace carries the generated code it needs to be loadable.\n\nSelects GraphQL field `withInitModule` on `Workspace`."]
     #[must_use]
     pub fn with_init_module(
         &self,
@@ -1063,7 +1063,7 @@ impl Workspace {
             selection: query,
         }
     }
-    #[doc = "Return this workspace with a module installed in its config.\n\nSelects GraphQL Wire_Name `withModule` on `Workspace`."]
+    #[doc = "Return this workspace with a module installed in its config.\n\nSelects GraphQL field `withModule` on `Workspace`."]
     #[must_use]
     pub fn with_module(&self, r#ref: impl Into<String>) -> super::Workspace {
         let query = self.selection.select("withModule");
@@ -1097,7 +1097,7 @@ impl Workspace {
             selection: query,
         }
     }
-    #[doc = "Return this workspace with a directory added, without mutating the source.\n\nSelects GraphQL Wire_Name `withNewDirectory` on `Workspace`."]
+    #[doc = "Return this workspace with a directory added, without mutating the source.\n\nSelects GraphQL field `withNewDirectory` on `Workspace`."]
     #[must_use]
     pub fn with_new_directory(
         &self,
@@ -1112,7 +1112,7 @@ impl Workspace {
             selection: query,
         }
     }
-    #[doc = "Return this workspace with a new or replaced file, without mutating the source.\n\nSelects GraphQL Wire_Name `withNewFile` on `Workspace`."]
+    #[doc = "Return this workspace with a new or replaced file, without mutating the source.\n\nSelects GraphQL field `withNewFile` on `Workspace`."]
     #[must_use]
     pub fn with_new_file(
         &self,
@@ -1148,7 +1148,7 @@ impl Workspace {
             selection: query,
         }
     }
-    #[doc = "Return this workspace with an SDK installed in its config.\n\nSelects GraphQL Wire_Name `withSDK` on `Workspace`."]
+    #[doc = "Return this workspace with an SDK installed in its config.\n\nSelects GraphQL field `withSDK` on `Workspace`."]
     #[must_use]
     pub fn with_sdk(&self, r#ref: impl Into<String>) -> super::Workspace {
         let query = self.selection.select("withSDK");
@@ -1187,7 +1187,7 @@ impl Workspace {
             selection: query,
         }
     }
-    #[doc = "Return this workspace with refreshed lockfile state.\n\nSelects GraphQL Wire_Name `withUpdatedLock` on `Workspace`."]
+    #[doc = "Return this workspace with refreshed lockfile state.\n\nSelects GraphQL field `withUpdatedLock` on `Workspace`."]
     #[must_use]
     pub fn with_updated_lock(&self) -> super::Workspace {
         let query = self.selection.select("withUpdatedLock");
@@ -1196,7 +1196,7 @@ impl Workspace {
             selection: query,
         }
     }
-    #[doc = "Return this workspace with its working directory pointed at the given workspace-relative path.\n\nSelects GraphQL Wire_Name `withWorkdir` on `Workspace`."]
+    #[doc = "Return this workspace with its working directory pointed at the given workspace-relative path.\n\nSelects GraphQL field `withWorkdir` on `Workspace`."]
     #[must_use]
     pub fn with_workdir(&self, path: impl Into<String>) -> super::Workspace {
         let query = self.selection.select("withWorkdir");
@@ -1206,7 +1206,7 @@ impl Workspace {
             selection: query,
         }
     }
-    #[doc = "Return this workspace with a named config environment removed.\n\nSelects GraphQL Wire_Name `withoutConfigEnv` on `Workspace`."]
+    #[doc = "Return this workspace with a named config environment removed.\n\nSelects GraphQL field `withoutConfigEnv` on `Workspace`."]
     #[must_use]
     pub fn without_config_env(&self, name: impl Into<String>) -> super::Workspace {
         let query = self.selection.select("withoutConfigEnv");
@@ -1235,7 +1235,7 @@ impl Workspace {
             selection: query,
         }
     }
-    #[doc = "Return this workspace with a configuration value removed.\n\nErrors when the key is not currently set.\n\nSelects GraphQL Wire_Name `withoutConfigValue` on `Workspace`."]
+    #[doc = "Return this workspace with a configuration value removed.\n\nErrors when the key is not currently set.\n\nSelects GraphQL field `withoutConfigValue` on `Workspace`."]
     #[must_use]
     pub fn without_config_value(&self, key: impl Into<String>) -> super::Workspace {
         let query = self.selection.select("withoutConfigValue");
@@ -1264,7 +1264,7 @@ impl Workspace {
             selection: query,
         }
     }
-    #[doc = "Return this workspace with a directory removed, without mutating the source.\n\nSelects GraphQL Wire_Name `withoutDirectory` on `Workspace`."]
+    #[doc = "Return this workspace with a directory removed, without mutating the source.\n\nSelects GraphQL field `withoutDirectory` on `Workspace`."]
     #[must_use]
     pub fn without_directory(&self, path: impl Into<String>) -> super::Workspace {
         let query = self.selection.select("withoutDirectory");
@@ -1274,7 +1274,7 @@ impl Workspace {
             selection: query,
         }
     }
-    #[doc = "Return this workspace with a file removed, without mutating the source.\n\nSelects GraphQL Wire_Name `withoutFile` on `Workspace`."]
+    #[doc = "Return this workspace with a file removed, without mutating the source.\n\nSelects GraphQL field `withoutFile` on `Workspace`."]
     #[must_use]
     pub fn without_file(&self, path: impl Into<String>) -> super::Workspace {
         let query = self.selection.select("withoutFile");
@@ -1284,7 +1284,7 @@ impl Workspace {
             selection: query,
         }
     }
-    #[doc = "Return this workspace with a module removed from its config.\n\nSelects GraphQL Wire_Name `withoutModule` on `Workspace`."]
+    #[doc = "Return this workspace with a module removed from its config.\n\nSelects GraphQL field `withoutModule` on `Workspace`."]
     #[must_use]
     pub fn without_module(&self, name: impl Into<String>) -> super::Workspace {
         let query = self.selection.select("withoutModule");
@@ -1313,7 +1313,7 @@ impl Workspace {
             selection: query,
         }
     }
-    #[doc = "Return this workspace with an SDK removed from its config.\n\nSelects GraphQL Wire_Name `withoutSDK` on `Workspace`."]
+    #[doc = "Return this workspace with an SDK removed from its config.\n\nSelects GraphQL field `withoutSDK` on `Workspace`."]
     #[must_use]
     pub fn without_sdk(&self, name: impl Into<String>) -> super::Workspace {
         let query = self.selection.select("withoutSDK");

@@ -37,7 +37,7 @@ impl From<ObjectTypeDef> for crate::IdInput<super::NodeClient> {
     }
 }
 impl ObjectTypeDef {
-    #[doc = "The function used to construct new instances of this object, if any.\n\nSelects GraphQL Wire_Name `constructor` on `ObjectTypeDef`."]
+    #[doc = "The function used to construct new instances of this object, if any.\n\nSelects GraphQL field `constructor` on `ObjectTypeDef`."]
     pub async fn constructor(&self) -> Result<Option<super::Function>, crate::QueryError> {
         let query = self.selection.select("constructor");
         let query = query.select("id");
@@ -45,17 +45,17 @@ impl ObjectTypeDef {
             .execute_reentry::<super::Function, Option<crate::Id>>(&self.session, "Function")
             .await
     }
-    #[doc = "The reason this enum member is deprecated, if any.\n\nSelects GraphQL Wire_Name `deprecated` on `ObjectTypeDef`."]
+    #[doc = "The reason this enum member is deprecated, if any.\n\nSelects GraphQL field `deprecated` on `ObjectTypeDef`."]
     pub async fn deprecated(&self) -> Result<Option<String>, crate::QueryError> {
         let query = self.selection.select("deprecated");
         query.execute(&self.session).await
     }
-    #[doc = "The doc string for the object, if any.\n\nSelects GraphQL Wire_Name `description` on `ObjectTypeDef`."]
+    #[doc = "The doc string for the object, if any.\n\nSelects GraphQL field `description` on `ObjectTypeDef`."]
     pub async fn description(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("description");
         query.execute(&self.session).await
     }
-    #[doc = "Static fields defined on this object, if any.\n\nSelects GraphQL Wire_Name `fields` on `ObjectTypeDef`."]
+    #[doc = "Static fields defined on this object, if any.\n\nSelects GraphQL field `fields` on `ObjectTypeDef`."]
     pub async fn fields(&self) -> Result<Vec<super::FieldTypeDef>, crate::QueryError> {
         let query = self.selection.select("fields");
         let query = query.select("id");
@@ -63,7 +63,7 @@ impl ObjectTypeDef {
             .execute_reentry::<super::FieldTypeDef, Vec<crate::Id>>(&self.session, "FieldTypeDef")
             .await
     }
-    #[doc = "Functions defined on this object, if any.\n\nSelects GraphQL Wire_Name `functions` on `ObjectTypeDef`."]
+    #[doc = "Functions defined on this object, if any.\n\nSelects GraphQL field `functions` on `ObjectTypeDef`."]
     pub async fn functions(&self) -> Result<Vec<super::Function>, crate::QueryError> {
         let query = self.selection.select("functions");
         let query = query.select("id");
@@ -71,17 +71,17 @@ impl ObjectTypeDef {
             .execute_reentry::<super::Function, Vec<crate::Id>>(&self.session, "Function")
             .await
     }
-    #[doc = "A unique identifier for this ObjectTypeDef.\n\nSelects GraphQL Wire_Name `id` on `ObjectTypeDef`."]
+    #[doc = "A unique identifier for this ObjectTypeDef.\n\nSelects GraphQL field `id` on `ObjectTypeDef`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "The name of the object.\n\nSelects GraphQL Wire_Name `name` on `ObjectTypeDef`."]
+    #[doc = "The name of the object.\n\nSelects GraphQL field `name` on `ObjectTypeDef`."]
     pub async fn name(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("name");
         query.execute(&self.session).await
     }
-    #[doc = "The location of this object declaration.\n\nSelects GraphQL Wire_Name `sourceMap` on `ObjectTypeDef`."]
+    #[doc = "The location of this object declaration.\n\nSelects GraphQL field `sourceMap` on `ObjectTypeDef`."]
     pub async fn source_map(&self) -> Result<Option<super::SourceMap>, crate::QueryError> {
         let query = self.selection.select("sourceMap");
         let query = query.select("id");
@@ -89,7 +89,7 @@ impl ObjectTypeDef {
             .execute_reentry::<super::SourceMap, Option<crate::Id>>(&self.session, "SourceMap")
             .await
     }
-    #[doc = "If this ObjectTypeDef is associated with a Module, the name of the module. Unset otherwise.\n\nSelects GraphQL Wire_Name `sourceModuleName` on `ObjectTypeDef`."]
+    #[doc = "If this ObjectTypeDef is associated with a Module, the name of the module. Unset otherwise.\n\nSelects GraphQL field `sourceModuleName` on `ObjectTypeDef`."]
     pub async fn source_module_name(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("sourceModuleName");
         query.execute(&self.session).await

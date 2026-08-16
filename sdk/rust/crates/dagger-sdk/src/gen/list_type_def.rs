@@ -37,7 +37,7 @@ impl From<ListTypeDef> for crate::IdInput<super::NodeClient> {
     }
 }
 impl ListTypeDef {
-    #[doc = "The type of the elements in the list.\n\nSelects GraphQL Wire_Name `elementTypeDef` on `ListTypeDef`."]
+    #[doc = "The type of the elements in the list.\n\nSelects GraphQL field `elementTypeDef` on `ListTypeDef`."]
     #[must_use]
     pub fn element_type_def(&self) -> super::TypeDef {
         let query = self.selection.select("elementTypeDef");
@@ -46,7 +46,7 @@ impl ListTypeDef {
             selection: query,
         }
     }
-    #[doc = "A unique identifier for this ListTypeDef.\n\nSelects GraphQL Wire_Name `id` on `ListTypeDef`."]
+    #[doc = "A unique identifier for this ListTypeDef.\n\nSelects GraphQL field `id` on `ListTypeDef`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await

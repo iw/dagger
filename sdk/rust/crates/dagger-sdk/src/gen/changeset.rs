@@ -10,7 +10,7 @@ pub struct Changeset {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ChangesetWithChangesetOpts {
-    #[doc = "What to do on a merge conflict\n\n`None` omits GraphQL Wire_Name `onConflict` and preserves engine default `Enum(SchemaName(\"FAIL\"))`."]
+    #[doc = "What to do on a merge conflict\n\n`None` omits GraphQL field `onConflict` and preserves engine default `Enum(SchemaName(\"FAIL\"))`."]
     pub on_conflict: Option<super::ChangesetMergeConflict>,
 }
 impl ChangesetWithChangesetOpts {
@@ -25,7 +25,7 @@ impl ChangesetWithChangesetOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ChangesetWithChangesetsOpts {
-    #[doc = "What to do on a merge conflict\n\n`None` omits GraphQL Wire_Name `onConflict` and preserves engine default `Enum(SchemaName(\"FAIL\"))`."]
+    #[doc = "What to do on a merge conflict\n\n`None` omits GraphQL field `onConflict` and preserves engine default `Enum(SchemaName(\"FAIL\"))`."]
     pub on_conflict: Option<super::ChangesetsMergeConflict>,
 }
 impl ChangesetWithChangesetsOpts {
@@ -77,12 +77,12 @@ impl From<Changeset> for crate::IdInput<super::SyncerClient> {
     }
 }
 impl Changeset {
-    #[doc = "Files and directories that were added in the newer directory.\n\nSelects GraphQL Wire_Name `addedPaths` on `Changeset`."]
+    #[doc = "Files and directories that were added in the newer directory.\n\nSelects GraphQL field `addedPaths` on `Changeset`."]
     pub async fn added_paths(&self) -> Result<Vec<String>, crate::QueryError> {
         let query = self.selection.select("addedPaths");
         query.execute(&self.session).await
     }
-    #[doc = "The newer/upper snapshot.\n\nSelects GraphQL Wire_Name `after` on `Changeset`."]
+    #[doc = "The newer/upper snapshot.\n\nSelects GraphQL field `after` on `Changeset`."]
     #[must_use]
     pub fn after(&self) -> super::Directory {
         let query = self.selection.select("after");
@@ -91,7 +91,7 @@ impl Changeset {
             selection: query,
         }
     }
-    #[doc = "Return a Git-compatible patch of the changes\n\nSelects GraphQL Wire_Name `asPatch` on `Changeset`."]
+    #[doc = "Return a Git-compatible patch of the changes\n\nSelects GraphQL field `asPatch` on `Changeset`."]
     #[must_use]
     pub fn as_patch(&self) -> super::File {
         let query = self.selection.select("asPatch");
@@ -100,7 +100,7 @@ impl Changeset {
             selection: query,
         }
     }
-    #[doc = "The older/lower snapshot to compare against.\n\nSelects GraphQL Wire_Name `before` on `Changeset`."]
+    #[doc = "The older/lower snapshot to compare against.\n\nSelects GraphQL field `before` on `Changeset`."]
     #[must_use]
     pub fn before(&self) -> super::Directory {
         let query = self.selection.select("before");
@@ -109,7 +109,7 @@ impl Changeset {
             selection: query,
         }
     }
-    #[doc = "Structured per-path diff statistics (kind and line counts) for this changeset.\n\nSelects GraphQL Wire_Name `diffStats` on `Changeset`."]
+    #[doc = "Structured per-path diff statistics (kind and line counts) for this changeset.\n\nSelects GraphQL field `diffStats` on `Changeset`."]
     pub async fn diff_stats(&self) -> Result<Vec<super::DiffStat>, crate::QueryError> {
         let query = self.selection.select("diffStats");
         let query = query.select("id");
@@ -117,23 +117,23 @@ impl Changeset {
             .execute_reentry::<super::DiffStat, Vec<crate::Id>>(&self.session, "DiffStat")
             .await
     }
-    #[doc = "Applies the diff represented by this changeset to a path on the host.\n\nSelects GraphQL Wire_Name `export` on `Changeset`."]
+    #[doc = "Applies the diff represented by this changeset to a path on the host.\n\nSelects GraphQL field `export` on `Changeset`."]
     pub async fn export(&self, path: impl Into<String>) -> Result<String, crate::QueryError> {
         let query = self.selection.select("export");
         let query = query.arg("path", path.into());
         query.execute(&self.session).await
     }
-    #[doc = "A unique identifier for this Changeset.\n\nSelects GraphQL Wire_Name `id` on `Changeset`."]
+    #[doc = "A unique identifier for this Changeset.\n\nSelects GraphQL field `id` on `Changeset`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "Returns true if the changeset is empty (i.e. there are no changes).\n\nSelects GraphQL Wire_Name `isEmpty` on `Changeset`."]
+    #[doc = "Returns true if the changeset is empty (i.e. there are no changes).\n\nSelects GraphQL field `isEmpty` on `Changeset`."]
     pub async fn is_empty(&self) -> Result<bool, crate::QueryError> {
         let query = self.selection.select("isEmpty");
         query.execute(&self.session).await
     }
-    #[doc = "Return a snapshot containing only the created and modified files\n\nSelects GraphQL Wire_Name `layer` on `Changeset`."]
+    #[doc = "Return a snapshot containing only the created and modified files\n\nSelects GraphQL field `layer` on `Changeset`."]
     #[must_use]
     pub fn layer(&self) -> super::Directory {
         let query = self.selection.select("layer");
@@ -142,17 +142,17 @@ impl Changeset {
             selection: query,
         }
     }
-    #[doc = "Files and directories that existed before and were updated in the newer directory.\n\nSelects GraphQL Wire_Name `modifiedPaths` on `Changeset`."]
+    #[doc = "Files and directories that existed before and were updated in the newer directory.\n\nSelects GraphQL field `modifiedPaths` on `Changeset`."]
     pub async fn modified_paths(&self) -> Result<Vec<String>, crate::QueryError> {
         let query = self.selection.select("modifiedPaths");
         query.execute(&self.session).await
     }
-    #[doc = "Files and directories that were removed. Directories are indicated by a trailing slash, and their child paths are not included.\n\nSelects GraphQL Wire_Name `removedPaths` on `Changeset`."]
+    #[doc = "Files and directories that were removed. Directories are indicated by a trailing slash, and their child paths are not included.\n\nSelects GraphQL field `removedPaths` on `Changeset`."]
     pub async fn removed_paths(&self) -> Result<Vec<String>, crate::QueryError> {
         let query = self.selection.select("removedPaths");
         query.execute(&self.session).await
     }
-    #[doc = "Force evaluation in the engine.\n\nSelects GraphQL Wire_Name `sync` on `Changeset`."]
+    #[doc = "Force evaluation in the engine.\n\nSelects GraphQL field `sync` on `Changeset`."]
     pub async fn sync(&self) -> Result<super::Changeset, crate::QueryError> {
         let query = self.selection.select("sync");
         let id: crate::Id = query.execute(&self.session).await?;
@@ -162,7 +162,7 @@ impl Changeset {
             "Changeset",
         ))
     }
-    #[doc = "Add changes to an existing changeset\n\nBy default the operation will fail in case of conflicts, for instance a file modified in both changesets. The behavior can be adjusted using onConflict argument\n\nSelects GraphQL Wire_Name `withChangeset` on `Changeset`."]
+    #[doc = "Add changes to an existing changeset\n\nBy default the operation will fail in case of conflicts, for instance a file modified in both changesets. The behavior can be adjusted using onConflict argument\n\nSelects GraphQL field `withChangeset` on `Changeset`."]
     #[must_use]
     pub fn with_changeset(
         &self,
@@ -194,7 +194,7 @@ impl Changeset {
             selection: query,
         }
     }
-    #[doc = "Add changes from multiple changesets using git octopus merge strategy\n\nThis is more efficient than chaining multiple withChangeset calls when merging many changesets.\n\nOnly FAIL and FAIL_EARLY conflict strategies are supported (octopus merge cannot use -X ours/theirs).\n\nSelects GraphQL Wire_Name `withChangesets` on `Changeset`."]
+    #[doc = "Add changes from multiple changesets using git octopus merge strategy\n\nThis is more efficient than chaining multiple withChangeset calls when merging many changesets.\n\nOnly FAIL and FAIL_EARLY conflict strategies are supported (octopus merge cannot use -X ours/theirs).\n\nSelects GraphQL field `withChangesets` on `Changeset`."]
     #[must_use]
     pub fn with_changesets(
         &self,

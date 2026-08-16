@@ -37,7 +37,7 @@ pub(crate) fn plan_client_names(
         naming_error(
             DiagnosticCode::RustNameInvalid,
             &root.field_coordinate,
-            "selected module Wire_Name cannot form a Rust module namespace",
+            "selected module wire name cannot form a Rust module namespace",
         )
     })?;
     if RESERVED_MODULE_NAMES.contains(&namespace.as_str().trim_start_matches("r#")) {
@@ -53,7 +53,7 @@ pub(crate) fn plan_client_names(
         naming_error(
             DiagnosticCode::RustNameInvalid,
             &root.field_coordinate,
-            "selected module Wire_Name cannot form an extension trait",
+            "selected module wire name cannot form an extension trait",
         )
     })?;
     let root_type = RustIdentifier::new("Client").map_err(|_| {

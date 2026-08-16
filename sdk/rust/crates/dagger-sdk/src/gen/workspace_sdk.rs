@@ -37,7 +37,7 @@ impl From<WorkspaceSdk> for crate::IdInput<super::NodeClient> {
     }
 }
 impl WorkspaceSdk {
-    #[doc = "Clients generated with this SDK.\n\nSelects GraphQL Wire_Name `clients` on `WorkspaceSDK`."]
+    #[doc = "Clients generated with this SDK.\n\nSelects GraphQL field `clients` on `WorkspaceSDK`."]
     pub async fn clients(&self) -> Result<Vec<super::WorkspaceModule>, crate::QueryError> {
         let query = self.selection.select("clients");
         let query = query.select("id");
@@ -48,12 +48,12 @@ impl WorkspaceSdk {
             )
             .await
     }
-    #[doc = "A unique identifier for this WorkspaceSDK.\n\nSelects GraphQL Wire_Name `id` on `WorkspaceSDK`."]
+    #[doc = "A unique identifier for this WorkspaceSDK.\n\nSelects GraphQL field `id` on `WorkspaceSDK`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "Modules authored with this SDK.\n\nSelects GraphQL Wire_Name `modules` on `WorkspaceSDK`."]
+    #[doc = "Modules authored with this SDK.\n\nSelects GraphQL field `modules` on `WorkspaceSDK`."]
     pub async fn modules(&self) -> Result<Vec<super::WorkspaceModule>, crate::QueryError> {
         let query = self.selection.select("modules");
         let query = query.select("id");
@@ -64,12 +64,12 @@ impl WorkspaceSdk {
             )
             .await
     }
-    #[doc = "The user-facing SDK name.\n\nSelects GraphQL Wire_Name `name` on `WorkspaceSDK`."]
+    #[doc = "The user-facing SDK name.\n\nSelects GraphQL field `name` on `WorkspaceSDK`."]
     pub async fn name(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("name");
         query.execute(&self.session).await
     }
-    #[doc = "The module reference this SDK was installed from.\n\nSelects GraphQL Wire_Name `ref` on `WorkspaceSDK`."]
+    #[doc = "The module reference this SDK was installed from.\n\nSelects GraphQL field `ref` on `WorkspaceSDK`."]
     pub async fn r#ref(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("ref");
         query.execute(&self.session).await

@@ -10,7 +10,7 @@ pub struct GitRef {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct GitRefAsWorkspaceOpts {
-    #[doc = "Current working directory inside the workspace root. Defaults to the workspace root.\n\n`None` omits GraphQL Wire_Name `cwd` and preserves engine default `String(\"/\")`."]
+    #[doc = "Current working directory inside the workspace root. Defaults to the workspace root.\n\n`None` omits GraphQL field `cwd` and preserves engine default `String(\"/\")`."]
     pub cwd: Option<String>,
 }
 impl GitRefAsWorkspaceOpts {
@@ -25,11 +25,11 @@ impl GitRefAsWorkspaceOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct GitRefTreeOpts {
-    #[doc = "The depth of the tree to fetch.\n\n`None` omits GraphQL Wire_Name `depth` and preserves engine default `Int(1)`."]
+    #[doc = "The depth of the tree to fetch.\n\n`None` omits GraphQL field `depth` and preserves engine default `Int(1)`."]
     pub depth: Option<i64>,
-    #[doc = "Set to true to discard .git directory.\n\n`None` omits GraphQL Wire_Name `discardGitDir` and preserves engine default `Boolean(false)`."]
+    #[doc = "Set to true to discard .git directory.\n\n`None` omits GraphQL field `discardGitDir` and preserves engine default `Boolean(false)`."]
     pub discard_git_dir: Option<bool>,
-    #[doc = "Set to true to populate tag refs in the local checkout .git.\n\n`None` omits GraphQL Wire_Name `includeTags` and preserves engine default `Boolean(false)`."]
+    #[doc = "Set to true to populate tag refs in the local checkout .git.\n\n`None` omits GraphQL field `includeTags` and preserves engine default `Boolean(false)`."]
     pub include_tags: Option<bool>,
 }
 impl GitRefTreeOpts {
@@ -83,7 +83,7 @@ impl From<GitRef> for crate::IdInput<super::NodeClient> {
     }
 }
 impl GitRef {
-    #[doc = "Creates a synthetic workspace from this git ref.\n\nSelects GraphQL Wire_Name `asWorkspace` on `GitRef`."]
+    #[doc = "Creates a synthetic workspace from this git ref.\n\nSelects GraphQL field `asWorkspace` on `GitRef`."]
     #[must_use]
     pub fn as_workspace(&self) -> super::Workspace {
         let query = self.selection.select("asWorkspace");
@@ -106,12 +106,12 @@ impl GitRef {
             selection: query,
         }
     }
-    #[doc = "The resolved commit id at this ref.\n\nSelects GraphQL Wire_Name `commit` on `GitRef`."]
+    #[doc = "The resolved commit id at this ref.\n\nSelects GraphQL field `commit` on `GitRef`."]
     pub async fn commit(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("commit");
         query.execute(&self.session).await
     }
-    #[doc = "Find the best common ancestor between this ref and another ref.\n\nSelects GraphQL Wire_Name `commonAncestor` on `GitRef`."]
+    #[doc = "Find the best common ancestor between this ref and another ref.\n\nSelects GraphQL field `commonAncestor` on `GitRef`."]
     #[must_use]
     pub fn common_ancestor(
         &self,
@@ -124,17 +124,17 @@ impl GitRef {
             selection: query,
         }
     }
-    #[doc = "A unique identifier for this GitRef.\n\nSelects GraphQL Wire_Name `id` on `GitRef`."]
+    #[doc = "A unique identifier for this GitRef.\n\nSelects GraphQL field `id` on `GitRef`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "The resolved ref name at this ref.\n\nSelects GraphQL Wire_Name `ref` on `GitRef`."]
+    #[doc = "The resolved ref name at this ref.\n\nSelects GraphQL field `ref` on `GitRef`."]
     pub async fn r#ref(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("ref");
         query.execute(&self.session).await
     }
-    #[doc = "The filesystem tree at this ref.\n\nSelects GraphQL Wire_Name `tree` on `GitRef`."]
+    #[doc = "The filesystem tree at this ref.\n\nSelects GraphQL field `tree` on `GitRef`."]
     #[must_use]
     pub fn tree(&self) -> super::Directory {
         let query = self.selection.select("tree");

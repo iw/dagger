@@ -37,7 +37,7 @@ impl From<WorkspaceGit> for crate::IdInput<super::NodeClient> {
     }
 }
 impl WorkspaceGit {
-    #[doc = "The checked-out HEAD of this workspace.\n\nSelects GraphQL Wire_Name `head` on `WorkspaceGit`."]
+    #[doc = "The checked-out HEAD of this workspace.\n\nSelects GraphQL field `head` on `WorkspaceGit`."]
     #[must_use]
     pub fn head(&self) -> super::GitRef {
         let query = self.selection.select("head");
@@ -46,12 +46,12 @@ impl WorkspaceGit {
             selection: query,
         }
     }
-    #[doc = "A unique identifier for this WorkspaceGit.\n\nSelects GraphQL Wire_Name `id` on `WorkspaceGit`."]
+    #[doc = "A unique identifier for this WorkspaceGit.\n\nSelects GraphQL field `id` on `WorkspaceGit`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "Uncommitted changes in this workspace, using the same rules as GitRepository.uncommitted.\n\nSelects GraphQL Wire_Name `uncommitted` on `WorkspaceGit`."]
+    #[doc = "Uncommitted changes in this workspace, using the same rules as GitRepository.uncommitted.\n\nSelects GraphQL field `uncommitted` on `WorkspaceGit`."]
     #[must_use]
     pub fn uncommitted(&self) -> super::Changeset {
         let query = self.selection.select("uncommitted");

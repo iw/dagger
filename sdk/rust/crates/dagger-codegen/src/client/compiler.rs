@@ -197,7 +197,7 @@ fn compile_surface(
         client_error(
             DiagnosticCode::ClientModuleRootInvalid,
             "client.module.name",
-            "engine-normalized module name is not a GraphQL Wire_Name",
+            "engine-normalized module name is not a GraphQL wire name",
         )
     })?;
     let query_name = plan.canonical().query();

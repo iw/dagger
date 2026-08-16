@@ -42,12 +42,12 @@ impl From<Terminal> for crate::IdInput<super::SyncerClient> {
     }
 }
 impl Terminal {
-    #[doc = "A unique identifier for this Terminal.\n\nSelects GraphQL Wire_Name `id` on `Terminal`."]
+    #[doc = "A unique identifier for this Terminal.\n\nSelects GraphQL field `id` on `Terminal`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "Forces evaluation of the pipeline in the engine.\n\nIt doesn't run the default command if no exec has been set.\n\nSelects GraphQL Wire_Name `sync` on `Terminal`."]
+    #[doc = "Forces evaluation of the pipeline in the engine.\n\nIt doesn't run the default command if no exec has been set.\n\nSelects GraphQL field `sync` on `Terminal`."]
     pub async fn sync(&self) -> Result<super::Terminal, crate::QueryError> {
         let query = self.selection.select("sync");
         let id: crate::Id = query.execute(&self.session).await?;

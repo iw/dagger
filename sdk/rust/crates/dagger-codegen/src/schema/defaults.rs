@@ -34,11 +34,11 @@ pub enum ConstValue {
     Float(FiniteF64),
     /// A string literal.
     String(String),
-    /// An enum Wire_Name literal.
+    /// An enum wire name literal.
     Enum(SchemaName),
     /// A recursively normalized list literal.
     List(Vec<ConstValue>),
-    /// An object literal sorted by input-field Wire_Name.
+    /// An object literal sorted by input-field wire name.
     Object(BTreeMap<SchemaName, ConstValue>),
 }
 
@@ -114,7 +114,7 @@ fn convert_value(
         Value::Null => Ok(ConstValue::Null),
         Value::Enum(value) => SchemaName::try_from(value.as_str())
             .map(ConstValue::Enum)
-            .map_err(|()| default_error(coordinate, "enum default has an invalid Wire_Name")),
+            .map_err(|()| default_error(coordinate, "enum default has an invalid wire name")),
         Value::List(values) => values
             .iter()
             .map(|value| convert_value(coordinate, value, depth + 1))

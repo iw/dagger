@@ -37,47 +37,47 @@ impl From<EngineCacheEntry> for crate::IdInput<super::NodeClient> {
     }
 }
 impl EngineCacheEntry {
-    #[doc = "Whether the cache entry is actively being used.\n\nSelects GraphQL Wire_Name `activelyUsed` on `EngineCacheEntry`."]
+    #[doc = "Whether the cache entry is actively being used.\n\nSelects GraphQL field `activelyUsed` on `EngineCacheEntry`."]
     pub async fn actively_used(&self) -> Result<bool, crate::QueryError> {
         let query = self.selection.select("activelyUsed");
         query.execute(&self.session).await
     }
-    #[doc = "The time the cache entry was created, in Unix nanoseconds.\n\nSelects GraphQL Wire_Name `createdTimeUnixNano` on `EngineCacheEntry`."]
+    #[doc = "The time the cache entry was created, in Unix nanoseconds.\n\nSelects GraphQL field `createdTimeUnixNano` on `EngineCacheEntry`."]
     pub async fn created_time_unix_nano(&self) -> Result<i64, crate::QueryError> {
         let query = self.selection.select("createdTimeUnixNano");
         query.execute(&self.session).await
     }
-    #[doc = "The DagQL call that produced this cache entry.\n\nSelects GraphQL Wire_Name `dagqlCall` on `EngineCacheEntry`."]
+    #[doc = "The DagQL call that produced this cache entry.\n\nSelects GraphQL field `dagqlCall` on `EngineCacheEntry`."]
     pub async fn dagql_call(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("dagqlCall");
         query.execute(&self.session).await
     }
-    #[doc = "The description of the cache entry.\n\nSelects GraphQL Wire_Name `description` on `EngineCacheEntry`."]
+    #[doc = "The description of the cache entry.\n\nSelects GraphQL field `description` on `EngineCacheEntry`."]
     pub async fn description(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("description");
         query.execute(&self.session).await
     }
-    #[doc = "The disk space used by the cache entry.\n\nSelects GraphQL Wire_Name `diskSpaceBytes` on `EngineCacheEntry`."]
+    #[doc = "The disk space used by the cache entry.\n\nSelects GraphQL field `diskSpaceBytes` on `EngineCacheEntry`."]
     pub async fn disk_space_bytes(&self) -> Result<i64, crate::QueryError> {
         let query = self.selection.select("diskSpaceBytes");
         query.execute(&self.session).await
     }
-    #[doc = "A unique identifier for this EngineCacheEntry.\n\nSelects GraphQL Wire_Name `id` on `EngineCacheEntry`."]
+    #[doc = "A unique identifier for this EngineCacheEntry.\n\nSelects GraphQL field `id` on `EngineCacheEntry`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "The most recent time the cache entry was used, in Unix nanoseconds.\n\nSelects GraphQL Wire_Name `mostRecentUseTimeUnixNano` on `EngineCacheEntry`."]
+    #[doc = "The most recent time the cache entry was used, in Unix nanoseconds.\n\nSelects GraphQL field `mostRecentUseTimeUnixNano` on `EngineCacheEntry`."]
     pub async fn most_recent_use_time_unix_nano(&self) -> Result<i64, crate::QueryError> {
         let query = self.selection.select("mostRecentUseTimeUnixNano");
         query.execute(&self.session).await
     }
-    #[doc = "The type of the cache record (e.g. regular, internal, frontend, source.local, source.git.checkout, exec.cachemount).\n\nSelects GraphQL Wire_Name `recordType` on `EngineCacheEntry`."]
+    #[doc = "The type of the cache record (e.g. regular, internal, frontend, source.local, source.git.checkout, exec.cachemount).\n\nSelects GraphQL field `recordType` on `EngineCacheEntry`."]
     pub async fn record_type(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("recordType");
         query.execute(&self.session).await
     }
-    #[doc = "The storage record types represented by this cache entry.\n\nSelects GraphQL Wire_Name `recordTypes` on `EngineCacheEntry`."]
+    #[doc = "The storage record types represented by this cache entry.\n\nSelects GraphQL field `recordTypes` on `EngineCacheEntry`."]
     pub async fn record_types(&self) -> Result<Vec<String>, crate::QueryError> {
         let query = self.selection.select("recordTypes");
         query.execute(&self.session).await

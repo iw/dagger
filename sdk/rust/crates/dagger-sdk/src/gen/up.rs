@@ -37,22 +37,22 @@ impl From<Up> for crate::IdInput<super::NodeClient> {
     }
 }
 impl Up {
-    #[doc = "The description of the service\n\nSelects GraphQL Wire_Name `description` on `Up`."]
+    #[doc = "The description of the service\n\nSelects GraphQL field `description` on `Up`."]
     pub async fn description(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("description");
         query.execute(&self.session).await
     }
-    #[doc = "A unique identifier for this Up.\n\nSelects GraphQL Wire_Name `id` on `Up`."]
+    #[doc = "A unique identifier for this Up.\n\nSelects GraphQL field `id` on `Up`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "Return the fully qualified name of the service\n\nSelects GraphQL Wire_Name `name` on `Up`."]
+    #[doc = "Return the fully qualified name of the service\n\nSelects GraphQL field `name` on `Up`."]
     pub async fn name(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("name");
         query.execute(&self.session).await
     }
-    #[doc = "The original module in which the service has been defined\n\nSelects GraphQL Wire_Name `originalModule` on `Up`."]
+    #[doc = "The original module in which the service has been defined\n\nSelects GraphQL field `originalModule` on `Up`."]
     #[must_use]
     pub fn original_module(&self) -> super::Module {
         let query = self.selection.select("originalModule");
@@ -61,12 +61,12 @@ impl Up {
             selection: query,
         }
     }
-    #[doc = "The path of the service within its module\n\nSelects GraphQL Wire_Name `path` on `Up`."]
+    #[doc = "The path of the service within its module\n\nSelects GraphQL field `path` on `Up`."]
     pub async fn path(&self) -> Result<Vec<String>, crate::QueryError> {
         let query = self.selection.select("path");
         query.execute(&self.session).await
     }
-    #[doc = "Execute the service function\n\nSelects GraphQL Wire_Name `run` on `Up`."]
+    #[doc = "Execute the service function\n\nSelects GraphQL field `run` on `Up`."]
     #[must_use]
     pub fn run(&self) -> super::Up {
         let query = self.selection.select("run");

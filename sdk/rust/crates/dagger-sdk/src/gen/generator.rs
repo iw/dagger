@@ -37,7 +37,7 @@ impl From<Generator> for crate::IdInput<super::NodeClient> {
     }
 }
 impl Generator {
-    #[doc = "The generated changeset from the last run\n\nSelects GraphQL Wire_Name `changes` on `Generator`."]
+    #[doc = "The generated changeset from the last run\n\nSelects GraphQL field `changes` on `Generator`."]
     #[must_use]
     pub fn changes(&self) -> super::Changeset {
         let query = self.selection.select("changes");
@@ -46,32 +46,32 @@ impl Generator {
             selection: query,
         }
     }
-    #[doc = "Whether the generator complete\n\nSelects GraphQL Wire_Name `completed` on `Generator`."]
+    #[doc = "Whether the generator complete\n\nSelects GraphQL field `completed` on `Generator`."]
     pub async fn completed(&self) -> Result<bool, crate::QueryError> {
         let query = self.selection.select("completed");
         query.execute(&self.session).await
     }
-    #[doc = "Return the description of the generator\n\nSelects GraphQL Wire_Name `description` on `Generator`."]
+    #[doc = "Return the description of the generator\n\nSelects GraphQL field `description` on `Generator`."]
     pub async fn description(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("description");
         query.execute(&self.session).await
     }
-    #[doc = "A unique identifier for this Generator.\n\nSelects GraphQL Wire_Name `id` on `Generator`."]
+    #[doc = "A unique identifier for this Generator.\n\nSelects GraphQL field `id` on `Generator`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "Whether changeset from the last generator run is empty or not\n\nSelects GraphQL Wire_Name `isEmpty` on `Generator`."]
+    #[doc = "Whether changeset from the last generator run is empty or not\n\nSelects GraphQL field `isEmpty` on `Generator`."]
     pub async fn is_empty(&self) -> Result<bool, crate::QueryError> {
         let query = self.selection.select("isEmpty");
         query.execute(&self.session).await
     }
-    #[doc = "Return the fully qualified name of the generator\n\nSelects GraphQL Wire_Name `name` on `Generator`."]
+    #[doc = "Return the fully qualified name of the generator\n\nSelects GraphQL field `name` on `Generator`."]
     pub async fn name(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("name");
         query.execute(&self.session).await
     }
-    #[doc = "The original module in which the generator has been defined\n\nSelects GraphQL Wire_Name `originalModule` on `Generator`."]
+    #[doc = "The original module in which the generator has been defined\n\nSelects GraphQL field `originalModule` on `Generator`."]
     #[must_use]
     pub fn original_module(&self) -> super::Module {
         let query = self.selection.select("originalModule");
@@ -80,12 +80,12 @@ impl Generator {
             selection: query,
         }
     }
-    #[doc = "The path of the generator within its module\n\nSelects GraphQL Wire_Name `path` on `Generator`."]
+    #[doc = "The path of the generator within its module\n\nSelects GraphQL field `path` on `Generator`."]
     pub async fn path(&self) -> Result<Vec<String>, crate::QueryError> {
         let query = self.selection.select("path");
         query.execute(&self.session).await
     }
-    #[doc = "Execute the generator\n\nSelects GraphQL Wire_Name `run` on `Generator`."]
+    #[doc = "Execute the generator\n\nSelects GraphQL field `run` on `Generator`."]
     #[must_use]
     pub fn run(&self) -> super::Generator {
         let query = self.selection.select("run");

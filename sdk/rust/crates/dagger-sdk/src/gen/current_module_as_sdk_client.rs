@@ -37,17 +37,17 @@ impl From<CurrentModuleAsSdkClient> for crate::IdInput<super::NodeClient> {
     }
 }
 impl CurrentModuleAsSdkClient {
-    #[doc = "A unique identifier for this CurrentModuleAsSDKClient.\n\nSelects GraphQL Wire_Name `id` on `CurrentModuleAsSDKClient`."]
+    #[doc = "A unique identifier for this CurrentModuleAsSDKClient.\n\nSelects GraphQL field `id` on `CurrentModuleAsSDKClient`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "The module the client is bound to (workspace-relative path or canonical ref).\n\nSelects GraphQL Wire_Name `module` on `CurrentModuleAsSDKClient`."]
+    #[doc = "The module the client is bound to (workspace-relative path or canonical ref).\n\nSelects GraphQL field `module` on `CurrentModuleAsSDKClient`."]
     pub async fn module(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("module");
         query.execute(&self.session).await
     }
-    #[doc = "The resolved module source this client is bound to, including its dependency closure and pinned version.\n\nSelects GraphQL Wire_Name `moduleSource` on `CurrentModuleAsSDKClient`."]
+    #[doc = "The resolved module source this client is bound to, including its dependency closure and pinned version.\n\nSelects GraphQL field `moduleSource` on `CurrentModuleAsSDKClient`."]
     #[must_use]
     pub fn module_source(&self) -> super::ModuleSource {
         let query = self.selection.select("moduleSource");
@@ -56,12 +56,12 @@ impl CurrentModuleAsSdkClient {
             selection: query,
         }
     }
-    #[doc = "Workspace-root-relative path of the generated client.\n\nSelects GraphQL Wire_Name `path` on `CurrentModuleAsSDKClient`."]
+    #[doc = "Workspace-root-relative path of the generated client.\n\nSelects GraphQL field `path` on `CurrentModuleAsSDKClient`."]
     pub async fn path(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("path");
         query.execute(&self.session).await
     }
-    #[doc = "The pinned version of the bound module, if any.\n\nSelects GraphQL Wire_Name `pin` on `CurrentModuleAsSDKClient`."]
+    #[doc = "The pinned version of the bound module, if any.\n\nSelects GraphQL field `pin` on `CurrentModuleAsSDKClient`."]
     pub async fn pin(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("pin");
         query.execute(&self.session).await

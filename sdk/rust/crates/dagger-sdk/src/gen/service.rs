@@ -10,9 +10,9 @@ pub struct Service {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ServiceEndpointOpts {
-    #[doc = "The exposed port number for the endpoint\n\n`None` omits GraphQL Wire_Name `port`."]
+    #[doc = "The exposed port number for the endpoint\n\n`None` omits GraphQL field `port`."]
     pub port: Option<i64>,
-    #[doc = "Return a URL with the given scheme, eg. http for [http://](http://)\n\n`None` omits GraphQL Wire_Name `scheme` and preserves engine default `String(\"\")`."]
+    #[doc = "Return a URL with the given scheme, eg. http for [http://](http://)\n\n`None` omits GraphQL field `scheme` and preserves engine default `String(\"\")`."]
     pub scheme: Option<String>,
 }
 impl ServiceEndpointOpts {
@@ -33,7 +33,7 @@ impl ServiceEndpointOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ServiceStopOpts {
-    #[doc = "Immediately kill the service without waiting for a graceful exit\n\n`None` omits GraphQL Wire_Name `kill` and preserves engine default `Boolean(false)`."]
+    #[doc = "Immediately kill the service without waiting for a graceful exit\n\n`None` omits GraphQL field `kill` and preserves engine default `Boolean(false)`."]
     pub kill: Option<bool>,
 }
 impl ServiceStopOpts {
@@ -48,7 +48,7 @@ impl ServiceStopOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ServiceTerminalOpts {
-    #[doc = "`None` omits GraphQL Wire_Name `cmd` and preserves engine default `List(\\[\\])`."]
+    #[doc = "`None` omits GraphQL field `cmd` and preserves engine default `List(\\[\\])`."]
     pub cmd: Option<Vec<String>>,
 }
 impl ServiceTerminalOpts {
@@ -63,9 +63,9 @@ impl ServiceTerminalOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ServiceUpOpts {
-    #[doc = "List of frontend/backend port mappings to forward.\n\nFrontend is the port accepting traffic on the host, backend is the service port.\n\n`None` omits GraphQL Wire_Name `ports` and preserves engine default `List(\\[\\])`."]
+    #[doc = "List of frontend/backend port mappings to forward.\n\nFrontend is the port accepting traffic on the host, backend is the service port.\n\n`None` omits GraphQL field `ports` and preserves engine default `List(\\[\\])`."]
     pub ports: Option<Vec<super::PortForward>>,
-    #[doc = "Bind each tunnel port to a random port on the host.\n\n`None` omits GraphQL Wire_Name `random` and preserves engine default `Boolean(false)`."]
+    #[doc = "Bind each tunnel port to a random port on the host.\n\n`None` omits GraphQL field `random` and preserves engine default `Boolean(false)`."]
     pub random: Option<bool>,
 }
 impl ServiceUpOpts {
@@ -118,7 +118,7 @@ impl From<Service> for crate::IdInput<super::SyncerClient> {
     }
 }
 impl Service {
-    #[doc = "Retrieves an endpoint that clients can use to reach this container.\n\nIf no port is specified, the first exposed port is used. If none exist an error is returned.\n\nIf a scheme is specified, a URL is returned. Otherwise, a host:port pair is returned.\n\nSelects GraphQL Wire_Name `endpoint` on `Service`."]
+    #[doc = "Retrieves an endpoint that clients can use to reach this container.\n\nIf no port is specified, the first exposed port is used. If none exist an error is returned.\n\nIf a scheme is specified, a URL is returned. Otherwise, a host:port pair is returned.\n\nSelects GraphQL field `endpoint` on `Service`."]
     pub async fn endpoint(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("endpoint");
         query.execute(&self.session).await
@@ -141,17 +141,17 @@ impl Service {
         };
         query.execute(&self.session).await
     }
-    #[doc = "Retrieves a hostname which can be used by clients to reach this container.\n\nSelects GraphQL Wire_Name `hostname` on `Service`."]
+    #[doc = "Retrieves a hostname which can be used by clients to reach this container.\n\nSelects GraphQL field `hostname` on `Service`."]
     pub async fn hostname(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("hostname");
         query.execute(&self.session).await
     }
-    #[doc = "A unique identifier for this Service.\n\nSelects GraphQL Wire_Name `id` on `Service`."]
+    #[doc = "A unique identifier for this Service.\n\nSelects GraphQL field `id` on `Service`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "Retrieves the list of ports provided by the service.\n\nSelects GraphQL Wire_Name `ports` on `Service`."]
+    #[doc = "Retrieves the list of ports provided by the service.\n\nSelects GraphQL field `ports` on `Service`."]
     pub async fn ports(&self) -> Result<Vec<super::Port>, crate::QueryError> {
         let query = self.selection.select("ports");
         let query = query.select("id");
@@ -159,7 +159,7 @@ impl Service {
             .execute_reentry::<super::Port, Vec<crate::Id>>(&self.session, "Port")
             .await
     }
-    #[doc = "Start the service and wait for its health checks to succeed.\n\nServices bound to a Container do not need to be manually started.\n\nSelects GraphQL Wire_Name `start` on `Service`."]
+    #[doc = "Start the service and wait for its health checks to succeed.\n\nServices bound to a Container do not need to be manually started.\n\nSelects GraphQL field `start` on `Service`."]
     pub async fn start(&self) -> Result<super::Service, crate::QueryError> {
         let query = self.selection.select("start");
         let id: crate::Id = query.execute(&self.session).await?;
@@ -169,7 +169,7 @@ impl Service {
             "Service",
         ))
     }
-    #[doc = "Stop the service.\n\nSelects GraphQL Wire_Name `stop` on `Service`."]
+    #[doc = "Stop the service.\n\nSelects GraphQL field `stop` on `Service`."]
     pub async fn stop(&self) -> Result<super::Service, crate::QueryError> {
         let query = self.selection.select("stop");
         let id: crate::Id = query.execute(&self.session).await?;
@@ -197,7 +197,7 @@ impl Service {
             "Service",
         ))
     }
-    #[doc = "Forces evaluation of the pipeline in the engine.\n\nSelects GraphQL Wire_Name `sync` on `Service`."]
+    #[doc = "Forces evaluation of the pipeline in the engine.\n\nSelects GraphQL field `sync` on `Service`."]
     pub async fn sync(&self) -> Result<super::Service, crate::QueryError> {
         let query = self.selection.select("sync");
         let id: crate::Id = query.execute(&self.session).await?;
@@ -207,7 +207,7 @@ impl Service {
             "Service",
         ))
     }
-    #[doc = "Selects GraphQL Wire_Name `terminal` on `Service`."]
+    #[doc = "Selects GraphQL field `terminal` on `Service`."]
     #[must_use]
     pub fn terminal(&self) -> super::Service {
         let query = self.selection.select("terminal");
@@ -230,7 +230,7 @@ impl Service {
             selection: query,
         }
     }
-    #[doc = "Creates a tunnel that forwards traffic from the caller's network to this service.\n\nSelects GraphQL Wire_Name `up` on `Service`."]
+    #[doc = "Creates a tunnel that forwards traffic from the caller's network to this service.\n\nSelects GraphQL field `up` on `Service`."]
     pub async fn up(&self) -> Result<(), crate::QueryError> {
         let query = self.selection.select("up");
         query.execute(&self.session).await
@@ -250,7 +250,7 @@ impl Service {
         };
         query.execute(&self.session).await
     }
-    #[doc = "Configures a hostname which can be used by clients within the session to reach this container.\n\nSelects GraphQL Wire_Name `withHostname` on `Service`."]
+    #[doc = "Configures a hostname which can be used by clients within the session to reach this container.\n\nSelects GraphQL field `withHostname` on `Service`."]
     #[must_use]
     pub fn with_hostname(&self, hostname: impl Into<String>) -> super::Service {
         let query = self.selection.select("withHostname");

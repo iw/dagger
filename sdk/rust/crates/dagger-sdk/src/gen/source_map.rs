@@ -37,32 +37,32 @@ impl From<SourceMap> for crate::IdInput<super::NodeClient> {
     }
 }
 impl SourceMap {
-    #[doc = "The column number within the line.\n\nSelects GraphQL Wire_Name `column` on `SourceMap`."]
+    #[doc = "The column number within the line.\n\nSelects GraphQL field `column` on `SourceMap`."]
     pub async fn column(&self) -> Result<i64, crate::QueryError> {
         let query = self.selection.select("column");
         query.execute(&self.session).await
     }
-    #[doc = "The filename from the module source.\n\nSelects GraphQL Wire_Name `filename` on `SourceMap`."]
+    #[doc = "The filename from the module source.\n\nSelects GraphQL field `filename` on `SourceMap`."]
     pub async fn filename(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("filename");
         query.execute(&self.session).await
     }
-    #[doc = "A unique identifier for this SourceMap.\n\nSelects GraphQL Wire_Name `id` on `SourceMap`."]
+    #[doc = "A unique identifier for this SourceMap.\n\nSelects GraphQL field `id` on `SourceMap`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "The line number within the filename.\n\nSelects GraphQL Wire_Name `line` on `SourceMap`."]
+    #[doc = "The line number within the filename.\n\nSelects GraphQL field `line` on `SourceMap`."]
     pub async fn line(&self) -> Result<i64, crate::QueryError> {
         let query = self.selection.select("line");
         query.execute(&self.session).await
     }
-    #[doc = "The module dependency this was declared in.\n\nSelects GraphQL Wire_Name `module` on `SourceMap`."]
+    #[doc = "The module dependency this was declared in.\n\nSelects GraphQL field `module` on `SourceMap`."]
     pub async fn module(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("module");
         query.execute(&self.session).await
     }
-    #[doc = "The URL to the file, if any. This can be used to link to the source map in the browser.\n\nSelects GraphQL Wire_Name `url` on `SourceMap`."]
+    #[doc = "The URL to the file, if any. This can be used to link to the source map in the browser.\n\nSelects GraphQL field `url` on `SourceMap`."]
     pub async fn url(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("url");
         query.execute(&self.session).await

@@ -37,12 +37,12 @@ impl From<CurrentModuleAsSdkModule> for crate::IdInput<super::NodeClient> {
     }
 }
 impl CurrentModuleAsSdkModule {
-    #[doc = "A unique identifier for this CurrentModuleAsSDKModule.\n\nSelects GraphQL Wire_Name `id` on `CurrentModuleAsSDKModule`."]
+    #[doc = "A unique identifier for this CurrentModuleAsSDKModule.\n\nSelects GraphQL field `id` on `CurrentModuleAsSDKModule`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "Workspace-root-relative path to the managed module.\n\nSelects GraphQL Wire_Name `path` on `CurrentModuleAsSDKModule`."]
+    #[doc = "Workspace-root-relative path to the managed module.\n\nSelects GraphQL field `path` on `CurrentModuleAsSDKModule`."]
     pub async fn path(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("path");
         query.execute(&self.session).await

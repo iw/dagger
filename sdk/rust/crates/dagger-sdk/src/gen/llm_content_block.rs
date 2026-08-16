@@ -37,42 +37,42 @@ impl From<LlmContentBlock> for crate::IdInput<super::NodeClient> {
     }
 }
 impl LlmContentBlock {
-    #[doc = "The arguments passed to the tool, JSON-encoded (for TOOL_CALL kind).\n\nSelects GraphQL Wire_Name `arguments` on `LLMContentBlock`."]
+    #[doc = "The arguments passed to the tool, JSON-encoded (for TOOL_CALL kind).\n\nSelects GraphQL field `arguments` on `LLMContentBlock`."]
     pub async fn arguments(&self) -> Result<crate::Json, crate::QueryError> {
         let query = self.selection.select("arguments");
         query.execute(&self.session).await
     }
-    #[doc = "The unique ID of a tool call (for TOOL_CALL or TOOL_RESULT kinds).\n\nSelects GraphQL Wire_Name `callId` on `LLMContentBlock`."]
+    #[doc = "The unique ID of a tool call (for TOOL_CALL or TOOL_RESULT kinds).\n\nSelects GraphQL field `callId` on `LLMContentBlock`."]
     pub async fn call_id(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("callId");
         query.execute(&self.session).await
     }
-    #[doc = "Whether the tool call resulted in an error (for TOOL_RESULT kind).\n\nSelects GraphQL Wire_Name `errored` on `LLMContentBlock`."]
+    #[doc = "Whether the tool call resulted in an error (for TOOL_RESULT kind).\n\nSelects GraphQL field `errored` on `LLMContentBlock`."]
     pub async fn errored(&self) -> Result<bool, crate::QueryError> {
         let query = self.selection.select("errored");
         query.execute(&self.session).await
     }
-    #[doc = "A unique identifier for this LLMContentBlock.\n\nSelects GraphQL Wire_Name `id` on `LLMContentBlock`."]
+    #[doc = "A unique identifier for this LLMContentBlock.\n\nSelects GraphQL field `id` on `LLMContentBlock`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "The kind of content block, which determines the other populated fields.\n\nSelects GraphQL Wire_Name `kind` on `LLMContentBlock`."]
+    #[doc = "The kind of content block, which determines the other populated fields.\n\nSelects GraphQL field `kind` on `LLMContentBlock`."]
     pub async fn kind(&self) -> Result<super::LlmContentBlockKind, crate::QueryError> {
         let query = self.selection.select("kind");
         query.execute(&self.session).await
     }
-    #[doc = "Provider-specific opaque data (e.g. Anthropic thinking signature). Preserve it when reconstructing a conversation.\n\nSelects GraphQL Wire_Name `signature` on `LLMContentBlock`."]
+    #[doc = "Provider-specific opaque data (e.g. Anthropic thinking signature). Preserve it when reconstructing a conversation.\n\nSelects GraphQL field `signature` on `LLMContentBlock`."]
     pub async fn signature(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("signature");
         query.execute(&self.session).await
     }
-    #[doc = "Text content (for TEXT, THINKING, or TOOL_RESULT kinds).\n\nSelects GraphQL Wire_Name `text` on `LLMContentBlock`."]
+    #[doc = "Text content (for TEXT, THINKING, or TOOL_RESULT kinds).\n\nSelects GraphQL field `text` on `LLMContentBlock`."]
     pub async fn text(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("text");
         query.execute(&self.session).await
     }
-    #[doc = "The name of the tool called (for TOOL_CALL kind).\n\nSelects GraphQL Wire_Name `toolName` on `LLMContentBlock`."]
+    #[doc = "The name of the tool called (for TOOL_CALL kind).\n\nSelects GraphQL field `toolName` on `LLMContentBlock`."]
     pub async fn tool_name(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("toolName");
         query.execute(&self.session).await

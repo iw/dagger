@@ -37,17 +37,17 @@ impl From<Engine> for crate::IdInput<super::NodeClient> {
     }
 }
 impl Engine {
-    #[doc = "The list of connected client IDs\n\nSelects GraphQL Wire_Name `clients` on `Engine`."]
+    #[doc = "The list of connected client IDs\n\nSelects GraphQL field `clients` on `Engine`."]
     pub async fn clients(&self) -> Result<Vec<String>, crate::QueryError> {
         let query = self.selection.select("clients");
         query.execute(&self.session).await
     }
-    #[doc = "A unique identifier for this Engine.\n\nSelects GraphQL Wire_Name `id` on `Engine`."]
+    #[doc = "A unique identifier for this Engine.\n\nSelects GraphQL field `id` on `Engine`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "The local engine cache state tracked by dagql\n\nSelects GraphQL Wire_Name `localCache` on `Engine`."]
+    #[doc = "The local engine cache state tracked by dagql\n\nSelects GraphQL field `localCache` on `Engine`."]
     #[must_use]
     pub fn local_cache(&self) -> super::EngineCache {
         let query = self.selection.select("localCache");
@@ -56,7 +56,7 @@ impl Engine {
             selection: query,
         }
     }
-    #[doc = "The name of the engine instance.\n\nSelects GraphQL Wire_Name `name` on `Engine`."]
+    #[doc = "The name of the engine instance.\n\nSelects GraphQL field `name` on `Engine`."]
     pub async fn name(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("name");
         query.execute(&self.session).await

@@ -37,7 +37,7 @@ impl From<ClientFilesyncMirror> for crate::IdInput<super::NodeClient> {
     }
 }
 impl ClientFilesyncMirror {
-    #[doc = "A unique identifier for this ClientFilesyncMirror.\n\nSelects GraphQL Wire_Name `id` on `ClientFilesyncMirror`."]
+    #[doc = "A unique identifier for this ClientFilesyncMirror.\n\nSelects GraphQL field `id` on `ClientFilesyncMirror`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await

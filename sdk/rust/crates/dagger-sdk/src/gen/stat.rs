@@ -37,27 +37,27 @@ impl From<Stat> for crate::IdInput<super::NodeClient> {
     }
 }
 impl Stat {
-    #[doc = "file type\n\nSelects GraphQL Wire_Name `fileType` on `Stat`."]
+    #[doc = "file type\n\nSelects GraphQL field `fileType` on `Stat`."]
     pub async fn file_type(&self) -> Result<Option<super::FileType>, crate::QueryError> {
         let query = self.selection.select("fileType");
         query.execute(&self.session).await
     }
-    #[doc = "A unique identifier for this Stat.\n\nSelects GraphQL Wire_Name `id` on `Stat`."]
+    #[doc = "A unique identifier for this Stat.\n\nSelects GraphQL field `id` on `Stat`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "file name\n\nSelects GraphQL Wire_Name `name` on `Stat`."]
+    #[doc = "file name\n\nSelects GraphQL field `name` on `Stat`."]
     pub async fn name(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("name");
         query.execute(&self.session).await
     }
-    #[doc = "permission bits\n\nSelects GraphQL Wire_Name `permissions` on `Stat`."]
+    #[doc = "permission bits\n\nSelects GraphQL field `permissions` on `Stat`."]
     pub async fn permissions(&self) -> Result<i64, crate::QueryError> {
         let query = self.selection.select("permissions");
         query.execute(&self.session).await
     }
-    #[doc = "file size\n\nSelects GraphQL Wire_Name `size` on `Stat`."]
+    #[doc = "file size\n\nSelects GraphQL field `size` on `Stat`."]
     pub async fn size(&self) -> Result<i64, crate::QueryError> {
         let query = self.selection.select("size");
         query.execute(&self.session).await

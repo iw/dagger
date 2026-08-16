@@ -10,19 +10,19 @@ pub struct Function {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct FunctionWithArgOpts {
-    #[doc = "`None` omits GraphQL Wire_Name `defaultAddress` and preserves engine default `String(\"\")`."]
+    #[doc = "`None` omits GraphQL field `defaultAddress` and preserves engine default `String(\"\")`."]
     pub default_address: Option<String>,
-    #[doc = "If the argument is a Directory or File type, default to load path from context directory, relative to root directory.\n\n`None` omits GraphQL Wire_Name `defaultPath` and preserves engine default `String(\"\")`."]
+    #[doc = "If the argument is a Directory or File type, default to load path from context directory, relative to root directory.\n\n`None` omits GraphQL field `defaultPath` and preserves engine default `String(\"\")`."]
     pub default_path: Option<String>,
-    #[doc = "A default value to use for this argument if not explicitly set by the caller, if any\n\n`None` omits GraphQL Wire_Name `defaultValue`."]
+    #[doc = "A default value to use for this argument if not explicitly set by the caller, if any\n\n`None` omits GraphQL field `defaultValue`."]
     pub default_value: Option<crate::Json>,
-    #[doc = "If deprecated, the reason or migration path.\n\n`None` omits GraphQL Wire_Name `deprecated`."]
+    #[doc = "If deprecated, the reason or migration path.\n\n`None` omits GraphQL field `deprecated`."]
     pub deprecated: Option<String>,
-    #[doc = "A doc string for the argument, if any\n\n`None` omits GraphQL Wire_Name `description` and preserves engine default `String(\"\")`."]
+    #[doc = "A doc string for the argument, if any\n\n`None` omits GraphQL field `description` and preserves engine default `String(\"\")`."]
     pub description: Option<String>,
-    #[doc = "Patterns to ignore when loading the contextual argument value.\n\n`None` omits GraphQL Wire_Name `ignore` and preserves engine default `List(\\[\\])`."]
+    #[doc = "Patterns to ignore when loading the contextual argument value.\n\n`None` omits GraphQL field `ignore` and preserves engine default `List(\\[\\])`."]
     pub ignore: Option<Vec<String>>,
-    #[doc = "The source map for the argument definition.\n\n`None` omits GraphQL Wire_Name `sourceMap`."]
+    #[doc = "The source map for the argument definition.\n\n`None` omits GraphQL field `sourceMap`."]
     pub source_map: Option<crate::IdInput<super::SourceMap>>,
 }
 impl FunctionWithArgOpts {
@@ -73,7 +73,7 @@ impl FunctionWithArgOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct FunctionWithCachePolicyOpts {
-    #[doc = "The TTL for the cache policy, if applicable. Provided as a duration string, e.g. \"5m\", \"1h30s\".\n\n`None` omits GraphQL Wire_Name `timeToLive`."]
+    #[doc = "The TTL for the cache policy, if applicable. Provided as a duration string, e.g. \"5m\", \"1h30s\".\n\n`None` omits GraphQL field `timeToLive`."]
     pub time_to_live: Option<String>,
 }
 impl FunctionWithCachePolicyOpts {
@@ -88,7 +88,7 @@ impl FunctionWithCachePolicyOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct FunctionWithDeprecatedOpts {
-    #[doc = "Reason or migration path describing the deprecation.\n\n`None` omits GraphQL Wire_Name `reason`."]
+    #[doc = "Reason or migration path describing the deprecation.\n\n`None` omits GraphQL field `reason`."]
     pub reason: Option<String>,
 }
 impl FunctionWithDeprecatedOpts {
@@ -130,7 +130,7 @@ impl From<Function> for crate::IdInput<super::NodeClient> {
     }
 }
 impl Function {
-    #[doc = "Arguments accepted by the function, if any.\n\nSelects GraphQL Wire_Name `args` on `Function`."]
+    #[doc = "Arguments accepted by the function, if any.\n\nSelects GraphQL field `args` on `Function`."]
     pub async fn args(&self) -> Result<Vec<super::FunctionArg>, crate::QueryError> {
         let query = self.selection.select("args");
         let query = query.select("id");
@@ -138,27 +138,27 @@ impl Function {
             .execute_reentry::<super::FunctionArg, Vec<crate::Id>>(&self.session, "FunctionArg")
             .await
     }
-    #[doc = "The reason this function is deprecated, if any.\n\nSelects GraphQL Wire_Name `deprecated` on `Function`."]
+    #[doc = "The reason this function is deprecated, if any.\n\nSelects GraphQL field `deprecated` on `Function`."]
     pub async fn deprecated(&self) -> Result<Option<String>, crate::QueryError> {
         let query = self.selection.select("deprecated");
         query.execute(&self.session).await
     }
-    #[doc = "A doc string for the function, if any.\n\nSelects GraphQL Wire_Name `description` on `Function`."]
+    #[doc = "A doc string for the function, if any.\n\nSelects GraphQL field `description` on `Function`."]
     pub async fn description(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("description");
         query.execute(&self.session).await
     }
-    #[doc = "A unique identifier for this Function.\n\nSelects GraphQL Wire_Name `id` on `Function`."]
+    #[doc = "A unique identifier for this Function.\n\nSelects GraphQL field `id` on `Function`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "The name of the function.\n\nSelects GraphQL Wire_Name `name` on `Function`."]
+    #[doc = "The name of the function.\n\nSelects GraphQL field `name` on `Function`."]
     pub async fn name(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("name");
         query.execute(&self.session).await
     }
-    #[doc = "The type returned by the function.\n\nSelects GraphQL Wire_Name `returnType` on `Function`."]
+    #[doc = "The type returned by the function.\n\nSelects GraphQL field `returnType` on `Function`."]
     #[must_use]
     pub fn return_type(&self) -> super::TypeDef {
         let query = self.selection.select("returnType");
@@ -167,7 +167,7 @@ impl Function {
             selection: query,
         }
     }
-    #[doc = "The location of this function declaration.\n\nSelects GraphQL Wire_Name `sourceMap` on `Function`."]
+    #[doc = "The location of this function declaration.\n\nSelects GraphQL field `sourceMap` on `Function`."]
     pub async fn source_map(&self) -> Result<Option<super::SourceMap>, crate::QueryError> {
         let query = self.selection.select("sourceMap");
         let query = query.select("id");
@@ -175,12 +175,12 @@ impl Function {
             .execute_reentry::<super::SourceMap, Option<crate::Id>>(&self.session, "SourceMap")
             .await
     }
-    #[doc = "If this function is provided by a module, the name of the module. Unset otherwise.\n\nSelects GraphQL Wire_Name `sourceModuleName` on `Function`."]
+    #[doc = "If this function is provided by a module, the name of the module. Unset otherwise.\n\nSelects GraphQL field `sourceModuleName` on `Function`."]
     pub async fn source_module_name(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("sourceModuleName");
         query.execute(&self.session).await
     }
-    #[doc = "Returns the function with the provided argument\n\nSelects GraphQL Wire_Name `withArg` on `Function`."]
+    #[doc = "Returns the function with the provided argument\n\nSelects GraphQL field `withArg` on `Function`."]
     #[must_use]
     pub fn with_arg(
         &self,
@@ -246,7 +246,7 @@ impl Function {
             selection: query,
         }
     }
-    #[doc = "Returns the function updated to use the provided cache policy.\n\nSelects GraphQL Wire_Name `withCachePolicy` on `Function`."]
+    #[doc = "Returns the function updated to use the provided cache policy.\n\nSelects GraphQL field `withCachePolicy` on `Function`."]
     #[must_use]
     pub fn with_cache_policy(&self, policy: super::FunctionCachePolicy) -> super::Function {
         let query = self.selection.select("withCachePolicy");
@@ -275,7 +275,7 @@ impl Function {
             selection: query,
         }
     }
-    #[doc = "Returns the function with a flag indicating it's a check.\n\nSelects GraphQL Wire_Name `withCheck` on `Function`."]
+    #[doc = "Returns the function with a flag indicating it's a check.\n\nSelects GraphQL field `withCheck` on `Function`."]
     #[must_use]
     pub fn with_check(&self) -> super::Function {
         let query = self.selection.select("withCheck");
@@ -284,7 +284,7 @@ impl Function {
             selection: query,
         }
     }
-    #[doc = "Returns the function with the provided deprecation reason.\n\nSelects GraphQL Wire_Name `withDeprecated` on `Function`."]
+    #[doc = "Returns the function with the provided deprecation reason.\n\nSelects GraphQL field `withDeprecated` on `Function`."]
     #[must_use]
     pub fn with_deprecated(&self) -> super::Function {
         let query = self.selection.select("withDeprecated");
@@ -307,7 +307,7 @@ impl Function {
             selection: query,
         }
     }
-    #[doc = "Returns the function with the given doc string.\n\nSelects GraphQL Wire_Name `withDescription` on `Function`."]
+    #[doc = "Returns the function with the given doc string.\n\nSelects GraphQL field `withDescription` on `Function`."]
     #[must_use]
     pub fn with_description(&self, description: impl Into<String>) -> super::Function {
         let query = self.selection.select("withDescription");
@@ -317,7 +317,7 @@ impl Function {
             selection: query,
         }
     }
-    #[doc = "Returns the function with a flag indicating it's a generator.\n\nSelects GraphQL Wire_Name `withGenerator` on `Function`."]
+    #[doc = "Returns the function with a flag indicating it's a generator.\n\nSelects GraphQL field `withGenerator` on `Function`."]
     #[must_use]
     pub fn with_generator(&self) -> super::Function {
         let query = self.selection.select("withGenerator");
@@ -326,7 +326,7 @@ impl Function {
             selection: query,
         }
     }
-    #[doc = "Returns the function with the given source map.\n\nSelects GraphQL Wire_Name `withSourceMap` on `Function`."]
+    #[doc = "Returns the function with the given source map.\n\nSelects GraphQL field `withSourceMap` on `Function`."]
     #[must_use]
     pub fn with_source_map(
         &self,
@@ -339,7 +339,7 @@ impl Function {
             selection: query,
         }
     }
-    #[doc = "Returns the function with a flag indicating it returns a service for dagger up.\n\nSelects GraphQL Wire_Name `withUp` on `Function`."]
+    #[doc = "Returns the function with a flag indicating it returns a service for dagger up.\n\nSelects GraphQL field `withUp` on `Function`."]
     #[must_use]
     pub fn with_up(&self) -> super::Function {
         let query = self.selection.select("withUp");
