@@ -10,7 +10,7 @@ pub struct GeneratorGroup {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct GeneratorGroupChangesOpts {
-    #[doc = "Strategy to apply on conflicts between generators\n\n`None` omits GraphQL Wire_Name `onConflict` and preserves engine default `Enum(SchemaName(\"FAIL_EARLY\"))`."]
+    #[doc = "Strategy to apply on conflicts between generators\n\n`None` omits GraphQL field `onConflict` and preserves engine default `Enum(SchemaName(\"FAIL_EARLY\"))`."]
     pub on_conflict: Option<super::ChangesetsMergeConflict>,
 }
 impl GeneratorGroupChangesOpts {
@@ -52,7 +52,7 @@ impl From<GeneratorGroup> for crate::IdInput<super::NodeClient> {
     }
 }
 impl GeneratorGroup {
-    #[doc = "The combined changes from the last run of the generators\n\nIf any conflict occurs, for instance if the same file is modified by multiple generators, or if a file is both modified and deleted, an error is raised and the merge of the changesets will failed.\n\nSet 'continueOnConflicts' flag to force to merge the changes in a 'last write wins' strategy.\n\nSelects GraphQL Wire_Name `changes` on `GeneratorGroup`."]
+    #[doc = "The combined changes from the last run of the generators\n\nIf any conflict occurs, for instance if the same file is modified by multiple generators, or if a file is both modified and deleted, an error is raised and the merge of the changesets will failed.\n\nSet 'continueOnConflicts' flag to force to merge the changes in a 'last write wins' strategy.\n\nSelects GraphQL field `changes` on `GeneratorGroup`."]
     #[must_use]
     pub fn changes(&self) -> super::Changeset {
         let query = self.selection.select("changes");
@@ -75,17 +75,17 @@ impl GeneratorGroup {
             selection: query,
         }
     }
-    #[doc = "A unique identifier for this GeneratorGroup.\n\nSelects GraphQL Wire_Name `id` on `GeneratorGroup`."]
+    #[doc = "A unique identifier for this GeneratorGroup.\n\nSelects GraphQL field `id` on `GeneratorGroup`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "Whether the generated changeset from the last run is empty or not\n\nSelects GraphQL Wire_Name `isEmpty` on `GeneratorGroup`."]
+    #[doc = "Whether the generated changeset from the last run is empty or not\n\nSelects GraphQL field `isEmpty` on `GeneratorGroup`."]
     pub async fn is_empty(&self) -> Result<bool, crate::QueryError> {
         let query = self.selection.select("isEmpty");
         query.execute(&self.session).await
     }
-    #[doc = "Return a list of individual generators and their details\n\nSelects GraphQL Wire_Name `list` on `GeneratorGroup`."]
+    #[doc = "Return a list of individual generators and their details\n\nSelects GraphQL field `list` on `GeneratorGroup`."]
     pub async fn list(&self) -> Result<Vec<super::Generator>, crate::QueryError> {
         let query = self.selection.select("list");
         let query = query.select("id");
@@ -93,12 +93,12 @@ impl GeneratorGroup {
             .execute_reentry::<super::Generator, Vec<crate::Id>>(&self.session, "Generator")
             .await
     }
-    #[doc = "Load failures tolerated while collecting the generators.\n\nEmpty unless a workspace module could not be loaded during an unscoped 'dagger generate' (no selector), where load failures are tolerated so the modules that do load still generate. Each entry is a human-readable error message. An explicit selector keeps failing hard instead.\n\nSelects GraphQL Wire_Name `loadFailures` on `GeneratorGroup`."]
+    #[doc = "Load failures tolerated while collecting the generators.\n\nEmpty unless a workspace module could not be loaded during an unscoped 'dagger generate' (no selector), where load failures are tolerated so the modules that do load still generate. Each entry is a human-readable error message. An explicit selector keeps failing hard instead.\n\nSelects GraphQL field `loadFailures` on `GeneratorGroup`."]
     pub async fn load_failures(&self) -> Result<Vec<String>, crate::QueryError> {
         let query = self.selection.select("loadFailures");
         query.execute(&self.session).await
     }
-    #[doc = "Execute all selected generators\n\nSelects GraphQL Wire_Name `run` on `GeneratorGroup`."]
+    #[doc = "Execute all selected generators\n\nSelects GraphQL field `run` on `GeneratorGroup`."]
     #[must_use]
     pub fn run(&self) -> super::GeneratorGroup {
         let query = self.selection.select("run");

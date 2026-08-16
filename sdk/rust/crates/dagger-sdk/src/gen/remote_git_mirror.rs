@@ -37,7 +37,7 @@ impl From<RemoteGitMirror> for crate::IdInput<super::NodeClient> {
     }
 }
 impl RemoteGitMirror {
-    #[doc = "A unique identifier for this RemoteGitMirror.\n\nSelects GraphQL Wire_Name `id` on `RemoteGitMirror`."]
+    #[doc = "A unique identifier for this RemoteGitMirror.\n\nSelects GraphQL field `id` on `RemoteGitMirror`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await

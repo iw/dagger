@@ -37,12 +37,12 @@ impl From<Cloud> for crate::IdInput<super::NodeClient> {
     }
 }
 impl Cloud {
-    #[doc = "A unique identifier for this Cloud.\n\nSelects GraphQL Wire_Name `id` on `Cloud`."]
+    #[doc = "A unique identifier for this Cloud.\n\nSelects GraphQL field `id` on `Cloud`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "The trace URL for the current session\n\nSelects GraphQL Wire_Name `traceURL` on `Cloud`."]
+    #[doc = "The trace URL for the current session\n\nSelects GraphQL field `traceURL` on `Cloud`."]
     pub async fn trace_url(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("traceURL");
         query.execute(&self.session).await

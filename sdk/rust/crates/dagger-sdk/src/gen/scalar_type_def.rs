@@ -37,22 +37,22 @@ impl From<ScalarTypeDef> for crate::IdInput<super::NodeClient> {
     }
 }
 impl ScalarTypeDef {
-    #[doc = "A doc string for the scalar, if any.\n\nSelects GraphQL Wire_Name `description` on `ScalarTypeDef`."]
+    #[doc = "A doc string for the scalar, if any.\n\nSelects GraphQL field `description` on `ScalarTypeDef`."]
     pub async fn description(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("description");
         query.execute(&self.session).await
     }
-    #[doc = "A unique identifier for this ScalarTypeDef.\n\nSelects GraphQL Wire_Name `id` on `ScalarTypeDef`."]
+    #[doc = "A unique identifier for this ScalarTypeDef.\n\nSelects GraphQL field `id` on `ScalarTypeDef`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "The name of the scalar.\n\nSelects GraphQL Wire_Name `name` on `ScalarTypeDef`."]
+    #[doc = "The name of the scalar.\n\nSelects GraphQL field `name` on `ScalarTypeDef`."]
     pub async fn name(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("name");
         query.execute(&self.session).await
     }
-    #[doc = "If this ScalarTypeDef is associated with a Module, the name of the module. Unset otherwise.\n\nSelects GraphQL Wire_Name `sourceModuleName` on `ScalarTypeDef`."]
+    #[doc = "If this ScalarTypeDef is associated with a Module, the name of the module. Unset otherwise.\n\nSelects GraphQL field `sourceModuleName` on `ScalarTypeDef`."]
     pub async fn source_module_name(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("sourceModuleName");
         query.execute(&self.session).await

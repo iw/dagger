@@ -18,7 +18,7 @@ use super::defaults::ConstValue;
 pub struct SchemaName(String);
 
 impl SchemaName {
-    /// Borrows the exact GraphQL Wire_Name.
+    /// Borrows the exact GraphQL wire name.
     #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
@@ -141,10 +141,10 @@ pub enum TypeShape {
     List(Box<TypeUse>),
 }
 
-/// A validated directive application with arguments sorted by Wire_Name.
+/// A validated directive application with arguments sorted by wire name.
 #[derive(Clone, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)]
 pub struct DirectiveApplication {
-    /// Exact directive Wire_Name.
+    /// Exact directive wire name.
     pub name: SchemaName,
     /// Encoded argument literals retained for later directive policy projection.
     pub arguments: BTreeMap<SchemaName, Option<String>>,
@@ -160,7 +160,7 @@ pub struct Deprecation {
 /// A field argument or directive-definition argument.
 #[derive(Clone, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)]
 pub struct ArgumentDefinition {
-    /// Exact argument Wire_Name.
+    /// Exact argument wire name.
     pub name: SchemaName,
     /// Exact source coordinate.
     pub coordinate: SchemaCoordinate,
@@ -179,13 +179,13 @@ pub struct ArgumentDefinition {
 /// A canonical object or interface field.
 #[derive(Clone, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)]
 pub struct FieldDefinition {
-    /// Exact field Wire_Name.
+    /// Exact field wire name.
     pub name: SchemaName,
     /// Exact source coordinate.
     pub coordinate: SchemaCoordinate,
     /// Schema-authored documentation.
     pub description: Option<String>,
-    /// Arguments sorted by exact Wire_Name.
+    /// Arguments sorted by exact wire name.
     pub arguments: BTreeMap<SchemaName, ArgumentDefinition>,
     /// Canonical recursive result type.
     pub type_use: TypeUse,
@@ -198,7 +198,7 @@ pub struct FieldDefinition {
 /// A canonical input-object field.
 #[derive(Clone, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)]
 pub struct InputFieldDefinition {
-    /// Exact field Wire_Name.
+    /// Exact field wire name.
     pub name: SchemaName,
     /// Exact source coordinate.
     pub coordinate: SchemaCoordinate,
@@ -217,7 +217,7 @@ pub struct InputFieldDefinition {
 /// A canonical enum value.
 #[derive(Clone, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)]
 pub struct EnumValueDefinition {
-    /// Exact enum-value Wire_Name.
+    /// Exact enum-value wire name.
     pub name: SchemaName,
     /// Exact source coordinate.
     pub coordinate: SchemaCoordinate,
@@ -232,7 +232,7 @@ pub struct EnumValueDefinition {
 /// A custom or built-in scalar definition.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct ScalarDefinition {
-    /// Exact scalar Wire_Name.
+    /// Exact scalar wire name.
     pub name: SchemaName,
     /// Exact source coordinate.
     pub coordinate: SchemaCoordinate,
@@ -245,15 +245,15 @@ pub struct ScalarDefinition {
 /// A canonical object definition.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct ObjectDefinition {
-    /// Exact object Wire_Name.
+    /// Exact object wire name.
     pub name: SchemaName,
     /// Exact source coordinate.
     pub coordinate: SchemaCoordinate,
     /// Schema-authored documentation.
     pub description: Option<String>,
-    /// Fields sorted by exact Wire_Name.
+    /// Fields sorted by exact wire name.
     pub fields: BTreeMap<SchemaName, FieldDefinition>,
-    /// Implemented interface names sorted by exact Wire_Name.
+    /// Implemented interface names sorted by exact wire name.
     pub interfaces: BTreeSet<SchemaName>,
     /// Validated type-level directive applications.
     pub directives: Vec<DirectiveApplication>,
@@ -262,17 +262,17 @@ pub struct ObjectDefinition {
 /// A canonical interface definition.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct InterfaceDefinition {
-    /// Exact interface Wire_Name.
+    /// Exact interface wire name.
     pub name: SchemaName,
     /// Exact source coordinate.
     pub coordinate: SchemaCoordinate,
     /// Schema-authored documentation.
     pub description: Option<String>,
-    /// Fields sorted by exact Wire_Name.
+    /// Fields sorted by exact wire name.
     pub fields: BTreeMap<SchemaName, FieldDefinition>,
-    /// Interfaces implemented by this interface, sorted by exact Wire_Name.
+    /// Interfaces implemented by this interface, sorted by exact wire name.
     pub interfaces: BTreeSet<SchemaName>,
-    /// Concrete possible types sorted by exact Wire_Name.
+    /// Concrete possible types sorted by exact wire name.
     pub possible_types: BTreeSet<SchemaName>,
     /// Validated type-level directive applications.
     pub directives: Vec<DirectiveApplication>,
@@ -281,13 +281,13 @@ pub struct InterfaceDefinition {
 /// A canonical enum definition.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct EnumDefinition {
-    /// Exact enum Wire_Name.
+    /// Exact enum wire name.
     pub name: SchemaName,
     /// Exact source coordinate.
     pub coordinate: SchemaCoordinate,
     /// Schema-authored documentation.
     pub description: Option<String>,
-    /// Values sorted by exact Wire_Name.
+    /// Values sorted by exact wire name.
     pub values: BTreeMap<SchemaName, EnumValueDefinition>,
     /// Validated type-level directive applications.
     pub directives: Vec<DirectiveApplication>,
@@ -296,13 +296,13 @@ pub struct EnumDefinition {
 /// A canonical input-object definition.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct InputObjectDefinition {
-    /// Exact input-object Wire_Name.
+    /// Exact input-object wire name.
     pub name: SchemaName,
     /// Exact source coordinate.
     pub coordinate: SchemaCoordinate,
     /// Schema-authored documentation.
     pub description: Option<String>,
-    /// Input fields sorted by exact Wire_Name.
+    /// Input fields sorted by exact wire name.
     pub fields: BTreeMap<SchemaName, InputFieldDefinition>,
     /// Validated type-level directive applications.
     pub directives: Vec<DirectiveApplication>,
@@ -324,7 +324,7 @@ pub enum TypeDefinition {
 }
 
 impl TypeDefinition {
-    /// Returns the exact Wire_Name shared by every supported definition.
+    /// Returns the exact wire name shared by every supported definition.
     #[must_use]
     pub fn name(&self) -> &SchemaName {
         match self {
@@ -340,7 +340,7 @@ impl TypeDefinition {
 /// A canonical directive definition.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct DirectiveDefinition {
-    /// Exact directive Wire_Name.
+    /// Exact directive wire name.
     pub name: SchemaName,
     /// Exact source coordinate.
     pub coordinate: SchemaCoordinate,
@@ -348,7 +348,7 @@ pub struct DirectiveDefinition {
     pub description: Option<String>,
     /// Valid application locations sorted by introspection spelling.
     pub locations: BTreeSet<String>,
-    /// Arguments sorted by exact Wire_Name.
+    /// Arguments sorted by exact wire name.
     pub arguments: BTreeMap<SchemaName, ArgumentDefinition>,
 }
 
@@ -419,19 +419,19 @@ impl CanonicalSchema {
         &self.target
     }
 
-    /// Returns the query-root Wire_Name.
+    /// Returns the query-root wire name.
     #[must_use]
     pub const fn query(&self) -> &SchemaName {
         &self.query
     }
 
-    /// Returns public named definitions in deterministic Wire_Name order.
+    /// Returns public named definitions in deterministic wire name order.
     #[must_use]
     pub const fn types(&self) -> &BTreeMap<SchemaName, TypeDefinition> {
         &self.types
     }
 
-    /// Returns directive definitions in deterministic Wire_Name order.
+    /// Returns directive definitions in deterministic wire name order.
     #[must_use]
     pub const fn directives(&self) -> &BTreeMap<SchemaName, DirectiveDefinition> {
         &self.directives

@@ -10,13 +10,13 @@ pub struct Address {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct AddressDirectoryOpts {
-    #[doc = "`None` omits GraphQL Wire_Name `exclude` and preserves engine default `List(\\[\\])`."]
+    #[doc = "`None` omits GraphQL field `exclude` and preserves engine default `List(\\[\\])`."]
     pub exclude: Option<Vec<String>>,
-    #[doc = "`None` omits GraphQL Wire_Name `gitignore` and preserves engine default `Boolean(false)`."]
+    #[doc = "`None` omits GraphQL field `gitignore` and preserves engine default `Boolean(false)`."]
     pub gitignore: Option<bool>,
-    #[doc = "`None` omits GraphQL Wire_Name `include` and preserves engine default `List(\\[\\])`."]
+    #[doc = "`None` omits GraphQL field `include` and preserves engine default `List(\\[\\])`."]
     pub include: Option<Vec<String>>,
-    #[doc = "`None` omits GraphQL Wire_Name `noCache` and preserves engine default `Boolean(false)`."]
+    #[doc = "`None` omits GraphQL field `noCache` and preserves engine default `Boolean(false)`."]
     pub no_cache: Option<bool>,
 }
 impl AddressDirectoryOpts {
@@ -49,13 +49,13 @@ impl AddressDirectoryOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct AddressFileOpts {
-    #[doc = "`None` omits GraphQL Wire_Name `exclude` and preserves engine default `List(\\[\\])`."]
+    #[doc = "`None` omits GraphQL field `exclude` and preserves engine default `List(\\[\\])`."]
     pub exclude: Option<Vec<String>>,
-    #[doc = "`None` omits GraphQL Wire_Name `gitignore` and preserves engine default `Boolean(false)`."]
+    #[doc = "`None` omits GraphQL field `gitignore` and preserves engine default `Boolean(false)`."]
     pub gitignore: Option<bool>,
-    #[doc = "`None` omits GraphQL Wire_Name `include` and preserves engine default `List(\\[\\])`."]
+    #[doc = "`None` omits GraphQL field `include` and preserves engine default `List(\\[\\])`."]
     pub include: Option<Vec<String>>,
-    #[doc = "`None` omits GraphQL Wire_Name `noCache` and preserves engine default `Boolean(false)`."]
+    #[doc = "`None` omits GraphQL field `noCache` and preserves engine default `Boolean(false)`."]
     pub no_cache: Option<bool>,
 }
 impl AddressFileOpts {
@@ -115,7 +115,7 @@ impl From<Address> for crate::IdInput<super::NodeClient> {
     }
 }
 impl Address {
-    #[doc = "Load a container from the address.\n\nSelects GraphQL Wire_Name `container` on `Address`."]
+    #[doc = "Load a container from the address.\n\nSelects GraphQL field `container` on `Address`."]
     #[must_use]
     pub fn container(&self) -> super::Container {
         let query = self.selection.select("container");
@@ -124,7 +124,7 @@ impl Address {
             selection: query,
         }
     }
-    #[doc = "Load a directory from the address.\n\nSelects GraphQL Wire_Name `directory` on `Address`."]
+    #[doc = "Load a directory from the address.\n\nSelects GraphQL field `directory` on `Address`."]
     #[must_use]
     pub fn directory(&self) -> super::Directory {
         let query = self.selection.select("directory");
@@ -162,7 +162,7 @@ impl Address {
             selection: query,
         }
     }
-    #[doc = "Load a file from the address.\n\nSelects GraphQL Wire_Name `file` on `Address`."]
+    #[doc = "Load a file from the address.\n\nSelects GraphQL field `file` on `Address`."]
     #[must_use]
     pub fn file(&self) -> super::File {
         let query = self.selection.select("file");
@@ -200,7 +200,7 @@ impl Address {
             selection: query,
         }
     }
-    #[doc = "Load a git ref (branch, tag or commit) from the address.\n\nSelects GraphQL Wire_Name `gitRef` on `Address`."]
+    #[doc = "Load a git ref (branch, tag or commit) from the address.\n\nSelects GraphQL field `gitRef` on `Address`."]
     #[must_use]
     pub fn git_ref(&self) -> super::GitRef {
         let query = self.selection.select("gitRef");
@@ -209,7 +209,7 @@ impl Address {
             selection: query,
         }
     }
-    #[doc = "Load a git repository from the address.\n\nSelects GraphQL Wire_Name `gitRepository` on `Address`."]
+    #[doc = "Load a git repository from the address.\n\nSelects GraphQL field `gitRepository` on `Address`."]
     #[must_use]
     pub fn git_repository(&self) -> super::GitRepository {
         let query = self.selection.select("gitRepository");
@@ -218,12 +218,12 @@ impl Address {
             selection: query,
         }
     }
-    #[doc = "A unique identifier for this Address.\n\nSelects GraphQL Wire_Name `id` on `Address`."]
+    #[doc = "A unique identifier for this Address.\n\nSelects GraphQL field `id` on `Address`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "Load a secret from the address.\n\nSelects GraphQL Wire_Name `secret` on `Address`."]
+    #[doc = "Load a secret from the address.\n\nSelects GraphQL field `secret` on `Address`."]
     #[must_use]
     pub fn secret(&self) -> super::Secret {
         let query = self.selection.select("secret");
@@ -232,7 +232,7 @@ impl Address {
             selection: query,
         }
     }
-    #[doc = "Load a service from the address.\n\nSelects GraphQL Wire_Name `service` on `Address`."]
+    #[doc = "Load a service from the address.\n\nSelects GraphQL field `service` on `Address`."]
     #[must_use]
     pub fn service(&self) -> super::Service {
         let query = self.selection.select("service");
@@ -241,7 +241,7 @@ impl Address {
             selection: query,
         }
     }
-    #[doc = "Load a local socket from the address.\n\nSelects GraphQL Wire_Name `socket` on `Address`."]
+    #[doc = "Load a local socket from the address.\n\nSelects GraphQL field `socket` on `Address`."]
     #[must_use]
     pub fn socket(&self) -> super::Socket {
         let query = self.selection.select("socket");
@@ -250,12 +250,12 @@ impl Address {
             selection: query,
         }
     }
-    #[doc = "The address value\n\nSelects GraphQL Wire_Name `value` on `Address`."]
+    #[doc = "The address value\n\nSelects GraphQL field `value` on `Address`."]
     pub async fn value(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("value");
         query.execute(&self.session).await
     }
-    #[doc = "Load a volume from the address.\n\nSelects GraphQL Wire_Name `volume` on `Address`."]
+    #[doc = "Load a volume from the address.\n\nSelects GraphQL field `volume` on `Address`."]
     #[must_use]
     pub fn volume(&self) -> super::Volume {
         let query = self.selection.select("volume");

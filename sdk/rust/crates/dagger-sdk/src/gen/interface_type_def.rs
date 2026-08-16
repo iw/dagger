@@ -37,12 +37,12 @@ impl From<InterfaceTypeDef> for crate::IdInput<super::NodeClient> {
     }
 }
 impl InterfaceTypeDef {
-    #[doc = "The doc string for the interface, if any.\n\nSelects GraphQL Wire_Name `description` on `InterfaceTypeDef`."]
+    #[doc = "The doc string for the interface, if any.\n\nSelects GraphQL field `description` on `InterfaceTypeDef`."]
     pub async fn description(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("description");
         query.execute(&self.session).await
     }
-    #[doc = "Functions defined on this interface, if any.\n\nSelects GraphQL Wire_Name `functions` on `InterfaceTypeDef`."]
+    #[doc = "Functions defined on this interface, if any.\n\nSelects GraphQL field `functions` on `InterfaceTypeDef`."]
     pub async fn functions(&self) -> Result<Vec<super::Function>, crate::QueryError> {
         let query = self.selection.select("functions");
         let query = query.select("id");
@@ -50,17 +50,17 @@ impl InterfaceTypeDef {
             .execute_reentry::<super::Function, Vec<crate::Id>>(&self.session, "Function")
             .await
     }
-    #[doc = "A unique identifier for this InterfaceTypeDef.\n\nSelects GraphQL Wire_Name `id` on `InterfaceTypeDef`."]
+    #[doc = "A unique identifier for this InterfaceTypeDef.\n\nSelects GraphQL field `id` on `InterfaceTypeDef`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "The name of the interface.\n\nSelects GraphQL Wire_Name `name` on `InterfaceTypeDef`."]
+    #[doc = "The name of the interface.\n\nSelects GraphQL field `name` on `InterfaceTypeDef`."]
     pub async fn name(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("name");
         query.execute(&self.session).await
     }
-    #[doc = "The location of this interface declaration.\n\nSelects GraphQL Wire_Name `sourceMap` on `InterfaceTypeDef`."]
+    #[doc = "The location of this interface declaration.\n\nSelects GraphQL field `sourceMap` on `InterfaceTypeDef`."]
     pub async fn source_map(&self) -> Result<Option<super::SourceMap>, crate::QueryError> {
         let query = self.selection.select("sourceMap");
         let query = query.select("id");
@@ -68,7 +68,7 @@ impl InterfaceTypeDef {
             .execute_reentry::<super::SourceMap, Option<crate::Id>>(&self.session, "SourceMap")
             .await
     }
-    #[doc = "If this InterfaceTypeDef is associated with a Module, the name of the module. Unset otherwise.\n\nSelects GraphQL Wire_Name `sourceModuleName` on `InterfaceTypeDef`."]
+    #[doc = "If this InterfaceTypeDef is associated with a Module, the name of the module. Unset otherwise.\n\nSelects GraphQL field `sourceModuleName` on `InterfaceTypeDef`."]
     pub async fn source_module_name(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("sourceModuleName");
         query.execute(&self.session).await

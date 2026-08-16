@@ -341,10 +341,10 @@ fn render_field(
             ArgumentPresence::Required => "This argument is required.".to_owned(),
             ArgumentPresence::Omittable { engine_default } => match engine_default {
                 Some(default) => format!(
-                    "`None` omits GraphQL Wire_Name `{}` and preserves engine default `{default:?}`.",
+                    "`None` omits GraphQL wire name `{}` and preserves engine default `{default:?}`.",
                     argument.wire_name
                 ),
-                None => format!("`None` omits GraphQL Wire_Name `{}`.", argument.wire_name),
+                None => format!("`None` omits GraphQL wire name `{}`.", argument.wire_name),
             },
         };
         let argument_attributes = public_attributes(
@@ -454,7 +454,7 @@ fn render_input(
                     field.wire_name
                 ),
                 None => format!(
-                    "Optional GraphQL input field `{}`; `None` omits its Wire_Name.",
+                    "Optional GraphQL input field `{}`; `None` omits its wire name.",
                     field.wire_name
                 ),
             },

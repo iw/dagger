@@ -444,7 +444,7 @@ fn input_field_contract(
                 projection.wire_name
             ),
             None => format!(
-                "Optional GraphQL input field `{}`; `None` omits its Wire_Name.",
+                "Optional GraphQL input field `{}`; `None` omits the field.",
                 projection.wire_name
             ),
         },
@@ -663,10 +663,10 @@ fn option_argument_documentation(
         ArgumentPresence::Required => "This argument is required.".to_owned(),
         ArgumentPresence::Omittable { engine_default } => match engine_default {
             Some(default) => format!(
-                "`None` omits GraphQL Wire_Name `{}` and preserves engine default `{default:?}`.",
+                "`None` omits GraphQL field `{}` and preserves engine default `{default:?}`.",
                 argument.wire_name
             ),
-            None => format!("`None` omits GraphQL Wire_Name `{}`.", argument.wire_name),
+            None => format!("`None` omits GraphQL field `{}`.", argument.wire_name),
         },
     };
     let mut source = canonical.description.clone().unwrap_or_default();
@@ -1187,7 +1187,7 @@ fn method_attributes(
         description.push_str("\n\n");
     }
     description.push_str(&format!(
-        "Selects GraphQL Wire_Name `{}` on `{}`.",
+        "Selects GraphQL field `{}` on `{}`.",
         field.wire_name, field.owner
     ));
     public_attributes(

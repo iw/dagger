@@ -37,7 +37,7 @@ impl From<GeneratedCode> for crate::IdInput<super::NodeClient> {
     }
 }
 impl GeneratedCode {
-    #[doc = "The directory containing the generated code.\n\nSelects GraphQL Wire_Name `code` on `GeneratedCode`."]
+    #[doc = "The directory containing the generated code.\n\nSelects GraphQL field `code` on `GeneratedCode`."]
     #[must_use]
     pub fn code(&self) -> super::Directory {
         let query = self.selection.select("code");
@@ -46,22 +46,22 @@ impl GeneratedCode {
             selection: query,
         }
     }
-    #[doc = "A unique identifier for this GeneratedCode.\n\nSelects GraphQL Wire_Name `id` on `GeneratedCode`."]
+    #[doc = "A unique identifier for this GeneratedCode.\n\nSelects GraphQL field `id` on `GeneratedCode`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "List of paths to mark generated in version control (i.e. .gitattributes).\n\nSelects GraphQL Wire_Name `vcsGeneratedPaths` on `GeneratedCode`."]
+    #[doc = "List of paths to mark generated in version control (i.e. .gitattributes).\n\nSelects GraphQL field `vcsGeneratedPaths` on `GeneratedCode`."]
     pub async fn vcs_generated_paths(&self) -> Result<Vec<String>, crate::QueryError> {
         let query = self.selection.select("vcsGeneratedPaths");
         query.execute(&self.session).await
     }
-    #[doc = "List of paths to ignore in version control (i.e. .gitignore).\n\nSelects GraphQL Wire_Name `vcsIgnoredPaths` on `GeneratedCode`."]
+    #[doc = "List of paths to ignore in version control (i.e. .gitignore).\n\nSelects GraphQL field `vcsIgnoredPaths` on `GeneratedCode`."]
     pub async fn vcs_ignored_paths(&self) -> Result<Vec<String>, crate::QueryError> {
         let query = self.selection.select("vcsIgnoredPaths");
         query.execute(&self.session).await
     }
-    #[doc = "Set the list of paths to mark generated in version control.\n\nSelects GraphQL Wire_Name `withVCSGeneratedPaths` on `GeneratedCode`."]
+    #[doc = "Set the list of paths to mark generated in version control.\n\nSelects GraphQL field `withVCSGeneratedPaths` on `GeneratedCode`."]
     #[must_use]
     pub fn with_vcs_generated_paths(&self, paths: Vec<impl Into<String>>) -> super::GeneratedCode {
         let query = self.selection.select("withVCSGeneratedPaths");
@@ -72,7 +72,7 @@ impl GeneratedCode {
             selection: query,
         }
     }
-    #[doc = "Set the list of paths to ignore in version control.\n\nSelects GraphQL Wire_Name `withVCSIgnoredPaths` on `GeneratedCode`."]
+    #[doc = "Set the list of paths to ignore in version control.\n\nSelects GraphQL field `withVCSIgnoredPaths` on `GeneratedCode`."]
     #[must_use]
     pub fn with_vcs_ignored_paths(&self, paths: Vec<impl Into<String>>) -> super::GeneratedCode {
         let query = self.selection.select("withVCSIgnoredPaths");

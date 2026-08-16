@@ -37,27 +37,27 @@ impl From<Port> for crate::IdInput<super::NodeClient> {
     }
 }
 impl Port {
-    #[doc = "The port description.\n\nSelects GraphQL Wire_Name `description` on `Port`."]
+    #[doc = "The port description.\n\nSelects GraphQL field `description` on `Port`."]
     pub async fn description(&self) -> Result<Option<String>, crate::QueryError> {
         let query = self.selection.select("description");
         query.execute(&self.session).await
     }
-    #[doc = "Skip the health check when run as a service.\n\nSelects GraphQL Wire_Name `experimentalSkipHealthcheck` on `Port`."]
+    #[doc = "Skip the health check when run as a service.\n\nSelects GraphQL field `experimentalSkipHealthcheck` on `Port`."]
     pub async fn experimental_skip_healthcheck(&self) -> Result<bool, crate::QueryError> {
         let query = self.selection.select("experimentalSkipHealthcheck");
         query.execute(&self.session).await
     }
-    #[doc = "A unique identifier for this Port.\n\nSelects GraphQL Wire_Name `id` on `Port`."]
+    #[doc = "A unique identifier for this Port.\n\nSelects GraphQL field `id` on `Port`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "The port number.\n\nSelects GraphQL Wire_Name `port` on `Port`."]
+    #[doc = "The port number.\n\nSelects GraphQL field `port` on `Port`."]
     pub async fn port(&self) -> Result<i64, crate::QueryError> {
         let query = self.selection.select("port");
         query.execute(&self.session).await
     }
-    #[doc = "The transport layer protocol.\n\nSelects GraphQL Wire_Name `protocol` on `Port`."]
+    #[doc = "The transport layer protocol.\n\nSelects GraphQL field `protocol` on `Port`."]
     pub async fn protocol(&self) -> Result<super::NetworkProtocol, crate::QueryError> {
         let query = self.selection.select("protocol");
         query.execute(&self.session).await

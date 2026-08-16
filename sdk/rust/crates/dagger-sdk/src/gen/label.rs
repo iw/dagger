@@ -37,17 +37,17 @@ impl From<Label> for crate::IdInput<super::NodeClient> {
     }
 }
 impl Label {
-    #[doc = "A unique identifier for this Label.\n\nSelects GraphQL Wire_Name `id` on `Label`."]
+    #[doc = "A unique identifier for this Label.\n\nSelects GraphQL field `id` on `Label`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "The label name.\n\nSelects GraphQL Wire_Name `name` on `Label`."]
+    #[doc = "The label name.\n\nSelects GraphQL field `name` on `Label`."]
     pub async fn name(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("name");
         query.execute(&self.session).await
     }
-    #[doc = "The label value.\n\nSelects GraphQL Wire_Name `value` on `Label`."]
+    #[doc = "The label value.\n\nSelects GraphQL field `value` on `Label`."]
     pub async fn value(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("value");
         query.execute(&self.session).await

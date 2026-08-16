@@ -37,17 +37,17 @@ impl From<FunctionCallArgValue> for crate::IdInput<super::NodeClient> {
     }
 }
 impl FunctionCallArgValue {
-    #[doc = "A unique identifier for this FunctionCallArgValue.\n\nSelects GraphQL Wire_Name `id` on `FunctionCallArgValue`."]
+    #[doc = "A unique identifier for this FunctionCallArgValue.\n\nSelects GraphQL field `id` on `FunctionCallArgValue`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "The name of the argument.\n\nSelects GraphQL Wire_Name `name` on `FunctionCallArgValue`."]
+    #[doc = "The name of the argument.\n\nSelects GraphQL field `name` on `FunctionCallArgValue`."]
     pub async fn name(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("name");
         query.execute(&self.session).await
     }
-    #[doc = "The value of the argument represented as a JSON serialized string.\n\nSelects GraphQL Wire_Name `value` on `FunctionCallArgValue`."]
+    #[doc = "The value of the argument represented as a JSON serialized string.\n\nSelects GraphQL field `value` on `FunctionCallArgValue`."]
     pub async fn value(&self) -> Result<crate::Json, crate::QueryError> {
         let query = self.selection.select("value");
         query.execute(&self.session).await

@@ -2,7 +2,7 @@
 // @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:7d6f61426d0c65454a32059732deed8927471c92e906f4ac7b31dd8ff8214306","target_revision":"501b57e0476dee5881b99a064c3c04173134ecc7"}
 #[doc = "An object with a globally unique ID."]
 pub trait Node: Clone + Send + Sync {
-    #[doc = "Selects GraphQL Wire_Name `id` on `Node`."]
+    #[doc = "Selects GraphQL field `id` on `Node`."]
     fn id(&self)
     -> impl core::future::Future<Output = Result<crate::Id, crate::QueryError>> + Send;
 }
@@ -38,7 +38,7 @@ impl From<NodeClient> for crate::IdInput<NodeClient> {
     }
 }
 impl NodeClient {
-    #[doc = "Selects GraphQL Wire_Name `id` on `Node`."]
+    #[doc = "Selects GraphQL field `id` on `Node`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await

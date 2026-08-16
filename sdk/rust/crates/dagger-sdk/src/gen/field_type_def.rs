@@ -37,27 +37,27 @@ impl From<FieldTypeDef> for crate::IdInput<super::NodeClient> {
     }
 }
 impl FieldTypeDef {
-    #[doc = "The reason this enum member is deprecated, if any.\n\nSelects GraphQL Wire_Name `deprecated` on `FieldTypeDef`."]
+    #[doc = "The reason this enum member is deprecated, if any.\n\nSelects GraphQL field `deprecated` on `FieldTypeDef`."]
     pub async fn deprecated(&self) -> Result<Option<String>, crate::QueryError> {
         let query = self.selection.select("deprecated");
         query.execute(&self.session).await
     }
-    #[doc = "A doc string for the field, if any.\n\nSelects GraphQL Wire_Name `description` on `FieldTypeDef`."]
+    #[doc = "A doc string for the field, if any.\n\nSelects GraphQL field `description` on `FieldTypeDef`."]
     pub async fn description(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("description");
         query.execute(&self.session).await
     }
-    #[doc = "A unique identifier for this FieldTypeDef.\n\nSelects GraphQL Wire_Name `id` on `FieldTypeDef`."]
+    #[doc = "A unique identifier for this FieldTypeDef.\n\nSelects GraphQL field `id` on `FieldTypeDef`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "The name of the field in lowerCamelCase format.\n\nSelects GraphQL Wire_Name `name` on `FieldTypeDef`."]
+    #[doc = "The name of the field in lowerCamelCase format.\n\nSelects GraphQL field `name` on `FieldTypeDef`."]
     pub async fn name(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("name");
         query.execute(&self.session).await
     }
-    #[doc = "The location of this field declaration.\n\nSelects GraphQL Wire_Name `sourceMap` on `FieldTypeDef`."]
+    #[doc = "The location of this field declaration.\n\nSelects GraphQL field `sourceMap` on `FieldTypeDef`."]
     pub async fn source_map(&self) -> Result<Option<super::SourceMap>, crate::QueryError> {
         let query = self.selection.select("sourceMap");
         let query = query.select("id");
@@ -65,7 +65,7 @@ impl FieldTypeDef {
             .execute_reentry::<super::SourceMap, Option<crate::Id>>(&self.session, "SourceMap")
             .await
     }
-    #[doc = "The type of the field.\n\nSelects GraphQL Wire_Name `typeDef` on `FieldTypeDef`."]
+    #[doc = "The type of the field.\n\nSelects GraphQL field `typeDef` on `FieldTypeDef`."]
     #[must_use]
     pub fn type_def(&self) -> super::TypeDef {
         let query = self.selection.select("typeDef");

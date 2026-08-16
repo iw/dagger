@@ -37,7 +37,7 @@ impl From<InputTypeDef> for crate::IdInput<super::NodeClient> {
     }
 }
 impl InputTypeDef {
-    #[doc = "Static fields defined on this input object, if any.\n\nSelects GraphQL Wire_Name `fields` on `InputTypeDef`."]
+    #[doc = "Static fields defined on this input object, if any.\n\nSelects GraphQL field `fields` on `InputTypeDef`."]
     pub async fn fields(&self) -> Result<Vec<super::FieldTypeDef>, crate::QueryError> {
         let query = self.selection.select("fields");
         let query = query.select("id");
@@ -45,12 +45,12 @@ impl InputTypeDef {
             .execute_reentry::<super::FieldTypeDef, Vec<crate::Id>>(&self.session, "FieldTypeDef")
             .await
     }
-    #[doc = "A unique identifier for this InputTypeDef.\n\nSelects GraphQL Wire_Name `id` on `InputTypeDef`."]
+    #[doc = "A unique identifier for this InputTypeDef.\n\nSelects GraphQL field `id` on `InputTypeDef`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "The name of the input object.\n\nSelects GraphQL Wire_Name `name` on `InputTypeDef`."]
+    #[doc = "The name of the input object.\n\nSelects GraphQL field `name` on `InputTypeDef`."]
     pub async fn name(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("name");
         query.execute(&self.session).await

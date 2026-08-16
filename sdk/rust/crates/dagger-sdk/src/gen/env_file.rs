@@ -10,7 +10,7 @@ pub struct EnvFile {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct EnvFileGetOpts {
-    #[doc = "Return the value exactly as written to the file. No quote removal or variable expansion\n\n`None` omits GraphQL Wire_Name `raw`."]
+    #[doc = "Return the value exactly as written to the file. No quote removal or variable expansion\n\n`None` omits GraphQL field `raw`."]
     pub raw: Option<bool>,
 }
 impl EnvFileGetOpts {
@@ -25,7 +25,7 @@ impl EnvFileGetOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct EnvFileVariablesOpts {
-    #[doc = "Return values exactly as written to the file. No quote removal or variable expansion\n\n`None` omits GraphQL Wire_Name `raw`."]
+    #[doc = "Return values exactly as written to the file. No quote removal or variable expansion\n\n`None` omits GraphQL field `raw`."]
     pub raw: Option<bool>,
 }
 impl EnvFileVariablesOpts {
@@ -67,7 +67,7 @@ impl From<EnvFile> for crate::IdInput<super::NodeClient> {
     }
 }
 impl EnvFile {
-    #[doc = "Return as a file\n\nSelects GraphQL Wire_Name `asFile` on `EnvFile`."]
+    #[doc = "Return as a file\n\nSelects GraphQL field `asFile` on `EnvFile`."]
     #[must_use]
     pub fn as_file(&self) -> super::File {
         let query = self.selection.select("asFile");
@@ -76,13 +76,13 @@ impl EnvFile {
             selection: query,
         }
     }
-    #[doc = "Check if a variable exists\n\nSelects GraphQL Wire_Name `exists` on `EnvFile`."]
+    #[doc = "Check if a variable exists\n\nSelects GraphQL field `exists` on `EnvFile`."]
     pub async fn exists(&self, name: impl Into<String>) -> Result<bool, crate::QueryError> {
         let query = self.selection.select("exists");
         let query = query.arg("name", name.into());
         query.execute(&self.session).await
     }
-    #[doc = "Lookup a variable (last occurrence wins) and return its value, or an empty string\n\nSelects GraphQL Wire_Name `get` on `EnvFile`."]
+    #[doc = "Lookup a variable (last occurrence wins) and return its value, or an empty string\n\nSelects GraphQL field `get` on `EnvFile`."]
     pub async fn get(&self, name: impl Into<String>) -> Result<String, crate::QueryError> {
         let query = self.selection.select("get");
         let query = query.arg("name", name.into());
@@ -103,12 +103,12 @@ impl EnvFile {
         };
         query.execute(&self.session).await
     }
-    #[doc = "A unique identifier for this EnvFile.\n\nSelects GraphQL Wire_Name `id` on `EnvFile`."]
+    #[doc = "A unique identifier for this EnvFile.\n\nSelects GraphQL field `id` on `EnvFile`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "Filters variables by prefix and removes the pref from keys. Variables without the prefix are excluded. For example, with the prefix \"MY_APP_\" and variables: MY_APP_TOKEN=topsecret MY_APP_NAME=hello FOO=bar the resulting environment will contain: TOKEN=topsecret NAME=hello\n\nSelects GraphQL Wire_Name `namespace` on `EnvFile`."]
+    #[doc = "Filters variables by prefix and removes the pref from keys. Variables without the prefix are excluded. For example, with the prefix \"MY_APP_\" and variables: MY_APP_TOKEN=topsecret MY_APP_NAME=hello FOO=bar the resulting environment will contain: TOKEN=topsecret NAME=hello\n\nSelects GraphQL field `namespace` on `EnvFile`."]
     #[must_use]
     pub fn namespace(&self, prefix: impl Into<String>) -> super::EnvFile {
         let query = self.selection.select("namespace");
@@ -118,7 +118,7 @@ impl EnvFile {
             selection: query,
         }
     }
-    #[doc = "Return all variables\n\nSelects GraphQL Wire_Name `variables` on `EnvFile`."]
+    #[doc = "Return all variables\n\nSelects GraphQL field `variables` on `EnvFile`."]
     pub async fn variables(&self) -> Result<Vec<super::EnvVariable>, crate::QueryError> {
         let query = self.selection.select("variables");
         let query = query.select("id");
@@ -142,7 +142,7 @@ impl EnvFile {
             .execute_reentry::<super::EnvVariable, Vec<crate::Id>>(&self.session, "EnvVariable")
             .await
     }
-    #[doc = "Add a variable\n\nSelects GraphQL Wire_Name `withVariable` on `EnvFile`."]
+    #[doc = "Add a variable\n\nSelects GraphQL field `withVariable` on `EnvFile`."]
     #[must_use]
     pub fn with_variable(
         &self,
@@ -157,7 +157,7 @@ impl EnvFile {
             selection: query,
         }
     }
-    #[doc = "Remove all occurrences of the named variable\n\nSelects GraphQL Wire_Name `withoutVariable` on `EnvFile`."]
+    #[doc = "Remove all occurrences of the named variable\n\nSelects GraphQL field `withoutVariable` on `EnvFile`."]
     #[must_use]
     pub fn without_variable(&self, name: impl Into<String>) -> super::EnvFile {
         let query = self.selection.select("withoutVariable");

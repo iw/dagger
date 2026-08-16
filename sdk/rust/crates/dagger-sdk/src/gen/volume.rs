@@ -37,7 +37,7 @@ impl From<Volume> for crate::IdInput<super::NodeClient> {
     }
 }
 impl Volume {
-    #[doc = "A unique identifier for this Volume.\n\nSelects GraphQL Wire_Name `id` on `Volume`."]
+    #[doc = "A unique identifier for this Volume.\n\nSelects GraphQL field `id` on `Volume`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await

@@ -37,17 +37,17 @@ impl From<Error> for crate::IdInput<super::NodeClient> {
     }
 }
 impl Error {
-    #[doc = "A unique identifier for this Error.\n\nSelects GraphQL Wire_Name `id` on `Error`."]
+    #[doc = "A unique identifier for this Error.\n\nSelects GraphQL field `id` on `Error`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "A description of the error.\n\nSelects GraphQL Wire_Name `message` on `Error`."]
+    #[doc = "A description of the error.\n\nSelects GraphQL field `message` on `Error`."]
     pub async fn message(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("message");
         query.execute(&self.session).await
     }
-    #[doc = "The extensions of the error.\n\nSelects GraphQL Wire_Name `values` on `Error`."]
+    #[doc = "The extensions of the error.\n\nSelects GraphQL field `values` on `Error`."]
     pub async fn values(&self) -> Result<Vec<super::ErrorValue>, crate::QueryError> {
         let query = self.selection.select("values");
         let query = query.select("id");
@@ -55,7 +55,7 @@ impl Error {
             .execute_reentry::<super::ErrorValue, Vec<crate::Id>>(&self.session, "ErrorValue")
             .await
     }
-    #[doc = "Add a value to the error.\n\nSelects GraphQL Wire_Name `withValue` on `Error`."]
+    #[doc = "Add a value to the error.\n\nSelects GraphQL field `withValue` on `Error`."]
     #[must_use]
     pub fn with_value(&self, name: impl Into<String>, value: crate::Json) -> super::Error {
         let query = self.selection.select("withValue");

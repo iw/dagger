@@ -37,27 +37,27 @@ impl From<WorkspaceModuleSetting> for crate::IdInput<super::NodeClient> {
     }
 }
 impl WorkspaceModuleSetting {
-    #[doc = "The constructor argument description.\n\nSelects GraphQL Wire_Name `description` on `WorkspaceModuleSetting`."]
+    #[doc = "The constructor argument description.\n\nSelects GraphQL field `description` on `WorkspaceModuleSetting`."]
     pub async fn description(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("description");
         query.execute(&self.session).await
     }
-    #[doc = "A unique identifier for this WorkspaceModuleSetting.\n\nSelects GraphQL Wire_Name `id` on `WorkspaceModuleSetting`."]
+    #[doc = "A unique identifier for this WorkspaceModuleSetting.\n\nSelects GraphQL field `id` on `WorkspaceModuleSetting`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "Whether the setting accepts a list of values.\n\nSelects GraphQL Wire_Name `isList` on `WorkspaceModuleSetting`."]
+    #[doc = "Whether the setting accepts a list of values.\n\nSelects GraphQL field `isList` on `WorkspaceModuleSetting`."]
     pub async fn is_list(&self) -> Result<bool, crate::QueryError> {
         let query = self.selection.select("isList");
         query.execute(&self.session).await
     }
-    #[doc = "The setting key.\n\nSelects GraphQL Wire_Name `key` on `WorkspaceModuleSetting`."]
+    #[doc = "The setting key.\n\nSelects GraphQL field `key` on `WorkspaceModuleSetting`."]
     pub async fn key(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("key");
         query.execute(&self.session).await
     }
-    #[doc = "The configured value after applying the selected workspace environment, or empty when unset.\n\nSelects GraphQL Wire_Name `value` on `WorkspaceModuleSetting`."]
+    #[doc = "The configured value after applying the selected workspace environment, or empty when unset.\n\nSelects GraphQL field `value` on `WorkspaceModuleSetting`."]
     pub async fn value(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("value");
         query.execute(&self.session).await

@@ -37,7 +37,7 @@ impl From<CacheVolume> for crate::IdInput<super::NodeClient> {
     }
 }
 impl CacheVolume {
-    #[doc = "A unique identifier for this CacheVolume.\n\nSelects GraphQL Wire_Name `id` on `CacheVolume`."]
+    #[doc = "A unique identifier for this CacheVolume.\n\nSelects GraphQL field `id` on `CacheVolume`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await

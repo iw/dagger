@@ -210,7 +210,7 @@ pub struct ClientNameKey {
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct ClientNamePlan {
-    /// Exact selected Query field Wire_Name.
+    /// Exact selected Query field wire name.
     pub module_wire_name: SchemaName,
     /// Public module namespace beneath `dagger_client`.
     pub namespace: RustIdentifier,
@@ -364,7 +364,7 @@ pub struct ClientBindingPlan {
     pub core_bindings: BTreeMap<BindingKey, CoreBindingReference>,
     /// Collision-checked selected-module names, absent for Core-only clients.
     pub names: Option<ClientNamePlan>,
-    /// Selected-module type projections in Wire_Name order.
+    /// Selected-module type projections in wire name order.
     pub module_types: BTreeMap<SchemaName, TypeProjection>,
     /// Selected-module field projections in coordinate order.
     pub module_fields: BTreeMap<SchemaCoordinate, FieldProjection>,

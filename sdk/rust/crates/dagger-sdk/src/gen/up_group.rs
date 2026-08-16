@@ -37,12 +37,12 @@ impl From<UpGroup> for crate::IdInput<super::NodeClient> {
     }
 }
 impl UpGroup {
-    #[doc = "A unique identifier for this UpGroup.\n\nSelects GraphQL Wire_Name `id` on `UpGroup`."]
+    #[doc = "A unique identifier for this UpGroup.\n\nSelects GraphQL field `id` on `UpGroup`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "Return a list of individual services and their details\n\nSelects GraphQL Wire_Name `list` on `UpGroup`."]
+    #[doc = "Return a list of individual services and their details\n\nSelects GraphQL field `list` on `UpGroup`."]
     pub async fn list(&self) -> Result<Vec<super::Up>, crate::QueryError> {
         let query = self.selection.select("list");
         let query = query.select("id");
@@ -50,7 +50,7 @@ impl UpGroup {
             .execute_reentry::<super::Up, Vec<crate::Id>>(&self.session, "Up")
             .await
     }
-    #[doc = "Execute all selected service functions\n\nSelects GraphQL Wire_Name `run` on `UpGroup`."]
+    #[doc = "Execute all selected service functions\n\nSelects GraphQL field `run` on `UpGroup`."]
     #[must_use]
     pub fn run(&self) -> super::UpGroup {
         let query = self.selection.select("run");

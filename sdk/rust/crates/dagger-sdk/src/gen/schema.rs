@@ -37,17 +37,17 @@ impl From<Schema> for crate::IdInput<super::NodeClient> {
     }
 }
 impl Schema {
-    #[doc = "Serialize the schema back to introspection JSON.\n\nSelects GraphQL Wire_Name `contents` on `Schema`."]
+    #[doc = "Serialize the schema back to introspection JSON.\n\nSelects GraphQL field `contents` on `Schema`."]
     pub async fn contents(&self) -> Result<crate::Json, crate::QueryError> {
         let query = self.selection.select("contents");
         query.execute(&self.session).await
     }
-    #[doc = "A unique identifier for this Schema.\n\nSelects GraphQL Wire_Name `id` on `Schema`."]
+    #[doc = "A unique identifier for this Schema.\n\nSelects GraphQL field `id` on `Schema`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "Merge a module's introspection-shaped type definitions into the schema, returning the combined schema.\n\nSelects GraphQL Wire_Name `merge` on `Schema`."]
+    #[doc = "Merge a module's introspection-shaped type definitions into the schema, returning the combined schema.\n\nSelects GraphQL field `merge` on `Schema`."]
     #[must_use]
     pub fn merge(
         &self,

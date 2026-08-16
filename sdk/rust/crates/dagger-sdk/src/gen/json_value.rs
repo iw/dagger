@@ -10,9 +10,9 @@ pub struct JsonValue {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct JsonValueContentsOpts {
-    #[doc = "Optional line prefix\n\n`None` omits GraphQL Wire_Name `indent` and preserves engine default `String(\"  \")`."]
+    #[doc = "Optional line prefix\n\n`None` omits GraphQL field `indent` and preserves engine default `String(\"  \")`."]
     pub indent: Option<String>,
-    #[doc = "Pretty-print\n\n`None` omits GraphQL Wire_Name `pretty` and preserves engine default `Boolean(false)`."]
+    #[doc = "Pretty-print\n\n`None` omits GraphQL field `pretty` and preserves engine default `Boolean(false)`."]
     pub pretty: Option<bool>,
 }
 impl JsonValueContentsOpts {
@@ -60,7 +60,7 @@ impl From<JsonValue> for crate::IdInput<super::NodeClient> {
     }
 }
 impl JsonValue {
-    #[doc = "Decode an array from json\n\nSelects GraphQL Wire_Name `asArray` on `JSONValue`."]
+    #[doc = "Decode an array from json\n\nSelects GraphQL field `asArray` on `JSONValue`."]
     pub async fn as_array(&self) -> Result<Vec<super::JsonValue>, crate::QueryError> {
         let query = self.selection.select("asArray");
         let query = query.select("id");
@@ -68,22 +68,22 @@ impl JsonValue {
             .execute_reentry::<super::JsonValue, Vec<crate::Id>>(&self.session, "JSONValue")
             .await
     }
-    #[doc = "Decode a boolean from json\n\nSelects GraphQL Wire_Name `asBoolean` on `JSONValue`."]
+    #[doc = "Decode a boolean from json\n\nSelects GraphQL field `asBoolean` on `JSONValue`."]
     pub async fn as_boolean(&self) -> Result<bool, crate::QueryError> {
         let query = self.selection.select("asBoolean");
         query.execute(&self.session).await
     }
-    #[doc = "Decode an integer from json\n\nSelects GraphQL Wire_Name `asInteger` on `JSONValue`."]
+    #[doc = "Decode an integer from json\n\nSelects GraphQL field `asInteger` on `JSONValue`."]
     pub async fn as_integer(&self) -> Result<i64, crate::QueryError> {
         let query = self.selection.select("asInteger");
         query.execute(&self.session).await
     }
-    #[doc = "Decode a string from json\n\nSelects GraphQL Wire_Name `asString` on `JSONValue`."]
+    #[doc = "Decode a string from json\n\nSelects GraphQL field `asString` on `JSONValue`."]
     pub async fn as_string(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("asString");
         query.execute(&self.session).await
     }
-    #[doc = "Return the value encoded as json\n\nSelects GraphQL Wire_Name `contents` on `JSONValue`."]
+    #[doc = "Return the value encoded as json\n\nSelects GraphQL field `contents` on `JSONValue`."]
     pub async fn contents(&self) -> Result<crate::Json, crate::QueryError> {
         let query = self.selection.select("contents");
         query.execute(&self.session).await
@@ -106,7 +106,7 @@ impl JsonValue {
         };
         query.execute(&self.session).await
     }
-    #[doc = "Lookup the field at the given path, and return its value.\n\nSelects GraphQL Wire_Name `field` on `JSONValue`."]
+    #[doc = "Lookup the field at the given path, and return its value.\n\nSelects GraphQL field `field` on `JSONValue`."]
     #[must_use]
     pub fn field(&self, path: Vec<impl Into<String>>) -> super::JsonValue {
         let query = self.selection.select("field");
@@ -117,17 +117,17 @@ impl JsonValue {
             selection: query,
         }
     }
-    #[doc = "List fields of the encoded object\n\nSelects GraphQL Wire_Name `fields` on `JSONValue`."]
+    #[doc = "List fields of the encoded object\n\nSelects GraphQL field `fields` on `JSONValue`."]
     pub async fn fields(&self) -> Result<Vec<String>, crate::QueryError> {
         let query = self.selection.select("fields");
         query.execute(&self.session).await
     }
-    #[doc = "A unique identifier for this JSONValue.\n\nSelects GraphQL Wire_Name `id` on `JSONValue`."]
+    #[doc = "A unique identifier for this JSONValue.\n\nSelects GraphQL field `id` on `JSONValue`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "Encode a boolean to json\n\nSelects GraphQL Wire_Name `newBoolean` on `JSONValue`."]
+    #[doc = "Encode a boolean to json\n\nSelects GraphQL field `newBoolean` on `JSONValue`."]
     #[must_use]
     pub fn new_boolean(&self, value: bool) -> super::JsonValue {
         let query = self.selection.select("newBoolean");
@@ -137,7 +137,7 @@ impl JsonValue {
             selection: query,
         }
     }
-    #[doc = "Encode an integer to json\n\nSelects GraphQL Wire_Name `newInteger` on `JSONValue`."]
+    #[doc = "Encode an integer to json\n\nSelects GraphQL field `newInteger` on `JSONValue`."]
     #[must_use]
     pub fn new_integer(&self, value: i64) -> super::JsonValue {
         let query = self.selection.select("newInteger");
@@ -147,7 +147,7 @@ impl JsonValue {
             selection: query,
         }
     }
-    #[doc = "Encode a string to json\n\nSelects GraphQL Wire_Name `newString` on `JSONValue`."]
+    #[doc = "Encode a string to json\n\nSelects GraphQL field `newString` on `JSONValue`."]
     #[must_use]
     pub fn new_string(&self, value: impl Into<String>) -> super::JsonValue {
         let query = self.selection.select("newString");
@@ -157,7 +157,7 @@ impl JsonValue {
             selection: query,
         }
     }
-    #[doc = "Return a new json value, decoded from the given content\n\nSelects GraphQL Wire_Name `withContents` on `JSONValue`."]
+    #[doc = "Return a new json value, decoded from the given content\n\nSelects GraphQL field `withContents` on `JSONValue`."]
     #[must_use]
     pub fn with_contents(&self, contents: crate::Json) -> super::JsonValue {
         let query = self.selection.select("withContents");
@@ -167,7 +167,7 @@ impl JsonValue {
             selection: query,
         }
     }
-    #[doc = "Set a new field at the given path\n\nSelects GraphQL Wire_Name `withField` on `JSONValue`."]
+    #[doc = "Set a new field at the given path\n\nSelects GraphQL field `withField` on `JSONValue`."]
     #[must_use]
     pub fn with_field(
         &self,

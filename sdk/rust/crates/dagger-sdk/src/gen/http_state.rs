@@ -37,7 +37,7 @@ impl From<HttpState> for crate::IdInput<super::NodeClient> {
     }
 }
 impl HttpState {
-    #[doc = "A unique identifier for this HTTPState.\n\nSelects GraphQL Wire_Name `id` on `HTTPState`."]
+    #[doc = "A unique identifier for this HTTPState.\n\nSelects GraphQL field `id` on `HTTPState`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await

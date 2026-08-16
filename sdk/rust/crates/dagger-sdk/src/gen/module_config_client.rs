@@ -37,17 +37,17 @@ impl From<ModuleConfigClient> for crate::IdInput<super::NodeClient> {
     }
 }
 impl ModuleConfigClient {
-    #[doc = "The directory the client is generated in.\n\nSelects GraphQL Wire_Name `directory` on `ModuleConfigClient`."]
+    #[doc = "The directory the client is generated in.\n\nSelects GraphQL field `directory` on `ModuleConfigClient`."]
     pub async fn directory(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("directory");
         query.execute(&self.session).await
     }
-    #[doc = "The generator to use\n\nSelects GraphQL Wire_Name `generator` on `ModuleConfigClient`."]
+    #[doc = "The generator to use\n\nSelects GraphQL field `generator` on `ModuleConfigClient`."]
     pub async fn generator(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("generator");
         query.execute(&self.session).await
     }
-    #[doc = "A unique identifier for this ModuleConfigClient.\n\nSelects GraphQL Wire_Name `id` on `ModuleConfigClient`."]
+    #[doc = "A unique identifier for this ModuleConfigClient.\n\nSelects GraphQL field `id` on `ModuleConfigClient`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await

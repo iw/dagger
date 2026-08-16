@@ -54,7 +54,7 @@ impl ArgumentPresence {
         }
     }
 
-    /// Returns whether absence must omit the Wire_Name rather than synthesize a value.
+    /// Returns whether absence must omit the wire name rather than synthesize a value.
     #[must_use]
     pub const fn is_omittable(&self) -> bool {
         matches!(self, Self::Omittable { .. })
@@ -77,9 +77,9 @@ impl ArgumentPresence {
 pub enum InputEncoder {
     /// Built-in or handwritten scalar value.
     Value,
-    /// Closed enum using its canonical Wire_Name.
+    /// Closed enum using its canonical wire name.
     Enum,
-    /// Owned input object using exact field Wire_Names.
+    /// Owned input object using exact field wire names.
     InputObject,
     /// Raw or lazily resolved ID constrained to one target type.
     TypedId { target: SchemaName },
@@ -146,7 +146,7 @@ impl InputEncoder {
 pub struct ArgumentProjection {
     /// Exact argument coordinate.
     pub coordinate: SchemaCoordinate,
-    /// Exact argument Wire_Name used in the GraphQL document.
+    /// Exact argument wire name used in the GraphQL document.
     pub wire_name: SchemaName,
     /// Rust source identifier.
     pub rust_name: String,
@@ -163,7 +163,7 @@ pub struct ArgumentProjection {
 }
 
 impl ArgumentProjection {
-    /// Returns the exact Wire_Name/value pair to emit, or omission for absent options.
+    /// Returns the exact wire name/value pair to emit, or omission for absent options.
     pub fn emitted_argument<'a, T>(
         &'a self,
         supplied: Option<&'a T>,
@@ -296,9 +296,9 @@ pub fn select_field_strategy(
 pub struct FieldProjection {
     /// Exact field coordinate.
     pub coordinate: SchemaCoordinate,
-    /// Owning object or interface Wire_Name.
+    /// Owning object or interface wire name.
     pub owner: SchemaName,
-    /// Exact field Wire_Name used by selection.
+    /// Exact field wire name used by selection.
     pub wire_name: SchemaName,
     /// Ordinary Rust method identifier.
     pub rust_name: String,
@@ -306,7 +306,7 @@ pub struct FieldProjection {
     pub options_method_name: Option<String>,
     /// Field-specific owned options type when omission is supported.
     pub options_type_name: Option<String>,
-    /// Arguments in exact Wire_Name order.
+    /// Arguments in exact wire name order.
     pub arguments: Vec<ArgumentProjection>,
     /// Wrapper-correct Rust output.
     pub return_type: RustType,

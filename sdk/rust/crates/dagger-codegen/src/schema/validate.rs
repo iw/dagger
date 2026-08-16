@@ -1732,7 +1732,7 @@ fn parse_name(
             diagnostics.push(schema_error(
                 DiagnosticCode::SchemaReferenceInvalid,
                 coordinate,
-                "schema Wire_Name is not a valid GraphQL name",
+                "schema wire name is not a valid GraphQL name",
             ));
             None
         }

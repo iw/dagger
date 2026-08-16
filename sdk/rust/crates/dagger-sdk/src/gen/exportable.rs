@@ -2,12 +2,12 @@
 // @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:7d6f61426d0c65454a32059732deed8927471c92e906f4ac7b31dd8ff8214306","target_revision":"501b57e0476dee5881b99a064c3c04173134ecc7"}
 #[doc = "An object that can be exported to the host.\n\nCalling export writes the object to a path on the host filesystem and returns the path that was written."]
 pub trait Exportable: Clone + Send + Sync {
-    #[doc = "Selects GraphQL Wire_Name `export` on `Exportable`."]
+    #[doc = "Selects GraphQL field `export` on `Exportable`."]
     fn export(
         &self,
         path: impl Into<String> + Send,
     ) -> impl core::future::Future<Output = Result<String, crate::QueryError>> + Send;
-    #[doc = "Selects GraphQL Wire_Name `id` on `Exportable`."]
+    #[doc = "Selects GraphQL field `id` on `Exportable`."]
     fn id(&self)
     -> impl core::future::Future<Output = Result<crate::Id, crate::QueryError>> + Send;
 }
@@ -48,13 +48,13 @@ impl From<ExportableClient> for crate::IdInput<super::NodeClient> {
     }
 }
 impl ExportableClient {
-    #[doc = "Selects GraphQL Wire_Name `export` on `Exportable`."]
+    #[doc = "Selects GraphQL field `export` on `Exportable`."]
     pub async fn export(&self, path: impl Into<String>) -> Result<String, crate::QueryError> {
         let query = self.selection.select("export");
         let query = query.arg("path", path.into());
         query.execute(&self.session).await
     }
-    #[doc = "Selects GraphQL Wire_Name `id` on `Exportable`."]
+    #[doc = "Selects GraphQL field `id` on `Exportable`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await

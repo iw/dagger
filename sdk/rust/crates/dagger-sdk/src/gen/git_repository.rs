@@ -10,7 +10,7 @@ pub struct GitRepository {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct GitRepositoryAsWorkspaceOpts {
-    #[doc = "Current working directory inside the workspace root. Defaults to the workspace root.\n\n`None` omits GraphQL Wire_Name `cwd` and preserves engine default `String(\"/\")`."]
+    #[doc = "Current working directory inside the workspace root. Defaults to the workspace root.\n\n`None` omits GraphQL field `cwd` and preserves engine default `String(\"/\")`."]
     pub cwd: Option<String>,
 }
 impl GitRepositoryAsWorkspaceOpts {
@@ -25,7 +25,7 @@ impl GitRepositoryAsWorkspaceOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct GitRepositoryBranchesOpts {
-    #[doc = "Glob patterns (e.g., \"refs/tags/v*\").\n\n`None` omits GraphQL Wire_Name `patterns`."]
+    #[doc = "Glob patterns (e.g., \"refs/tags/v*\").\n\n`None` omits GraphQL field `patterns`."]
     pub patterns: Option<Vec<String>>,
 }
 impl GitRepositoryBranchesOpts {
@@ -40,7 +40,7 @@ impl GitRepositoryBranchesOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct GitRepositoryTagsOpts {
-    #[doc = "Glob patterns (e.g., \"refs/tags/v*\").\n\n`None` omits GraphQL Wire_Name `patterns`."]
+    #[doc = "Glob patterns (e.g., \"refs/tags/v*\").\n\n`None` omits GraphQL field `patterns`."]
     pub patterns: Option<Vec<String>>,
 }
 impl GitRepositoryTagsOpts {
@@ -82,7 +82,7 @@ impl From<GitRepository> for crate::IdInput<super::NodeClient> {
     }
 }
 impl GitRepository {
-    #[doc = "Creates a synthetic workspace from this git repository.\n\nSelects GraphQL Wire_Name `asWorkspace` on `GitRepository`."]
+    #[doc = "Creates a synthetic workspace from this git repository.\n\nSelects GraphQL field `asWorkspace` on `GitRepository`."]
     #[must_use]
     pub fn as_workspace(&self) -> super::Workspace {
         let query = self.selection.select("asWorkspace");
@@ -105,7 +105,7 @@ impl GitRepository {
             selection: query,
         }
     }
-    #[doc = "Returns details of a branch.\n\nSelects GraphQL Wire_Name `branch` on `GitRepository`."]
+    #[doc = "Returns details of a branch.\n\nSelects GraphQL field `branch` on `GitRepository`."]
     #[must_use]
     pub fn branch(&self, name: impl Into<String>) -> super::GitRef {
         let query = self.selection.select("branch");
@@ -115,7 +115,7 @@ impl GitRepository {
             selection: query,
         }
     }
-    #[doc = "branches that match any of the given glob patterns.\n\nSelects GraphQL Wire_Name `branches` on `GitRepository`."]
+    #[doc = "branches that match any of the given glob patterns.\n\nSelects GraphQL field `branches` on `GitRepository`."]
     pub async fn branches(&self) -> Result<Vec<String>, crate::QueryError> {
         let query = self.selection.select("branches");
         query.execute(&self.session).await
@@ -133,7 +133,7 @@ impl GitRepository {
         };
         query.execute(&self.session).await
     }
-    #[doc = "Returns details of a commit.\n\nSelects GraphQL Wire_Name `commit` on `GitRepository`."]
+    #[doc = "Returns details of a commit.\n\nSelects GraphQL field `commit` on `GitRepository`."]
     #[must_use]
     pub fn commit(&self, id: impl Into<String>) -> super::GitRef {
         let query = self.selection.select("commit");
@@ -143,7 +143,7 @@ impl GitRepository {
             selection: query,
         }
     }
-    #[doc = "Returns details for HEAD.\n\nSelects GraphQL Wire_Name `head` on `GitRepository`."]
+    #[doc = "Returns details for HEAD.\n\nSelects GraphQL field `head` on `GitRepository`."]
     #[must_use]
     pub fn head(&self) -> super::GitRef {
         let query = self.selection.select("head");
@@ -152,12 +152,12 @@ impl GitRepository {
             selection: query,
         }
     }
-    #[doc = "A unique identifier for this GitRepository.\n\nSelects GraphQL Wire_Name `id` on `GitRepository`."]
+    #[doc = "A unique identifier for this GitRepository.\n\nSelects GraphQL field `id` on `GitRepository`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "Returns details for the latest semver tag.\n\nSelects GraphQL Wire_Name `latestVersion` on `GitRepository`."]
+    #[doc = "Returns details for the latest semver tag.\n\nSelects GraphQL field `latestVersion` on `GitRepository`."]
     #[must_use]
     pub fn latest_version(&self) -> super::GitRef {
         let query = self.selection.select("latestVersion");
@@ -166,7 +166,7 @@ impl GitRepository {
             selection: query,
         }
     }
-    #[doc = "Returns details of a ref.\n\nSelects GraphQL Wire_Name `ref` on `GitRepository`."]
+    #[doc = "Returns details of a ref.\n\nSelects GraphQL field `ref` on `GitRepository`."]
     #[must_use]
     pub fn r#ref(&self, name: impl Into<String>) -> super::GitRef {
         let query = self.selection.select("ref");
@@ -176,7 +176,7 @@ impl GitRepository {
             selection: query,
         }
     }
-    #[doc = "Returns details of a tag.\n\nSelects GraphQL Wire_Name `tag` on `GitRepository`."]
+    #[doc = "Returns details of a tag.\n\nSelects GraphQL field `tag` on `GitRepository`."]
     #[must_use]
     pub fn tag(&self, name: impl Into<String>) -> super::GitRef {
         let query = self.selection.select("tag");
@@ -186,7 +186,7 @@ impl GitRepository {
             selection: query,
         }
     }
-    #[doc = "tags that match any of the given glob patterns.\n\nSelects GraphQL Wire_Name `tags` on `GitRepository`."]
+    #[doc = "tags that match any of the given glob patterns.\n\nSelects GraphQL field `tags` on `GitRepository`."]
     pub async fn tags(&self) -> Result<Vec<String>, crate::QueryError> {
         let query = self.selection.select("tags");
         query.execute(&self.session).await
@@ -204,7 +204,7 @@ impl GitRepository {
         };
         query.execute(&self.session).await
     }
-    #[doc = "Returns the changeset of uncommitted changes in the git repository.\n\nSelects GraphQL Wire_Name `uncommitted` on `GitRepository`."]
+    #[doc = "Returns the changeset of uncommitted changes in the git repository.\n\nSelects GraphQL field `uncommitted` on `GitRepository`."]
     #[must_use]
     pub fn uncommitted(&self) -> super::Changeset {
         let query = self.selection.select("uncommitted");
@@ -213,7 +213,7 @@ impl GitRepository {
             selection: query,
         }
     }
-    #[doc = "The URL of the git repository.\n\nSelects GraphQL Wire_Name `url` on `GitRepository`."]
+    #[doc = "The URL of the git repository.\n\nSelects GraphQL field `url` on `GitRepository`."]
     pub async fn url(&self) -> Result<Option<String>, crate::QueryError> {
         let query = self.selection.select("url");
         query.execute(&self.session).await

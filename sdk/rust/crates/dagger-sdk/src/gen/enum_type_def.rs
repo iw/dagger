@@ -37,17 +37,17 @@ impl From<EnumTypeDef> for crate::IdInput<super::NodeClient> {
     }
 }
 impl EnumTypeDef {
-    #[doc = "A doc string for the enum, if any.\n\nSelects GraphQL Wire_Name `description` on `EnumTypeDef`."]
+    #[doc = "A doc string for the enum, if any.\n\nSelects GraphQL field `description` on `EnumTypeDef`."]
     pub async fn description(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("description");
         query.execute(&self.session).await
     }
-    #[doc = "A unique identifier for this EnumTypeDef.\n\nSelects GraphQL Wire_Name `id` on `EnumTypeDef`."]
+    #[doc = "A unique identifier for this EnumTypeDef.\n\nSelects GraphQL field `id` on `EnumTypeDef`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "The members of the enum.\n\nSelects GraphQL Wire_Name `members` on `EnumTypeDef`."]
+    #[doc = "The members of the enum.\n\nSelects GraphQL field `members` on `EnumTypeDef`."]
     pub async fn members(&self) -> Result<Vec<super::EnumValueTypeDef>, crate::QueryError> {
         let query = self.selection.select("members");
         let query = query.select("id");
@@ -58,12 +58,12 @@ impl EnumTypeDef {
             )
             .await
     }
-    #[doc = "The name of the enum.\n\nSelects GraphQL Wire_Name `name` on `EnumTypeDef`."]
+    #[doc = "The name of the enum.\n\nSelects GraphQL field `name` on `EnumTypeDef`."]
     pub async fn name(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("name");
         query.execute(&self.session).await
     }
-    #[doc = "The location of this enum declaration.\n\nSelects GraphQL Wire_Name `sourceMap` on `EnumTypeDef`."]
+    #[doc = "The location of this enum declaration.\n\nSelects GraphQL field `sourceMap` on `EnumTypeDef`."]
     pub async fn source_map(&self) -> Result<Option<super::SourceMap>, crate::QueryError> {
         let query = self.selection.select("sourceMap");
         let query = query.select("id");
@@ -71,12 +71,12 @@ impl EnumTypeDef {
             .execute_reentry::<super::SourceMap, Option<crate::Id>>(&self.session, "SourceMap")
             .await
     }
-    #[doc = "If this EnumTypeDef is associated with a Module, the name of the module. Unset otherwise.\n\nSelects GraphQL Wire_Name `sourceModuleName` on `EnumTypeDef`."]
+    #[doc = "If this EnumTypeDef is associated with a Module, the name of the module. Unset otherwise.\n\nSelects GraphQL field `sourceModuleName` on `EnumTypeDef`."]
     pub async fn source_module_name(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("sourceModuleName");
         query.execute(&self.session).await
     }
-    #[doc = "The members of the enum.\n\nSelects GraphQL Wire_Name `values` on `EnumTypeDef`.\n\n**Deprecated:** use members instead"]
+    #[doc = "The members of the enum.\n\nSelects GraphQL field `values` on `EnumTypeDef`.\n\n**Deprecated:** use members instead"]
     #[deprecated(note = "use members instead")]
     pub async fn values(&self) -> Result<Vec<super::EnumValueTypeDef>, crate::QueryError> {
         let query = self.selection.select("values");

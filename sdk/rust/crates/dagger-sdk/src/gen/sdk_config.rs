@@ -37,17 +37,17 @@ impl From<SdkConfig> for crate::IdInput<super::NodeClient> {
     }
 }
 impl SdkConfig {
-    #[doc = "Whether to start the SDK runtime in debug mode with an interactive terminal.\n\nSelects GraphQL Wire_Name `debug` on `SDKConfig`."]
+    #[doc = "Whether to start the SDK runtime in debug mode with an interactive terminal.\n\nSelects GraphQL field `debug` on `SDKConfig`."]
     pub async fn debug(&self) -> Result<bool, crate::QueryError> {
         let query = self.selection.select("debug");
         query.execute(&self.session).await
     }
-    #[doc = "A unique identifier for this SDKConfig.\n\nSelects GraphQL Wire_Name `id` on `SDKConfig`."]
+    #[doc = "A unique identifier for this SDKConfig.\n\nSelects GraphQL field `id` on `SDKConfig`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "Source of the SDK. Either a name of a builtin SDK or a module source ref string pointing to the SDK's implementation.\n\nSelects GraphQL Wire_Name `source` on `SDKConfig`."]
+    #[doc = "Source of the SDK. Either a name of a builtin SDK or a module source ref string pointing to the SDK's implementation.\n\nSelects GraphQL field `source` on `SDKConfig`."]
     pub async fn source(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("source");
         query.execute(&self.session).await

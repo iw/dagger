@@ -37,7 +37,7 @@ impl From<CurrentModuleAsSdk> for crate::IdInput<super::NodeClient> {
     }
 }
 impl CurrentModuleAsSdk {
-    #[doc = "The generated clients this SDK produces in the workspace.\n\nSelects GraphQL Wire_Name `clients` on `CurrentModuleAsSDK`."]
+    #[doc = "The generated clients this SDK produces in the workspace.\n\nSelects GraphQL field `clients` on `CurrentModuleAsSDK`."]
     pub async fn clients(&self) -> Result<Vec<super::CurrentModuleAsSdkClient>, crate::QueryError> {
         let query = self.selection.select("clients");
         let query = query.select("id");
@@ -48,12 +48,12 @@ impl CurrentModuleAsSdk {
             )
             .await
     }
-    #[doc = "A unique identifier for this CurrentModuleAsSDK.\n\nSelects GraphQL Wire_Name `id` on `CurrentModuleAsSDK`."]
+    #[doc = "A unique identifier for this CurrentModuleAsSDK.\n\nSelects GraphQL field `id` on `CurrentModuleAsSDK`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "The workspace-local modules this SDK authors and manages.\n\nSelects GraphQL Wire_Name `modules` on `CurrentModuleAsSDK`."]
+    #[doc = "The workspace-local modules this SDK authors and manages.\n\nSelects GraphQL field `modules` on `CurrentModuleAsSDK`."]
     pub async fn modules(&self) -> Result<Vec<super::CurrentModuleAsSdkModule>, crate::QueryError> {
         let query = self.selection.select("modules");
         let query = query.select("id");
@@ -64,7 +64,7 @@ impl CurrentModuleAsSdk {
             )
             .await
     }
-    #[doc = "The user-facing name of this SDK in the workspace.\n\nSelects GraphQL Wire_Name `name` on `CurrentModuleAsSDK`."]
+    #[doc = "The user-facing name of this SDK in the workspace.\n\nSelects GraphQL field `name` on `CurrentModuleAsSDK`."]
     pub async fn name(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("name");
         query.execute(&self.session).await

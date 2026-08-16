@@ -10,7 +10,7 @@ pub struct CheckGroup {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct CheckGroupRunOpts {
-    #[doc = "If true, stop running checks as soon as any check fails.\n\n`None` omits GraphQL Wire_Name `failFast`."]
+    #[doc = "If true, stop running checks as soon as any check fails.\n\n`None` omits GraphQL field `failFast`."]
     pub fail_fast: Option<bool>,
 }
 impl CheckGroupRunOpts {
@@ -52,12 +52,12 @@ impl From<CheckGroup> for crate::IdInput<super::NodeClient> {
     }
 }
 impl CheckGroup {
-    #[doc = "A unique identifier for this CheckGroup.\n\nSelects GraphQL Wire_Name `id` on `CheckGroup`."]
+    #[doc = "A unique identifier for this CheckGroup.\n\nSelects GraphQL field `id` on `CheckGroup`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "Return a list of individual checks and their details\n\nSelects GraphQL Wire_Name `list` on `CheckGroup`."]
+    #[doc = "Return a list of individual checks and their details\n\nSelects GraphQL field `list` on `CheckGroup`."]
     pub async fn list(&self) -> Result<Vec<super::Check>, crate::QueryError> {
         let query = self.selection.select("list");
         let query = query.select("id");
@@ -65,7 +65,7 @@ impl CheckGroup {
             .execute_reentry::<super::Check, Vec<crate::Id>>(&self.session, "Check")
             .await
     }
-    #[doc = "Generate a markdown report\n\nSelects GraphQL Wire_Name `report` on `CheckGroup`."]
+    #[doc = "Generate a markdown report\n\nSelects GraphQL field `report` on `CheckGroup`."]
     #[must_use]
     pub fn report(&self) -> super::File {
         let query = self.selection.select("report");
@@ -74,7 +74,7 @@ impl CheckGroup {
             selection: query,
         }
     }
-    #[doc = "Execute all selected checks\n\nSelects GraphQL Wire_Name `run` on `CheckGroup`."]
+    #[doc = "Execute all selected checks\n\nSelects GraphQL field `run` on `CheckGroup`."]
     #[must_use]
     pub fn run(&self) -> super::CheckGroup {
         let query = self.selection.select("run");

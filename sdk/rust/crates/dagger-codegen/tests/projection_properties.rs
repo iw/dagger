@@ -294,7 +294,7 @@ proptest! {
         let (wire_name, canonical) = coordinates[value_index % coordinates.len()];
         let decoded = enumeration
             .decode_variant(wire_name.as_str())
-            .expect("canonical and alias Wire_Names must decode");
+            .expect("canonical and alias wire names must decode");
         prop_assert_eq!(&decoded.wire_name, canonical);
         prop_assert_eq!(
             enumeration.decode_variant(&format!("__UNKNOWN_{unknown_suffix}")),

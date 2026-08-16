@@ -37,7 +37,7 @@ impl From<WorkspaceMigration> for crate::IdInput<super::NodeClient> {
     }
 }
 impl WorkspaceMigration {
-    #[doc = "Filesystem changes for the full migration plan.\n\nSelects GraphQL Wire_Name `changes` on `WorkspaceMigration`."]
+    #[doc = "Filesystem changes for the full migration plan.\n\nSelects GraphQL field `changes` on `WorkspaceMigration`."]
     #[must_use]
     pub fn changes(&self) -> super::Changeset {
         let query = self.selection.select("changes");
@@ -46,12 +46,12 @@ impl WorkspaceMigration {
             selection: query,
         }
     }
-    #[doc = "A unique identifier for this WorkspaceMigration.\n\nSelects GraphQL Wire_Name `id` on `WorkspaceMigration`."]
+    #[doc = "A unique identifier for this WorkspaceMigration.\n\nSelects GraphQL field `id` on `WorkspaceMigration`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "Logical migration steps, each identified by a stable code.\n\nSelects GraphQL Wire_Name `steps` on `WorkspaceMigration`."]
+    #[doc = "Logical migration steps, each identified by a stable code.\n\nSelects GraphQL field `steps` on `WorkspaceMigration`."]
     pub async fn steps(&self) -> Result<Vec<super::WorkspaceMigrationStep>, crate::QueryError> {
         let query = self.selection.select("steps");
         let query = query.select("id");

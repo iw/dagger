@@ -37,22 +37,22 @@ impl From<WorkspaceModule> for crate::IdInput<super::NodeClient> {
     }
 }
 impl WorkspaceModule {
-    #[doc = "Whether the module is the workspace entrypoint (functions aliased to Query root).\n\nSelects GraphQL Wire_Name `entrypoint` on `WorkspaceModule`."]
+    #[doc = "Whether the module is the workspace entrypoint (functions aliased to Query root).\n\nSelects GraphQL field `entrypoint` on `WorkspaceModule`."]
     pub async fn entrypoint(&self) -> Result<bool, crate::QueryError> {
         let query = self.selection.select("entrypoint");
         query.execute(&self.session).await
     }
-    #[doc = "A unique identifier for this WorkspaceModule.\n\nSelects GraphQL Wire_Name `id` on `WorkspaceModule`."]
+    #[doc = "A unique identifier for this WorkspaceModule.\n\nSelects GraphQL field `id` on `WorkspaceModule`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "The module name.\n\nSelects GraphQL Wire_Name `name` on `WorkspaceModule`."]
+    #[doc = "The module name.\n\nSelects GraphQL field `name` on `WorkspaceModule`."]
     pub async fn name(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("name");
         query.execute(&self.session).await
     }
-    #[doc = "List constructor-backed settings for this module.\n\nSelects GraphQL Wire_Name `settings` on `WorkspaceModule`."]
+    #[doc = "List constructor-backed settings for this module.\n\nSelects GraphQL field `settings` on `WorkspaceModule`."]
     pub async fn settings(&self) -> Result<Vec<super::WorkspaceModuleSetting>, crate::QueryError> {
         let query = self.selection.select("settings");
         let query = query.select("id");
@@ -63,7 +63,7 @@ impl WorkspaceModule {
             )
             .await
     }
-    #[doc = "The module source path.\n\nSelects GraphQL Wire_Name `source` on `WorkspaceModule`."]
+    #[doc = "The module source path.\n\nSelects GraphQL field `source` on `WorkspaceModule`."]
     pub async fn source(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("source");
         query.execute(&self.session).await

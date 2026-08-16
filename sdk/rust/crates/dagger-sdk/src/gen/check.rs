@@ -37,22 +37,22 @@ impl From<Check> for crate::IdInput<super::NodeClient> {
     }
 }
 impl Check {
-    #[doc = "The type of check: 'check' for annotated checks, 'generate' for generate-as-checks\n\nSelects GraphQL Wire_Name `checkType` on `Check`."]
+    #[doc = "The type of check: 'check' for annotated checks, 'generate' for generate-as-checks\n\nSelects GraphQL field `checkType` on `Check`."]
     pub async fn check_type(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("checkType");
         query.execute(&self.session).await
     }
-    #[doc = "Whether the check completed\n\nSelects GraphQL Wire_Name `completed` on `Check`."]
+    #[doc = "Whether the check completed\n\nSelects GraphQL field `completed` on `Check`."]
     pub async fn completed(&self) -> Result<bool, crate::QueryError> {
         let query = self.selection.select("completed");
         query.execute(&self.session).await
     }
-    #[doc = "The description of the check\n\nSelects GraphQL Wire_Name `description` on `Check`."]
+    #[doc = "The description of the check\n\nSelects GraphQL field `description` on `Check`."]
     pub async fn description(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("description");
         query.execute(&self.session).await
     }
-    #[doc = "If the check failed, this is the error\n\nSelects GraphQL Wire_Name `error` on `Check`."]
+    #[doc = "If the check failed, this is the error\n\nSelects GraphQL field `error` on `Check`."]
     pub async fn error(&self) -> Result<Option<super::Error>, crate::QueryError> {
         let query = self.selection.select("error");
         let query = query.select("id");
@@ -60,17 +60,17 @@ impl Check {
             .execute_reentry::<super::Error, Option<crate::Id>>(&self.session, "Error")
             .await
     }
-    #[doc = "A unique identifier for this Check.\n\nSelects GraphQL Wire_Name `id` on `Check`."]
+    #[doc = "A unique identifier for this Check.\n\nSelects GraphQL field `id` on `Check`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "Return the fully qualified name of the check\n\nSelects GraphQL Wire_Name `name` on `Check`."]
+    #[doc = "Return the fully qualified name of the check\n\nSelects GraphQL field `name` on `Check`."]
     pub async fn name(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("name");
         query.execute(&self.session).await
     }
-    #[doc = "The original module in which the check has been defined\n\nSelects GraphQL Wire_Name `originalModule` on `Check`."]
+    #[doc = "The original module in which the check has been defined\n\nSelects GraphQL field `originalModule` on `Check`."]
     #[must_use]
     pub fn original_module(&self) -> super::Module {
         let query = self.selection.select("originalModule");
@@ -79,22 +79,22 @@ impl Check {
             selection: query,
         }
     }
-    #[doc = "Whether the check passed\n\nSelects GraphQL Wire_Name `passed` on `Check`."]
+    #[doc = "Whether the check passed\n\nSelects GraphQL field `passed` on `Check`."]
     pub async fn passed(&self) -> Result<bool, crate::QueryError> {
         let query = self.selection.select("passed");
         query.execute(&self.session).await
     }
-    #[doc = "The path of the check within its module\n\nSelects GraphQL Wire_Name `path` on `Check`."]
+    #[doc = "The path of the check within its module\n\nSelects GraphQL field `path` on `Check`."]
     pub async fn path(&self) -> Result<Vec<String>, crate::QueryError> {
         let query = self.selection.select("path");
         query.execute(&self.session).await
     }
-    #[doc = "An emoji representing the result of the check\n\nSelects GraphQL Wire_Name `resultEmoji` on `Check`."]
+    #[doc = "An emoji representing the result of the check\n\nSelects GraphQL field `resultEmoji` on `Check`."]
     pub async fn result_emoji(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("resultEmoji");
         query.execute(&self.session).await
     }
-    #[doc = "Execute the check\n\nSelects GraphQL Wire_Name `run` on `Check`."]
+    #[doc = "Execute the check\n\nSelects GraphQL field `run` on `Check`."]
     #[must_use]
     pub fn run(&self) -> super::Check {
         let query = self.selection.select("run");

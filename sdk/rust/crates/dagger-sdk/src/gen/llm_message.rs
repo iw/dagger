@@ -37,7 +37,7 @@ impl From<LlmMessage> for crate::IdInput<super::NodeClient> {
     }
 }
 impl LlmMessage {
-    #[doc = "The message's content blocks, in the order the model produced them.\n\nSelects GraphQL Wire_Name `content` on `LLMMessage`."]
+    #[doc = "The message's content blocks, in the order the model produced them.\n\nSelects GraphQL field `content` on `LLMMessage`."]
     pub async fn content(&self) -> Result<Vec<super::LlmContentBlock>, crate::QueryError> {
         let query = self.selection.select("content");
         let query = query.select("id");
@@ -48,17 +48,17 @@ impl LlmMessage {
             )
             .await
     }
-    #[doc = "A unique identifier for this LLMMessage.\n\nSelects GraphQL Wire_Name `id` on `LLMMessage`."]
+    #[doc = "A unique identifier for this LLMMessage.\n\nSelects GraphQL field `id` on `LLMMessage`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "The role that produced this message.\n\nSelects GraphQL Wire_Name `role` on `LLMMessage`."]
+    #[doc = "The role that produced this message.\n\nSelects GraphQL field `role` on `LLMMessage`."]
     pub async fn role(&self) -> Result<super::LlmMessageRole, crate::QueryError> {
         let query = self.selection.select("role");
         query.execute(&self.session).await
     }
-    #[doc = "Token usage reported by the provider for the API call that produced this message; all zeros except on assistant responses.\n\nSelects GraphQL Wire_Name `tokenUsage` on `LLMMessage`."]
+    #[doc = "Token usage reported by the provider for the API call that produced this message; all zeros except on assistant responses.\n\nSelects GraphQL field `tokenUsage` on `LLMMessage`."]
     #[must_use]
     pub fn token_usage(&self) -> super::LlmTokenUsage {
         let query = self.selection.select("tokenUsage");

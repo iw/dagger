@@ -37,32 +37,32 @@ impl From<LlmTokenUsage> for crate::IdInput<super::NodeClient> {
     }
 }
 impl LlmTokenUsage {
-    #[doc = "Input tokens served from the provider's prompt cache.\n\nSelects GraphQL Wire_Name `cachedTokenReads` on `LLMTokenUsage`."]
+    #[doc = "Input tokens served from the provider's prompt cache.\n\nSelects GraphQL field `cachedTokenReads` on `LLMTokenUsage`."]
     pub async fn cached_token_reads(&self) -> Result<i64, crate::QueryError> {
         let query = self.selection.select("cachedTokenReads");
         query.execute(&self.session).await
     }
-    #[doc = "Input tokens written to the provider's prompt cache.\n\nSelects GraphQL Wire_Name `cachedTokenWrites` on `LLMTokenUsage`."]
+    #[doc = "Input tokens written to the provider's prompt cache.\n\nSelects GraphQL field `cachedTokenWrites` on `LLMTokenUsage`."]
     pub async fn cached_token_writes(&self) -> Result<i64, crate::QueryError> {
         let query = self.selection.select("cachedTokenWrites");
         query.execute(&self.session).await
     }
-    #[doc = "A unique identifier for this LLMTokenUsage.\n\nSelects GraphQL Wire_Name `id` on `LLMTokenUsage`."]
+    #[doc = "A unique identifier for this LLMTokenUsage.\n\nSelects GraphQL field `id` on `LLMTokenUsage`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "Uncached input tokens sent to the model.\n\nSelects GraphQL Wire_Name `inputTokens` on `LLMTokenUsage`."]
+    #[doc = "Uncached input tokens sent to the model.\n\nSelects GraphQL field `inputTokens` on `LLMTokenUsage`."]
     pub async fn input_tokens(&self) -> Result<i64, crate::QueryError> {
         let query = self.selection.select("inputTokens");
         query.execute(&self.session).await
     }
-    #[doc = "Tokens received from the model, including text and tool calls.\n\nSelects GraphQL Wire_Name `outputTokens` on `LLMTokenUsage`."]
+    #[doc = "Tokens received from the model, including text and tool calls.\n\nSelects GraphQL field `outputTokens` on `LLMTokenUsage`."]
     pub async fn output_tokens(&self) -> Result<i64, crate::QueryError> {
         let query = self.selection.select("outputTokens");
         query.execute(&self.session).await
     }
-    #[doc = "Total tokens consumed, as reported by the provider.\n\nSelects GraphQL Wire_Name `totalTokens` on `LLMTokenUsage`."]
+    #[doc = "Total tokens consumed, as reported by the provider.\n\nSelects GraphQL field `totalTokens` on `LLMTokenUsage`."]
     pub async fn total_tokens(&self) -> Result<i64, crate::QueryError> {
         let query = self.selection.select("totalTokens");
         query.execute(&self.session).await

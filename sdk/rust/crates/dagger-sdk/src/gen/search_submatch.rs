@@ -37,22 +37,22 @@ impl From<SearchSubmatch> for crate::IdInput<super::NodeClient> {
     }
 }
 impl SearchSubmatch {
-    #[doc = "The match's end offset within the matched lines.\n\nSelects GraphQL Wire_Name `end` on `SearchSubmatch`."]
+    #[doc = "The match's end offset within the matched lines.\n\nSelects GraphQL field `end` on `SearchSubmatch`."]
     pub async fn end(&self) -> Result<i64, crate::QueryError> {
         let query = self.selection.select("end");
         query.execute(&self.session).await
     }
-    #[doc = "A unique identifier for this SearchSubmatch.\n\nSelects GraphQL Wire_Name `id` on `SearchSubmatch`."]
+    #[doc = "A unique identifier for this SearchSubmatch.\n\nSelects GraphQL field `id` on `SearchSubmatch`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "The match's start offset within the matched lines.\n\nSelects GraphQL Wire_Name `start` on `SearchSubmatch`."]
+    #[doc = "The match's start offset within the matched lines.\n\nSelects GraphQL field `start` on `SearchSubmatch`."]
     pub async fn start(&self) -> Result<i64, crate::QueryError> {
         let query = self.selection.select("start");
         query.execute(&self.session).await
     }
-    #[doc = "The matched text.\n\nSelects GraphQL Wire_Name `text` on `SearchSubmatch`."]
+    #[doc = "The matched text.\n\nSelects GraphQL field `text` on `SearchSubmatch`."]
     pub async fn text(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("text");
         query.execute(&self.session).await

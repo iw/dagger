@@ -37,32 +37,32 @@ impl From<SearchResult> for crate::IdInput<super::NodeClient> {
     }
 }
 impl SearchResult {
-    #[doc = "The byte offset of this line within the file.\n\nSelects GraphQL Wire_Name `absoluteOffset` on `SearchResult`."]
+    #[doc = "The byte offset of this line within the file.\n\nSelects GraphQL field `absoluteOffset` on `SearchResult`."]
     pub async fn absolute_offset(&self) -> Result<i64, crate::QueryError> {
         let query = self.selection.select("absoluteOffset");
         query.execute(&self.session).await
     }
-    #[doc = "The path to the file that matched.\n\nSelects GraphQL Wire_Name `filePath` on `SearchResult`."]
+    #[doc = "The path to the file that matched.\n\nSelects GraphQL field `filePath` on `SearchResult`."]
     pub async fn file_path(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("filePath");
         query.execute(&self.session).await
     }
-    #[doc = "A unique identifier for this SearchResult.\n\nSelects GraphQL Wire_Name `id` on `SearchResult`."]
+    #[doc = "A unique identifier for this SearchResult.\n\nSelects GraphQL field `id` on `SearchResult`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "The first line that matched.\n\nSelects GraphQL Wire_Name `lineNumber` on `SearchResult`."]
+    #[doc = "The first line that matched.\n\nSelects GraphQL field `lineNumber` on `SearchResult`."]
     pub async fn line_number(&self) -> Result<i64, crate::QueryError> {
         let query = self.selection.select("lineNumber");
         query.execute(&self.session).await
     }
-    #[doc = "The line content that matched.\n\nSelects GraphQL Wire_Name `matchedLines` on `SearchResult`."]
+    #[doc = "The line content that matched.\n\nSelects GraphQL field `matchedLines` on `SearchResult`."]
     pub async fn matched_lines(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("matchedLines");
         query.execute(&self.session).await
     }
-    #[doc = "Sub-match positions and content within the matched lines.\n\nSelects GraphQL Wire_Name `submatches` on `SearchResult`."]
+    #[doc = "Sub-match positions and content within the matched lines.\n\nSelects GraphQL field `submatches` on `SearchResult`."]
     pub async fn submatches(&self) -> Result<Vec<super::SearchSubmatch>, crate::QueryError> {
         let query = self.selection.select("submatches");
         let query = query.select("id");

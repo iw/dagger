@@ -214,7 +214,7 @@ fn every_rendered_operation_uses_exact_wire_names_and_its_selected_runtime_bound
             .collect::<String>();
         assert!(
             body.contains(&format!("select(\"{}\")", field.wire_name)),
-            "{} must select exact Wire_Name {}",
+            "{} must select exact wire name {}",
             field.coordinate,
             field.wire_name
         );
@@ -222,7 +222,7 @@ fn every_rendered_operation_uses_exact_wire_names_and_its_selected_runtime_bound
             assert!(
                 body.contains(&format!("arg(\"{}\"", argument.wire_name))
                     || body.contains(&format!("arg_id_input(\"{}\"", argument.wire_name)),
-                "{} must encode exact argument Wire_Name {}",
+                "{} must encode exact argument wire name {}",
                 field.coordinate,
                 argument.wire_name
             );

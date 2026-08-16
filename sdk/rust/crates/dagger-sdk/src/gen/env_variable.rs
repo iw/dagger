@@ -37,17 +37,17 @@ impl From<EnvVariable> for crate::IdInput<super::NodeClient> {
     }
 }
 impl EnvVariable {
-    #[doc = "A unique identifier for this EnvVariable.\n\nSelects GraphQL Wire_Name `id` on `EnvVariable`."]
+    #[doc = "A unique identifier for this EnvVariable.\n\nSelects GraphQL field `id` on `EnvVariable`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "The environment variable name.\n\nSelects GraphQL Wire_Name `name` on `EnvVariable`."]
+    #[doc = "The environment variable name.\n\nSelects GraphQL field `name` on `EnvVariable`."]
     pub async fn name(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("name");
         query.execute(&self.session).await
     }
-    #[doc = "The environment variable value.\n\nSelects GraphQL Wire_Name `value` on `EnvVariable`."]
+    #[doc = "The environment variable value.\n\nSelects GraphQL field `value` on `EnvVariable`."]
     pub async fn value(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("value");
         query.execute(&self.session).await

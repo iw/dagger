@@ -91,7 +91,7 @@ pub struct WrapperPlan {
 /// Structural wrapper plan below one nullability level.
 #[derive(Clone, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)]
 pub enum WrapperShape {
-    /// Exact named leaf Wire_Name.
+    /// Exact named leaf wire name.
     Named(SchemaName),
     /// Recursively projected list element.
     List(Box<WrapperPlan>),
@@ -134,7 +134,7 @@ pub enum ScalarKind {
 }
 
 impl ScalarKind {
-    /// Selects a scalar policy from an exact Wire_Name.
+    /// Selects a scalar policy from an exact wire name.
     #[must_use]
     pub fn from_name(name: &SchemaName) -> Option<Self> {
         match name.as_str() {
@@ -186,7 +186,7 @@ impl ScalarKind {
 pub enum DecodeLeaf {
     /// A built-in or handwritten scalar decoder.
     Scalar(ScalarKind),
-    /// A closed enum decoder that rejects unknown Wire_Names.
+    /// A closed enum decoder that rejects unknown wire names.
     Enum(SchemaName),
     /// A generated input-value decoder.
     Input(SchemaName),
@@ -203,7 +203,7 @@ pub enum DecodeFailure {
     NonNullViolation,
     /// A scalar value violated its exact wire representation.
     InvalidScalarWire(ScalarKind),
-    /// A closed enum received an unknown Wire_Name.
+    /// A closed enum received an unknown wire name.
     UnknownEnumValue(SchemaName),
     /// A list member failed its recursively projected decoder.
     InvalidListElement,
@@ -227,7 +227,7 @@ pub struct DecodePlan {
 pub struct ScalarProjection {
     /// Exact scalar coordinate.
     pub coordinate: SchemaCoordinate,
-    /// Exact scalar Wire_Name.
+    /// Exact scalar wire name.
     pub wire_name: SchemaName,
     /// Rust scalar policy.
     pub scalar: ScalarKind,
@@ -249,7 +249,7 @@ pub struct InterfaceImplementationProjection {
 pub struct ObjectProjection {
     /// Exact type coordinate.
     pub coordinate: SchemaCoordinate,
-    /// Exact type Wire_Name.
+    /// Exact type wire name.
     pub wire_name: SchemaName,
     /// Public Rust handle identifier.
     pub rust_name: String,
@@ -268,7 +268,7 @@ pub struct ObjectProjection {
 pub struct InterfaceProjection {
     /// Exact type coordinate.
     pub coordinate: SchemaCoordinate,
-    /// Exact type Wire_Name.
+    /// Exact type wire name.
     pub wire_name: SchemaName,
     /// Public trait identifier.
     pub trait_name: String,
@@ -289,7 +289,7 @@ pub struct InterfaceProjection {
 pub struct EnumVariantProjection {
     /// Exact canonical enum-value coordinate.
     pub coordinate: SchemaCoordinate,
-    /// Canonical Wire_Name used for encoding.
+    /// Canonical wire name used for encoding.
     pub wire_name: SchemaName,
     /// Public Rust variant identifier.
     pub rust_name: String,
@@ -301,14 +301,14 @@ pub struct EnumVariantProjection {
     pub experimental: Option<String>,
 }
 
-/// One alternate enum Wire_Name accepted during decoding.
+/// One alternate enum wire name accepted during decoding.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct EnumAliasProjection {
     /// Exact alias coordinate.
     pub coordinate: SchemaCoordinate,
-    /// Alias Wire_Name accepted during decoding.
+    /// Alias wire name accepted during decoding.
     pub wire_name: SchemaName,
-    /// Canonical sibling Wire_Name used for encoding.
+    /// Canonical sibling wire name used for encoding.
     pub canonical_wire_name: SchemaName,
     /// Rust variant shared with the canonical value.
     pub rust_name: String,
@@ -319,18 +319,18 @@ pub struct EnumAliasProjection {
 pub struct EnumProjection {
     /// Exact type coordinate.
     pub coordinate: SchemaCoordinate,
-    /// Exact enum Wire_Name.
+    /// Exact enum wire name.
     pub wire_name: SchemaName,
     /// Public Rust enum identifier.
     pub rust_name: String,
-    /// Canonical variants keyed by canonical Wire_Name.
+    /// Canonical variants keyed by canonical wire name.
     pub variants: BTreeMap<SchemaName, EnumVariantProjection>,
-    /// Decode aliases keyed by alias Wire_Name.
+    /// Decode aliases keyed by alias wire name.
     pub aliases: BTreeMap<SchemaName, EnumAliasProjection>,
 }
 
 impl EnumProjection {
-    /// Resolves a canonical or aliased Wire_Name to its Rust variant.
+    /// Resolves a canonical or aliased wire name to its Rust variant.
     #[must_use]
     pub fn decode_variant(&self, wire_name: &str) -> Option<&EnumVariantProjection> {
         if let Some(variant) = self
@@ -352,7 +352,7 @@ impl EnumProjection {
 pub struct InputFieldProjection {
     /// Exact field coordinate.
     pub coordinate: SchemaCoordinate,
-    /// Exact field Wire_Name used by serialization.
+    /// Exact field wire name used by serialization.
     pub wire_name: SchemaName,
     /// Public Rust field identifier.
     pub rust_name: String,
@@ -373,7 +373,7 @@ pub struct InputFieldProjection {
 pub struct InputObjectProjection {
     /// Exact type coordinate.
     pub coordinate: SchemaCoordinate,
-    /// Exact input-object Wire_Name.
+    /// Exact input-object wire name.
     pub wire_name: SchemaName,
     /// Public Rust type identifier.
     pub rust_name: String,
@@ -381,7 +381,7 @@ pub struct InputObjectProjection {
     pub module_name: String,
     /// Public constructor identifier.
     pub constructor_name: String,
-    /// Fields in exact Wire_Name order.
+    /// Fields in exact wire name order.
     pub fields: BTreeMap<SchemaName, InputFieldProjection>,
 }
 
@@ -390,7 +390,7 @@ pub struct InputObjectProjection {
 pub struct TargetPrivateTypeProjection {
     /// Exact type coordinate.
     pub coordinate: SchemaCoordinate,
-    /// Exact target-private Wire_Name.
+    /// Exact target-private wire name.
     pub wire_name: SchemaName,
     /// Exact field coordinates contained by the no-symbol policy.
     pub fields: BTreeSet<SchemaCoordinate>,

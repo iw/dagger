@@ -37,42 +37,42 @@ impl From<HealthcheckConfig> for crate::IdInput<super::NodeClient> {
     }
 }
 impl HealthcheckConfig {
-    #[doc = "Healthcheck command arguments.\n\nSelects GraphQL Wire_Name `args` on `HealthcheckConfig`."]
+    #[doc = "Healthcheck command arguments.\n\nSelects GraphQL field `args` on `HealthcheckConfig`."]
     pub async fn args(&self) -> Result<Vec<String>, crate::QueryError> {
         let query = self.selection.select("args");
         query.execute(&self.session).await
     }
-    #[doc = "A unique identifier for this HealthcheckConfig.\n\nSelects GraphQL Wire_Name `id` on `HealthcheckConfig`."]
+    #[doc = "A unique identifier for this HealthcheckConfig.\n\nSelects GraphQL field `id` on `HealthcheckConfig`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "Interval between running healthcheck. Example:30s\n\nSelects GraphQL Wire_Name `interval` on `HealthcheckConfig`."]
+    #[doc = "Interval between running healthcheck. Example:30s\n\nSelects GraphQL field `interval` on `HealthcheckConfig`."]
     pub async fn interval(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("interval");
         query.execute(&self.session).await
     }
-    #[doc = "The maximum number of consecutive failures before the container is marked as unhealthy. Example:3\n\nSelects GraphQL Wire_Name `retries` on `HealthcheckConfig`."]
+    #[doc = "The maximum number of consecutive failures before the container is marked as unhealthy. Example:3\n\nSelects GraphQL field `retries` on `HealthcheckConfig`."]
     pub async fn retries(&self) -> Result<i64, crate::QueryError> {
         let query = self.selection.select("retries");
         query.execute(&self.session).await
     }
-    #[doc = "Healthcheck command is a shell command.\n\nSelects GraphQL Wire_Name `shell` on `HealthcheckConfig`."]
+    #[doc = "Healthcheck command is a shell command.\n\nSelects GraphQL field `shell` on `HealthcheckConfig`."]
     pub async fn shell(&self) -> Result<bool, crate::QueryError> {
         let query = self.selection.select("shell");
         query.execute(&self.session).await
     }
-    #[doc = "StartInterval configures the duration between checks during the startup phase. Example:5s\n\nSelects GraphQL Wire_Name `startInterval` on `HealthcheckConfig`."]
+    #[doc = "StartInterval configures the duration between checks during the startup phase. Example:5s\n\nSelects GraphQL field `startInterval` on `HealthcheckConfig`."]
     pub async fn start_interval(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("startInterval");
         query.execute(&self.session).await
     }
-    #[doc = "StartPeriod allows for failures during this initial startup period which do not count towards maximum number of retries. Example:0s\n\nSelects GraphQL Wire_Name `startPeriod` on `HealthcheckConfig`."]
+    #[doc = "StartPeriod allows for failures during this initial startup period which do not count towards maximum number of retries. Example:0s\n\nSelects GraphQL field `startPeriod` on `HealthcheckConfig`."]
     pub async fn start_period(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("startPeriod");
         query.execute(&self.session).await
     }
-    #[doc = "Healthcheck timeout. Example:3s\n\nSelects GraphQL Wire_Name `timeout` on `HealthcheckConfig`."]
+    #[doc = "Healthcheck timeout. Example:3s\n\nSelects GraphQL field `timeout` on `HealthcheckConfig`."]
     pub async fn timeout(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("timeout");
         query.execute(&self.session).await
