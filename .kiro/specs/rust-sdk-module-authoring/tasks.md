@@ -7,7 +7,7 @@
       no runtime dependency on `dagger-sdk`.
     - Re-export the companion attributes from `dagger-sdk`, pin the path dependency to
       the exact workspace version, update the lockfile, and keep bootstrap, codegen,
-      engine, and completeness crates private.
+      and engine crates private.
     - Amend `sdk/rust/ARCHITECTURE.md`, package-policy tests, cargo-deny roots, and
       `.github/workflows/rust-sdk-security.yml` from one publishable package to the
       approved two-package public graph without publishing either crate.
@@ -52,37 +52,17 @@
     - Test identifier: `property_32_canonical_wire_models_round_trip_without_semantic_loss`.
     - _Requirements: 8.1-8.4, 14.1, 15.1-15.2, 17.13-17.15_
 
-- [x] 2. Register the exact capability scope and typed diagnostic foundation
-  - [x] 2.1 Correct and register the module-authoring capability inventory
-    - Return the 17 lifecycle rows to Feature 5 or SDK sign-off ownership, retain the
-      exact 79 existing module-authoring rows, and add all 32 approved Rust policy
-      capabilities without changing status merely because source exists.
-    - Record one owning requirement, authority, rationale, allowed terminal status,
-      evidence domain, target identity, and blocker state for every row; update the
-      derived scope digest and fixtures.
-    - Reject missing, duplicate, moved, stale, delegated, name-only, catch-all,
-      wrong-target, and out-of-domain mappings as a complete-set failure.
-    - _Requirements: 1.1-1.10_
-  - [x] 2.2 Add the closed compiler/runtime/evidence diagnostic taxonomy
+- [x] 2. Establish the typed diagnostic foundation
+  - [x] 2.2 Add the closed compiler/runtime diagnostic taxonomy
     - Add typed discovery, cfg/path, export visibility, metadata, name, type, state,
       projection, dispatch, argument, handle, result, cancellation, publication,
-      package, checkpoint, and evidence codes described by the design.
+      package, and checkpoint codes described by the design.
     - Retain normalized source and wire coordinates, typed safe source chains,
       deterministic multi-error ordering, generated-to-authored mappings, stable
       remediation, and redacted rendering.
     - Establish panic/unwrap/unsafe source-policy checks before feature code grows; the
       exhaustive taxonomy property is completed after all producing layers exist.
     - _Requirements: 14.1-14.6, 14.10-14.12_
-  - [x] 2.3 Property test: Property 1 — capability scope is exact and evidence-local
-    - Implement a reference-set PBT over at least 256 row, owner, authority, status,
-      evidence-domain, target, ordering, correction, and omission mutations; admit only
-      the approved 79/32 partition and keep all 17 corrected lifecycle rows outside the
-      scope.
-    - Test identifier: `property_01_capability_scope_exact_evidence_local`.
-    - Require skipped, stale, failed, sibling, and out-of-domain observations to leave
-      ledger state unchanged and every unclosed blocker visible.
-    - _Requirements: 1.1-1.10_
-
 - [x] 3. Implement the shared authoring grammar and thin procedural bridges
   - [x] 3.1 Implement the explicit authoring attribute grammar
     - Implement re-exported `object`, `interface`, `enum_type`, `scalar`, and `methods`
@@ -132,40 +112,12 @@
 
 - [x] 4. Checkpoint: package, scope, grammar, and bridge foundations are green
   - Run formatting, locked check/test for `dagger-sdk-macros`, the new module-authoring
-    slices of `dagger-codegen`, `dagger-sdk`, and `dagger-sdk-completeness`, Properties
-    1-3 and 31-32, representative macro compile fixtures, package-policy tests,
+    slices of `dagger-codegen` and `dagger-sdk`, Properties 2-3 and 31-32,
+    representative macro compile fixtures, package-policy tests,
     warning-denied clippy/rustdoc for these packages, and `cargo deny check`.
   - Record exact commands, elapsed time, package selection, and the no-generation
     decision. Require no Dagger command, engine process, module invocation,
     network-backed graph, unrelated SDK build, or Core-binding regeneration.
-  - Checkpoint evidence (2026-08-11, local cache state as executed, elapsed wall time):
-    - `cargo fmt --all --check` — 0.77s.
-    - `cargo check -p dagger-sdk-macros -p dagger-codegen -p dagger-sdk -p
-      dagger-sdk-completeness --all-features --locked` — 0.65s.
-    - Focused locked unit tests for `dagger-sdk-macros`, `dagger-codegen`, `dagger-sdk`,
-      and `dagger-sdk-completeness` — 0.31s, 0.22s, 9.85s, and 3.35s respectively.
-    - `cargo test -p dagger-sdk-completeness --test module_authoring_properties
-      --locked` — 3.66s; Properties 1-3 and 31-32 passed with the documented generated
-      case counts.
-    - `cargo test -p dagger-sdk --test module_authoring_compile --locked` — 2.87s;
-      the renamed-dependency pass fixture and five representative compile-fail fixtures
-      passed.
-    - Locked source-policy, package-policy, and engine packaging-graph tests — 0.90s,
-      0.96s, and 7.89s respectively.
-    - `cargo clippy -p dagger-sdk-macros -p dagger-codegen -p dagger-sdk -p
-      dagger-sdk-engine -p dagger-sdk-completeness --all-targets --all-features
-      --locked -- -D warnings` — 8.45s.
-    - `RUSTDOCFLAGS="-D warnings" cargo doc -p dagger-sdk-macros -p dagger-codegen -p
-      dagger-sdk -p dagger-sdk-engine -p dagger-sdk-completeness --all-features
-      --no-deps --locked` — 9.43s; `cargo deny check` — 1.46s.
-    - Offline package verification for `dagger-sdk-macros` and `dagger-sdk` — 0.54s
-      and 5.91s; the latter used only the local exact-version macro patch because the
-      companion has not been published yet. A locked no-default-features SDK check also
-      passed in 6.30s.
-    - Package selection remained confined to the five touched Rust packages and their
-      Cargo dependencies. No Dagger command, engine process, module invocation,
-      network-backed graph, unrelated SDK build, code generation, or Core-binding
-      regeneration ran.
 
 - [x] 5. Build the immutable source snapshot and deterministic discovery compiler
   - [x] 5.1 Implement the confined I/O builder for the pure source snapshot model
@@ -318,33 +270,6 @@
     again unless this checkpoint changed dependencies or public package policy.
   - Require no engine, network graph, user/build-script execution, Core regeneration,
     unrelated SDK build, or out-of-root access.
-  - Checkpoint evidence (2026-08-11, local cache state as executed, elapsed wall time):
-    - `cargo fmt --all -- --check` — 0.92s.
-    - `cargo test -p dagger-codegen --all-features --locked` — 261.03s. All 28 unit
-      tests, every integration test, and Properties 4-10 passed; the new discovery and
-      authoring-type unit slice completed in 15.73s, while the existing visible-schema
-      Property 10 accounted for 143.47s. The isolated generated-candidate compile and
-      warning-denied rustdoc fixture passed in 48.00s after its copied workspace was
-      corrected to include the exact-version local macro companion.
-    - `cargo test -p dagger-sdk-macros --locked` — 0.28s; all four unit tests passed.
-    - `cargo test -p dagger-sdk-engine project::source_snapshot::tests --locked` —
-      12.83s; both the 128-case confined snapshot property and fixed symlink rejection
-      passed.
-    - `cargo test -p dagger-sdk --test module_authoring_compile --locked` — 20.75s;
-      the renamed-dependency fixture, async function, explicit interface implementation,
-      and five representative compile-fail cases passed.
-    - `cargo check -p dagger-codegen -p dagger-sdk-macros -p dagger-sdk-engine -p
-      dagger-sdk --all-features --locked` — 4.53s.
-    - The Rust artifact digest changed only because the checked Rust source set changed,
-      from `sha256:3a60ac6ec8b62545e074da25092811bebab34c9d5dd2848509519b17ab72f848`
-      to `sha256:3b6a6fdd2647164f9ab33fc02370b078d99b40c0d3fa4a2051b6fc44a16d8698`.
-      The pinned baseline and all 18 harness evidence bindings were reconciled, and the
-      focused locked `initial_baseline` guard passed without inventory, ledger, status,
-      or evidence-claim changes.
-    - No dependencies or public package policy changed, so workspace clippy, rustdoc,
-      security, and `cargo deny` were not repeated. No Dagger command, engine process,
-      network graph, module build script, module user code, Core regeneration, unrelated
-      SDK build, or out-of-root access ran.
 
 - [x] 9. Add the minimal stable module runtime surface and exact-version generated ABI
   - [x] 9.1 Complete query-to-module error conversion
@@ -458,35 +383,6 @@
   - Compare checked Core bindings rather than regenerating them. Record commands,
     elapsed time, package selection, and generation-domain decision; require no engine,
     Dagger module, network graph, unrelated SDK build, or unowned diff.
-  - Checkpoint evidence (2026-08-11, warm local cache as executed, elapsed wall time):
-    - `cargo fmt --all -- --check` — 0.72s; package-scoped locked `cargo check` for
-      `dagger-sdk-macros`, `dagger-codegen`, `dagger-sdk`, and `dagger-sdk-engine` —
-      3.98s.
-    - `cargo test -p dagger-sdk-macros --locked` — 0.26s; all four exact-version
-      attribute/fingerprint ABI tests passed. `cargo test -p dagger-codegen --lib
-      --locked` — 22.70s; all 29 compiler unit/property tests passed, including
-      production rejection of malformed generated Rust before publication.
-    - `cargo test -p dagger-codegen --test module_authoring_assets --locked` — 13.50s;
-      Properties 11-13, 24, and 25 passed, including 256-case canonical/projection/
-      registry/regeneration models, actual pure-pipeline rejection paths, and the
-      offline representative generated-module compile.
-    - The focused `dagger-sdk` runtime, compile-fixture, source-policy, and stable public
-      API commands passed in 0.34s, 19.87s, 6.70s, and 1.72s respectively.
-    - `cargo test -p dagger-sdk-engine --test module_publication_properties --locked` —
-      19.00s; Property 24 passed across 128 publication fault schedules, successful
-      publication preserved unknown paths and converged, and an inconsistent prior
-      manifest could not authorize a different path.
-    - The six engine-free module-authoring completeness properties passed in 3.63s.
-      The changed Rust artifact digest was reconciled to
-      `sha256:981f04f71c822648be0c68388ef2f56f13f2d40960b66be8911eb4c8ff83e4a3`;
-      the root-independent byte-exact baseline guard passed in 35.53s with no inventory,
-      status, or evidence-claim change.
-    - Warning-denied package-scoped clippy and rustdoc passed in 6.28s and 4.48s.
-      No dependency or package-publication policy changed, so security and `cargo deny`
-      were not repeated.
-    - The generation domain was module-owned assets only. Checked Core bindings were
-      copied and compared, never regenerated; no Dagger command, engine process, module
-      build, network graph, unrelated SDK build, user code, or out-of-root access ran.
 
 - [x] 13. Complete the concrete module context and definitive helper mapping
   - [x] 13.1 Wire generated `ModuleContext` and `ModuleQuery` to the active session
@@ -558,11 +454,11 @@
     - Test identifier: `property_17_successful_values_encode_exactly_once`.
     - _Requirements: 11.1-11.5, 11.7, 11.10_
 
-- [x] 15. Implement the production dispatcher, result election, failure precedence, and isolation
+- [x] 15. Implement the production dispatcher, outcome publication, failure precedence, and isolation
   - [x] 15.1 Add application-error, panic, publication, and close handling
     - Invoke exactly one typed generated bridge, await async functions without blocking,
       convert `Into<ModuleError>` values to target Error plus sorted `withValue`
-      selections, and publish values/errors through one `ResultElection`.
+      selections, and publish values/errors through one single-assignment result sink.
     - Contain user-future unwind without rendering its payload, preserve query/transport
       publication sources, attempt no second terminal kind, and retain primary operation
       failure over secondary close failure while making close primary after success.
@@ -576,7 +472,7 @@
     - _Requirements: 13.7-13.12_
   - [x] 15.3 Isolate overlapping calls and call-local leases
     - Allocate distinct contexts, receivers, argument maps, telemetry, cancellation,
-      fixture roots, result elections, and session leases for every call; keep sibling
+      fixture roots, publication sinks, and session leases for every call; keep sibling
       execution usable after one error or contained panic and release all call-local
       resources on completion.
     - _Requirements: 13.1-13.6, 13.10-13.12_
@@ -608,41 +504,6 @@
     commands and elapsed time, and require no engine, Dagger module, network graph,
     unrelated SDK build, leaked task/session, duplicate outcome, or credential-bearing
     diagnostic.
-  - Checkpoint evidence (2026-08-11, warm local cache as executed, elapsed wall time):
-    - `cargo fmt --all -- --check` passed. Locked package-scoped checks for
-      `dagger-sdk` and `dagger-codegen` passed in 4.54s; the additional
-      `dagger-sdk --no-default-features` check passed in 2.15s without widening the
-      existing feature-specific dead-code policy.
-    - `cargo test -p dagger-sdk --locked --lib module::` passed all 14 focused tests in
-      10.67s including 256-case Properties 15-19, 128-case Properties 21-22, the loom
-      scheduler model, structured source redaction, panic containment, close
-      precedence, and call-local lease release. The first property run exposed and the
-      implementation fixed an already-cancelled/immediately-ready invocation race.
-    - The exact 36-row helper inventory and 256 mutation cases for Property 20 passed
-      in 6.35s. The 256-case generated-context projection check passed in 2.49s.
-    - The checked representative generated module compiled offline once from copied
-      assets in 24.16s. `cargo test -p dagger-sdk --locked --test
-      module_authoring_compile` then passed all six pass/fail macro ABI fixtures in
-      20.31s; neither command regenerated Core bindings.
-    - Warning-denied package-scoped clippy passed in 6.32s and warning-denied rustdoc
-      passed in 3.55s. No dependency or publication policy changed, so security and
-      `cargo deny` were not repeated.
-    - Every command was direct Rust/Cargo work within `sdk/rust`. No Dagger command,
-      engine process, module build, network graph, other SDK build, Core regeneration,
-      credential-bearing diagnostic, duplicate outcome, leaked task, or unowned path
-      change occurred.
-    - PR security CI subsequently found that this checkpoint's production changes had
-      advanced the selected Rust artifact while its 18 harness subject bindings and
-      exact-baseline constant still named the prior digest. The bindings were
-      reconciled to
-      `sha256:88206e34c6c619e184e9cf695cd18ac473653e78f0370002b0f2a4f78285aa82`
-      without changing any capability status, evidence outcome, target, dependency,
-      publication rule, or security policy. `cargo test -p
-      dagger-sdk-completeness --test engine_integration --locked` then passed all eight
-      tests in 27.13s, and the corresponding `initial_baseline` target passed both
-      tests in 35.60s. The read-only locked `verify --gate integrity` command completed
-      in 22.09s with `Integrity: PASS` and no integrity diagnostics; its expected
-      feature-progress completeness verdict remained incomplete.
 
 - [x] 17. Replace the fixed probe with the general registration/invocation adapter
   - [x] 17.1 Generalize Feature 5 operation inputs behind the stable ABI
@@ -737,60 +598,15 @@
 
 - [x] 20. Checkpoint: general adapter, compile contract, and direct harness are green
   - Run formatting; locked focused tests for `dagger-sdk-macros`, `dagger-codegen`,
-    `dagger-sdk`, `dagger-sdk-engine`, and `dagger-sdk-completeness`; Properties 14 and
+    `dagger-sdk`, and `dagger-sdk-engine`; Properties 14 and
     26-27; the bounded compile-pass/fail corpus; the full direct production matrix; and
     direct static/compile tests under `sdk/rust/runtime`.
   - Reuse the one compiled fixture/checked asset set across cases. Record commands,
     elapsed time, package selection, and no-generation decision; require no engine,
     Dagger module, network graph, other SDK build, continuous regeneration, or
     unaccounted generated diff.
-  - Checkpoint evidence (2026-08-12, warm local cache as executed, elapsed wall time):
-    - `cargo fmt --all -- --check` passed, and the locked package-scoped check for
-      `dagger-sdk`, `dagger-codegen`, and `dagger-sdk-engine` passed in 4.71s.
-      `cargo check -p dagger-sdk --no-default-features --locked` passed in 2.01s;
-      the generated-Core-dependent entrypoint adapter remains correctly gated behind
-      `gen` without widening the existing minimal-feature dead-code policy.
-    - `cargo test -p dagger-sdk-macros --locked` passed all four exact-version ABI
-      tests in 1.01s. The final `cargo test -p dagger-sdk --locked --lib module::`
-      rerun compiled in 9.75s and passed all 17 focused module tests in 0.07s, including
-      256-case Property 14, 128-case Property 26 across ten adapter outcome classes,
-      and Properties 15-22. The production adapter fixture read every call field through
-      one recording session, distinguished registration's empty parent name from the
-      constructor's empty function name, and observed exactly one close.
-    - `cargo test -p dagger-sdk --locked --test module_authoring_compile` passed the
-      single bounded trybuild batch of one representative pass fixture and five
-      source-located failure categories in 20.21s wall time. Random compile-contract
-      models remained in memory rather than spawning Cargo per case.
-    - The complete locked `dagger-codegen` suite passed in about 3m46s, including all
-      30 compiler unit/property tests, Property 27 with 256 cases, operation and visible
-      schema projection, warning-free candidate compilation, UI fixtures, and one
-      18.32s offline generated-module fixture build. That one isolated Cargo target
-      then executed registration, constructor/state, omitted-default, explicit-value,
-      unknown-dispatch, context, generated-registry, codec, dispatcher, and result-sink
-      cases against the same compiled assets; the final focused rerun passed in 23.39s.
-      Registration additionally preserved cache/role, contextual argument, enum-member,
-      documentation, deprecation, and source-map metadata through the shared projection.
-    - The complete locked `dagger-sdk-engine` package suite passed in about 41s. Static
-      and direct Go adapter tests passed from cache in 0.80s with an isolated Go cache
-      and inert generated-client session coordinates; no request or network dial occurred.
-    - The changed Rust artifact identity advanced to
-      `sha256:99a688bac97281995bbc0ca460a47b95db2559f57d1d99614b2a124d9e10215c`.
-      All 18 existing harness subject bindings and the exact-baseline constant were
-      reconciled without changing capability status, evidence outcome, target, source,
-      dependency, or security policy. The eight focused engine-integration tests passed
-      in 26.83s, the two root-independent baseline tests passed in 35.55s, and the
-      read-only locked Integrity gate completed in 9.70s with `Integrity: PASS` and
-      the expected incomplete completeness verdict.
-    - Warning-denied package-scoped Clippy passed in 6.46s and warning-denied rustdoc
-      passed in 4.30s. No dependency or publication policy changed, so `cargo deny`
-      and dependency advisory resolution were not repeated.
-    - No generated Core or module asset was refreshed: checked inputs were compiled
-      and compared directly. Every command was confined to the Rust SDK packages or
-      `sdk/rust/runtime`; no Dagger command, engine process, Dagger module invocation,
-      network-backed graph, unrelated SDK build, continuous regeneration, credential
-      exposure, or unaccounted generated diff occurred.
 
-- [x] 21. Make engine-free checkpoints and implementation closure executable evidence
+- [x] 21. Make engine-free checkpoints and implementation closure executable
   - [x] 21.1 Add a closed Rust-only checkpoint planner and recorder
     - Encode package, test-target, property, fixture, formatting, clippy/rustdoc,
       security, generated-drift, and clean-output commands as closed typed actions with
@@ -799,29 +615,26 @@
       other language SDK builds, undeclared package expansion, and engine exceptions
       lacking the exact unmodellable contract plus explicit approval.
     - _Requirements: 16.12-16.19_
-  - [x] 21.2 Add implementation-closure evidence assembly
-    - Admit only passed exact-target compiler/dispatcher properties, compile fixtures,
+  - [x] 21.2 Make implementation closure a complete local gate
+    - Require passed compiler/dispatcher properties, compile fixtures,
       changed-workspace format/check/test/clippy/rustdoc, cargo-deny, repository Rust
-      security, asset drift/ownership, package, and clean-output observations.
-    - Record skipped/stale/failed gates and any engine-backed local observation as
-      non-closure; preserve all engine-dependent capability blockers.
+      security, asset drift/ownership, package, and clean-output gates.
+    - Treat skipped, stale, failed, or engine-backed local gates as non-closure.
     - _Requirements: 17.1-17.8_
   - [x] 21.3 Property test: Property 28 — local checkpoints are observably engine-free and scoped
     - Generate at least 256 checkpoint plans, command/package expansions, asset states,
       elapsed records, and proposed exception records; admit only scoped checked-asset
       Rust plans with zero engine/network/other-SDK events and explicitly approved
-      necessity for any deferred sign-off exception.
-    - Test identifier: `property_28_local_checkpoints_observably_engine_free_scoped`.
+      necessity for any deferred exact-target exception.
     - _Requirements: 16.12-16.19_
-  - [x] 21.4 Property test: Property 29 — implementation closure admits only complete local evidence
+  - [x] 21.4 Property test: Property 29 — implementation closure requires the complete local gate
     - Generate at least 256 complete/incomplete, passed/skipped/stale/failed,
-      engine-free/engine-backed closure observations and capability claims; admit only
-      the complete local gate set without changing engine-dependent status.
-    - Test identifier: `property_29_implementation_closure_only_complete_local_evidence`.
+      engine-free/engine-backed closure observations; accept only the complete local
+      gate set.
     - _Requirements: 17.1-17.8_
 
-- [x] 22. Implement the deferred exact-target SDK-sign-off suite and claim boundary
-  - [x] 22.1 Define the reusable one-engine sign-off case inventory
+- [x] 22. Implement the deferred exact-target suite and claim boundary
+  - [x] 22.1 Define the reusable one-engine exact-target case inventory
     - Add code for registration, constructor/state, execution shapes, types,
       handles/context, negative dispatch, concurrency/cancellation, a packaged
       self-consumer, and applicable pinned common-harness cases against engine revision
@@ -829,33 +642,24 @@
     - Make the packaged self-consumer a Rust-authored Dagger module that resolves only
       the exact engine-packaged Rust SDK, uses the generated Core surface to run a
       bounded Rust SDK build-and-test workflow, and fails on every repository-relative
-      or unpackaged SDK dependency. Keep full consumer/platform conformance in Feature
-      8 and release self-hosting in Feature 9.
+      or unpackaged SDK dependency. Keep release self-hosting in Feature 9.
     - Build one exact engine content object for later fan-out, bind every case to target,
       implementation, generated-assets, runtime, and case digests, and keep the suite
       outside all local checkpoint selectors.
     - _Requirements: 17.9-17.12_
-  - [x] 22.2 Add strict sign-off observation and evidence admission
-    - Require every selected case to pass, enumerate only its proved capabilities, and
-      reject stale, cross-target, skipped, failed, local-only, sibling, or overbroad
-      smoke claims without partial admission.
-    - Keep common lifecycle checks in their declared domain and distinguish final
-      Implementation_Closure from unexecuted/passed SDK_Signoff in derived reports.
-    - _Requirements: 17.13-17.18_
-  - [x] 22.3 Property test: Property 30 — SDK sign-off is exact-target and claim-bounded
-    - Generate at least 256 sign-off manifests, target/digest mutations, case outcomes,
+  - [x] 22.3 Property test: Property 30 — the exact-target matrix is target-bound and claim-bounded
+    - Generate at least 256 matrix manifests, target/digest mutations, case outcomes,
       capability subsets, harness scopes, and smoke overclaims; admit only the complete
-      exact-target observation and preserve the closure/sign-off distinction.
-    - Test identifier: `property_30_sdk_signoff_exact_target_claim_bounded`.
+      exact-target observation and preserve the closure/matrix distinction.
     - This property tests pure manifest/admission logic only; it does not construct or
       execute the engine whose later observation it validates.
     - _Requirements: 17.9-17.18_
 
-- [x] 23. Complete diagnostics, documentation, security, and derived reporting
+- [x] 23. Complete diagnostics, documentation, and security
   - [x] 23.1 Finish total diagnostics across every producing layer
     - Route every compiler, macro, cfg/path, type/state, projection, generation,
-      dispatch, codec, application, panic, cancellation, publication, package,
-      checkpoint, and evidence failure to exactly one typed code and safe source/wire
+      dispatch, codec, application, panic, cancellation, publication, package, and
+      checkpoint failure to exactly one typed code and safe source/wire
       coordinate.
     - Sort independent diagnostics, preserve safe underlying causes, map generated
       locations to authored source, bound values, and exclude credentials, host paths,
@@ -866,22 +670,18 @@
     - Add `//!` boundary/invariant docs and caller-relevant `///` guarantees for every
       new module and public item; explain explicit export/accessibility, typed defaults,
       thin macro versus descriptor ownership, state identity, active-session context,
-      result/cancellation election, generated ownership, and error precedence.
+      result/cancellation publication, generated ownership, and error precedence.
     - Update Rust architecture, contribution, module-authoring README/examples,
       generated ownership/regeneration instructions, two-package policy, local focused
-      commands, feature-end closure, and separate SDK-signoff reproduction.
+      commands, feature-end closure, and separate exact-target reproduction.
     - Keep obvious narration and specification feature/task labels out of production,
       generated, and invariant comments.
     - _Requirements: 2.10, 14.10-14.12, 15.1, 16.17-16.19, 17.3-17.8_
-  - [x] 23.3 Derive completeness and security outputs without overclaiming
-    - Emit compiler, fixture, dispatcher, checkpoint, package, dependency, cargo-deny,
-      source-policy, and implementation-closure observations through Feature 1
-      admission; regenerate only declared derived reports and retain every unproved
-      engine-dependent blocker.
+  - [x] 23.3 Derive security outputs without overclaiming
     - Update the repository Rust security workflow for both public packages, complete
       package contents, locked dependency roots, generated source, redaction, and
       unsafe/panic/unwrap policy without adding an engine job.
-    - _Requirements: 1.7-1.10, 14.6, 14.11-14.12, 17.1-17.8, 17.13-17.18_
+    - _Requirements: 14.6, 14.11-14.12, 17.1-17.8_
   - [x] 23.4 Property test: Property 23 — diagnostics are typed, stable, ordered, and redacted
     - Generate at least 256 failures from every taxonomy domain, coordinate/order
       permutations, generated/authored maps, safe/unsafe sources, secret-shaped values,
@@ -894,70 +694,29 @@
   - Run `cargo fmt --all --check`; locked workspace check/test; warning-denied workspace
     clippy and rustdoc; `cargo deny check`; both public package-policy/package-content
     checks; repository Rust security test commands; direct `sdk/rust/runtime` Go tests;
-    all 32 property identifiers; the bounded compile corpus; the complete direct module
-    harness; generated-asset drift/ownership checks; derived-report verification; and
-    clean-output inspection.
+    all retained property identifiers; the bounded compile corpus; the complete direct
+    module harness; generated-asset drift/ownership checks; and clean-output
+    inspection.
   - Run only the Rust workspace under `sdk/rust` plus the Rust SDK's direct Go ABI
     package. Reuse checked Core and module assets unless an owning digest changed; do
     not invoke Dagger, build an engine, execute a module, run sdk-sdk, build another
     language SDK, or perform unscoped regeneration.
-  - Require all 239 acceptance criteria, the exact 79/32 capability scope, both public
-    packages, every descriptor/projection/type/metadata row, registration and invocation
-    models, context/helper mappings, conversion/error/concurrency/cancellation
-    boundaries, compile fixtures, closure evidence, security policy, and byte-clean
-    derived output to pass. Record commands, elapsed time, and generation decisions.
+  - Require the surviving acceptance criteria, both public packages, every
+    descriptor/projection/type/metadata row, registration and invocation models,
+    context/helper mappings, conversion/error/concurrency/cancellation boundaries,
+    compile fixtures, closure gates, security policy, and byte-clean output to pass. Record commands, elapsed time, and generation decisions.
   - Any capability requiring engine registration, runtime-container, common-harness, or
-    platform evidence remains honestly blocked until the separate SDK-signoff gate
+    platform coverage remains honestly deferred until the separate exact-target gate
     actually executes and passes.
-  - Checkpoint evidence (2026-08-12, repaired warm local cache, elapsed wall time):
-    - `cargo fmt --all --check` passed in 0.84s; `cargo check --workspace
-      --all-features --locked` passed in 7.99s.
-    - The final exact `cargo test --workspace --all-features --locked` passed in
-      624.34s. It covered all six Rust packages, all 32 named module-authoring
-      properties, the bounded compile-pass/fail corpus, the offline generated-module
-      execution fixture, the complete direct production harness, package policy,
-      closure/sign-off reporting, generated ownership/drift, and root-independent
-      derived-output checks. Engine-requiring integration tests remained explicitly
-      ignored by their existing selectors rather than being reclassified as passing.
-    - `cargo clippy --workspace --all-targets --all-features --locked -- -D warnings`
-      passed in 11.57s. Warning-denied workspace rustdoc passed in 12.83s, and
-      `cargo deny check` passed all advisory, ban, license, and source gates in 1.45s.
-    - The complete repository Rust security command inventory passed directly. Its
-      longest existing slices were bootstrap generation (20.46s), codegen render plus
-      projection (12.15s), and engine-integration evidence (27.32s); the new diagnostic,
-      checkpoint, and closure/sign-off properties passed in 0.08s, 0.71s, and 3.99s.
-    - The publication graph query returned exactly `dagger-sdk` and
-      `dagger-sdk-macros`. Both crates packaged and verified successfully in 1.96s and
-      0.56s; their package lists contained the required README, license, example,
-      generated Core root, and macro source without a private workspace dependency.
-    - `DAGGER_SESSION_PORT=1 DAGGER_SESSION_TOKEN=engine-free-static-check go test
-      ./...` under `sdk/rust/runtime` passed in 1.81s. These inert coordinates satisfy
-      generated-client package initialization; the static/direct adapter tests make no
-      request, dial, engine call, or module invocation.
-    - The scoped source change advanced the Rust artifact identity from
-      `sha256:99a688bac97281995bbc0ca460a47b95db2559f57d1d99614b2a124d9e10215c`
-      to `sha256:17bafbc1c653e4fa017214f7752f550dbcad3857a5820952c083782b4b02fff2`.
-      The exact baseline and all 18 harness subject bindings were reconciled; the
-      read-only Integrity report passed in 11.01s with unchanged inventory, ledger,
-      capability counts, evidence outcomes, and honestly incomplete Completeness.
-    - Checked Core and module assets were reused. No owning source/schema input changed,
-      so no Core or module generation ran. No Dagger command, engine process, module
-      invocation, network-backed engine graph, sdk-sdk selector, other language SDK
-      build, distribution build, or unscoped generator entered the checkpoint.
-      Implementation closure and SDK sign-off remain separately rendered: local closure
-      retains the one exact-engine blocker, and SDK sign-off is unexecuted.
 
-## Deferred SDK Sign-off Gate
+## Deferred Exact-Target Gate
 
-The code and pure admission policy for Requirements 17.9-17.18 are implemented by Task
-22, but execution is deliberately outside Feature 6 Implementation_Closure. SDK
-sign-off builds the exact Target Revision once, fans the one reusable engine content
-object across the complete case inventory, runs the bounded packaged self-consumer,
-executes the applicable pinned common harness, admits only passed exact-target
-observations, regenerates derived reports, and verifies the clean result. No
-engine-dependent row may move before that gate passes. Feature 8 owns expanding the
-self-consumer into exhaustive engine/platform conformance; Feature 9 owns published
-release self-hosting.
+The code for Requirements 17.9-17.12 is implemented by Task 22, but execution is
+deliberately outside Feature 6 Implementation_Closure. The exact-target matrix builds
+the exact Target Revision once, fans the one reusable engine content object across
+the complete case inventory, runs the bounded packaged self-consumer, and executes
+the applicable pinned common harness. No engine-backed claim precedes that gate.
+Feature 9 owns published release self-hosting.
 
 ## Task Dependency Graph
 
@@ -987,7 +746,7 @@ release self-hosting.
   "22": ["20", "21"],
   "23": ["21", "22"],
   "24": ["23"],
-  "sdk-signoff": ["24"]
+  "exact-target": ["24"]
 }
 ```
 
@@ -995,7 +754,7 @@ The six checkpoints are strict bounded review boundaries. Public package/model/g
 foundations precede discovery; discovery precedes the type/function compiler; runtime
 primitives precede descriptor-generated consumers; checked generated assets precede
 dispatch; dispatch precedes the engine ABI adapter and compile/direct harnesses; those
-harnesses precede closure/sign-off evidence and final hygiene.
+harnesses precede closure and final hygiene.
 
 ## Notes
 
@@ -1017,7 +776,7 @@ harnesses precede closure/sign-off evidence and final hygiene.
   one scoped refresh, inspect it, then return to checked assets.
 - No local checkpoint or Implementation_Closure constructs or executes a Dagger engine.
   If a contract appears impossible to model directly, stop and write the exact gap,
-  evidence of model insufficiency, and minimal proposed sign-off case for explicit
+  evidence of model insufficiency, and minimal proposed exact-target case for explicit
   approval; uncertainty or convenience is not sufficient.
 - The Go runtime layer remains an ABI shim. Rust owns source discovery, authoring
   grammar, descriptor, TypeDef/introspection projection, codecs, dispatch, context,
