@@ -3,7 +3,7 @@ name = "dagger-sdk"
 description = "A dagger sdk for rust, written in rust"
 publish = true
 readme = "README.md"
-include = ["/src/**", "/examples/**", "/README.md", "/LICENSE"]
+include = ["/src/**", "/examples/**", "!/examples/*/app/**", "/README.md", "/LICENSE"]
 
 version.workspace = true
 edition.workspace = true

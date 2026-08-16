@@ -35,8 +35,7 @@ kinds:
 headerFormat: |-
   This SDK uses 🚙 Engine + 🚗 CLI version `{{.Env.ENGINE_VERSION}}`. [See what changed in that release](https://github.com/dagger/dagger/releases/tag/{{.Env.ENGINE_VERSION}}).
 
-  ⚙️ https://crates.io/crates/dagger-sdk/{{ trimPrefix "v" .Version }}
-  📒 https://docs.rs/dagger-sdk/{{ trimPrefix "v" .Version }}/dagger-sdk
+  📦 Released as checked repository artifacts (`dagger-sdk` and `dagger-sdk-macros` crate files plus the complete engine); see sdk/rust/NAMESPACE_BUILD.md.
 footerFormat: |-
   {{- $contributorSet := dict }}
   {{- $maintainers := list "dependabot[bot]" }}
@@ -63,7 +62,7 @@ footerFormat: |-
   {{ end -}}
 
   ### What to do next
-  - Read the [documentation](https://docs.dagger.io/sdk/nodejs)
+  - Read the [documentation](https://docs.dagger.io/sdk)
   - Join our [Discord server](https://discord.gg/dagger-io)
   - Follow us on [Twitter](https://twitter.com/dagger_io)
 newlines:
