@@ -208,6 +208,32 @@ fn runtime() -> tokio::runtime::Runtime {
         .expect("the test runtime builds")
 }
 
+// The projection's Debug form is the one place a spawn's full environment is
+// aggregated, so it must render key names only, never credential values.
+#[test]
+fn projection_debug_renders_environment_keys_without_values() {
+    let request = launch_request(
+        None,
+        Some("configured-secret-value"),
+        None,
+        Some("ambient-secret-value"),
+        None,
+        None,
+        None,
+    );
+    let start = CliSessionStart::new(
+        crate::launch::SelectedCli::explicit(LaunchExecutable::unmanaged(PathBuf::from(
+            "/selected/dagger",
+        ))),
+        request,
+    );
+    let rendered = format!("{:?}", start.projection());
+    assert!(rendered.contains("_EXPERIMENTAL_DAGGER_RUNNER_TOKEN"));
+    assert!(!rendered.contains("configured-secret-value"));
+    assert!(!rendered.contains("ambient-secret-value"));
+    assert!(!rendered.contains("custom-value"));
+}
+
 proptest! {
     #![proptest_config(proptest_config())]
 
