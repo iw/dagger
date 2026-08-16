@@ -1,0 +1,7 @@
+kind: Removed
+body: |
+    Removed the legacy beta connector (`crates/dagger-sdk/src/core`) and its transitional error types. The unreachable tree carried the pre-1.0 downloader, HTTP client, and session code plus seven dependency trees (eyre, derive_builder, graphql_client, hex-literal, platform-info, thiserror, which) that no live code used; the published crate no longer compiles or ships any of it.
+time: 2026-08-16T00:00:03Z
+custom:
+    Author: iw
+    PR: ""

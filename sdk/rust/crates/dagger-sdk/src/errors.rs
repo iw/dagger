@@ -11,7 +11,7 @@ use std::fmt;
 use std::sync::Arc;
 use std::time::Duration;
 
-use crate::connection::{EngineConnectionError, EngineConnectionErrorKind};
+use crate::connection::EngineConnectionError;
 use crate::graphql::RawResponse;
 use crate::runtime_errors::{
     CompatibilityError, ExecError, ProvisioningError, SessionStartupError,
@@ -944,118 +944,6 @@ impl Error for CloseError {
             Self::Connection(error) => Some(error),
             Self::Interrupted | Self::Panicked => None,
         }
-    }
-}
-
-/// Transitional generated-binding error retained until query execution moves onto
-/// the shared-session facade.
-#[allow(dead_code)]
-pub(crate) enum DaggerError {
-    /// Query construction failed.
-    Build(QueryBuildError),
-    /// A generated input could not be serialized.
-    Serialize(RequestEncodingError),
-    /// The beta GraphQL adapter failed.
-    Query(crate::core::graphql_client::GraphQLError),
-    /// Selected data could not be unpacked.
-    Unpack(DaggerUnpackError),
-    /// The beta CLI downloader failed.
-    DownloadClient(EngineConnectionError),
-}
-
-impl fmt::Display for DaggerError {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        formatter.write_str(match self {
-            Self::Build(_) => "failed to build the internal GraphQL query",
-            Self::Serialize(_) => "failed to encode a GraphQL input",
-            Self::Query(_) => "failed to query the Dagger engine",
-            Self::Unpack(_) => "failed to unpack the GraphQL response",
-            Self::DownloadClient(_) => "failed to acquire the Dagger CLI",
-        })
-    }
-}
-
-impl fmt::Debug for DaggerError {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        formatter.write_str(match self {
-            Self::Build(_) => "DaggerError::Build",
-            Self::Serialize(_) => "DaggerError::Serialize",
-            Self::Query(_) => "DaggerError::Query",
-            Self::Unpack(_) => "DaggerError::Unpack",
-            Self::DownloadClient(_) => "DaggerError::DownloadClient",
-        })
-    }
-}
-
-impl Error for DaggerError {
-    fn source(&self) -> Option<&(dyn Error + 'static)> {
-        match self {
-            Self::Build(error) => Some(error),
-            Self::Serialize(error) => Some(error),
-            Self::Query(error) => Some(error),
-            Self::Unpack(error) => Some(error),
-            Self::DownloadClient(error) => Some(error),
-        }
-    }
-}
-
-/// Transitional selected-data decoding error.
-#[allow(dead_code)]
-pub(crate) enum DaggerUnpackError {
-    /// More object layers were present than the beta selector could traverse.
-    TooManyNestedObjects,
-    /// JSON selected data could not be decoded.
-    Deserialize(ResponseDecodingError),
-}
-
-impl fmt::Display for DaggerUnpackError {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        formatter.write_str(match self {
-            Self::TooManyNestedObjects => "the GraphQL response is nested too deeply",
-            Self::Deserialize(_) => "the selected GraphQL response could not be decoded",
-        })
-    }
-}
-
-impl fmt::Debug for DaggerUnpackError {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        formatter.write_str(match self {
-            Self::TooManyNestedObjects => "TooManyNestedObjects",
-            Self::Deserialize(_) => "Deserialize",
-        })
-    }
-}
-
-impl Error for DaggerUnpackError {
-    fn source(&self) -> Option<&(dyn Error + 'static)> {
-        match self {
-            Self::Deserialize(error) => Some(error),
-            Self::TooManyNestedObjects => None,
-        }
-    }
-}
-
-#[derive(Debug)]
-struct EyreReportSource(eyre::Report);
-
-impl fmt::Display for EyreReportSource {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        formatter.write_str("a legacy internal operation failed")
-    }
-}
-
-impl Error for EyreReportSource {
-    fn source(&self) -> Option<&(dyn Error + 'static)> {
-        Some(self.0.as_ref())
-    }
-}
-
-impl DaggerError {
-    pub(crate) fn from_legacy_download(error: eyre::Report) -> Self {
-        Self::DownloadClient(EngineConnectionError::with_source(
-            EngineConnectionErrorKind::Other,
-            EyreReportSource(error),
-        ))
     }
 }
 

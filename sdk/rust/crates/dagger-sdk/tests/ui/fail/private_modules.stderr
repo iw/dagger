@@ -1,21 +1,7 @@
-error[E0603]: module `core` is private
+error[E0603]: module `query` is private
  --> tests/ui/fail/private_modules.rs:2:45
   |
-2 |     let _ = std::mem::size_of::<dagger_sdk::core::config::Config>();
-  |                                             ^^^^          ------ struct `Config` is not publicly re-exported
-  |                                             |
-  |                                             private module
-  |
-note: the module `core` is defined here
- --> src/lib.rs
-  |
-  | mod core;
-  | ^^^^^^^^
-
-error[E0603]: module `query` is private
- --> tests/ui/fail/private_modules.rs:3:45
-  |
-3 |     let _ = std::mem::size_of::<dagger_sdk::query::Selection>();
+2 |     let _ = std::mem::size_of::<dagger_sdk::query::Selection>();
   |                                             ^^^^^  --------- struct `Selection` is not publicly re-exported
   |                                             |
   |                                             private module
@@ -27,9 +13,9 @@ note: the module `query` is defined here
   | ^^^^^^^^^
 
 error[E0603]: module `connector` is private
- --> tests/ui/fail/private_modules.rs:4:45
+ --> tests/ui/fail/private_modules.rs:3:45
   |
-4 |     let _ = std::mem::size_of::<dagger_sdk::connector::DefaultConnector>();
+3 |     let _ = std::mem::size_of::<dagger_sdk::connector::DefaultConnector>();
   |                                             ^^^^^^^^^  ---------------- struct `DefaultConnector` is not publicly re-exported
   |                                             |
   |                                             private module
@@ -41,9 +27,9 @@ note: the module `connector` is defined here
   | ^^^^^^^^^^^^^
 
 error[E0603]: module `provision` is private
- --> tests/ui/fail/private_modules.rs:5:45
+ --> tests/ui/fail/private_modules.rs:4:45
   |
-5 |     let _ = std::mem::size_of::<dagger_sdk::provision::DefaultCliProvisioner<(), ()>>();
+4 |     let _ = std::mem::size_of::<dagger_sdk::provision::DefaultCliProvisioner<(), ()>>();
   |                                             ^^^^^^^^^  --------------------- struct `DefaultCliProvisioner` is not publicly re-exported
   |                                             |
   |                                             private module
@@ -55,9 +41,9 @@ note: the module `provision` is defined here
   | ^^^^^^^^^^^^^
 
 error[E0603]: module `transport` is private
- --> tests/ui/fail/private_modules.rs:6:45
+ --> tests/ui/fail/private_modules.rs:5:45
   |
-6 |     let _ = std::mem::size_of::<dagger_sdk::transport::ReqwestLoopbackConnection>();
+5 |     let _ = std::mem::size_of::<dagger_sdk::transport::ReqwestLoopbackConnection>();
   |                                             ^^^^^^^^^  ------------------------- struct `ReqwestLoopbackConnection` is not publicly re-exported
   |                                             |
   |                                             private module
@@ -69,9 +55,9 @@ note: the module `transport` is defined here
   | ^^^^^^^^^^^^^
 
 error[E0603]: module `propagation` is private
- --> tests/ui/fail/private_modules.rs:7:45
+ --> tests/ui/fail/private_modules.rs:6:45
   |
-7 |     let _ = std::mem::size_of::<dagger_sdk::propagation::W3cPropagation>();
+6 |     let _ = std::mem::size_of::<dagger_sdk::propagation::W3cPropagation>();
   |                                             ^^^^^^^^^^^  -------------- struct `W3cPropagation` is not publicly re-exported
   |                                             |
   |                                             private module
@@ -83,9 +69,9 @@ note: the module `propagation` is defined here
   | ^^^^^^^^^^^^^^^
 
 error[E0603]: module `session_startup` is private
- --> tests/ui/fail/private_modules.rs:8:45
+ --> tests/ui/fail/private_modules.rs:7:45
   |
-8 |     let _ = std::mem::size_of::<dagger_sdk::session_startup::SessionResources>();
+7 |     let _ = std::mem::size_of::<dagger_sdk::session_startup::SessionResources>();
   |                                             ^^^^^^^^^^^^^^^  ---------------- struct `SessionResources` is not publicly re-exported
   |                                             |
   |                                             private module
@@ -97,9 +83,9 @@ note: the module `session_startup` is defined here
   | ^^^^^^^^^^^^^^^^^^^
 
 error[E0603]: module `compatibility` is private
- --> tests/ui/fail/private_modules.rs:9:45
+ --> tests/ui/fail/private_modules.rs:8:45
   |
-9 |     let _ = std::mem::size_of::<dagger_sdk::compatibility::CompatibilityValidator>();
+8 |     let _ = std::mem::size_of::<dagger_sdk::compatibility::CompatibilityValidator>();
   |                                             ^^^^^^^^^^^^^  ---------------------- struct `CompatibilityValidator` is not publicly re-exported
   |                                             |
   |                                             private module
