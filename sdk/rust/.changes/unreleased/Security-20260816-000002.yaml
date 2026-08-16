@@ -1,7 +1,0 @@
-kind: Security
-body: |
-    Built query documents, which inline argument literals including secret plaintexts, are no longer rendered into TRACE telemetry. The source policy now forbids direct telemetry in client foundations so this class of leak cannot return.
-time: 2026-08-16T00:00:02Z
-custom:
-    Author: iw
-    PR: "72"

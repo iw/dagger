@@ -1,7 +1,0 @@
-kind: Fixed
-body: |
-    CLI provisioning no longer performs blocking filesystem work on the async runtime thread: archive downloads write through an async handle, and extraction, cache publication, and retention pruning run on the blocking pool. The cache lock became a cancellable try-lock poll (replacing a kernel-blocking flock whose thread detached on cancellation), and file locking now uses the standard library, removing the fs4 dependency.
-time: 2026-08-16T00:00:04Z
-custom:
-    Author: iw
-    PR: "72"

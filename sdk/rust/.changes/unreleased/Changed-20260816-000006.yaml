@@ -1,7 +1,0 @@
-kind: Changed
-body: |
-    The published `dagger-sdk` crate no longer packages example application scaffolding (~8.6 MB of lockfiles and assets); example sources remain. `dagger-sdk-macros` now ships its LICENSE. Changelog metadata reflects the repository-artifact release model instead of crates.io, and no longer links the Node.js SDK documentation.
-time: 2026-08-16T00:00:06Z
-custom:
-    Author: iw
-    PR: "72"

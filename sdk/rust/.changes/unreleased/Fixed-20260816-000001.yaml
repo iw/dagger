@@ -1,7 +1,0 @@
-kind: Fixed
-body: |
-    The module code generator now reports its Result-arity diagnostic for return types shaped like `std::io::Result<()>` instead of panicking, for exported functions and for interface methods whose `Result` generics carry no type arguments.
-time: 2026-08-16T00:00:01Z
-custom:
-    Author: iw
-    PR: "72"

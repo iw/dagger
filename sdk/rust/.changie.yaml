@@ -7,7 +7,7 @@ versionFormat: '## sdk/rust/{{.Version}} - {{.Time.Format "2006-01-02"}}'
 kindFormat: '### {{.Kind}}'
 changeFormat: |
   {{- $lines := .Body | splitn "\n" 2 -}}
-  - {{ $lines._0 | trimSuffix "." }} by @{{.Custom.Author}} in https://github.com/dagger/dagger/pull/{{.Custom.PR}}
+  - {{ $lines._0 | trimSuffix "." }} by @{{.Custom.Author}} in https://github.com/iw/dagger/pull/{{.Custom.PR}}
   {{- with $lines._1 -}}
     {{ " " }}\{{ "\n" }}
     {{- . | trim | indent 2 }}
@@ -33,7 +33,7 @@ kinds:
   - label: Security
   - label: Dependencies
 headerFormat: |-
-  This SDK uses 🚙 Engine + 🚗 CLI version `{{.Env.ENGINE_VERSION}}`. [See what changed in that release](https://github.com/dagger/dagger/releases/tag/{{.Env.ENGINE_VERSION}}).
+  This SDK uses 🚙 Engine + 🚗 CLI version `{{.Env.ENGINE_VERSION}}`, built from this repository at the release commit; the complete engine ships as a release artifact alongside the crate files.
 
   📦 Released as checked repository artifacts (`dagger-sdk` and `dagger-sdk-macros` crate files plus the complete engine); see sdk/rust/docs/namespace-build.md.
 footerFormat: |-
