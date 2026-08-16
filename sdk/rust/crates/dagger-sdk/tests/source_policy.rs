@@ -228,6 +228,10 @@ fn client_foundations_have_no_unchecked_or_process_global_escape_hatches() {
             "dbg!(",
             "println!(",
             "eprintln!(",
+            // Built documents inline argument literals, secret plaintexts
+            // included, so client foundations may never emit telemetry
+            // directly; spans and sizes belong to the session boundary.
+            "tracing::",
         ] {
             assert!(
                 !production.contains(forbidden),

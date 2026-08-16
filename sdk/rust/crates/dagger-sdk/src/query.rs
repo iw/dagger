@@ -152,7 +152,9 @@ impl Selection {
         D: DeserializeOwned,
     {
         let document = self.build().await.map_err(QueryError::Build)?;
-        tracing::trace!(query = document.as_str(), "dagger-query");
+        // The document inlines every argument literal, including secret
+        // plaintexts, so it must never reach telemetry; observability stops at
+        // the session boundary, which sees sizes and categories only.
         let response = session
             .execute(RawRequest::new(document))
             .await
