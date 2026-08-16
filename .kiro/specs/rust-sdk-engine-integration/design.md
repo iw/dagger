@@ -73,21 +73,16 @@ approximation. `toml_edit` supplies format-preserving Cargo manifest mutation; i
 private engine-tool dependency and does not enter `dagger-sdk`'s public dependency
 graph.
 
-Implementation closure and SDK sign-off are separate gates. Ordinary Feature 5
-checkpoints execute the production Rust compiler, operation facade, project/runtime
-planners, protocol model, and evidence model through an engine-free contract harness.
+Implementation closure and exact-target verification are separate gates. Ordinary
+Feature 5 checkpoints execute the production Rust compiler, operation facade,
+project/runtime planners, and protocol model through an engine-free contract harness.
 The packaged adapter and exact-engine matrix remain production code, but engine
-construction and execution occur only at SDK sign-off. Until that later matrix passes,
-engine-dependent completeness rows remain Partial.
+construction and execution occur only in the engine-backed integration matrix.
 
 ## Dependencies and Non-Goals
 
 ### Owning relationships
 
-- Feature 1 owns Capability_ID construction, ledger transitions, evidence admission,
-  authority extraction, and derived reporting. Feature 5 adds an exact scope mapping,
-  operation manifests, integration observations, and Rust-policy rows through those
-  existing mechanisms.
 - Feature 2 owns `Client`, `SessionHandle`, `QueryBuilder`, generated handle ownership,
   shutdown, and raw execution. The runtime probe calls those public paths and does not
   introduce a second connection or query stack.
@@ -108,9 +103,7 @@ engine-dependent completeness rows remain Partial.
 - Feature 7 owns complete standalone client content, client initialization choices,
   dependency-client composition, and user-facing client usability. Feature 5 supplies
   the lossless `GenerateClient` operation and its baseline renderer.
-- Feature 8 owns the full platform, SDK, engine-distribution, and application
-  conformance matrix. Feature 5 adds focused Linux engine-build and runtime evidence
-  for the exact target.
+- Feature 9 owns release assembly and the final gate.
 - Feature 9 owns stable Git-tagged distribution, version synchronization, migration
   guidance, exact-revision Cargo rehearsal, release assets, and presentation. Feature
   5 preserves `dagger-sdk` as the sole external SDK entry package.
@@ -118,7 +111,7 @@ engine-dependent completeness rows remain Partial.
 ### Construction rules
 
 - `dagger-codegen` remains pure. It accepts data and returns plans or candidates; it
-  performs no filesystem, process, network, engine-session, or completeness-ledger I/O.
+  performs no filesystem, process, network, engine-session, or manifest I/O.
 - `dagger-sdk-engine` is private orchestration shipped inside the engine. It may read
   and write only the operation roots supplied by its CLI, run allowlisted Cargo or
   formatter actions, and publish only paths named by a complete candidate manifest.
@@ -156,8 +149,8 @@ engine-dependent completeness rows remain Partial.
 ### Dependency decisions
 
 - Add a private workspace crate named `dagger-sdk-engine`, with `publish = false`, and
-  a binary named `dagger-rust-engine`. It depends on `dagger-codegen`, not
-  `dagger-sdk-completeness` or the public runtime crate.
+  a binary named `dagger-rust-engine`. It depends on `dagger-codegen`, not the
+  public runtime crate.
 - Add `toml_edit` as a locked workspace dependency for preserving unrelated Cargo
   manifest formatting and semantic tables. It is used only by
   `dagger-sdk-engine`.
@@ -285,11 +278,6 @@ sdk/rust/
 │   │       ├── runtime.rs               # committed/legacy verification
 │   │       └── diagnostic.rs            # stable typed private failures
 │   ├── dagger-bootstrap/                # repository generation only
-│   ├── dagger-sdk-completeness/
-│   │   └── src/engine_integration/
-│   │       ├── scope.rs
-│   │       ├── manifest.rs
-│   │       └── evidence.rs
 │   └── dagger-sdk/                      # sole publishable crate
 │       └── src/gen/                     # Feature 4 generated core bindings
 ├── runtime/
@@ -300,11 +288,10 @@ sdk/rust/
 │   ├── runtime.go                       # clean runtime assembly
 │   ├── internal/dagger/                 # generated Go bindings
 │   └── dagger.gen.go                    # generated adapter dispatcher
-├── completeness/
-│   ├── engine-integration-mappings.json
-│   └── artifacts/
-│       ├── engine-integration-manifest.json
-│       └── engine-integration-report.json
+├── codegen/
+│   ├── target.json                      # checked target identity
+│   ├── schema.json                      # checked introspection snapshot
+│   └── generated.json                   # generated binding manifest
 └── tests/
     └── engine-integration/
         ├── fixtures/
@@ -584,7 +571,7 @@ LICENSE                                      repository license
 The `runtime/` include set is explicit. `packaged-assets.json` covers every payload
 path but excludes itself and `engine-source.json`; the final OCI digest covers all
 paths. Tests, local targets, credentials, `.git`, the
-repository completeness artifacts, and unpublished Rust crate source are not copied
+checked `codegen/` artifacts, and unpublished Rust crate source are not copied
 unless a path is named as a runtime template in the asset manifest. The operation
 executable is built from source during the same engine build. The formatter component
 is installed from the exact target toolchain during that build and copied as its real
@@ -804,9 +791,9 @@ are known.
 
 The baseline client renderer creates a valid Cargo package at the requested output,
 uses the immutable `PublishedSdkDependency`, and emits visible-schema bindings. Its
-manifest labels the content domain `engine-hook-baseline`; completeness evidence
-can close the operation hook but cannot close Feature 7's client-content capability
-set. Feature 7 replaces this renderer behind the same typed operation input.
+manifest labels the content domain `engine-hook-baseline`: the hook is proved without
+claiming Feature 7's client content. Feature 7 replaces this renderer behind the same
+typed operation input.
 
 #### Entrypoint renderer (`engine/entrypoint.rs`)
 
@@ -1130,60 +1117,30 @@ close sources. Its ordinary display includes only stable phase and engine coordi
 No session port, token, URL, headers, environment values, parent JSON, or response body
 is rendered.
 
-### Completeness integration
-
-```rust
-pub fn assemble_engine_integration_manifest(
-    target: &TargetDescriptor,
-    ledger: &Ledger,
-    mappings: &EngineIntegrationMappings,
-    packaged_assets: &PackagedAssetManifest,
-    operations: &[OperationManifest],
-) -> Result<EngineIntegrationManifest, DiagnosticSet>;
-
-pub fn verify_engine_integration_evidence(
-    manifest: &EngineIntegrationManifest,
-    observations: &[EngineIntegrationObservation],
-) -> Result<CapabilityEvidenceSet, DiagnosticSet>;
-```
-
-Assembly requires the exact existing 31-row Feature 5 scope digest and all 22 new
-`policy/rust-policy/engine-*` IDs. Every row maps to one implementation subject, one
-evidence-domain set, and one allowed terminal classification. Mapping by Go symbol name
-alone is forbidden; reviewed Go-specific mechanisms use `IdiomaticEquivalent` records
-that name the Rust invariant replacing them.
-
-Evidence subjects include the engine revision/version, core and visible schema
-digests, Rust SDK dependency, Rust toolchain, packaged OCI asset digest, operation
-input/manifest digests, and exact proved Capability_IDs. The registry rejects any
-subject mismatch before asking the Feature 1 transition engine for a status change.
-Hook observations and delegated Feature 6/7 content observations use different
-evidence IDs and non-overlapping capability sets.
-
-### Repository development workflow (`toolchains/rust-sdk-dev`)
+### Repository development workflow (`.dagger/modules/rust-client-dev`)
 
 Feature 5 adds focused functions rather than one monolithic six-hour build:
 
 ```text
-rust-sdk-dev engine-unit
-rust-sdk-dev engine-content
-rust-sdk-dev engine-integration --cases <name>[,<name>...]
-rust-sdk-dev engine-evidence
+rust-client-dev engine-unit
+rust-client-dev engine-content engine-integration --cases=<name>[,<name>...]
+rust-client-dev build
+rust-client-dev verify
 ```
 
-Local Feature 5 checkpoints invoke Cargo and Go directly; they do not require a Dagger
-engine or a `rust-sdk-dev` function. At SDK sign-off, `engine-unit` reproduces the Rust
+Local Feature 5 checkpoints invoke Cargo and Go directly; they do not require a
+Dagger engine or a dev-module function. In the engine-backed matrix, `engine-unit`
+reproduces the Rust
 operation properties and compile/static Go adapter tests in the containerized Dagger
 graph, and `engine-content` returns a `RustEngineContent` object holding
 the OCI root, target-bound engine construction inputs, and their canonical digests.
 `engine-integration --cases` accepts one or more finite case selectors, constructs that
 object once in the same top-level Dagger DAG, and fans the selected cases out from the
 actual object. A singleton selector remains the focused development path.
-`engine-evidence` constructs the object once, runs the complete exact-target matrix in
-parallel branches, and writes the committed observation only after every required case
-passes. All four functions are SDK-sign-off tools: an implementation
-checkpoint does not invoke them, substitute simulated success for them, or admit their
-evidence.
+The `build` and `verify` entry points own release assembly and independent
+verification of the packaged artifacts. These functions are exact-target tools: an
+implementation checkpoint does not invoke them or substitute simulated success for
+them.
 
 The content digest is evidence and a cache identity; it is never treated as a transport
 for the content bytes. Correctness therefore does not depend on a fresh GitHub runner
@@ -1418,16 +1375,6 @@ and at least 100 successful generated cases. Properties that model filesystem
 boundaries use a fresh temporary tree per case and generate symlinks on platforms that
 support them. Engine facts that do not vary over an input space remain fixed
 integration tests in the next section rather than artificial properties.
-
-### Property 1: Exact capability scope and evidence separation
-
-*For any* valid completeness ledger and Feature 5 mapping input, assembly SHALL either
-produce exactly the approved 31 existing capability IDs plus the 22 declared Rust
-engine-policy IDs with one owner and evidence-domain mapping each, or reject the input;
-missing, duplicate, moved, unclassified, delegated, and out-of-scope rows SHALL never
-be silently admitted, and hook evidence SHALL never close delegated content.
-
-**Validates: Requirements 1.1–1.12**
 
 ### Property 2: Deterministic Rust SDK resolution
 
@@ -1677,33 +1624,15 @@ SHALL be terminated and reaped before control returns.
 
 **Validates: Requirements 4.17, 4.18, 6.16, 9.8, 12.10–12.13**
 
-### Property 28: Evidence admission is exact-target and capability-local
-
-*For any* integration observation, admission SHALL succeed only when its engine,
-version, schema, SDK source, toolchain, packaged assets, case outcomes, and capability
-set exactly match the approved manifest; skipped, stale, failed, cross-target, sibling,
-or out-of-domain claims SHALL be rejected without changing ledger state.
-
-**Validates: Requirements 13.24–13.27**
-
-### Property 29: Completeness reports are derived rather than presented
-
-*For any* admitted evidence set and prior completeness ledger, every status change
-SHALL be produced by the Feature 1 transition policy, and the resulting report SHALL
-preserve the exact remaining blocker identities and distinguish engine-hook,
-committed-generation, legacy-generation, and delegated content evidence.
-
-**Validates: Requirements 1.6, 1.10–1.12, 9.12, 13.28, 13.29**
-
 ### Property 30: Canonical models round-trip without semantic loss
 
-*For any* valid operation request, manifest, engine descriptor, runtime provenance, or
-integration observation, canonical encode followed by strict decode SHALL reproduce an
+*For any* valid operation request, manifest, engine descriptor, or runtime
+provenance, canonical encode followed by strict decode SHALL reproduce an
 equal typed value and equal digest; invalid enum values, unknown fields, non-canonical
 paths, mutable dependency references, and malformed digests SHALL be rejected rather
 than normalized into a different meaning.
 
-**Validates: Requirements 2.6–2.8, 5.9–5.16, 6.10, 8.2–8.9, 13.24–13.26**
+**Validates: Requirements 2.6–2.8, 5.9–5.16, 6.10, 8.2–8.9**
 
 ## Error Handling
 
@@ -1715,8 +1644,6 @@ Go category. Multi-error results sort by code then normalized coordinate.
 
 | Condition | Internal diagnostic | External behavior |
 | --- | --- | --- |
-| Scope manifest omits, duplicates, or misclassifies a capability | `SCOPE_MANIFEST_INVALID` | Evidence assembly fails and names the capability coordinate; no ledger mutation |
-| Source row or owner drifts at the checked target | `SCOPE_DRIFT` | Evidence is rejected and the old classification remains |
 | Bare Rust is absent or duplicated in canonical metadata | `SDK_RUST_METADATA_INVALID` | Engine construction/test fails before resolution is exposed |
 | Versioned Rust shorthand is supplied | `SDK_VERSION_UNSUPPORTED` | Loader reports that `rust@…` is unsupported and suggests bare `rust` or an immutable external ref; no external lookup |
 | Neither built-in nor external SDK resolution succeeds | `SDK_RESOLUTION_FAILED` | Engine error preserves the built-in and external causes in stable order |
@@ -1762,8 +1689,6 @@ Go category. Multi-error results sort by code then normalized coordinate.
 | Function result reporting fails | `RESULT_REPORT_FAILED` | Typed FunctionCall source is preserved; no invocation success is claimed |
 | Operation is cancelled | `OPERATION_CANCELLED` | Child processes are terminated/reaped and staged state is discarded |
 | Build output contains a credential-bearing URL, header, token, or secret | `DIAGNOSTIC_REDACTION_FAILED` | Unsafe diagnostic is replaced by the stable redaction failure code |
-| Integration observation is skipped, stale, failed, or target-mismatched | `EVIDENCE_SUBJECT_MISMATCH` | Registry rejects the entire observation without partial admission |
-| Observation claims a sibling or out-of-domain capability | `EVIDENCE_SCOPE_VIOLATION` | Registry names only the offending capability IDs and preserves ledger state |
 
 The Go adapter also retains ordinary engine cancellation and Dagger error wrapping.
 Panics in a private Rust binary are treated as `RUNTIME_BUILD_FAILED` or
@@ -1787,12 +1712,12 @@ live beside the owning pure model rather than in one global test-support crate.
 | `dagger-sdk-engine/src/descriptor.rs` plus engine builder fixtures | 3, 23, 25 | build descriptors, dependency/source graphs, packaged asset sets, security roots |
 | `dagger-sdk-engine/src/runtime.rs` | 17–20, 24, 27 | toolchains, lock states, provenance, cache/secret sets, failure injection |
 | `dagger-sdk-engine/src/protocol.rs` | 21, 22 | call contexts, concurrent call IDs, session failures |
-| `dagger-sdk-completeness` engine-integration modules | 1, 28, 29 | ledgers, mappings, evidence subjects, capability claims |
 | Go adapter model tests plus Rust adapter fixtures | 2, 4, 15, 16 | loader references, workspace transitions, hook configurations, clone state |
 | Cross-layer canonical model tests | 26 | error variants, source chains, coordinate ordering, secret-bearing strings |
 
 Property identity is encoded in stable test names such as
-`property_01_exact_capability_scope`, and the implementation task retains the
+`property_30_canonical_models_round_trip_without_semantic_loss`, and the
+implementation task retains the
 requirement links. Inline test comments state the invariant when it is not evident from
 the assertion, but do not name specification features. This applies the repository's
 WHY-not-WHAT documentation standard and the operator's explicit preference against
@@ -1831,7 +1756,7 @@ Generated-binding verification is change-triggered rather than cyclical. Documen
 fixtures, Rust internals, and implementation-only Go edits do not run a Dagger generator.
 Only a reviewed change to the owning Dagger module API or schema authorizes one scoped
 refresh of that module's bindings; the resulting diff is inspected once, then direct
-compile/static checks guard it for the remainder of the checkpoint. SDK sign-off may
+compile/static checks guard it for the remainder of the checkpoint. The exact-target matrix may
 perform its own reproducibility regeneration after the engine boundary is intentionally
 entered.
 
@@ -1839,19 +1764,19 @@ entered.
 
 Focused Go tests compile and statically inspect the module-backed ABI adapter and its
 fixed reflected surface. Rust remains the sole behavioural implementation of schema,
-Cargo, ownership, rendering, runtime planning, protocol, and evidence policy. Go tests
+Cargo, ownership, rendering, runtime planning, and protocol policy. Go tests
 must not recreate those contracts as a second behavioural harness. Engine builder and
-live reflection observations are reserved for SDK sign-off.
+live reflection observations are reserved for the exact-target matrix.
 
-Local tests run directly through Cargo and Go. At SDK sign-off, `engine-unit` reproduces
-that static boundary inside the Dagger graph, while `engine-content` returns a reusable
-`RustEngineContent` object and exposes its digest for evidence. A top-level sign-off
-invocation passes the actual object to parallel case branches instead of rebuilding the
+Local tests run directly through Cargo and Go. In the engine-backed matrix,
+`engine-unit` reproduces that static boundary inside the Dagger graph, while
+`engine-content` returns a reusable `RustEngineContent` object and exposes its digest.
+A top-level engine-backed invocation passes the actual object to parallel case branches instead of rebuilding the
 Rust toolchain layer or assuming a digest string can recover bytes on another runner.
 
-### SDK sign-off exact-target integration matrix
+### Exact-target integration matrix
 
-The SDK-sign-off suite builds revision
+The exact-target integration suite builds revision
 `25300124ca110612edc09c43f89cb5fad6028170` with the current Feature 5 patch and uses
 that engine for all cases. Requirements 13.1-13.23 are deliberately example-based
 end-to-end observations, because each names one fixed target behavior rather than a
@@ -1871,17 +1796,11 @@ variable invariant.
 | `negative-redaction` | injected credential values do not occur in files, provenance, cache keys, or diagnostics | 13.23 |
 
 The protocol case runs registration and invocation through `ModuleRuntime.Call`; calling
-the private binary directly is not admissible evidence. The test also launches at
+the private binary directly is not an admissible observation. The test also launches at
 least two overlapping calls to cover call isolation without claiming Feature 6
-dispatch completeness.
+dispatch coverage.
 
-### Completeness and security verification
-
-`rust-sdk-dev engine-evidence` consumes only passed exact-target cases, rebuilds the
-canonical integration observation, verifies its target and scope digests, and then
-invokes the Feature 1 admission and transition APIs. A skipped case is not success.
-Reports are regenerated and compared in the same clean-worktree checkpoint so derived
-counts cannot drift from admitted evidence.
+### Implementation closure and security verification
 
 Feature 5 implementation closure runs, in order:
 
@@ -1892,14 +1811,13 @@ Feature 5 implementation closure runs, in order:
 5. compile or static tests for every changed Go ABI-adapter package;
 6. the complete pure Rust contract harness without constructing a Dagger engine;
 7. repository Rust security checks; and
-8. clean-worktree verification after report rendering, with generated bindings compared
-   rather than regenerated unless their owning API/schema changed.
+8. clean-worktree verification, with generated bindings compared rather than
+   regenerated unless their owning API/schema changed.
 
 This is the executable coverage for Requirements 13.30-13.37. Individual development
 checkpoints run their owning unit/property slice; implementation closure runs the
-complete engine-free contract once. SDK sign-off separately runs the exact-target
-matrix using one shared engine content object, admits its observations, regenerates the
-integration report, and verifies the clean derived result. Build cache keys exclude
+complete engine-free contract once. The exact-target matrix separately runs against
+one shared engine content object. Build cache keys exclude
 test-only source from the packaged Rust toolchain layer while retaining every source
 and provenance input that can affect shipped content.
 
@@ -1915,14 +1833,13 @@ and provenance input that can affect shipped content.
   older template, and premature authoring macros were not adopted.
 - The private protocol probe establishes a real executed boundary without constraining
   Feature 6's idiomatic Rust authoring design. Generate_Client establishes the lossless
-  Feature 7 hook without claiming standalone client completeness.
+  Feature 7 hook without claiming standalone client content.
 - The packaged descriptor makes fork-built engines and future canonical release engines
   use the same mechanism: only their immutable `dagger-sdk` dependency coordinate
   differs. No ambient checkout path enters a user project.
-- Direct Cargo and Go commands are the local gate. `engine-unit`, content,
-  integration-case, and evidence functions remain SDK-sign-off machinery; they do not
-  sit on the ordinary Feature checkpoint path and do not manufacture evidence before a
-  live run.
+- Direct Cargo and Go commands are the local gate. `engine-unit`, content, and
+  integration-case functions remain exact-target machinery; they do not sit on the
+  ordinary Feature checkpoint path and do not claim coverage before a live run.
 - The current Rust guide's mandatory `// Feature: ...` property-test tag must be
   reconciled with the approved no-feature-label comment policy before implementation;
   stable property test names retain traceability without leaking planning vocabulary

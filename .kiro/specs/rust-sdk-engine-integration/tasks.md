@@ -1,11 +1,11 @@
 # Implementation Plan
 
-- [x] 1. Establish the exact engine-integration scope, private crate, and fast test foundation
+- [x] 1. Establish the engine-integration private crate and fast test foundation
   - [x] 1.1 Make Rust SDK engine work lazy and independently testable
     - Remove the unconditional Dagger engine/client installation from
-      `toolchains/rust-sdk-dev.New`; retain a Rust-only base and introduce an explicit
+      `.dagger/modules/rust-client-dev.New`; retain a Rust-only base and introduce an explicit
       engine-bearing path used only by engine-content and integration cases.
-    - Add the SDK-sign-off `engine-unit` function for focused Rust engine-tool and Go
+    - Add the exact-target `engine-unit` function for focused Rust engine-tool and Go
       adapter tests, include the approved Feature 5 specifications and required engine
       source in the toolchain input filter, and prove that the ordinary direct test path
       does not construct an engine.
@@ -41,44 +41,24 @@
       typed normalized relative paths; keep filesystem/process/Dagger I/O out of
       `dagger-codegen`.
     - Add valid-first `proptest` strategies for each canonical model, dependency source,
-      target mutation, schema identity, path, Cargo graph, artifact set, evidence
-      subject, and stable diagnostic coordinate; centralize 256-case pure and 128-case
+      target mutation, schema identity, path, Cargo graph, artifact set, and stable
+      diagnostic coordinate; centralize 256-case pure and 128-case
       filesystem/concurrency defaults above the 100-case floor.
     - _Requirements: 2.5-2.8, 5.8-5.16, 6.1, 6.2, 6.10, 8.2-8.9, 12.8, 12.9, 12.15_
-  - [x] 1.5 Register the exact engine-integration scope and policy inventory
-    - Add the 22 approved `policy/rust-policy/engine-*` capabilities and the exact
-      31-row existing Feature 5 scope without changing a status.
-    - Add closed implementation-subject, owner, evidence-domain, delegated-content,
-      and `IdiomaticEquivalent` mapping records; reject missing, duplicate, moved,
-      name-only, catch-all, wrong-target, fingerprint-drifted, and out-of-scope rows.
-    - Preserve hook evidence separately from Feature 6 dispatch and Feature 7 client
-      content evidence, and retain the approved scope digest
-      `sha256:1f502e06f809fcfd90a8b9a3912eece3384585ad5c88963fac7681acb79c8cb3`.
-    - _Requirements: 1.1-1.12_
-  - [x] 1.6 Property test: Property 1 — exact capability scope and evidence separation
-    - Implement a reference-set `proptest` with at least 256 generated row, owner,
-      evidence-domain, status, ordering, delegation, and policy mutations; accept only
-      the approved 31/22 partition and require status identity before evidence exists.
-    - Test identifier: `property_01_exact_capability_scope_evidence_separation`.
-    - The one-line invariant comment explains why hook and delegated-content evidence
-      cannot close one another, without naming a specification feature.
-    - _Requirements: 1.1-1.12_
   - [x] 1.7 Property test: Property 30 — canonical models round-trip without semantic loss
     - Generate at least 256 valid and invalid operation, descriptor, manifest,
-      provenance, path, dependency, and evidence models; require strict
+      provenance, path, and dependency models; require strict
       encode/decode equality and digest equality while rejecting unknown fields,
       invalid enums, mutable refs, malformed digests, and non-canonical paths.
     - Test identifier: `property_30_canonical_models_round_trip_without_semantic_loss`.
-    - _Requirements: 2.6-2.8, 5.9-5.16, 6.10, 8.2-8.9, 13.24-13.26_
+    - _Requirements: 2.6-2.8, 5.9-5.16, 6.10, 8.2-8.9_
 
-- [x] 2. Checkpoint: scope, canonical models, and engine-free development are green
-  - Run Rust formatting, locked check/test for the new private crate and completeness
-    modules, Properties 1 and 30, warning-denied clippy/rustdoc, cargo-deny, and focused
-    direct Go toolchain tests.
+- [x] 2. Checkpoint: canonical models and engine-free development are green
+  - Run Rust formatting, locked check/test for the new private crate, Property 30,
+    warning-denied clippy/rustdoc, cargo-deny, and focused direct Go toolchain tests.
   - Require the direct test path to avoid engine construction and network fetch for
-    engine assets, the pre-change ledger to remain status-identical, every canonical
-    model to reject ambiguous input, and the worktree to contain no generated engine
-    content.
+    engine assets, every canonical model to reject ambiguous input, and the worktree
+    to contain no generated engine content.
 
 - [x] 3. Implement the pure visible-schema operation compiler and four renderer seams
   - [x] 3.1 Generalize Feature 4 validation to exact core plus visible extensions
@@ -95,8 +75,8 @@
     - Enforce required/forbidden module, schema, output, dependency, and TypeDef inputs
       before rendering; retain the exact engine target and normalized output identity,
       and return typed diagnostics for every unconstructable selector/input pair.
-    - Keep the pure facade free of filesystem, process, Cargo, engine, network,
-      completeness, and publication I/O.
+    - Keep the pure facade free of filesystem, process, Cargo, engine, network, and
+      publication I/O.
     - _Requirements: 5.8-5.13, 6.1, 6.2, 6.5-6.7, 6.19_
   - [x] 3.3 Implement production library/module renderers and bounded hook baselines
     - Render visible-schema library bindings and module extension bindings through the
@@ -107,7 +87,7 @@
       generator ownership; reserve operation-manifest creation for the runner.
     - Add a valid Cargo client baseline carrying the `engine-hook-baseline` content
       domain and an entrypoint renderer that accepts only the checked private protocol
-      probe TypeDef; neither renderer may claim sibling content completeness.
+      probe TypeDef; neither renderer claims sibling-owned content.
     - _Requirements: 4.13-4.16, 4.20, 6.3-6.7, 6.18, 7.2-7.6, 10.10-10.13_
   - [x] 3.4 Add Rust-owned client-generation metadata
     - Derive canonical required-host-file metadata from renderer configuration, validate
@@ -278,7 +258,7 @@
       image and copy only the final executable into a fresh content root.
     - Package the explicit `runtime/` Go module, descriptor, client metadata, declared
       templates, optional non-secret seed, license, and payload asset manifest; exclude
-      tests, targets, `.git`, credentials, completeness artifacts, and private source.
+      tests, targets, `.git`, credentials, checked codegen artifacts, and private source.
     - Hash payload assets excluding the two metadata files, embed that manifest digest
       in `engine-source.json`, then compute the complete OCI digest; bind OCI and
       descriptor digests separately to the engine image to avoid a hash cycle.
@@ -356,7 +336,7 @@
   - Prove canonical metadata, immutable dependency selection, shorthand rejection,
     packaged asset/descriptor integrity, and no repository-checkout dependency without
     constructing `RustEngineContent`; object construction and the focused exact-target
-    `resolution` case belong to SDK sign-off.
+    `resolution` case belong to the exact-target matrix.
 
 - [x] 10. Wire Rust initialization, codegen, and client hooks through the packaged adapter
   - [x] 10.1 Add one data-only adapter operation helper
@@ -506,7 +486,7 @@
   - Require the production project/runtime planners to prove scoped initialization and
     codegen, exact dependency/toolchain/lock behavior, clean runtime promotion, and no
     leaked secret, cache, or source material. Exact-target `init-*`, `operations`, and
-    `runtime-*` executions belong to SDK sign-off.
+    `runtime-*` executions belong to the exact-target matrix.
 
 - [x] 13. Execute the private module protocol boundary and close cross-layer failures
   - [x] 13.1 Generate only the fixed private protocol probe
@@ -577,61 +557,23 @@
     - Test identifier: `property_27_rejection_cancellation_no_partial_result`.
     - _Requirements: 4.17, 4.18, 6.16, 9.8, 12.10-12.13_
 
-- [x] 14. Model exact engine observations in the completeness contract
-  - [x] 14.1 Finalize closed capability-to-implementation/evidence mappings
-    - Join the exact checked target, 31 existing rows, 22 policy rows, Go/Rust reviewed
-      equivalences, packaged assets, operation manifests, hook outputs, and delegated
-      sibling boundaries into `engine-integration-mappings.json`.
-    - Require one implementation subject, required evidence-domain set, and allowed
-      terminal classification per capability; reject missing/extra/duplicate/name-only/
-      wrong-owner/drifted mappings and prohibit hook-to-content substitution.
-    - _Requirements: 1.1-1.12, 13.24-13.29_
-  - [x] 14.2 Assemble target-bound integration manifests and observation fixtures
-    - Generate canonical engine-integration manifest/report models containing scope,
-      target, descriptor, schema, SDK dependency, Rust toolchain, packaged OCI asset,
-      operation input/output, runtime provenance, case result, evidence, and exact
-      proved Capability IDs; use non-live fixtures until SDK sign-off.
-    - Reject skipped, stale, failed, wrong-engine/version/schema/source/toolchain/asset,
-      sibling, and out-of-domain observations atomically before calling Feature 1's
-      transition API.
-    - _Requirements: 13.24-13.27_
-  - [x] 14.3 Derive honest statuses and reports through Feature 1 only
-    - Separate engine-hook, checked-generation, legacy-generation, protocol, and
-      delegated-content evidence IDs; admit only capability-local domains and let the
-      existing transition policy derive every status.
-    - Render remaining blocker identities without presentation relabeling and ensure a
-      source/build/test/report alone cannot move a row lacking all declared evidence.
-    - _Requirements: 1.6, 1.10-1.12, 9.12, 13.28, 13.29_
-  - [x] 14.4 Property test: Property 28 — evidence admission is exact-target and capability-local
-    - Generate at least 256 valid observations and target/version/schema/source/
-      toolchain/asset/case/capability mutations; compare all-or-nothing admission and
-      unchanged rejection state to an independent subject/domain set model.
-    - Test identifier: `property_28_evidence_admission_exact_target_capability_local`.
-    - _Requirements: 13.24-13.27_
-  - [x] 14.5 Property test: Property 29 — completeness reports are derived rather than presented
-    - Generate at least 256 prior ledgers, admitted evidence sets, missing domains, hook/
-      content overlaps, and checked/legacy observations; require Feature 1 transition
-      equality and exact remaining blocker/evidence-domain rendering.
-    - Test identifier: `property_29_completeness_reports_derived_not_presented`.
-    - _Requirements: 1.6, 1.10-1.12, 9.12, 13.28, 13.29_
-
-- [x] 15. Checkpoint: pure protocol and evidence models are green
-  - Run formatting, locked Rust tests for Properties 15 and 21-22/26-29, compile/static
-    tests for changed Go ABI-adapter packages, warning-denied clippy/rustdoc,
-    cargo-deny, and Rust security checks directly, without Dagger orchestration.
-  - Require both protocol branches, overlapping-call isolation, rejection atomicity,
-    exact-target evidence admission rules, and derived status reporting to pass without
-    constructing a Dagger engine or committing a live integration observation.
+- [x] 15. Checkpoint: pure protocol models are green
+  - Run formatting, locked Rust tests for Properties 15, 21-22, and 26-27,
+    compile/static tests for changed Go ABI-adapter packages, warning-denied
+    clippy/rustdoc, cargo-deny, and Rust security checks directly, without Dagger
+    orchestration.
+  - Require both protocol branches, overlapping-call isolation, and rejection
+    atomicity to pass without constructing a Dagger engine.
 
 - [x] 16. Close the pure Rust production contract
   - [x] 16.1 Make the engine-free contract the ordinary development path
-    - Run the real Rust operation, project, runtime-planning, protocol, and
-      evidence-model suites through direct Cargo commands, plus direct compile/static Go
-      tests for the ABI adapter.
-    - Retain `engine-unit`, `engine-content`, `engine-integration`, and
-      `engine-evidence` as explicit SDK-sign-off functions; no local checkpoint invokes
-      them or treats their absence as simulated success.
-    - _Requirements: 13.24-13.29, 13.36_
+    - Run the real Rust operation, project, runtime-planning, and protocol suites
+      through direct Cargo commands, plus direct compile/static Go tests for the ABI
+      adapter.
+    - Retain `engine-unit`, `engine-content`, and `engine-integration` as explicit
+      exact-target functions; no local checkpoint invokes them or treats their absence
+      as simulated success.
+    - _Requirements: 13.36_
   - [x] 16.2 Admit only the authoritative dynamic `sourceMap` omission
     - Add a deterministic engine-authored module schema fixture whose type and Query
       constructor carry `sourceMap(module: ...)` while `filename`, `line`, `column`, and
@@ -656,23 +598,21 @@
     - Require typed, bounded, redacted diagnostics and byte-identical prior state for
       every rejected fixture.
     - _Requirements: 5.4-5.6, 5.14, 5.15, 6.2, 6.9, 6.12, 6.16, 12.1-12.16_
-  - [x] 16.5 Fence live evidence until SDK sign-off
-    - Prove that source presence, successful pure tests, packaged-content construction,
-      and incomplete/skipped case sets cannot produce an admissible live observation or
-      transition an engine-dependent completeness row.
-    - Keep the exact-target case inventory and one-shared-content sign-off workflow
-      documented and callable, but outside Feature 5 implementation checkpoints.
-    - _Requirements: 1.6, 1.10-1.12, 13.24-13.29_
+  - [x] 16.5 Fence live engine execution behind the exact-target matrix
+    - Prove that source presence, successful pure tests, and packaged-content
+      construction cannot substitute for a live engine observation.
+    - Keep the exact-target case inventory and one-shared-content workflow documented
+      and callable, but outside Feature 5 implementation checkpoints.
+    - _Requirements: 13.36_
 
 - [x] 17. Stabilize documentation, security policy, and committed derived outputs
   - [x] 17.1 Document the durable engine-integration contracts
     - Complete `//!` boundary/invariant docs and caller-relevant `///` guarantees across
       codegen engine modules, private runner, descriptor/project/publication/runtime/
-      protocol layers, Go adapter, engine loader/builder, completeness integration, and
-      development workflow.
+      protocol layers, Go adapter, engine loader/builder, and development workflow.
     - Explain why packaged metadata is acyclic, why the Go layer is only an ABI adapter,
       why manifests—not names—own generated files, why provenance is two-phase, why the
-      runtime is clean, and why hook evidence cannot close delegated content.
+      runtime is clean, and why hook coverage cannot claim delegated content.
     - Keep obvious narration and specification feature/task/property labels out of
       production/generated comments.
     - _Requirements: 4.20, 6.19, 10.10-10.13, 11.1-11.24, 12.16_
@@ -681,23 +621,22 @@
       contract-boundary review, focused Cargo/Go-static commands, failure triage,
       generated ownership repair, security review, and clean-output verification.
     - Document target/descriptor refresh, fork versus canonical dependency descriptors,
-      engine-content/per-case/evidence commands, cache identities, protocol probe, and
-      evidence interpretation in a separate SDK-sign-off section. Reproducing sign-off
-      must not require ambient local crate paths or expose credentials.
-    - _Requirements: 2.5-2.8, 4.20, 8.2-8.9, 11.8-11.23, 13.24-13.37_
-  - [x] 17.3 Publish only manifest-owned generated and evidence artifacts
+      engine-content/per-case commands, cache identities, and the protocol probe in a
+      separate exact-target section. Reproducing that matrix must not require ambient
+      local crate paths or expose credentials.
+    - _Requirements: 2.5-2.8, 4.20, 8.2-8.9, 11.8-11.23, 13.30-13.37_
+  - [x] 17.3 Publish only manifest-owned generated artifacts
     - If and only if an owning Dagger module API/schema changed, run one scoped
       generation/update, inspect the exact declared changeset, and commit only its
       manifest-owned bindings. Documentation, fixtures, Rust internals, and
       implementation-only Go changes do not trigger regeneration.
-    - Commit operation/asset manifests, client metadata, and derived engine-free reports;
-      use direct diff and compile/static checks for the remainder of the checkpoint.
-    - Do not create, refresh, or present an exact-target observation during
-      Implementation_Closure. Integration observations and resulting status reports are
-      published only after the SDK-sign-off matrix has actually passed.
+    - Commit operation/asset manifests and client metadata; use direct diff and
+      compile/static checks for the remainder of the checkpoint.
+    - Do not present exact-target results during Implementation_Closure; engine-backed
+      claims follow only after the exact-target matrix has actually passed.
     - Remove or replace only paths authorized by compatible prior manifests; keep
       caller-authored Cargo/source/VCS files and unrelated repository outputs unchanged.
-    - _Requirements: 4.13-4.20, 6.13-6.17, 9.1-9.12, 13.29, 13.30_
+    - _Requirements: 4.13-4.20, 6.13-6.17, 9.1-9.12, 13.30_
   - [x] 17.4 Fence final dependency, release-note, and public-surface policy
     - Complete cargo-deny and Rust security coverage for the locked graph, immutable
       Git/registry sources, credential redaction, confined paths, subprocesses, cache/
@@ -724,14 +663,13 @@
     honestly `Missing` or `Partial`; Implementation_Closure, a green build, registered
     hook, source presence, or sibling implementation cannot close it.
 
-## Deferred SDK Sign-off Gate
+## Deferred Exact-Target Gate
 
-Requirements 13.1-13.29 remain mandatory after Implementation_Closure. SDK sign-off
-builds the exact Target_Revision once, constructs one shared `RustEngineContent`, fans
-out the complete positive and negative case inventory, executes both runtime protocol
-branches, admits only the resulting target-bound observation, regenerates derived
-reports, and verifies the clean result. This is not a local Feature checkpoint and no
-engine-dependent row may move before it passes.
+Requirements 13.1-13.23 remain mandatory after Implementation_Closure. The
+exact-target matrix builds the exact Target_Revision once, constructs one shared
+`RustEngineContent`, fans out the complete positive and negative case inventory, and
+executes both runtime protocol branches. This is not a local Feature checkpoint, and
+no engine-backed claim precedes it.
 
 ## Task Dependency Graph
 
@@ -755,15 +693,15 @@ engine-dependent row may move before it passes.
   "16": ["15"],
   "17": ["16"],
   "18": ["17"],
-  "sdk-signoff": ["18"]
+  "exact-target": ["18"]
 }
 ```
 
 The seven checkpoints are strict review boundaries. Pure models and renderers precede
 Cargo/project I/O; project planning precedes publication; a tested private runner
 precedes packaging; packaged resolution precedes engine hooks; hooks precede runtime;
-runtime precedes protocol/evidence models; Implementation_Closure precedes the separate
-exact-target SDK-sign-off evidence and any committed engine-dependent status.
+runtime precedes protocol models; Implementation_Closure precedes the separate
+exact-target integration matrix.
 
 ## Notes
 
@@ -778,9 +716,9 @@ exact-target SDK-sign-off evidence and any committed engine-dependent status.
 - Checkpoint 2 deliberately removes the eager engine dependency. Every ordinary
   checkpoint and Feature 5 Implementation_Closure is engine-free. Checkpoint 9 proves
   the reusable content construction boundary without making later local checkpoints
-  execute it. SDK sign-off alone shares the actual object within one top-level DAG and
-  records its digest as evidence; cross-runner cache availability is never a
-  correctness premise.
+  execute it. The exact-target matrix alone shares the actual object within one top-level DAG
+  and records its digest; cross-runner cache availability is never a correctness
+  premise.
 - Checkpoints are the preferred commit and pull-request boundaries. A checkpoint may be
   split only when its independently compiling dependency layer is itself reviewable;
   do not stack unverified engine changes merely to avoid a long final pull request.
@@ -792,6 +730,3 @@ exact-target SDK-sign-off evidence and any committed engine-dependent status.
   behind the stable runtime seam.
 - The client baseline proves lossless engine dispatch only. Feature 7 owns complete
   standalone client content and may extend the packaged required-host-file metadata.
-- The integration report is derived evidence, not presentation. Do not optimize the
-  `Implemented` count or relabel remaining blockers; each status moves only through
-  Feature 1's admitted capability-local evidence.
