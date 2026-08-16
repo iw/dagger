@@ -36,20 +36,25 @@ module's dependency graph into one generated client. The older prose in
 `core/integration/generators_test.go:1236-1266`; the executable schema contract and
 test govern this specification.
 
-Feature 7 depends on Feature 1's completeness contract, Feature 2's client ownership,
+Feature 7 depends on Feature 2's client ownership,
 Feature 3's transport and reliability, Feature 4's exact Core projection, Feature 5's
-engine operation and workspace seams, and Feature 6's module TypeDef surface. Feature
-8 owns cross-platform and complete engine-backed conformance, including the bounded
-exact-target SDK sign-off. Feature 9 owns immutable Git-tagged distribution, release
+engine operation and workspace seams, and Feature 6's module TypeDef surface. The bounded
+exact-target verification gate owns the engine-backed client cases. Feature 9 owns
+immutable Git-tagged distribution, release
 migration, release assets, and stable release presentation.
 
 Every Feature 7 implementation checkpoint is engine-free and Rust-first. Production
 schema composition, project reconciliation, formatting, compilation, query
-construction, workspace selection, diagnostics, and evidence admission must be
+construction, workspace selection, diagnostics, and closure gates must be
 exercisable directly through Rust fixtures. Checked Core artifacts are reused unless
-an owning input digest changes. A Dagger engine is reserved for final SDK sign-off
+an owning input digest changes. A Dagger engine is reserved for the final exact-target gate
 unless a direct model is proven insufficient and the exception is separately recorded
 and approved.
+
+This specification was reinstated after the removal of the deprecated
+completeness/evidence delivery machinery; the client-generation contract below is
+maintained, the retired ledger apparatus is not. Repository citations are pinned to
+the historical Target_Revision.
 
 ## Glossary
 
@@ -57,8 +62,6 @@ and approved.
   Generated_Client_Manifest.
 - **Bound_Module:** The single local or pinned remote module selected by one
   Workspace_Client_Record.
-- **Capability_Scope:** The exact Feature 1 Capability_ID set owned or consumed by
-  Feature 7, including its target, evidence domain, and terminal-status policy.
 - **Client_Initializer:** The Rust SDK implementation of the target engine's
   `initClient(ws, path, module, ...) -> Changeset` contract.
 - **Client_Visible_Schema:** The engine-supplied introspection schema containing the
@@ -70,8 +73,11 @@ and approved.
   selected local or pinned remote module dependency; it is still bound to exactly one
   module.
 - **Exact_Target:** The Target_Descriptor selected by
-  `sdk/rust/completeness/target.json`, including Target_Revision, engine version
+  `sdk/rust/codegen/target.json`, including Target_Revision, engine version
   `v1.0.0-beta.10`, Rust SDK version `1.0.0-beta.10`, Rust 1.97.1, and edition 2024.
+- **Exact_Target_Matrix:** The later bounded exact-target gate that consumes the
+  matching Implementation_Closure record and runs only the real-engine cases that
+  direct Rust fixtures cannot prove.
 - **Feature_7_Local_Checkpoint:** Any implementation checkpoint, feature-end check, or
   local regression command used to claim Feature 7 progress or closure.
 - **Generated_Client_Manifest:** The canonical record of a generated client's target,
@@ -80,7 +86,7 @@ and approved.
 - **Generated_Module_Surface:** The typed Rust bindings and root integration generated
   for the Bound_Module coordinates in the Client_Visible_Schema.
 - **Implementation_Closure:** The boundary at which production Feature 7 logic,
-  engine-free client fixtures, scoped hygiene, security, and completeness checks pass
+  engine-free client fixtures, scoped hygiene, security, and policy checks pass
   without constructing or invoking a Dagger engine.
 - **Legacy_Client_Path:** The target-compatible ModuleSource client-generation path
   that invokes `ClientGenerator.GenerateClient` directly.
@@ -89,9 +95,6 @@ and approved.
 - **Published_SDK_Dependency:** The exact registry version or immutable Git URL and
   full revision selected by the engine-packaged Rust SDK; never an ambient path or
   mutable branch.
-- **SDK_Signoff:** The later bounded exact-target gate that consumes matching
-  Implementation_Closure evidence and runs only the real-engine cases that direct
-  Rust fixtures cannot prove.
 - **Standalone_Client_Project:** A path-confined Cargo project containing a reusable
   Core_Client_Surface, one optional Generated_Module_Surface, and no module-runtime or
   dispatch entrypoint.
@@ -141,7 +144,7 @@ symlinks, stale targets, or ambiguous ownership fail before publication.
 The generated project composes with ordinary Cargo commands and a standard Rust async
 runtime under the documented `dagger-sdk` runtime policy. Engine-free fixtures compile
 the exact candidate, construct representative Core and module queries through a
-recording transport, and verify the emitted GraphQL contract. SDK_Signoff later proves
+recording transport, and verify the emitted GraphQL contract. The Exact_Target_Matrix later proves
 workspace initialization, exact engine schema delivery, one local client, one pinned
 remote client, regeneration, and one real query without broadening local checkpoints.
 
@@ -186,7 +189,7 @@ Rust citations describe `main` after Feature 6 at commit
   dependency network resolution during generation, and confines generated source to
   the requested client directory. Cargo shape is Rust-owned.
 - **Definitive client lifecycle anchor:** `dagger.gen.go:15666` at the
-  Definitive_Go_SDK revision exposes `Workspace.WithInitClient`; Feature 1 records it
+  Definitive_Go_SDK revision exposes `Workspace.WithInitClient`; it is recorded
   as `behavior/go-client/init-client-lifecycle`.
 - **Current Feature 5 workspace seam:** `sdk/rust/runtime/main.go:93-143` discovers
   Rust-managed clients, filters them by workspace current directory, resolves each
@@ -215,35 +218,16 @@ Rust citations describe `main` after Feature 6 at commit
 - **Current public runtime:** `sdk/rust/crates/dagger-sdk/**` supplies the checked Core
   bindings, Shared_Session, Query_Builder, connection lifecycle, typed errors,
   transport, and observability reused by generated clients.
-- **Completeness correction:** the current ledger assigns two rows to Feature 7:
-  `behavior/go-client/init-client-lifecycle` is Missing and the pinned Go
-  `TestProvision` row is Partial. `sdk/go/provision_test.go:28-145` proves concurrent
-  CLI cache reuse and belongs to Feature 3, whose requirements already ground that
-  behaviour; it is not standalone-client generation evidence.
+- **Provisioning coverage correction:** the pinned Go `TestProvision`
+  (`sdk/go/provision_test.go:28-145`) proves concurrent CLI cache reuse and belongs to
+  Feature 3, whose requirements already ground that behaviour; it is not
+  standalone-client generation evidence.
 
-## Completeness Contract Policy
+## Client Generation Policy Obligations
 
-### Existing Scope and Ownership Correction
-
-Feature 7 retains one existing authority capability:
-`behavior/go-client/init-client-lifecycle`, currently Missing with fingerprint
-`sha256:1dfbf33549038de9fd9fbac8a12574d88658764e0c9732cd5a7996d14a3beb37`.
-
-The current Feature 7 assignment for
-`behavior/go-client/source%2Fgo-client%2Fgo-test%2Fdagger%2F%2554est%2550rovision`
-is corrected to Feature 3. Its fingerprint is
-`sha256:42cf3a1fb160841bd3237cbf44dd394c9fff5d661a9361b44a518b34e1bde26d`.
-This correction changes ownership only; it does not change status or evidence.
-
-Feature 5 continues to own the ClientGenerator hook, operation dispatch, target
-identity, output confinement, and immutable Published_SDK_Dependency input. Feature 7
-owns the ClientInitializer behaviour and the generated project's semantic contents,
-Cargo integration, regeneration, and usability. Hook evidence cannot close content
-capabilities.
-
-### Rust Policy Capabilities Added by Feature 7
-
-Feature 7 adds these stable `rust-policy` capabilities:
+These stable identifiers name the client generation's correctness obligations; their
+behaviours are specified throughout this document and enforced by the feature's test
+suites:
 
 ```text
 policy/rust-policy/client-capability-scope
@@ -277,18 +261,17 @@ requirement, implementation subject, allowed terminal status, and finite evidenc
 domain. Added policy rows supplement rather than replace engine or Definitive_Go_SDK
 authority rows.
 
-### Authority and Evidence Boundary
+## Authority and Verification Boundary
 
 | Claim | Authority | Minimum implementation evidence | Engine evidence policy |
 |---|---|---|---|
-| Rust supports client initialization | Engine ClientInitializer and workspace contracts | Direct adapter fixture plus path-confined scaffold reconciliation | Exact CLI path at SDK_Signoff |
-| A supplied schema is client-visible | Engine client-schema construction and exact target manifest | Canonical schema fixture proving Core closure, one namespaced module, and dependency exclusion | Exact delivered schema at SDK_Signoff |
+| Rust supports client initialization | Engine ClientInitializer and workspace contracts | Direct adapter fixture plus path-confined scaffold reconciliation | Exact CLI path in the Exact_Target_Matrix |
+| A supplied schema is client-visible | Engine client-schema construction and exact target manifest | Canonical schema fixture proving Core closure, one namespaced module, and dependency exclusion | Exact delivered schema in the Exact_Target_Matrix |
 | Generated Core behaviour is complete | Feature 4 Core bindings plus Features 2–3 runtime | Reuse identity plus existing Core property evidence | Not re-proved by copying symbols |
-| Generated module behaviour is complete | Bound_Module TypeDefs and Rust policy | Exhaustive semantic catalog, typed compile fixtures, and recording-transport query properties | One local and one pinned remote client at SDK_Signoff |
+| Generated module behaviour is complete | Bound_Module TypeDefs and Rust policy | Exhaustive semantic catalog, typed compile fixtures, and recording-transport query properties | One local and one pinned remote client in the Exact_Target_Matrix |
 | Existing Cargo state is preserved | Rust/Cargo policy plus target generator preservation behaviour | Permuted manifest and filesystem reconciliation properties | No engine required |
-| A client query is correct | Client_Visible_Schema Wire_Names plus public Rust runtime | Production generated API against a recording transport | One real representative query at SDK_Signoff |
+| A client query is correct | Client_Visible_Schema Wire_Names plus public Rust runtime | Production generated API against a recording transport | One real representative query in the Exact_Target_Matrix |
 | Feature 7 is implementation-complete | This specification and Rust repository policy | Complete engine-free client harness plus scoped hygiene/security | No engine is started |
-| Feature 7 is release-signed-off | Exact_Target engine plus admitted closure evidence | All local evidence plus the bounded exact-engine client cases | Required only at SDK_Signoff |
 
 ## Contract Policy
 
@@ -346,9 +329,9 @@ authority rows.
 | Documentation or quickstart | Create concise compile-and-query guidance with generated ownership markers | Refresh only the SDK-owned section | Preserve unrelated prose and reject ambiguous ownership |
 | Obsolete generated paths | None on first generation | Remove only paths proved obsolete by the previous manifest | Never infer ownership from filename or directory alone |
 
-### Local Checkpoint and Sign-off Boundary
+### Local Checkpoint and Exact-Target Boundary
 
-| Activity | Feature 7 local policy | Deferred SDK sign-off policy |
+| Activity | Feature 7 local policy | Deferred exact-target policy |
 |---|---|---|
 | Schema tests | Direct production compiler over Core-only, local-module, and dependency-bound fixtures | Confirm exact engine supplies the same schema classes |
 | Project tests | Temporary Cargo roots and semantic filesystem reconciliation | Confirm engine Changesets land at the intended workspace roots |
@@ -360,37 +343,6 @@ authority rows.
 | Other SDKs | Not built, tested, generated, or distributed | Build only the engine-required Go runtime content once |
 
 ## Requirements
-
-### Requirement 1: Exact Capability Scope and Ground-Truth Accountability
-
-**User Story:** As a release reviewer, I want every client-generation capability owned
-and evidenced precisely, so that a passing engine hook cannot conceal an unusable Rust
-client.
-
-#### Acceptance Criteria
-
-1. THE Feature 7 scope SHALL retain `behavior/go-client/init-client-lifecycle` with its
-   exact fingerprint.
-2. THE ownership correction SHALL route the pinned `TestProvision` capability to
-   Feature 3 without changing its status.
-3. THE Feature 7 scope SHALL add every declared Rust policy capability without
-   replacing an existing authority capability.
-4. THE Feature 7 mapping SHALL bind each capability to one implementation subject.
-5. THE Feature 7 mapping SHALL bind each capability to one non-empty evidence-domain
-   set.
-6. THE Feature 7 mapping SHALL declare one allowed terminal status for each capability.
-7. THE Feature 7 mapping SHALL preserve Feature 5 ownership of the engine hook and
-   operation boundary.
-8. IF hook evidence lacks generated-content evidence, THEN THE completeness registry
-   SHALL retain the content capability as blocking.
-9. WHEN a capability status changes, THE evidence SHALL enumerate the exact proved
-   Capability_ID set.
-10. IF evidence is stale, skipped, failed, incomplete, or target-incompatible, THEN THE
-    completeness registry SHALL reject it.
-11. THE rendered completeness report SHALL distinguish client initialization,
-    generated content, local implementation closure, and SDK sign-off.
-12. THE umbrella correction SHALL define dependency generation as independently bound
-    clients rather than one transitive dependency graph.
 
 ### Requirement 2: Path-Confined Client Initialization
 
@@ -634,7 +586,7 @@ overwritten.
 ### Requirement 9: Engine-Free Generated-Client Usability
 
 **User Story:** As a Rust application author, I want generated output proven through
-ordinary Rust tools before engine sign-off, so that routine defects are found quickly
+ordinary Rust tools before engine verification, so that routine defects are found quickly
 without an expensive build graph.
 
 #### Acceptance Criteria
@@ -664,10 +616,10 @@ without an expensive build graph.
 14. THE generated-client harness SHALL exercise the production renderer and public
     runtime rather than a test-only client implementation.
 
-### Requirement 10: Engine-Free Checkpoints and Deferred Exact-Target Sign-off
+### Requirement 10: Engine-Free Checkpoints and Deferred Exact-Target Verification
 
 **User Story:** As a maintainer, I want fast Rust-first checkpoints separated from one
-bounded engine sign-off, so that development remains efficient without weakening the
+bounded engine verification, so that development remains efficient without weakening the
 release claim.
 
 #### Acceptance Criteria
@@ -688,17 +640,17 @@ release claim.
     explicit approval before execution.
 11. WHEN Implementation_Closure is evaluated, THE closure report SHALL require every
     Feature 7 production, fixture, hygiene, security, and evidence gate.
-12. WHEN SDK_Signoff is evaluated, THE sign-off SHALL consume matching
-    Implementation_Closure evidence without replaying local checks.
-13. THE SDK_Signoff inventory SHALL include one initialized local-module client.
-14. THE SDK_Signoff inventory SHALL include one pinned remote dependency-bound client.
-15. THE SDK_Signoff inventory SHALL include one regeneration after a schema change.
-16. THE SDK_Signoff inventory SHALL include one representative Core query.
-17. THE SDK_Signoff inventory SHALL include one representative namespaced module query.
-18. THE SDK_Signoff SHALL reuse the umbrella's one exact-target artifact, engine
+12. WHEN the Exact_Target_Matrix is evaluated, THE gate SHALL consume the matching
+    Implementation_Closure record without replaying local checks.
+13. THE Exact_Target_Matrix inventory SHALL include one initialized local-module client.
+14. THE Exact_Target_Matrix inventory SHALL include one pinned remote dependency-bound client.
+15. THE Exact_Target_Matrix inventory SHALL include one regeneration after a schema change.
+16. THE Exact_Target_Matrix inventory SHALL include one representative Core query.
+17. THE Exact_Target_Matrix inventory SHALL include one representative namespaced module query.
+18. THE Exact_Target_Matrix SHALL reuse one exact-target artifact, engine
     service, and installed Rust baseline.
-19. IF any required sign-off case is absent, stale, skipped, or failed, THEN THE final
-    Rust SDK sign-off SHALL fail atomically.
+19. IF any required case is absent, stale, skipped, or failed, THEN THE final
+    exact-target gate SHALL fail atomically.
 
 ## Out of Scope
 
@@ -707,10 +659,10 @@ release claim.
 - Reimplementing Core_Schema bindings already owned by Feature 4.
 - Changing Feature 5's engine ABI, runtime container, or generic operation runner.
 - Changing Feature 6 module authoring, TypeDef registration, or dispatch.
-- Running the Feature 8 platform, cross-SDK, or complete engine conformance matrix.
+- Running the full platform, cross-SDK, or complete engine conformance matrix.
 - Publishing crates, synchronizing release versions, or presenting the stable release.
 - Treating repository-relative dependency patches as valid generated output.
-- Claiming Feature 7 SDK sign-off from engine-free Implementation_Closure alone.
+- Claiming exact-target verification from engine-free Implementation_Closure alone.
 
 ## Iteration and Feedback Notes
 

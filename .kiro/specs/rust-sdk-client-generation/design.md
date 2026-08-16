@@ -77,18 +77,15 @@ legal after the first generation.
 
 Every local checkpoint is Rust-first and engine-free. The production compiler,
 reconciler, publisher, runtime bridge, generated API, recording transport, fixture
-resolver, completeness validator, and direct Go ABI helpers are exercised directly.
-Checked Core output is reused unless an owning input changes. Feature 8 later consumes
-this closure evidence and uses one reusable exact-target engine artifact for the small
-set of workspace and real-query facts that a direct harness cannot prove.
+resolver and direct Go ABI helpers are exercised directly. Checked Core output is
+reused unless an owning input changes. The exact-target gate later uses one reusable
+engine artifact for the small set of workspace and real-query facts that a direct
+harness cannot prove.
 
 ## Dependencies and Non-Goals
 
 ### Owning relationships
 
-- Feature 1 owns capability identities, mapping validation, evidence admission,
-  blocker rendering, and status transitions. Feature 7 supplies its mapping, policy
-  records, evidence subjects, and the correction moving `TestProvision` to Feature 3.
 - Feature 2 owns `Client`, `SharedSession`, connection configuration, explicit close,
   and the no-global lifecycle. Generated clients clone its existing lease.
 - Feature 3 owns request execution, GraphQL and transport errors, timeouts,
@@ -104,9 +101,9 @@ set of workspace and real-query facts that a direct harness cannot prove.
 - Feature 6 owns module TypeDef authoring and dispatch. Its output determines the
   bound module schema consumed here; none of its dispatcher or module binary is copied
   into a standalone client.
-- Feature 8 owns the reusable exact-target engine artifact, one-engine sign-off run,
-  platform and cross-SDK conformance, and the final digest-bound verdict. Feature 7
-  defines and validates the client case inventory but does not execute it locally.
+- The exact-target gate owns the reusable engine artifact, the one-engine
+  verification run, and the final digest-bound verdict. Feature 7 defines and
+  validates the client case inventory but does not execute it locally.
 - Feature 9 owns immutable Git-tagged SDK distribution, public release automation,
   migration policy, release assets, and stable-release presentation. Feature 7
   consumes an immutable Git `PublishedSdkDependency`; it does not release the
@@ -119,7 +116,6 @@ set of workspace and real-query facts that a direct harness cannot prove.
 - `dagger-sdk-engine` owns Cargo/toolchain discovery, authored-file reconciliation,
   post-work, ownership verification, filesystem publication, checkpoint planning, and
   fixture Cargo execution.
-- `dagger-sdk-completeness` owns Feature 7 mapping and evidence validation.
 - `sdk/rust/runtime` remains a thin Go ABI adapter. It selects engine objects, validates
   workspace records and pins, marshals closed Rust requests, and returns Dagger
   changesets. It does not implement Rust naming, Cargo editing, schema traversal, or
@@ -176,7 +172,7 @@ set of workspace and real-query facts that a direct harness cannot prove.
 - Generated packages have one SDK dependency, `dagger-sdk` from the exact
   `PublishedSdkDependency`, plus the existing documented direct Tokio runtime
   dependency needed by an executable async quickstart. They do not depend on `dagger-codegen`,
-  `dagger-sdk-engine`, `dagger-sdk-completeness`, or another SDK.
+  `dagger-sdk-engine`, or another SDK.
 - Generated serde implementations use the exact-version re-export under
   `dagger_sdk::__private::serde`. This avoids accidentally selecting a second public
   serde policy while keeping the generated package's Cargo surface small. The hidden
@@ -219,7 +215,7 @@ set of workspace and real-query facts that a direct harness cannot prove.
 - Running another SDK's generator, building another SDK, starting a Dagger engine, or
   continuously regenerating checked Core bindings at Feature 7 checkpoints.
 - Claiming the exact CLI workspace flow, remote fetch, or real engine query before the
-  deferred SDK sign-off.
+  deferred exact-target gate.
 
 ## Repository Layout
 
@@ -246,12 +242,6 @@ sdk/rust/
 │   │       ├── ownership.rs            # semantic amendment verification
 │   │       ├── fixture.rs              # engine-free candidate compilation
 │   │       └── checkpoint.rs           # Feature 7 checkpoint composition
-│   └── dagger-sdk-completeness/
-│       └── src/client_generation.rs    # scope, closure, and sign-off admission
-├── completeness/
-│   ├── mappings/rust-sdk-client-generation.json
-│   ├── policies/rust-client-generation.json
-│   └── evidence/rust-sdk-client-generation/
 ├── fixtures/client-generation/
 │   ├── core-only/
 │   ├── local-module/
@@ -452,7 +442,7 @@ root `node(id:)` re-entry builder on the same session, and adding lazily resolve
 target-typed ID inputs. `SessionHandle` and `Selection` remain private, and Core's
 `Loadable` trait remains sealed.
 
-### Engine-free checkpoint and deferred sign-off plane
+### Engine-free checkpoint and deferred exact-target plane
 
 ```mermaid
 flowchart LR
@@ -463,7 +453,7 @@ flowchart LR
     CARGO --> REC["Recording transport query assertions"]
     LOCAL --> CLOSE["Implementation_Closure record"]
     REC --> CLOSE
-    CLOSE --> SIGN["Feature 8 exact-target sign-off"]
+    CLOSE --> SIGN["Exact-target verification"]
     SIGN --> CASES["init, local, pinned remote, regeneration, Core + module query"]
 ```
 
@@ -480,7 +470,7 @@ unscoped generation, distribution builds, and network dependency resolution. A
 proposed engine exception is evidence data requiring separate approval, not an action
 the local planner can execute.
 
-Feature 8 consumes the resulting exact-target closure record. It builds the target
+The exact-target gate consumes the resulting closure record. It builds the target
 artifact, required Go engine/CLI/runtime content, and Rust content at most once; starts
 one engine; installs one Rust baseline; fans out the bounded client cases; records
 phase timings; rejects duplicate builds or starts; and emits one atomic verdict bound
@@ -991,61 +981,6 @@ VCS credentials, the whole source tree, and generated output. Modern workspace
 generation already receives its workspace directory directly; both paths still use
 the same Rust discovery and reconciliation code.
 
-### Completeness and evidence (`dagger-sdk-completeness/src/client_generation.rs`)
-
-The completeness component defines closed records for scope, local closure, and
-deferred sign-off:
-
-```rust
-pub struct ClientGenerationClosureObservation {
-    pub target: TargetIdentity,
-    pub implementation_digest: Sha256Digest,
-    pub capability_scope_digest: Sha256Digest,
-    pub compiler: EvidenceSet,
-    pub project: EvidenceSet,
-    pub generated_api: EvidenceSet,
-    pub query_transport: EvidenceSet,
-    pub diagnostics_security: EvidenceSet,
-    pub checkpoint: CheckpointRecord,
-}
-
-pub struct ClientSignoffInventory {
-    pub initialized_local: SignoffCase,
-    pub pinned_remote: SignoffCase,
-    pub regeneration: SignoffCase,
-    pub core_query: SignoffCase,
-    pub module_query: SignoffCase,
-}
-
-pub fn admit_client_generation_closure(
-    observation: ClientGenerationClosureObservation,
-) -> Result<ClientGenerationClosure, CompletenessDiagnosticSet>;
-
-pub fn validate_client_signoff_candidate(
-    closure: &ClientGenerationClosure,
-    run: &ExactTargetSignoffRun,
-    inventory: &ClientSignoffInventory,
-) -> Result<ClientSignoffVerdict, CompletenessDiagnosticSet>;
-```
-
-Closure admission requires every mapped Feature 7 evidence domain, exact target,
-passed engine-free checkpoint record, matching implementation and input digests, and
-no engine/other-SDK observation. It can mark Rust policy capabilities only according
-to their mapping's allowed terminal status. It cannot promote the engine-backed
-initialization lifecycle merely from an adapter fixture.
-
-Sign-off validation is a pure evidence check in Feature 7. It requires the five client
-cases, one admitted matching closure, one exact-target artifact identity, at-most-once
-engine/CLI/Go-runtime/Rust builds, one engine start, one installed Rust baseline,
-isolated case outcomes, phase timings, and one atomic digest-bound verdict. Feature 8
-later produces those observations.
-
-The mapping correction changes only the owning feature for the pinned `TestProvision`
-capability and retains its fingerprint and status. The umbrella requirement that
-currently suggests one client includes transitive dependencies is amended to the
-approved meaning: each local or pinned remote dependency receives its own independently
-bound client; a selected module's transitive dependency surfaces are excluded.
-
 ### Durable workflow guide (`sdk/rust/CLIENT_GENERATION.md`)
 
 The guide explains:
@@ -1057,10 +992,10 @@ The guide explains:
 - why a dependency requires a separately bound client;
 - engine-free contributor fixtures and change-triggered regeneration;
 - how to inspect the generated manifest and typed diagnostics; and
-- the exact boundary between Implementation_Closure and Feature 8 SDK_Signoff.
+- the exact boundary between Implementation_Closure and the exact-target gate.
 
-It includes commands that use only `sdk/rust` packages at local checkpoints. Engine
-sign-off commands remain in the separate sign-off guide and are not presented as a
+It includes commands that use only `sdk/rust` packages at local checkpoints. Engine-backed
+commands remain in the separate exact-target guide and are not presented as a
 fallback for a failing local fixture.
 
 ## Data Models
@@ -1132,7 +1067,7 @@ pub enum ClientBindingSource {
 
 Core descriptors point to an exact Feature 4 fingerprint and `dagger_sdk` Rust path.
 Generated descriptors point below the local module namespace. Policy descriptors
-account for project, ownership, checkpoint, and sign-off rules which intentionally
+account for project, ownership, checkpoint, and exact-target rules which intentionally
 have no schema coordinate. The catalog is exhaustive: a visible public coordinate with
 no descriptor or more than one emitted descriptor is an error.
 
@@ -1201,36 +1136,20 @@ plans without exposing credentials. `clients` is sorted by path. Validation prov
 that every path is at or below `cwd` and that no pair is equal or prefix-overlapping.
 The Go adapter holds engine objects transiently beside this safe semantic plan.
 
-### Checkpoint and sign-off records
+### Checkpoint and exact-target records
 
 Feature 7 reuses Feature 6's `CheckpointPlan`, `CheckpointRecord`,
 `GeneratedAssetDecision`, and phase timing types. New stable test targets are added to
 the closed Rust package enum rather than represented as shell strings.
 
-`ClientSignoffInventory` uses case-kind enum values rather than display names. Every
+The exact-target case inventory uses case-kind enum values rather than display
+names. Every
 case records the exact target artifact digest, installed Rust baseline digest, client
 manifest digest, module/schema identity, outcome, and elapsed time. The final verdict
-hashes the admitted closure, shared build identities, engine start identity, sorted
+hashes the closure record, shared build identities, engine start identity, sorted
 case records, and phase timings.
 
 ## Correctness Properties
-
-### Property 1: Capability scope is exact, attributable, and evidence-gated
-
-*For any* candidate Feature 7 mapping, policy inventory, ledger snapshot, and evidence
-set, validation SHALL succeed if and only if the retained initialization capability,
-all 24 declared Rust policy capabilities, and no other capabilities are present; the
-pinned `TestProvision` capability retains its fingerprint and status while belonging
-to Feature 3; every Feature 7 capability has exactly one requirement, implementation
-subject, non-empty evidence domain, and allowed terminal status; Feature 5 hook
-ownership is preserved; content claims cannot be closed by hook-only evidence; stale,
-skipped, failed, incomplete, or target-incompatible evidence admits no transition; and
-the rendered report separates initialization, generated contents, Cargo integration,
-regeneration, query usability, local closure, and sign-off blockers. The umbrella
-scope SHALL describe dependencies as separately bound clients rather than transitive
-surfaces in one client.
-
-**Validates: Requirements 1.1–1.12**
 
 ### Property 2: Client initialization is confined, conservative, and idempotent
 
@@ -1517,16 +1436,16 @@ non-executable and require a separately recorded proof and explicit approval.
 if and only if every mapped implementation, compiler, project, generated API, query,
 diagnostic/security, hygiene, and checkpoint domain passed for the same exact target,
 implementation digest, catalog/manifest identities, and engine-free boundary. The
-result SHALL be canonical and consumable by sign-off without replaying local work;
+result SHALL be canonical and consumable by the exact-target gate without replaying local work;
 missing, stale, skipped, failed, mismatched, engine-backed, or other-SDK local evidence
 SHALL reject closure.
 
 **Validates: Requirements 10.11–10.12**
 
-### Property 27: SDK sign-off inventory is bounded, reused, and atomic
+### Property 27: The exact-target inventory is bounded, reused, and atomic
 
 *For any* admitted matching closure, exact-target build/run observation, and client
-case inventory, sign-off validation SHALL succeed if and only if the inventory contains
+case inventory, validation SHALL succeed if and only if the inventory contains
 one initialized local client, one pinned remote dependency-bound client, one schema
 regeneration, one Core query, and one namespaced module query; engine, CLI/Go runtime,
 and Rust content were built at most once from one reusable artifact identity; exactly
@@ -1584,7 +1503,6 @@ only a fixed operation label; it never appends raw process output or a module re
 | Generated fixture fails format/check/clippy/rustdoc/test | `ClientFixtureDiagnostic` | `CLIENT_FIXTURE_FAILED` with phase and safe relative coordinate |
 | Checkpoint includes engine, Dagger, network, generation, distribution, or another SDK | existing `CheckpointScopeInvalid` | `CLIENT_CHECKPOINT_SCOPE_INVALID` |
 | Checkpoint observation is incomplete/stale or lacks timing/reuse decision | existing checkpoint record diagnostic | `CLIENT_CHECKPOINT_EVIDENCE_INVALID` |
-| Capability scope/mapping/fingerprint is wrong | existing completeness scope diagnostic | `CAPABILITY_SCOPE_CHANGED`, `CAPABILITY_BINDING_*`, or `CAPABILITY_FINGERPRINT_MISMATCH` |
 | Closure evidence is missing, stale, failed, skipped, mismatched, or engine-backed | `ClientClosureDiagnostic` | `CLIENT_CLOSURE_INCOMPLETE` |
 | Sign-off case is absent, stale, skipped, failed, or digest-mismatched | `ClientSignoffDiagnostic` | `CLIENT_SIGNOFF_INCOMPLETE` |
 | Exact-target artifact/build/engine is duplicated | `ClientSignoffDiagnostic` | `CLIENT_SIGNOFF_DUPLICATE_WORK` |
@@ -1594,7 +1512,7 @@ contract distinction: `ClientInitializationInvalid`, `ClientPinMismatch`,
 `ClientProjectConflict`, and `ClientRootOverlap` in the engine; and
 `ClientModuleRootInvalid` and `ClientSchemaScopeInvalid` in the compiler. Existing
 Cargo, dependency, toolchain, path, ownership, publication, target, schema, naming,
-checkpoint, and completeness codes remain authoritative elsewhere.
+and checkpoint codes remain authoritative elsewhere.
 
 Diagnostic messages are bounded and sanitized. Coordinates are schema coordinates,
 semantic Cargo keys, or normalized operation-relative paths. Module references,
@@ -1605,7 +1523,7 @@ generated query arguments are never diagnostic coordinates.
 
 ### Property tests
 
-Every Property 1–27 is required and uses the workspace-standard `proptest` crate with
+Every retained property is required and uses the workspace-standard `proptest` crate with
 at least 100 successful cases; project/publication and schema/name properties use at
 least 256 because their permutation and fault spaces are larger. Each implementation
 test uses a stable `property_NN_<name>` identifier and the task list repeats the exact
@@ -1614,7 +1532,6 @@ explain enduring invariants rather than carrying Feature or task labels.
 
 | Placement | Properties | Generated input/reference model |
 |---|---:|---|
-| `dagger-sdk-completeness/tests/client_generation_scope.rs` | 1 | capability sets, ownership mutations, evidence states, target identities |
 | `dagger-sdk-engine/tests/client_initialization_properties.rs` | 2, 3, 11, 13 | authored trees, manifests, toolchains, init decisions, failure gates |
 | `dagger-sdk-engine/tests/client_workspace_properties.rs` | 4, 17–19 | workspace records, cwd trees, pins, disjoint/overlapping paths, adapter translations |
 | `dagger-codegen/tests/client_schema_properties.rs` | 5, 6 | exact Core plus extension graph mutations and declaration permutations |
@@ -1625,7 +1542,6 @@ explain enduring invariants rather than carrying Feature or task labels.
 | `dagger-sdk-engine/tests/client_fixture_properties.rs` | 23 | Core-only/local/dependency schemas and new/adopted projects |
 | `dagger-sdk/tests/generated_client_query_properties.rs` | 9, 24 | typed arguments, omissions, ID failures, responses, lifecycle schedules |
 | `dagger-sdk-engine/tests/client_checkpoint_properties.rs` | 25 | action graphs, package selectors, asset states, observations, exceptions |
-| `dagger-sdk-completeness/tests/client_generation_evidence.rs` | 26, 27 | closure/sign-off evidence permutations, digests, counts, timings |
 
 Schema tests compare the production compiler with a small graph reachability reference
 model. Cargo tests compare semantic TOML maps plus exact unaffected byte slices. Name
@@ -1719,8 +1635,7 @@ cargo fmt --all -- --check
 cargo test -p dagger-codegen --test client_schema_properties --test client_api_properties --locked
 cargo test -p dagger-sdk --test generated_client_query_properties --locked
 cargo test -p dagger-sdk-engine --test client_initialization_properties --test client_workspace_properties --test client_project_properties --test client_publication_properties --test client_fixture_properties --test client_checkpoint_properties --locked
-cargo test -p dagger-sdk-completeness --test client_generation_scope --test client_generation_evidence --locked
-cargo clippy -p dagger-codegen -p dagger-sdk -p dagger-sdk-engine -p dagger-sdk-completeness --all-targets --locked -- -D warnings
+cargo clippy -p dagger-codegen -p dagger-sdk -p dagger-sdk-engine --all-targets --locked -- -D warnings
 RUSTDOCFLAGS="-D warnings" cargo doc -p dagger-sdk --no-deps --locked
 cargo deny check
 DAGGER_SESSION_PORT=1 DAGGER_SESSION_TOKEN=engine-free-static-check go test ./...
@@ -1744,10 +1659,11 @@ The checkpoint must record per-phase elapsed milliseconds and one of
 It fails if an action expands to `dagger`, engine construction, another SDK, repository-
 wide generation, a distribution build, or network resolution.
 
-### Deferred exact-target sign-off
+### Deferred exact-target verification
 
 No Feature 7 implementation task runs the engine. The feature-end result is
-Implementation_Closure plus a validated sign-off inventory contract. Feature 8 later
+Implementation_Closure plus a validated exact-target inventory contract. The
+exact-target gate later
 executes exactly:
 
 - one `dagger api client init rust` local-module case, including scoped generation;
@@ -1766,13 +1682,13 @@ security evidence.
 
 The implementation updates `sdk/rust/CLIENT_GENERATION.md`, `sdk/rust/ARCHITECTURE.md`,
 `sdk/rust/CONTRIBUTING.md`, generated-crate READMEs, the umbrella requirements, and the
-Feature 7 completeness report together. Review checks that generated and handwritten
+Feature 7 closure report together. Review checks that generated and handwritten
 public items follow the repository documentation rule: module-level purpose and
 invariants, public-item guarantees and failure/omission semantics, and inline WHY only
 where ownership, session identity, wire fidelity, or transactional correctness would
 otherwise be easy to simplify incorrectly.
 
-Implementation closure is not release sign-off. The report must say which policy
+Implementation closure is not release verification. The report must say which policy
 capabilities gained admitted evidence, which engine-backed initialization claim still
-awaits Feature 8, and why a successful Feature 5 hook or local compilation alone does
+awaits the exact-target gate, and why a successful Feature 5 hook or local compilation alone does
 not claim complete standalone-client behaviour.
