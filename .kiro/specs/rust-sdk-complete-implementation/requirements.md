@@ -33,9 +33,10 @@ Rust dispatch runtime. It is open and unmerged at the baseline, so it informs th
 child designs without defining their requirements.
 
 The maintained requirements preserve the accepted capability scope of Features 2–7
-plus release readiness. Feature 1's historical completeness registry has been retired;
-Git history retains its delivery record. The remaining feature numbering is preserved
-so accepted requirements and implementation history remain traceable.
+plus release readiness (Feature 9) and the runtime-integrity contract (Feature 10).
+Feature 1's historical completeness registry has been retired; Git history retains
+its delivery record. The remaining feature numbering is preserved so accepted
+requirements and implementation history remain traceable.
 
 One deliberately small verification contract governs the maintained work:
 
@@ -62,11 +63,17 @@ One deliberately small verification contract governs the maintained work:
   5
 - Feature 9 (Distribution, Documentation, and Stable Release) — depends on Features
   2–7
+- Feature 10 (Runtime Integrity) — hardens Features 2–7's shipped runtime; its one
+  open requirement awaits engine-side termination-grace work
 
-The maintained child specification is `rust-sdk-release-readiness` (Feature 9).
-Completed Features 2–7 remain defined here; their delivery designs, tasks, and
-historical verification records remain available in Git history rather than the
-maintained specification tree.
+The maintained child specifications are the reinstated Features 2–7
+(`rust-sdk-client-lifecycle`, `rust-sdk-transport-observability`,
+`rust-sdk-core-codegen`, `rust-sdk-engine-integration`, `rust-sdk-module-authoring`,
+`rust-sdk-client-generation`), `rust-sdk-release-readiness` (Feature 9), and
+`rust-sdk-runtime-integrity` (Feature 10). The reinstated children preserve their
+accepted requirements, designs, and delivery records with the retired
+completeness/evidence apparatus excised and their contracts modernized to the merged
+code; full historical verification records remain in Git history.
 
 ## Glossary
 
@@ -196,6 +203,11 @@ All repository citations in this document refer to Target_Revision
 | Crate package graph | Public and private package boundaries require final validation | Feature 9 | Exactly two public packages pass clean-source package checks |
 | Version synchronization | Workspace and embedded engine versions differ | Feature 9 | Single release update and consistency checks |
 | User documentation | Current material still describes an experimental SDK | Feature 9 | Stable client and module guides with tested examples |
+| Module cancellation | Cancellation scaffold existed but nothing produced a cancellation | Feature 10 | Signal-producer and dispatch cancellation-ordering tests |
+| Provisioning scheduling | Blocking filesystem work and a parked lock on the async runtime thread | Feature 10 | Blocking-pool executor assertions and cancellable try-lock tests |
+| Diagnostic confidentiality | Query-document trace event and unredacted launch Debug | Feature 10 | Redacting-projection property and source-policy tracing ban |
+| Production liveness | Blanket dead-code allows and eager-index generator panics | Feature 10 | Reasoned expect attributes and Result-arity diagnostic tests |
+| Package contents | Example application scaffolding shipped; consumer lockfile pinned removed dependencies | Feature 10 | Package include checks and the isolated Verify consumer build |
 
 ## Client Configuration Policy
 
@@ -642,6 +654,38 @@ distribution system.
 11. WHEN a GitHub Release is requested, THE release action SHALL require direct user
     authorization and SHALL otherwise remain a local artifact build only.
 
+## Feature 10: Runtime Integrity
+
+### Requirement 10.1: Runtime Integrity Obligations
+
+**User Story:** As an operator of the shipped SDK, I want the running process to
+stop cooperatively, schedule work on the right threads, keep diagnostics
+credential-safe, keep suppressions compiler-audited, and package exactly what
+consumers need, so that correctness at the API layer extends to the process's
+behaviour in production.
+
+#### Acceptance Criteria
+
+1. WHEN a module serve receives SIGTERM or SIGINT, THE runtime SHALL publish
+   exactly one structured cancelled error and never a successful value afterward.
+2. THE provisioning pipeline SHALL perform no blocking filesystem or
+   kernel-blocking lock call on the async runtime thread; the cache lock SHALL be
+   a cancellable try-lock poll.
+3. THE diagnostics SHALL render identity, never material: no query documents, no
+   secret or environment values, and a launch projection pinned complete and
+   collision-free by property test.
+4. THE production sources SHALL carry reasoned, compiler-audited dead-code
+   expectations rather than blanket allows, and generator input failures SHALL be
+   named diagnostics rather than panics.
+5. THE published packages SHALL exclude example application scaffolding, ship
+   their licenses, and keep the external consumer lockfile regenerated through the
+   Verify layout.
+6. WHEN the engine grows a termination-grace channel, THE integration SHALL carry
+   it through `engineutil.ExecutionMetadata` into the existing cancellation path;
+   until then this remains the feature's one open requirement.
+
+The child specification is `rust-sdk-runtime-integrity`.
+
 ## Iteration and Feedback Notes
 
 - Requirements approval is the consent gate before a maintained child design is
@@ -652,3 +696,7 @@ distribution system.
 - PR #12229 should be re-evaluated during Features 5 and 6 for reusable tests, failure
   discoveries, and authoring ergonomics; its architecture remains subject to the same
   source-of-truth order as new work.
+- The Feature 2–7 children were reinstated in 2026-08 after their removal alongside
+  the completeness registry: the requirements and designs are maintained content,
+  the retired evidence apparatus is not, and Feature 10 captures the audit
+  remediation delivered after those features closed.
