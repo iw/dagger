@@ -26,6 +26,10 @@ pub enum DiagnosticStream {
 }
 
 /// One ordered, borrowed diagnostic payload.
+///
+/// Sinks read these fields; only the router constructs values, so additional
+/// fields can be introduced without breaking implementors.
+#[non_exhaustive]
 #[derive(Clone, Copy)]
 pub struct Diagnostic<'a> {
     /// The source stream.

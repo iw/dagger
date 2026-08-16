@@ -4,6 +4,8 @@
 //! Dagger naming, schema projection, JSON codecs, dispatch, and engine work remain in
 //! the pure compiler and generated runtime.
 
+#![warn(missing_docs)]
+
 use proc_macro::TokenStream;
 use syn::parse_macro_input;
 

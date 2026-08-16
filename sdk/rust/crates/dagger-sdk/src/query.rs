@@ -341,6 +341,17 @@ pub struct QueryBuilder {
     selection: Selection,
 }
 
+impl std::fmt::Debug for QueryBuilder {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        // Selections inline argument literals, secret plaintexts included, so a
+        // rendering carries the session identity and nothing of the document.
+        formatter
+            .debug_struct("QueryBuilder")
+            .field("session_identity", &self.session.identity())
+            .finish_non_exhaustive()
+    }
+}
+
 impl QueryBuilder {
     pub(crate) fn new(session: SessionHandle) -> Self {
         Self {

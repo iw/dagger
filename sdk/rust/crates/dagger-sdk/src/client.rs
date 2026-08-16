@@ -22,6 +22,17 @@ pub struct Client {
     session: SessionHandle,
 }
 
+impl std::fmt::Debug for Client {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        // The session owns credentials; its numeric identity is the only
+        // reviewable fact a rendering should carry.
+        formatter
+            .debug_struct("Client")
+            .field("session_identity", &self.session.identity())
+            .finish()
+    }
+}
+
 impl Client {
     /// Starts an immutable compositional query on this client's shared session.
     ///

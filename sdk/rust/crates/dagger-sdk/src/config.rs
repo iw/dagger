@@ -277,6 +277,41 @@ pub struct ClientConfigBuilder {
     allow_unverified_compatibility: Option<bool>,
 }
 
+impl fmt::Debug for ClientConfigBuilder {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        // The builder retains the same paths, URIs, and environment values as the
+        // built configuration, so it renders presence only, like ClientConfig.
+        formatter
+            .debug_struct("ClientConfigBuilder")
+            .field("workdir_present", &self.workdir.is_some())
+            .field("workspace_present", &self.workspace.is_some())
+            .field("diagnostic_sink_present", &self.diagnostic_sink.is_some())
+            .field("load_workspace_modules", &self.load_workspace_modules)
+            .field("explicit_connection_present", &self.connection.is_some())
+            .field("version_present", &self.version.is_some())
+            .field("verbosity", &self.verbosity)
+            .field("runner_host_present", &self.runner_host.is_some())
+            .field("environment_keys", &EnvironmentKeys(&self.environment))
+            .field(
+                "session_startup_timeout_present",
+                &self.session_startup_timeout.is_some(),
+            )
+            .field(
+                "http_connect_timeout_present",
+                &self.http_connect_timeout.is_some(),
+            )
+            .field(
+                "graphql_execution_timeout_present",
+                &self.graphql_execution_timeout.is_some(),
+            )
+            .field(
+                "allow_unverified_compatibility",
+                &self.allow_unverified_compatibility,
+            )
+            .finish()
+    }
+}
+
 impl ClientConfigBuilder {
     /// Sets the optional host workdir. Filesystem existence is checked during preflight.
     #[must_use]
