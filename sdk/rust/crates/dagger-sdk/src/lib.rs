@@ -149,7 +149,6 @@ mod compatibility;
 mod config;
 mod connection;
 mod connector;
-mod core;
 mod diagnostic;
 #[allow(dead_code)]
 mod discovery;

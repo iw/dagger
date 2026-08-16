@@ -1,5 +1,4 @@
 fn main() {
-    let _ = std::mem::size_of::<dagger_sdk::core::config::Config>();
     let _ = std::mem::size_of::<dagger_sdk::query::Selection>();
     let _ = std::mem::size_of::<dagger_sdk::connector::DefaultConnector>();
     let _ = std::mem::size_of::<dagger_sdk::provision::DefaultCliProvisioner<(), ()>>();
