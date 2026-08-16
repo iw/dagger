@@ -141,13 +141,6 @@ impl ProvisionError {
         self.status
     }
 
-    pub(crate) const fn expected_digest(&self) -> Option<&[u8; 32]> {
-        self.expected_digest.as_ref()
-    }
-
-    pub(crate) const fn actual_digest(&self) -> Option<&[u8; 32]> {
-        self.actual_digest.as_ref()
-    }
 }
 
 impl fmt::Display for ProvisionError {

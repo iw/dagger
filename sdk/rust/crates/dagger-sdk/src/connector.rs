@@ -265,7 +265,6 @@ where
     }
 }
 
-#[allow(dead_code)]
 enum PreparedCliSource {
     ExplicitLocal(LaunchExecutable),
     CompiledRelease {

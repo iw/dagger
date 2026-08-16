@@ -162,6 +162,7 @@ impl Selection {
         self.decode(response)
     }
 
+    #[cfg_attr(not(feature = "gen"), allow(dead_code))]
     pub(crate) async fn execute_reentry<T, I>(
         &self,
         session: &SessionHandle,
@@ -259,6 +260,7 @@ fn project_selection(data: Value, path: &[Selection]) -> Result<Value, serde_jso
     }
 }
 
+#[cfg_attr(not(feature = "gen"), allow(dead_code))]
 pub(crate) fn reenter<T>(session: &SessionHandle, id: Id, concrete_type: &str) -> T
 where
     T: loadable::private::Sealed,
@@ -270,6 +272,7 @@ where
     T::from_query(session.clone(), selection)
 }
 
+#[cfg_attr(not(feature = "gen"), allow(dead_code))]
 pub(crate) fn reenter_lazy<T>(session: &SessionHandle, id: IdInput<T>, concrete_type: &str) -> T
 where
     T: loadable::private::Sealed + 'static,
@@ -281,6 +284,7 @@ where
     T::from_query(session.clone(), selection)
 }
 
+#[cfg_attr(not(feature = "gen"), allow(dead_code))]
 pub(crate) trait ReentryIds<T>
 where
     T: loadable::private::Sealed,

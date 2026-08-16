@@ -3,9 +3,9 @@ use std::time::Duration;
 use dagger_sdk::{ClientConfig, HostDirectoryOpts};
 
 #[tokio::main]
-async fn main() -> eyre::Result<()> {
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     tracing_subscriber::fmt::try_init()
-        .map_err(|_| eyre::eyre!("failed to install the tracing subscriber"))?;
+        .map_err(|_| "failed to install the tracing subscriber")?;
     let config = ClientConfig::builder()
         .session_startup_timeout(Duration::from_secs(30))
         .build()?;

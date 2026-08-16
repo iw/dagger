@@ -2,7 +2,7 @@ use dagger_sdk::HostDirectoryOpts;
 use rand::Rng;
 
 #[tokio::main]
-async fn main() -> eyre::Result<()> {
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let owned = dagger_sdk::connect().await?;
     let client = owned.query();
     let output = "examples/publish-the-application/app/build";
