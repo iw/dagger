@@ -6,7 +6,7 @@ This specification defines Feature 4 of the approved
 `rust-sdk-complete-implementation` umbrella: a target-pinned, exhaustive, and
 idiomatic Rust projection of Dagger's Core_Schema. It turns the broad but weakly
 verified generated client already present in `dagger-sdk` into a reproducible public
-contract whose schema coverage, Rust mapping, generated source, and completeness
+contract whose schema coverage, Rust mapping, generated source, and verification
 evidence agree.
 
 The engine schema at Dagger commit
@@ -21,32 +21,27 @@ traits, fallible conversion, documentation, and async composition define the pub
 shape. Go pointers, variadic option structs, zero-value tests, aliases, and helper
 methods are evidence of behaviour, not templates for Rust source.
 
-Feature 4 depends on Feature 1's executable Completeness_Ledger and reuses the owned
+Feature 4 reuses the owned
 Shared_Session, Query_Builder, Loadable contract, Into_ID conversion, and typed query
 failures delivered by Features 2 and 3. Feature 4 owns the pure Core_Schema-to-Rust
 projection and the committed core binding artifacts. Feature 5 owns engine SDK
 registration and the `GenerateLibrary`, `GenerateModule`, `GenerateClient`, and
 `GenerateEntrypoint` hooks. Feature 6 owns Rust source discovery, module TypeDef
 emission, and dispatch. Feature 7 owns standalone, module, and dependency client
-project generation. Feature 8 owns the closing multi-platform and end-to-end
-conformance matrix. Feature 9 owns immutable Git-tagged distribution, migration
-material, release assets, and the stable release gate.
+project generation. Feature 9 owns release assembly, migration material, and the
+stable release gate.
 
 The current `sdk-sdk` harness has no check that enumerates Core_Schema coordinates or
 directly exercises the generated typed bindings. Its generation and module-load checks
 provide smoke coverage, and it remains authoritative for the common checks it declares,
-but a green harness result is not evidence for a Feature 4 status transition. Feature 4
-therefore supplies coordinate-complete generator, compile, serialization,
-query-projection, and exact-target engine evidence.
+but a green harness result alone does not prove Feature 4's generated contract.
+Feature 4 therefore supplies coordinate-complete generator, compile, serialization,
+query-projection, and exact-target engine coverage.
 
-The current ledger routes 3,329 `Partial` capabilities to Feature 4. Ground-truth
-review shows that 68 of those rows belong to Features 3, 5, or 6. After that ownership
-correction, Feature 4 owns 3,261 existing blocking capabilities: all 1,567 active
-engine-schema coordinates, 1,673 generated Go-client declarations, and 21 shared
-schema-to-client code-generation behaviours. The feature also adds the Rust-specific
-policy capabilities omitted by the Feature 1 baseline. Statuses move only when their
-own evidence passes; this specification does not inflate `Implemented` by treating
-ownership changes or a single successful compile as conformance.
+This specification was reinstated after the removal of the deprecated
+completeness/evidence delivery machinery; the generator contract below is
+maintained, the retired ledger apparatus is not. Repository citations are pinned to
+the historical Target_Revision.
 
 ## Glossary
 
@@ -55,22 +50,19 @@ ownership changes or a single successful compile as conformance.
 - **Binding_Kind:** The reviewed Rust projection category for a capability, such as
   Handle, Interface_Trait, Enum, Input_Object, Scalar, Method, Option, Directive_Policy,
   or Idiomatic_Equivalent.
-- **Binding_Record:** One Generated_Binding_Manifest entry connecting authoritative
-  Capability_IDs to their Rust symbol or reviewed policy, implementation fingerprint,
-  and executable evidence.
-- **Blocking_Status:** `Missing` or `Partial` under the Feature 1 status policy.
+- **Binding_Record:** One Generated_Binding_Manifest entry connecting an
+  authoritative schema coordinate to its Rust symbol or reviewed policy and its
+  implementation fingerprint.
 - **Canonical_Schema:** The checked, digest-verified engine introspection snapshot
   selected by the Exact_Target.
-- **Complete_Status:** `Implemented`, `Idiomatic_Equivalent`, or a justified
-  `Inapplicable` classification under the Feature 1 status policy.
 - **Core_Schema:** The Dagger engine GraphQL schema before user-module or dependency
   types are merged into it.
 - **Defaulted_Argument:** A GraphQL argument with a non-null `defaultValue` in the
   Canonical_Schema; omission delegates value selection to the engine.
 - **Definitive_Go_SDK:** `github.com/dagger/dagger-go-sdk` at commit
   `1309520660f6a5b35ef97b4fbe151e32a06a8dc5`.
-- **Exact_Target:** The Target_Descriptor selected by
-  `sdk/rust/completeness/target.json`, including Dagger revision
+- **Exact_Target:** The Target_Descriptor selected by the checked target identity
+  (today `sdk/rust/codegen/target.json`), including Dagger revision
   `25300124ca110612edc09c43f89cb5fad6028170` and engine version
   `v1.0.0-beta.10`.
 - **Generated_Artifact:** A source or manifest file wholly owned by the Core_Generator,
@@ -78,8 +70,8 @@ ownership changes or a single successful compile as conformance.
 - **Generated_Binding:** A public Rust type, trait, method, option, implementation, or
   reviewed no-symbol policy emitted or enforced from the Canonical_Schema.
 - **Generated_Binding_Manifest:** The deterministic machine-readable index of every
-  Feature 4 capability, its Binding_Kind, authoritative wire coordinate, Rust symbol
-  or policy, and evidence scope.
+  generated binding: its Binding_Kind, authoritative wire coordinate, and Rust symbol
+  or policy.
 - **Generated_Handle:** A cloneable object or interface client value carrying a
   Selection and a lease on the same Shared_Session as its originating Client.
 - **Identifier_Reentry:** Reconstruction of a typed Generated_Handle from an engine ID
@@ -141,7 +133,7 @@ The two single-underscore engine metadata objects and their four fields remain a
 manifest coordinates but receive reviewed no-symbol policies. This matches the
 Definitive_Go_SDK visitor's `strings.HasPrefix(t.Name, "_")` exclusion in
 `cmd/codegen/introspection/visitor.go` without letting those coordinates disappear
-from completeness accounting.
+from the binding manifest.
 
 Generation is fallible, order-independent, byte-stable after the pinned formatter,
 and side-effect-free until explicit publication. Malformed or unsupported schema
@@ -152,7 +144,7 @@ worktree unchanged.
 
 Feature 4 does not register Rust with the engine generator, parse user Rust source,
 emit module TypeDefs or dispatch code, create standalone Cargo projects, publish a
-crate, or claim Feature 8's multi-platform closure. It supplies the core generator and
+crate, or own the closing multi-platform conformance matrix. It supplies the core generator and
 bindings those later features consume.
 
 ## Evidence From Current Code
@@ -161,13 +153,11 @@ Repository citations for authoritative behaviour use Target_Revision unless the
 Definitive_Go_SDK revision is stated. Current Rust citations describe `main` after
 Features 1–3.
 
-- **Canonical contract and current ledger:**
-  `sdk/rust/completeness/snapshots/schema.json` contains the checked Exact_Target
+- **Canonical contract:**
+  `sdk/rust/codegen/schema.json` contains the checked Exact_Target
   introspection snapshot. It yields 1 query root, 111 public named types, 720 fields,
   611 arguments, 14 input fields, 84 enum values, 12 directives, and 14 directive
-  arguments. `sdk/rust/completeness/classifications.json` currently assigns the full
-  engine-schema authority, all 83 Go code-generator declarations, and nearly all
-  `dagger.gen.go` declarations to Feature 4 with one coarse `Partial` gap.
+  arguments.
 - **Definitive generated library:**
   `sdk/go/generate.go:1-3` invokes the engine's `generate-library` operation.
   `sdk/go/dagger.gen.go` at Definitive_Go_SDK commit
@@ -186,8 +176,7 @@ Features 1–3.
 - **Generator contract boundary:**
   `cmd/codegen/generator/generator.go:17-36` at Target_Revision defines
   `GenerateModule`, `GenerateClient`, `GenerateLibrary`, and `GenerateEntrypoint` as
-  engine generator operations. The umbrella assigns those hooks to Feature 5, even
-  though their current ledger rows are coarsely owned by Feature 4. Module source
+  engine generator operations. The umbrella assigns those hooks to Feature 5. Module source
   introspection tests under `cmd/codegen/generator/go/templates` belong to Feature 6.
 - **Current introspection model:**
   `sdk/rust/crates/dagger-sdk/src/core/introspection.rs:137-311` can deserialize named
@@ -249,53 +238,11 @@ Features 1–3.
   ownership, complete public documentation, panic-free library paths, denied unsafe
   code, exact authority evidence, and generator plus engine-backed tests.
 
-## Completeness Contract Policy
+## Generator Policy Obligations
 
-### Existing Capability Scope After Ownership Correction
-
-The following table partitions all existing capabilities currently routed to Feature
-4 and is the human-readable policy. The Generated_Binding_Manifest is the exhaustive
-machine-readable list of individual Capability_IDs.
-
-| Authority partition | Current rows | Feature 4 rows | Target policy |
-|---|---:|---:|---|
-| `engine-schema` | 1,567 | 1,567 | Retain every Active_Schema_Coordinate under Feature 4 |
-| `go-client` generated `dagger.gen.go` surface | 1,679 | 1,673 | Retain generated binding, load/reference, and common object-interface behaviours; route trace and execution-error rows to Feature 3 |
-| `go-codegen` | 83 | 21 | Retain only shared schema-to-client mapping behaviours; route engine generator operations to Feature 5 and module source/introspection behaviours to Feature 6 |
-| **Total** | **3,329** | **3,261** | Ownership change alone does not change status |
-
-The lexicographically sorted compact-JSON list of the 3,261 retained existing
-Capability_IDs has scope digest
-`sha256:2b46180b54356faf2071a91198afd1a0e40a757b57a1686f579d2f9ab6ed583f`.
-
-### Go Client Ownership Correction
-
-| Definitive Go declarations | Count | Correct owner | Rationale |
-|---|---:|---|---|
-| `Tracer` | 1 | Feature 3 | Trace construction and propagation are observability behaviour |
-| `ExecError` plus `Error`, `Extensions`, `Message`, and `Unwrap` | 5 | Feature 3 | Typed engine-domain failure projection was delivered by Feature 3 |
-| Remaining generated library declarations | 1,673 | Feature 4 | They define or support the Core_Schema generated client surface |
-
-Routing these six rows does not itself assert that Feature 3 evidence is sufficient for
-a Complete_Status. Any status change remains a separate evidence-backed ledger edit.
-
-### Go Code-Generator Ownership Correction
-
-This source-by-source partition accounts for all 83 current `go-codegen` rows.
-`GenerateClient` remains Feature 5-owned as an engine generator hook; Feature 7 owns
-the generated standalone project's contents and usability.
-
-| Source group at Target_Revision | Count | Correct owner | Rationale |
-|---|---:|---|---|
-| `templates/enum_test.go`, `format.go`, `interface_surface_test.go`, `object_test.go`, `param_names_test.go` | 21 | Feature 4 | Shared schema-to-client mapping and generated public-surface behaviour |
-| `generator/generator.go`, `go/generate_{client,entrypoint,library,module}.go`, `generate_module_test.go`, `go/generator.go`, `loader.go`, `mount.go`, `templates/templates.go` | 19 | Feature 5 | Engine generator interface, backend orchestration, overlays, and post-generation operations |
-| `templates/functions.go`, `introspect_emit_test.go`, `module_interfaces_test.go`, `module_objects_test.go`, `module_types.go`, `modules_test.go`, `visit_determinism_test.go` | 43 | Feature 6 | User-source discovery, module TypeDef/introspection emission, and module traversal |
-
-### Omitted Rust Policy Capabilities
-
-Feature 1 did not inventory the Rust-specific correctness obligations needed to call a
-generated client complete. Feature 4 adds the following stable IDs under the
-`rust-policy` authority and routes them to Feature 4:
+These stable identifiers name the generator's correctness obligations; their
+behaviours are specified throughout this document and enforced by the generator's
+test suites:
 
 ```text
 policy/rust-policy/core-codegen-atomic-publication
@@ -315,22 +262,6 @@ policy/rust-policy/core-codegen-scalar-wire-types
 policy/rust-policy/core-codegen-target-drift
 policy/rust-policy/core-codegen-toolchain-compatibility
 ```
-
-### Status Evidence Boundary
-
-Source presence or a matching generated filename can establish only `Partial`. A
-Complete_Status requires a Binding_Record, implementation evidence, and executable
-verification evidence scoped to every affected Capability_ID. One property may prove a
-shared generator rule for many coordinates only when the manifest records why every
-coordinate falls within that property's generated domain. A compile of `gen.rs` alone
-does not prove wire names, argument omission, nullable decoding, ID conversion,
-directive projection, or public reachability.
-
-Feature 4 evidence may establish completion for generator and generated-binding
-capabilities without waiting for Feature 8's platform matrix when it is deterministic,
-target-scoped, and capability-complete. Feature 8 remains responsible for cross-SDK,
-multi-platform, and full application end-to-end closure. An unrelated `sdk-sdk` check
-cannot be attached as Feature 4 verification evidence.
 
 ## Core Schema Contract Policy
 
@@ -419,39 +350,6 @@ discard new directive semantics that happen not to affect the old target.
 | Formatter | Use the pinned Rust toolchain's canonical formatter without semantic compiler fix-ups | `GENERATED_FORMAT_FAILED` | Temporary state before publication |
 
 ## Requirements
-
-### Requirement 1: Exact and Honest Completeness Scope
-
-**User Story:** As a Rust SDK release reviewer, I want every Feature 4 capability
-identified and correctly owned, so that the large completeness movement is real rather
-than a bulk relabel.
-
-#### Acceptance Criteria
-
-1. WHEN Feature 4 begins implementation, THE Completeness_Ledger SHALL route the 3,261
-   retained existing capability IDs to Feature 4.
-2. WHEN the Go-client ownership correction is applied, THE Completeness_Ledger SHALL
-   route the six trace and execution-error declarations to Feature 3.
-3. WHEN the Go-codegen ownership correction is applied, THE Completeness_Ledger SHALL
-   route the 19 engine-generator declarations to Feature 5.
-4. WHEN the Go-codegen ownership correction is applied, THE Completeness_Ledger SHALL
-   route the 43 module-source and introspection declarations to Feature 6.
-5. WHEN ownership changes without new evidence, THE Completeness_Ledger SHALL preserve
-   the capability's prior status.
-6. WHEN Feature 4 policy is registered, THE rust-policy authority SHALL include the 16
-   omitted core-codegen capability IDs.
-7. THE Generated_Binding_Manifest SHALL contain exactly one Binding_Record for every
-   Feature 4-owned Active_Capability.
-8. IF a Binding_Record cites a materially different Rust public shape, THEN THE
-   Completeness_Ledger SHALL require reviewed Idiomatic_Equivalent decision evidence.
-9. WHEN a capability receives a Complete_Status, THE Completeness_Ledger SHALL cite
-   capability-scoped implementation and executable verification evidence.
-10. IF evidence proves only source presence or compilation, THEN THE
-    Completeness_Ledger SHALL retain `Partial` for behaviours not proved by that
-    evidence.
-11. WHEN the Exact_Target changes, THE completeness validator SHALL reject every
-    unreconciled Feature 4 capability addition, removal, fingerprint change, or owner
-    change.
 
 ### Requirement 2: Validated Canonical Schema Input
 
@@ -744,20 +642,19 @@ reviewable, so that schema changes produce only intentional generated diffs.
 15. WHEN concurrent verification processes run against the same checkout, THE
     generation workflow SHALL avoid shared mutable temporary output.
 
-### Requirement 10: Capability-Complete Verification and Evidence
+### Requirement 10: Capability-Complete Verification
 
 **User Story:** As a release reviewer, I want executable proof behind every generated
-binding status, so that thousands of green ledger rows mean more than “the file
-compiled.”
+binding, so that a green generation gate means more than "the file compiled."
 
 #### Acceptance Criteria
 
 1. WHEN the Canonical_Schema is verified, THE manifest test SHALL prove exact equality
    between Active_Schema_Coordinates and schema Binding_Records.
 2. WHEN retained Go-client capabilities are verified, THE manifest test SHALL prove
-   exact equality between their Capability_IDs and generated Binding_Records.
-3. WHEN retained Go-codegen capabilities are verified, THE manifest test SHALL prove
-   exact equality between their Capability_IDs and mapping-policy Binding_Records.
+   exact equality between the reviewed Go-client surface and generated Binding_Records.
+3. WHEN retained Go-codegen policies are verified, THE manifest test SHALL prove
+   exact equality between the reviewed policy set and mapping-policy Binding_Records.
 4. WHEN generated public reachability is verified, THE compile suite SHALL reference
    every emitted public Rust symbol through the supported `dagger-sdk` namespace.
 5. WHEN required arguments and fields are verified, THE compile-fail suite SHALL prove
@@ -784,28 +681,22 @@ compiled.”
     rustdoc warnings under the declared toolchain.
 16. WHEN generated source compatibility is verified, THE compile suite SHALL use the
     workspace MSRV and declared features without undocumented flags.
-17. WHEN exact-target engine evidence runs, THE integration suite SHALL exercise
+17. WHEN exact-target engine tests run, THE integration suite SHALL exercise
     representative scalar, enum, input, object, interface, nullable, list-object,
     expected-type, and Void paths.
 18. WHEN generated bindings are tested, THE suite SHALL preserve Feature 2/3 lifecycle,
     timeout, transport, GraphQL, and engine-domain error behaviour.
-19. WHEN a verification result is registered, THE evidence record SHALL identify the
-    Exact_Target, subject revision, capability scope, command, and result identity.
-20. IF any Feature 4-owned capability lacks its required passing evidence, THEN THE
-    completeness report SHALL retain that capability as `Missing` or `Partial`.
+19. WHEN a verification suite runs, THE suite SHALL pin the Exact_Target and subject
+    revision it verified.
+20. IF any generated binding lacks its required passing verification, THEN THE
+    generation gate SHALL fail.
 
 ## Iteration and Feedback Notes
 
 - Requirements-first workflow selected for Feature 4.
 - Ground truth reviewed against the Exact_Target schema snapshot, the Definitive Go
   generated library, target-pinned Go generator sources and tests, current Rust
-  generator templates, current generated output, and the Feature 1 ledger.
-- The reviewed boundary corrects 68 coarsely routed rows before implementation: six
-  Go-client trace/error declarations, 19 engine-generator declarations, and 43 module
-  source/introspection declarations.
-- Feature 4 closes 3,261 existing blocking rows when their evidence passes. The final
-  `Implemented` versus `Idiomatic_Equivalent` split remains evidence-led; the spec does
-  not optimize the label at the expense of idiomatic Rust.
+  generator templates, and current generated output.
 - Explicit GraphQL `null` as a generated argument is not added beyond the Definitive Go
   surface. Raw_Request remains the lossless escape hatch. Concrete zero-like values are
   explicitly supported because Rust can preserve them without copying Go's zero-value

@@ -5,17 +5,17 @@
 Feature 4 replaces the current best-effort Rust generator with a target-pinned,
 fallible projection pipeline and replaces the monolithic generated client with a
 coordinate-complete Rust API. The pipeline consumes the checked engine introspection
-snapshot selected by `sdk/rust/completeness/target.json`, validates it into an
+snapshot selected by `sdk/rust/codegen/target.json`, validates it into an
 order-independent canonical model, derives one typed binding plan, renders per-type
 Rust modules, formats them with the pinned toolchain, and assembles the exhaustive
 Generated_Binding_Manifest before any repository file can change.
 
 The design keeps code generation and query execution separate. `dagger-codegen` is a
 pure schema compiler: it performs no filesystem, process, network, engine, or
-completeness-ledger I/O. `dagger-bootstrap` is the repository orchestration boundary:
-it reads checked inputs, invokes the formatter in private temporary state, asks the
-completeness crate to close the authoritative capability mapping, and either verifies
-or transactionally publishes the declared output set. Generated bindings remain thin
+manifest I/O. `dagger-bootstrap` is the repository orchestration boundary: it reads
+checked inputs, invokes the formatter in private temporary state, assembles the
+Generated_Binding_Manifest over the projection catalog, and either verifies or
+transactionally publishes the declared output set. Generated bindings remain thin
 projections over Feature 2's `SessionHandle` and immutable `Selection`; Feature 3's
 typed transport, GraphQL, engine-domain, timeout, and lifecycle failures therefore
 remain the only execution path.
@@ -58,10 +58,6 @@ and Rust `1.97.1` toolchain.
 
 ### Owning relationships
 
-- Feature 1 owns Capability_ID construction, authority extraction, ledger status
-  policy, evidence registration, and derived reports. Feature 4 extends the
-  completeness crate with binding-manifest assembly and validation; it does not create
-  an independent parity ledger.
 - Feature 2 owns `Client`, `SessionHandle`, immutable `Selection`, `QueryBuilder`,
   `Loadable`, `IntoID`, argument-build failures, and the close/timeout fence. Feature 4
   adds generated uses and one typed ID-erasure support value; it does not introduce a
@@ -82,9 +78,7 @@ and Rust `1.97.1` toolchain.
 - Feature 7 owns complete standalone, module, and dependency client projects. Feature
   4 supplies the core bindings those projects import; it does not create their Cargo
   projects or workspace configuration.
-- Feature 8 owns the multi-platform, cross-SDK, and full application conformance
-  matrix. Feature 4 supplies focused exact-target engine evidence for the generated
-  categories it claims.
+- Feature 9 owns release assembly and the final gate.
 - Feature 9 owns immutable Git-tagged distribution, user migration, final SemVer
   review, release assets, and the stable release gate. Feature 4 detects when its
   public change requires a breaking-change fragment but does not create a release.
@@ -125,12 +119,11 @@ and Rust `1.97.1` toolchain.
 - `sha2`, `serde`, `serde_json`, and `thiserror` are direct codegen dependencies for
   target digests, wire input, canonical manifests, and typed failures. They already
   exist in the workspace and lockfile.
-- `dagger-bootstrap` removes its dependency on `dagger-sdk`, adds the internal
-  `dagger-sdk-completeness` library, and reuses the workspace `tempfile` dependency for
-  private formatting and publication state.
-- `dagger-sdk-completeness` depends on `dagger-codegen`'s data-only projection catalog
-  types so it can map authoritative capabilities without parsing Rust source text.
-  The dependency direction remains one-way: codegen has no knowledge of the ledger.
+- `dagger-bootstrap` removes its dependency on `dagger-sdk` and reuses the workspace
+  `tempfile` dependency for private formatting and publication state.
+- Manifest assembly consumes `dagger-codegen`'s data-only projection catalog types
+  without parsing Rust source text. The dependency direction remains one-way: codegen
+  has no knowledge of the manifest.
 - `proptest` and `trybuild` remain the workspace-standard property and compile-fail
   tools. No snapshot framework, template runtime, async-trait helper, or additional
   code-formatting crate is introduced.
@@ -141,7 +134,7 @@ workspace registry/source policy, and `unsafe_code = "deny"`.
 ### Non-goals
 
 - Feature 4 does not consume a live engine schema during repository regeneration. A
-  target refresh is an explicit Feature 1 authority operation; ordinary generation
+  target refresh is an explicit maintainer authority operation; ordinary generation
   uses the checked snapshot and target descriptor.
 - Feature 4 does not expose the raw introspection model from `dagger-sdk` or make schema
   compiler types part of the application SDK.
@@ -207,8 +200,6 @@ sdk/rust/
 │   │           ├── mod.rs              # check/update orchestration
 │   │           ├── format.rs           # pinned rustfmt adapter
 │   │           └── publish.rs           # owned-set comparison/publication
-│   ├── dagger-sdk-completeness/
-│   │   └── src/core_codegen.rs          # scope correction + binding closure
 │   └── dagger-sdk/
 │       ├── src/
 │       │   ├── scalar.rs                # Id, Json, Platform
@@ -225,15 +216,13 @@ sdk/rust/
 │           ├── generated_public_api.rs  # generated positive compile surface
 │           ├── core_codegen.rs           # handwritten runtime category tests
 │           └── ui/core_codegen/          # representative generated compile failures
-├── completeness/
-│   ├── core-codegen-mappings.json        # reviewed Go/policy mapping exceptions
-│   └── artifacts/
-│       └── core-codegen-bindings.json    # Generated_Binding_Manifest
+├── codegen/
+│   ├── target.json                        # checked target identity
+│   ├── schema.json                        # checked introspection snapshot
+│   └── generated.json                     # Generated_Binding_Manifest
 └── rust-toolchain.toml                    # formatter/compiler authority
 
-toolchains/rust-sdk-dev/
-├── main.go                                # generate/check/core-conformance functions
-└── completeness.go                        # ledger verification and evidence commands
+.dagger/modules/rust-client-dev/           # generate/check/core-conformance functions
 ```
 
 Every file below `dagger-sdk/src/gen/` is generated and carries a provenance header.
@@ -251,18 +240,16 @@ loads the schema or manifest.
 
 ```mermaid
 flowchart TB
-    subgraph Control["Generation and evidence control plane"]
+    subgraph Control["Generation control plane"]
         Target["Exact target descriptor"]
         Snapshot["Canonical schema snapshot"]
-        Ledger["Feature 1 ledger"]
-        Mapping["Reviewed compatibility mappings"]
         Decode["Bounded raw decode"]
         Validate["Canonical validator"]
         Project["Rust projection plan"]
         Render["Per-type Rust renderer"]
         Format["Pinned rustfmt in private state"]
         Catalog["Projection catalog"]
-        Close["Completeness binding closure"]
+        Close["Binding manifest assembly"]
         Candidate["Candidate owned output set"]
         Mode{"check or update"}
         Compare["Artifact drift report"]
@@ -273,8 +260,6 @@ flowchart TB
         Decode --> Validate --> Project
         Project --> Render --> Format
         Project --> Catalog
-        Ledger --> Close
-        Mapping --> Close
         Catalog --> Close
         Format --> Candidate
         Close --> Candidate
@@ -307,8 +292,8 @@ flowchart TB
 ### Generation pipeline
 
 1. `dagger-bootstrap generate` resolves paths relative to an explicit Rust workspace
-   root and reads the target descriptor, schema snapshot, current ledger, reviewed
-   mapping file, and previous binding manifest. It rejects non-regular inputs and size
+   root and reads the target descriptor, schema snapshot, and previous binding
+   manifest. It rejects non-regular inputs and size
    violations before decoding.
 2. The raw decoder accepts either the checked `{"__schema": ...}` shape or a full
    GraphQL `{"data":{"__schema": ...}}` response, but the repository command requires
@@ -326,10 +311,9 @@ flowchart TB
 6. The formatter adapter writes only to a unique private temporary directory, invokes
    the formatter selected by `rust-toolchain.toml`, reparses the result, and returns
    bytes. No repository path is mounted or passed as formatter output.
-7. The completeness binding closer maps the projection catalog across the corrected
-   3,261 existing Feature 4 capabilities and 16 Rust policy capabilities. Unmatched,
-   duplicate, ambiguous, wrong-owner, or fingerprint-drifted rows reject the complete
-   candidate.
+7. Manifest assembly maps the projection catalog into the Generated_Binding_Manifest,
+   one record per schema coordinate or explicit no-symbol policy. Unmatched, duplicate,
+   ambiguous, or fingerprint-drifted records reject the complete candidate.
 8. Finalization computes formatted artifact digests, implementation fingerprints, and
    canonical compact JSON for the binding manifest. Only then may check or update mode
    inspect repository output paths.
@@ -405,7 +389,7 @@ pub fn render_core(plan: &ProjectionPlan) -> Result<RenderedCandidate, Diagnosti
 ```
 
 `ProjectionPlan` fields are inspectable through read-only methods for tests and the
-completeness bridge but cannot be mutated after validation. `RenderedCandidate` paths
+manifest bridge but cannot be mutated after validation. `RenderedCandidate` paths
 are validated relative paths; construction rejects absolute paths, parent traversal,
 empty segments, and platform-dependent aliases. The library API returns typed
 diagnostics and contains no `eyre::Result`, filesystem path opening, global logger
@@ -434,8 +418,8 @@ struct RawIntrospectionResponse { /* accepted envelope only */ }
 struct RawSchema { /* optional wire fields retained as optional */ }
 ```
 
-The target is projected from Feature 1's descriptor; no second target file is added.
-Digest calculation uses Feature 1's canonical schema digest algorithm and verifies the
+The target is projected from the checked target descriptor; no second target file is
+added. Digest calculation uses the canonical schema digest algorithm and verifies the
 same `schema_digest` already recorded in `target.json`. `RawSchema` deliberately
 retains absence and unknown kinds so validation can distinguish missing data from a
 supported empty list and can report the authoritative coordinate that failed.
@@ -664,7 +648,6 @@ pub struct BindingDescriptor {
     pub binding_kind: BindingKind,
     pub signature: RustSignature,
     pub implementation_fingerprint: Sha256Digest,
-    pub required_evidence: BTreeSet<EvidenceScope>,
 }
 
 pub struct ProjectionCatalog {
@@ -677,17 +660,17 @@ pub struct ProjectionCatalog {
 The catalog describes semantics, not source spans guessed by regex. A binding's
 implementation fingerprint is the digest of canonical JSON containing its wire
 coordinate, exact Rust signature, wrapper plan, argument plan, directives, execution
-strategy, symbol path, and evidence domains. Formatting-only changes do not change the
+strategy, and symbol path. Formatting-only changes do not change the
 semantic fingerprint; the artifact digest still detects their byte diff.
 
-`dagger-sdk-completeness::core_codegen` joins this catalog to the corrected Feature 4
-ledger scope. Engine-schema coordinates join by exact semantic coordinate. Generated
+Manifest assembly joins this catalog to the active schema coordinates; engine-schema
+coordinates join by exact semantic coordinate. Generated
 Go declarations join through closed rules for schema operations, enum constants,
 options, input values, interface conversions, ID/load/re-entry helpers, and serde or
 Rust-language equivalents. The 21 shared Go-codegen capabilities and 16 Rust policy
 capabilities join through exact reviewed IDs in `core-codegen-mappings.json`.
 Catch-all or name-only fallback is forbidden: every rule declares the authority kind,
-semantic signature predicate, Binding_Kind, and evidence scope, and exact-set tests
+semantic signature predicate and Binding_Kind, and exact-set tests
 prove that no extra row matched.
 
 ### Rust renderer (`render/`)
@@ -874,9 +857,8 @@ dagger-rust generate --workspace <sdk/rust> --update
 ```
 
 Exactly one mode is required. Repository-relative defaults below the explicit
-workspace locate `completeness/target.json`, `completeness/snapshots/schema.json`,
-`completeness/artifacts/ledger.json`, `completeness/core-codegen-mappings.json`, the
-previous binding manifest, and the declared generated roots. Narrow path overrides are
+workspace locate `codegen/target.json`, `codegen/schema.json`, the previous binding
+manifest, and the declared generated roots. Narrow path overrides are
 available for fixture tests but cannot expand destination ownership beyond an explicit
 temporary test root.
 
@@ -892,50 +874,19 @@ finalized. The publication transaction is confined to paths declared by the prev
 and candidate manifests plus the explicit legacy predecessor; symlinks and
 non-regular destinations are rejected without following them.
 
-### Completeness integration (`dagger-sdk-completeness/src/core_codegen.rs`)
-
-```rust
-pub fn assemble_core_codegen_manifest(
-    target: &TargetDescriptor,
-    ledger: &Ledger,
-    mappings: &CoreCodegenMappings,
-    catalog: &ProjectionCatalog,
-    artifacts: &FormattedArtifactSet,
-) -> Result<GeneratedBindingManifest, DiagnosticSet>;
-
-pub fn verify_core_codegen_evidence(
-    manifest: &GeneratedBindingManifest,
-    evidence: &EvidenceRegistry,
-) -> Result<(), DiagnosticSet>;
-```
-
-Assembly first applies the approved ownership correction as an exact transition: six
-Go-client rows route to Feature 3, 19 Go-codegen rows to Feature 5, and 43 Go-codegen
-rows to Feature 6 without changing status. It registers the 16 exact Rust policy IDs,
-then requires equality with the approved 3,261-row retained scope digest. The mapping
-join produces exactly one record per active Feature 4 capability. A record may point
-to a public symbol, a private runtime strategy, or a reviewed no-symbol policy, but it
-must always name its implementation fingerprint and required evidence.
-
-Evidence verification does not infer success from a manifest. It joins recorded
-implementation, property/compile/projection, documentation, and exact-target evidence
-whose subject revision, target, command, result identity, and capability scope match.
-The ledger transition engine remains the only writer of status; a missing evidence
-domain leaves the existing `Partial` or `Missing` result intact.
-
-### Repository Dagger workflow (`toolchains/rust-sdk-dev`)
+### Repository Dagger workflow (`.dagger/modules/rust-client-dev`)
 
 `WithGeneratedClient` stops mounting live engine introspection and stops running
 `cargo fix`. It invokes `dagger-rust generate --update` against the checked workspace
 and returns only the declared change set. A `GeneratedClientCheck` function invokes
 `--check`, the generated positive/negative compile suites, query-projection tests,
-rustdoc with warnings denied, and completeness binding verification.
+rustdoc with warnings denied, and owned-manifest verification.
 
 A separate `CoreConformance` function starts the Exact_Target engine and runs focused
 tests for scalar, enum, input object, object, interface, nullable handle, list re-entry,
 expected-type ID conversion, Void, lifecycle close, timeout, GraphQL, and engine-domain
-errors. Its evidence record names that live target and only the capabilities observed
-by those cases. The existing `CargoFmt`, `CargoCheck`, `Test`, `CargoClippy`,
+errors. Its report names that live target and only the behaviours observed by those
+cases. The existing `CargoFmt`, `CargoCheck`, `Test`, `CargoClippy`,
 `CargoDoc`, and `CargoDeny` checks remain independently visible.
 
 ## Data Models and Invariants
@@ -949,7 +900,7 @@ pub struct SchemaInput {
 }
 ```
 
-The descriptor is decoded from the Feature 1 target registry. Digests are lowercase,
+The descriptor is decoded from the checked target descriptor file. Digests are lowercase,
 fixed-width SHA-256 values and revisions are full Git object IDs. The schema digest is
 computed from the checked snapshot bytes before JSON decoding; this makes the approved
 artifact, rather than a reserialized equivalent, the trust boundary. The canonical
@@ -963,7 +914,6 @@ snapshot bytes digest == target.schema_digest
 target identity == approved Exact_Target
 projection catalog target == target identity
 binding manifest target == target identity
-evidence target == binding manifest target
 ```
 
 No later layer can replace or weaken one member of this chain.
@@ -1136,14 +1086,13 @@ pub struct GeneratedBindingManifest {
 }
 
 pub struct BindingRecord {
-    pub capability_id: CapabilityId,
+    pub key: BindingKey,
     pub authority_id: AuthorityId,
     pub capability_fingerprint: CapabilityFingerprint,
     pub binding_kind: BindingKind,
     pub wire_coordinate: Option<SchemaCoordinate>,
     pub rust_symbol: Option<RustPath>,
     pub implementation_fingerprint: ImplementationFingerprint,
-    pub required_evidence: BTreeSet<EvidenceDomain>,
 }
 
 pub enum BindingKind {
@@ -1158,17 +1107,16 @@ pub enum BindingKind {
 The manifest is an exhaustive join, not a generator-produced assertion of status.
 Records without a public symbol are permitted only for an enumerated private runtime
 strategy, mapping policy, or target-inactive directive. A materially different public
-shape requires an approved decision ID. The manifest cannot set `Implemented`,
-`Partial`, or `Missing`; Feature 1 derives those states after joining evidence.
+shape requires an approved decision ID. The manifest is an inventory of
+bindings, not a status assertion.
 
 The binding invariant is:
 
 ```text
 keys(bindings) == active Feature 4 capability IDs
-count(binding records per capability) == 1
+count(binding records per coordinate) == 1
 record fingerprint == authoritative capability fingerprint
 record implementation fingerprint == current projection/policy fingerprint
-record required evidence is non-empty
 ```
 
 ### Runtime handle invariants
@@ -1204,25 +1152,15 @@ Each property is a universal contract over generated fixture data, canonical tar
 data, or both. Property tests run at least 100 successful cases per strategy unless
 the finite Exact_Target domain is exhaustively enumerated instead.
 
-### Property 1: Ownership correction is exact and status-neutral
-
-*For any* accepted pre-Feature-4 ledger, applying the reviewed ownership transition
-routes exactly 3,261 retained capabilities to Feature 4, six trace/error declarations
-to Feature 3, 19 generator-operation declarations to Feature 5, and 43 module-source
-or introspection declarations to Feature 6; it also registers exactly the 16 Rust
-policy IDs and leaves every pre-existing status unchanged.
-
-**Validates: Requirements 1.1, 1.2, 1.3, 1.4, 1.5, 1.6**
-
 ### Property 2: Binding closure is a capability bijection
 
-*For any* validated target ledger and projection catalog, manifest assembly succeeds
-if and only if the manifest keys equal the active Feature 4 capability IDs, every ID
-has one fingerprint-matching record, every materially different shape cites a reviewed
-idiomatic-equivalence decision, and every record declares capability-scoped executable
-evidence; source or compile evidence alone cannot complete an unproved behaviour.
+*For any* validated projection catalog, manifest assembly succeeds if and only if
+the manifest keys equal the active schema coordinates, every coordinate has one
+fingerprint-matching Binding_Record, and every materially different shape cites a
+reviewed idiomatic-equivalence decision; source presence or compilation alone cannot
+complete an unproved behaviour.
 
-**Validates: Requirements 1.7, 1.8, 1.9, 1.10, 10.1, 10.2, 10.3, 10.19, 10.20**
+**Validates: Requirements 10.1, 10.2, 10.3**
 
 ### Property 3: Target identity gates all publication
 
@@ -1231,7 +1169,7 @@ snapshot bytes, target revision, engine version, source revisions, scope fingerp
 or authority fingerprints causes a target- or digest-bearing diagnostic and leaves
 the committed artifact set unchanged until every identity agrees.
 
-**Validates: Requirements 1.11, 2.1, 2.2, 2.11**
+**Validates: Requirements 2.1, 2.2, 2.11**
 
 ### Property 4: Schema validation is total and coordinate-complete
 
@@ -1460,21 +1398,12 @@ unobserved and no unknown coordinate is observed.
 
 ### Property 29: Exact-target conformance spans every generated category
 
-*For any* focused conformance run accepted as Feature 4 evidence, the live engine is
+*For any* focused conformance run accepted as exact-target coverage, the live engine is
 the Exact_Target and the suite successfully exercises representative scalar, enum,
 input, object, interface, nullable, object-list, expected-type, and Void paths through
 the generated public API.
 
 **Validates: Requirements 10.17**
-
-### Property 30: Evidence cannot outlive its subject
-
-*For any* registered Feature 4 verification result, changing its target, subject
-revision, command identity, result digest, capability scope, implementation
-fingerprint, or required evidence domain prevents the result from satisfying the
-binding record.
-
-**Validates: Requirements 1.9, 10.19, 10.20**
 
 ## Error Handling
 
@@ -1511,7 +1440,7 @@ The stable codes are partitioned by failure boundary:
 | Handle and argument policy | `OBJECT_HANDLE_MAPPING_INVALID`, `LIST_REENTRY_TYPE_INVALID`, `EXPECTED_TYPE_INVALID`, `OPTION_ARGUMENT_MAPPING_INVALID`, `WIRE_NAME_MISMATCH` |
 | Directive policy | `DEPRECATION_DIRECTIVE_INVALID`, `EXPERIMENTAL_DIRECTIVE_INVALID`, `TARGET_INACTIVE_DIRECTIVE_CHANGED` |
 | Rust surface | `RUST_NAME_INVALID`, `RUST_NAME_COLLISION`, `GENERATED_DOCUMENTATION_INVALID`, `GENERATED_PROVENANCE_INVALID` |
-| Completeness closure | `CAPABILITY_SCOPE_CHANGED`, `CAPABILITY_BINDING_MISSING`, `CAPABILITY_BINDING_DUPLICATE`, `CAPABILITY_FINGERPRINT_MISMATCH`, `CAPABILITY_EVIDENCE_INCOMPLETE` |
+| Manifest assembly | `CAPABILITY_SCOPE_CHANGED`, `CAPABILITY_BINDING_MISSING`, `CAPABILITY_BINDING_DUPLICATE`, `CAPABILITY_FINGERPRINT_MISMATCH` |
 | Repository orchestration | `GENERATED_FORMAT_FAILED`, `GENERATED_OUTPUT_DRIFT`, `GENERATED_PUBLICATION_FAILED` |
 
 `REQUIRED_ARGUMENT_OMITTED` is the named compile-fail evidence class, not a runtime
@@ -1559,49 +1488,6 @@ Successful completion removes transaction state; stale transaction state from a 
 process is detected on the next update and must be recovered or diagnosed before a new
 publication begins. Check mode never enters this path.
 
-## Completeness and Evidence Flow
-
-The binding manifest connects four independently reviewable facts:
-
-```mermaid
-flowchart LR
-    A["Authoritative capability and fingerprint"] --> J["Exhaustive manifest join"]
-    P["Validated projection or reviewed policy"] --> J
-    S["Generated artifact digest or handwritten support digest"] --> J
-    J --> B["Binding record"]
-    B --> E["Capability-scoped evidence join"]
-    T["Properties / compile / projection / rustdoc / exact target"] --> E
-    E --> L["Feature 1 ledger transition"]
-```
-
-Implementation evidence identifies the manifest record and artifact or handwritten
-support fingerprint. Verification evidence identifies its domain, target, subject
-revision, command, result digest, and the exact binding records covered. A shared
-property may cover many records only from the generated catalog that parameterized the
-test; a hand-maintained capability list is not accepted.
-
-The minimum evidence domains are chosen by binding kind:
-
-| Binding kind | Minimum evidence domains |
-|---|---|
-| Public type or public field symbol | implementation, public reachability, relevant property/projection, documentation |
-| Executing field strategy | implementation, query projection, runtime error preservation, and representative exact-target category |
-| Expected-type or list re-entry policy | implementation, exhaustive property, negative compatibility compile case, representative exact-target category |
-| Scalar/enum/input mapping | implementation, exhaustive round-trip or omission property, public reachability, representative exact-target category |
-| Naming/documentation policy | implementation, generated-domain property, compile/rustdoc |
-| Target-inactive directive | implementation fingerprint, definition validation, inactive-domain property |
-| Idiomatic equivalent | all applicable executable domains plus reviewed decision evidence |
-
-The exact-target suite is representative by behaviour category rather than falsely
-claiming one live call per schema coordinate. Exhaustive coordinate proof comes from
-the manifest, compile catalog, and document projection suite. The live suite proves
-that each generated runtime strategy composes with the engine and Feature 2/3 runtime.
-
-Evidence expires whenever the target, subject revision, test command identity, result
-digest, capability scope, projection fingerprint, or implementation fingerprint no
-longer matches. The report retains `Partial` or `Missing` until every record's declared
-domains close; manifest generation itself moves no status.
-
 ## Testing Strategy
 
 ### Test layers
@@ -1615,9 +1501,9 @@ domains close; manifest generation itself moves no status.
 | Compile-pass/fail tests | generated catalog plus `dagger-sdk/tests/ui/` | Public reachability, requiredness, typed-ID compatibility, interface traits, feature boundaries, and negative contracts |
 | Query-projection tests | generated `dagger-sdk/tests/core_projection.rs` | Every target field/argument Wire_Name, omission, concrete zero values, re-entry shape, and no premature transport |
 | Runtime unit tests | `dagger-sdk/src/` | `IdInput`, scalar newtypes, session preservation, all-or-nothing lazy IDs, decoding, lifecycle, timeout, and error fidelity |
-| Manifest/evidence tests | `dagger-sdk-completeness/tests/` | Ownership correction, scope digest, bijection, mapping fingerprints, evidence expiry, and status conservatism |
+| Manifest tests | `dagger-bootstrap/tests/` | Scope digest, bijection, and mapping fingerprints |
 | Bootstrap integration tests | `dagger-bootstrap/tests/generation.rs` | Check purity, exact drift sets, bad inputs, private temporary state, atomic update, rollback, symlink rejection, and concurrency |
-| Exact-target integration | `toolchains/rust-sdk-dev` | Representative live generated scalar, enum, input, object, interface, nullable, list, expected-type, Void, and error paths |
+| Exact-target integration | `.dagger/modules/rust-client-dev` | Representative live generated scalar, enum, input, object, interface, nullable, list, expected-type, Void, and error paths |
 
 Every property test includes a source tag of the form:
 
@@ -1713,5 +1599,5 @@ been deliberately updated. Whole-workspace generation is not a Rust SDK release 
 
 This design deliberately commits to the pure compiler/orchestrator split, recursive
 wrapper model, owned options plus typed `IdInput<T>`, per-type generated modules,
-manifest/evidence closure, and representative exact-target strategy. Implementation
+manifest closure, and representative exact-target strategy. Implementation
 tasks are not derived until this document is explicitly approved.
