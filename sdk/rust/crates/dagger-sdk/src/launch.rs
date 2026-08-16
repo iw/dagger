@@ -91,12 +91,24 @@ impl SelectedCli {
         }
     }
 
-    #[cfg_attr(not(test), expect(dead_code, reason = "test-observation accessor; production paths consume the owning value directly"))]
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "test-observation accessor; production paths consume the owning value directly"
+        )
+    )]
     pub(crate) fn is_compatibility_fallback(&self) -> bool {
         self.release_unavailable.is_some()
     }
 
-    #[cfg_attr(not(test), expect(dead_code, reason = "test-observation accessor; production paths consume the owning value directly"))]
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "test-observation accessor; production paths consume the owning value directly"
+        )
+    )]
     pub(crate) fn release_unavailable(&self) -> Option<&ProvisionError> {
         self.release_unavailable.as_ref()
     }
@@ -123,7 +135,13 @@ impl CliSelectionError {
         }
     }
 
-    #[cfg_attr(not(test), expect(dead_code, reason = "test-observation accessor; production paths consume the owning value directly"))]
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "test-observation accessor; production paths consume the owning value directly"
+        )
+    )]
     pub(crate) fn lookup_cause(&self) -> Option<&crate::CliDiscoveryError> {
         match self {
             Self::Provision(_) => None,
@@ -256,7 +274,13 @@ impl CliSessionStart {
         }
     }
 
-    #[cfg_attr(not(test), expect(dead_code, reason = "test-observation accessor; production paths consume the owning value directly"))]
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "test-observation accessor; production paths consume the owning value directly"
+        )
+    )]
     pub(crate) fn options(&self) -> &CliLaunchRequest {
         &self.options
     }
@@ -341,7 +365,13 @@ impl CliLaunchProjection {
         &self.executable
     }
 
-    #[cfg_attr(not(test), expect(dead_code, reason = "test-observation accessor; production paths consume the owning value directly"))]
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "test-observation accessor; production paths consume the owning value directly"
+        )
+    )]
     pub(crate) fn arguments(&self) -> &[OsString] {
         &self.arguments
     }
@@ -350,7 +380,13 @@ impl CliLaunchProjection {
         &self.environment
     }
 
-    #[cfg_attr(not(test), expect(dead_code, reason = "test-observation accessor; production paths consume the owning value directly"))]
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "test-observation accessor; production paths consume the owning value directly"
+        )
+    )]
     pub(crate) const fn stdio(&self) -> StdioProjection {
         self.stdio
     }
@@ -465,7 +501,10 @@ impl RetryClock for TokioRetryClock {
 pub(crate) struct SpawnSuccess<T> {
     pub(crate) output: T,
     pub(crate) executable: LaunchExecutable,
-    #[cfg_attr(not(test), expect(dead_code, reason = "read only through test-observation accessors"))]
+    #[cfg_attr(
+        not(test),
+        expect(dead_code, reason = "read only through test-observation accessors")
+    )]
     pub(crate) attempts: u8,
 }
 
@@ -501,12 +540,24 @@ impl SpawnError {
         }
     }
 
-    #[cfg_attr(not(test), expect(dead_code, reason = "test-observation accessor; production paths consume the owning value directly"))]
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "test-observation accessor; production paths consume the owning value directly"
+        )
+    )]
     pub(crate) const fn kind(&self) -> SpawnErrorKind {
         self.kind
     }
 
-    #[cfg_attr(not(test), expect(dead_code, reason = "test-observation accessor; production paths consume the owning value directly"))]
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "test-observation accessor; production paths consume the owning value directly"
+        )
+    )]
     pub(crate) const fn attempts(&self) -> u8 {
         self.attempts
     }
@@ -562,12 +613,24 @@ impl SessionSpawnError {
         }
     }
 
-    #[cfg_attr(not(test), expect(dead_code, reason = "test-observation accessor; production paths consume the owning value directly"))]
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "test-observation accessor; production paths consume the owning value directly"
+        )
+    )]
     pub(crate) fn spawn(&self) -> &SpawnError {
         &self.spawn
     }
 
-    #[cfg_attr(not(test), expect(dead_code, reason = "test-observation accessor; production paths consume the owning value directly"))]
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "test-observation accessor; production paths consume the owning value directly"
+        )
+    )]
     pub(crate) fn release_unavailable(&self) -> Option<&ProvisionError> {
         self.release_unavailable.as_ref()
     }

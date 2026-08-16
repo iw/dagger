@@ -95,6 +95,48 @@ where
     }
 }
 
+/// Owns the signal listener that feeds one call's cancellation.
+///
+/// The task holds only a cancellation clone, and dropping the producer aborts
+/// it, so a completed call never leaves a detached listener behind. Signal
+/// registration failure downgrades to the previous no-producer behaviour.
+struct SignalProducer(Option<tokio::task::JoinHandle<()>>);
+
+impl SignalProducer {
+    fn install(cancellation: ModuleCancellation) -> Self {
+        #[cfg(unix)]
+        {
+            use tokio::signal::unix::{SignalKind, signal};
+            let (Ok(mut terminate), Ok(mut interrupt)) = (
+                signal(SignalKind::terminate()),
+                signal(SignalKind::interrupt()),
+            ) else {
+                return Self(None);
+            };
+            Self(Some(tokio::spawn(async move {
+                tokio::select! {
+                    _ = terminate.recv() => {}
+                    _ = interrupt.recv() => {}
+                }
+                cancellation.cancel();
+            })))
+        }
+        #[cfg(not(unix))]
+        {
+            let _ = cancellation;
+            Self(None)
+        }
+    }
+}
+
+impl Drop for SignalProducer {
+    fn drop(&mut self) {
+        if let Some(task) = self.0.take() {
+            task.abort();
+        }
+    }
+}
+
 async fn run_with_client<R, G, F>(
     client: &Client,
     registry: &R,
@@ -111,9 +153,16 @@ where
     let selector = envelope.identity.selector().clone();
     let current_call = CurrentCall::new(envelope.identity.call_id(), selector)
         .map_err(|_| ModuleEntrypointError::InvalidCall)?;
+    let cancellation = ModuleCancellation::default();
+    // Termination signals are the cancellation producer: the engine's teardown
+    // (and a developer running the entrypoint directly) trips the same signal
+    // the dispatcher and authored code observe. The definitive Go SDK offers no
+    // module cancellation; this is an intentional Rust extension that stays
+    // inert until a signal actually arrives.
+    let _signals = SignalProducer::install(cancellation.clone());
     let context = ModuleContextBase::new(
         client.query_builder(),
-        ModuleCancellation::default(),
+        cancellation,
         tracing::Span::current().context(),
         current_call,
     );

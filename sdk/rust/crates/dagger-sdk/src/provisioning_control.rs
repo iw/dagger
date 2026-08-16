@@ -43,7 +43,13 @@ impl ProvisioningCancellation {
         Self::default()
     }
 
-    #[cfg_attr(not(test), expect(dead_code, reason = "driven only by tests until a production canceller exists"))]
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "driven only by tests until a production canceller exists"
+        )
+    )]
     pub(crate) fn cancel(&self) {
         if !self.inner.cancelled.swap(true, Ordering::AcqRel) {
             self.inner.notify.notify_waiters();

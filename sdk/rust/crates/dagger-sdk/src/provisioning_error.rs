@@ -140,7 +140,6 @@ impl ProvisionError {
     pub(crate) const fn status(&self) -> Option<u16> {
         self.status
     }
-
 }
 
 impl fmt::Display for ProvisionError {

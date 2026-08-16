@@ -181,12 +181,24 @@ pub(crate) struct ParsedControl {
 }
 
 impl ParsedControl {
-    #[cfg_attr(not(test), expect(dead_code, reason = "test-observation accessor; production paths consume the owning value directly"))]
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "test-observation accessor; production paths consume the owning value directly"
+        )
+    )]
     pub(crate) fn parameters(&self) -> &SessionParameters {
         &self.parameters
     }
 
-    #[cfg_attr(not(test), expect(dead_code, reason = "test-observation accessor; production paths consume the owning value directly"))]
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "test-observation accessor; production paths consume the owning value directly"
+        )
+    )]
     pub(crate) fn suffix(&self) -> &[u8] {
         &self.suffix
     }
@@ -313,7 +325,13 @@ impl StreamOutcome {
         self.kind
     }
 
-    #[cfg_attr(not(test), expect(dead_code, reason = "test-observation accessor; production paths consume the owning value directly"))]
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "test-observation accessor; production paths consume the owning value directly"
+        )
+    )]
     pub(crate) const fn bytes_seen(&self) -> u64 {
         self.bytes_seen
     }
@@ -397,7 +415,13 @@ pub(crate) enum SessionStartError {
 }
 
 impl SessionStartError {
-    #[cfg_attr(not(test), expect(dead_code, reason = "test-observation accessor; production paths consume the owning value directly"))]
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "test-observation accessor; production paths consume the owning value directly"
+        )
+    )]
     pub(crate) fn protocol(&self) -> Option<&ControlError> {
         match self {
             Self::Spawn(_) => None,
@@ -405,7 +429,13 @@ impl SessionStartError {
         }
     }
 
-    #[cfg_attr(not(test), expect(dead_code, reason = "test-observation accessor; production paths consume the owning value directly"))]
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "test-observation accessor; production paths consume the owning value directly"
+        )
+    )]
     pub(crate) fn diagnostics(&self) -> Option<&DiagnosticSnapshot> {
         match self {
             Self::Spawn(_) => None,
@@ -691,19 +721,37 @@ pub(crate) struct SessionResources {
 /// Deterministic terminal observation of child and background worker state.
 #[derive(Debug)]
 pub(crate) struct SessionCloseReport {
-    #[cfg_attr(not(test), expect(dead_code, reason = "read only through test-observation accessors"))]
+    #[cfg_attr(
+        not(test),
+        expect(dead_code, reason = "read only through test-observation accessors")
+    )]
     stream_outcomes: Vec<StreamOutcome>,
-    #[cfg_attr(not(test), expect(dead_code, reason = "read only through test-observation accessors"))]
+    #[cfg_attr(
+        not(test),
+        expect(dead_code, reason = "read only through test-observation accessors")
+    )]
     child_failure: Option<BackgroundFailureKind>,
 }
 
 impl SessionCloseReport {
-    #[cfg_attr(not(test), expect(dead_code, reason = "test-observation accessor; production paths consume the owning value directly"))]
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "test-observation accessor; production paths consume the owning value directly"
+        )
+    )]
     pub(crate) fn stream_outcomes(&self) -> &[StreamOutcome] {
         &self.stream_outcomes
     }
 
-    #[cfg_attr(not(test), expect(dead_code, reason = "test-observation accessor; production paths consume the owning value directly"))]
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "test-observation accessor; production paths consume the owning value directly"
+        )
+    )]
     pub(crate) const fn child_failure(&self) -> Option<BackgroundFailureKind> {
         self.child_failure
     }
@@ -732,7 +780,10 @@ impl SessionResources {
     ) -> Result<SessionCloseReport, EngineConnectionError> {
         let mut failures = Vec::new();
         self.stdin.take();
-        let child_failure = if let Some(mut child) = self.child.take() {
+        // The child and worker handles stay owned by self until each await
+        // completes: if this future is dropped mid-close, Drop still observes
+        // them and aborts, preserving the armed-owner invariant.
+        let child_failure = if let Some(child) = self.child.as_mut() {
             match tokio::time::timeout(timeout, child.wait()).await {
                 Ok(Ok(status)) => {
                     #[cfg(test)]
@@ -748,26 +799,30 @@ impl SessionResources {
                 }
                 Ok(Err(_)) => {
                     failures.push(ShutdownFailureKind::Reap);
-                    force_kill_and_reap(&mut child, &mut failures).await;
+                    force_kill_and_reap(child, &mut failures).await;
                     None
                 }
                 Err(_) => {
                     failures.push(ShutdownFailureKind::Timeout);
-                    force_kill_and_reap(&mut child, &mut failures).await;
+                    force_kill_and_reap(child, &mut failures).await;
                     None
                 }
             }
         } else {
             None
         };
+        self.child = None;
 
         let mut outcomes = Vec::with_capacity(3);
-        for (kind, task) in [
-            (StreamKind::Stdout, self.stdout_task.take()),
-            (StreamKind::Stderr, self.stderr_task.take()),
-        ] {
-            if let Some(task) = task {
-                match task.await {
+        for kind in [StreamKind::Stdout, StreamKind::Stderr] {
+            let slot = match kind {
+                StreamKind::Stdout => &mut self.stdout_task,
+                StreamKind::Stderr => &mut self.stderr_task,
+            };
+            if let Some(task) = slot.as_mut() {
+                let joined = task.await;
+                *slot = None;
+                match joined {
                     Ok(outcome) => {
                         if outcome.failure().is_some() {
                             failures.push(stream_shutdown_failure(kind));
@@ -805,7 +860,6 @@ impl SessionResources {
             ))
         }
     }
-
 }
 
 async fn force_kill_and_reap(child: &mut Child, failures: &mut Vec<ShutdownFailureKind>) {
