@@ -2,7 +2,7 @@
 
 Tasks 1–6 are recorded complete: they were delivered by the 2026-08 audit
 remediation (pull request #72) and verified by the engine-free gate on two hosts
-plus the engine-backed Build/Verify entry points from `ENGINE_INTEGRATION.md`.
+plus the engine-backed Build/Verify entry points from `sdk/rust/docs/engine-integration.md`.
 Task 7 is the one open follow-up.
 
 - [x] 1. Implement cooperative module cancellation
@@ -90,7 +90,7 @@ Task 7 is the one open follow-up.
     test, clippy (warning-denied), rustdoc (warning-denied), and
     `cargo deny check`; then the engine-backed
     `dagger -m .dagger/modules/rust-client-dev api call build
-    --platform=linux/amd64 verify` per `ENGINE_INTEGRATION.md`.
+    --platform=linux/amd64 verify` per `sdk/rust/docs/engine-integration.md`.
   - Require the dispatch cancellation orderings, provisioning executor
     assertions, property_16, the source-policy guards, the arity diagnostics,
     and the isolated consumer build to pass.

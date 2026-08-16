@@ -42,7 +42,7 @@ One client never absorbs transitive module dependencies. Each dependency is boun
 an independent client, giving it a separate pin, namespace, schema, project, manifest,
 and regeneration boundary. Publication preserves unknown files and authored bytes;
 the ownership manifest is committed last so failure cannot expose a partial next
-generation. See [CLIENT_GENERATION.md](CLIENT_GENERATION.md) for the consumer and
+generation. See [client-generation.md](client-generation.md) for the consumer and
 maintainer contract.
 
 ## Module authoring and dispatch
@@ -179,7 +179,7 @@ caches, source, credentials, or builder state.
 The private entrypoint proves registration and invocation hooks against the nested
 engine session. Those hooks cannot stand in for arbitrary module dispatch or complete
 standalone-client content, which remain separately scoped work. See
-[ENGINE_INTEGRATION.md](ENGINE_INTEGRATION.md) for the reproducible build audit,
+[engine-integration.md](engine-integration.md) for the reproducible build audit,
 focused case workflow, and exact-target verification rules.
 
 ## Implementation closure and completed-engine verification
@@ -193,4 +193,4 @@ Dagger engine with the Rust SDK content, and runs one isolated external Rust con
 against that completed engine. Focused engine-backed regression tests remain available
 for boundaries that cannot be represented by the direct harness; they are not a second
 release mechanism. The maintainer procedure is documented in
-[MODULE_AUTHORING.md](MODULE_AUTHORING.md).
+[module-authoring.md](module-authoring.md).

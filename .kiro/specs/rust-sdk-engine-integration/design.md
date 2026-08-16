@@ -241,7 +241,7 @@ rules that appear there instead of in Rust.
 ```text
 sdk/rust/
 ├── Cargo.toml
-├── ARCHITECTURE.md
+├── docs/architecture.md
 ├── crates/
 │   ├── dagger-codegen/
 │   │   └── src/

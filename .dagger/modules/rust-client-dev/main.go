@@ -102,7 +102,7 @@ func New(
 			"sdk/rust/target",
 			"sdk/rust/**/target",
 			"!sdk/rust/AGENTS.md",
-			"!sdk/rust/ARCHITECTURE.md",
+			"!sdk/rust/docs/architecture.md",
 			"!sdk/rust/CONTRIBUTING.md",
 			"!sdk/rust/Cargo.lock",
 			"!sdk/rust/Cargo.toml",

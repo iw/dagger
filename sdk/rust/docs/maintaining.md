@@ -93,7 +93,7 @@ cargo run -p dagger-bootstrap --bin dagger-rust --locked -- \
 ```
 
 Also run the direct Go ABI and Dagger-module Go tests listed in
-[ENGINE_INTEGRATION.md](ENGINE_INTEGRATION.md). Review dependency activation with
+[engine-integration.md](engine-integration.md). Review dependency activation with
 `cargo tree -p dagger-sdk -e features` and inspect every Cargo Deny advisory, license,
 ban, and source result. These checks do not construct an engine.
 
@@ -103,7 +103,7 @@ owned-path confinement, checksum verification, and credential-safe diagnostics.
 
 ## 6. Assemble and retrieve artifacts
 
-Use the complete [Namespace Rust SDK artifact build](NAMESPACE_BUILD.md) runbook. It is
+Use the complete [Namespace Rust SDK artifact build](namespace-build.md) runbook. It is
 the single authoritative procedure for the exact checkout, builder preflight, ordinary
 build and external verification, artifact export, checksum, download, and devbox pause.
 Do not duplicate or abbreviate that sequence here.

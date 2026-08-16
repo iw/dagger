@@ -2,7 +2,7 @@
 
 This document is the maintainer contract for the private Rust compiler, engine adapter,
 runtime image, and completed-engine verification workflow. Application lifecycle and
-transport ownership are described in [ARCHITECTURE.md](ARCHITECTURE.md).
+transport ownership are described in [architecture.md](architecture.md).
 
 ## Runtime build audit
 
@@ -93,7 +93,7 @@ verification passes. Checksums cover the exported bytes.
 The single authoritative Namespace procedure, including the fresh checkout,
 AppleDouble guard, Docker CLI `PATH`, pinned runner, exact CLI build, exports,
 checksums, retrieval, marker handling, and pause, is
-[Namespace Rust SDK artifact build](NAMESPACE_BUILD.md). Do not reconstruct the
+[Namespace Rust SDK artifact build](namespace-build.md). Do not reconstruct the
 procedure from fragments in other documents.
 
 ## Immutable generated dependency

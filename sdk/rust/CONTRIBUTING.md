@@ -41,15 +41,15 @@ or a better idiomatic Rust design.
   generation, test, packaging, and complete-engine assembly tooling for this SDK.
 - `codegen` contains the exact target, schema, and compact generated ownership manifest.
 
-See [ARCHITECTURE.md](ARCHITECTURE.md) for the existing component overview.
+See [docs/architecture.md](docs/architecture.md) for the existing component overview.
 The focused built-in SDK build, case, and verification procedure is in
-[ENGINE_INTEGRATION.md](ENGINE_INTEGRATION.md).
+[docs/engine-integration.md](docs/engine-integration.md).
 The module authoring contract, direct harness, and completed-engine verification
-boundary are in [MODULE_AUTHORING.md](MODULE_AUTHORING.md).
+boundary are in [docs/module-authoring.md](docs/module-authoring.md).
 The standalone-client compiler, project, generated API, ownership, checkpoint, and
-verification workflow is in [CLIENT_GENERATION.md](CLIENT_GENERATION.md).
+verification workflow is in [docs/client-generation.md](docs/client-generation.md).
 The complete checked-target refresh and release procedure is in
-[MAINTAINING.md](MAINTAINING.md).
+[docs/maintaining.md](docs/maintaining.md).
 
 ## Rust toolchains
 
@@ -96,7 +96,7 @@ An engine is not a local checkpoint fallback. If a contract cannot be represente
 the direct production harness, document the precise model gap and add the narrowest
 engine-backed regression test that owns it. Release readiness separately packages the
 two public crates, assembles the complete engine with Rust SDK content, and runs one
-isolated external Rust consumer as documented in [MODULE_AUTHORING.md](MODULE_AUTHORING.md).
+isolated external Rust consumer as documented in [docs/module-authoring.md](docs/module-authoring.md).
 
 For non-module work whose owning contract genuinely requires a running Dagger engine,
 the relevant repository checks may be run through Dagger:

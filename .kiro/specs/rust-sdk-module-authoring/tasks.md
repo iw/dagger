@@ -8,7 +8,7 @@
     - Re-export the companion attributes from `dagger-sdk`, pin the path dependency to
       the exact workspace version, update the lockfile, and keep bootstrap, codegen,
       and engine crates private.
-    - Amend `sdk/rust/ARCHITECTURE.md`, package-policy tests, cargo-deny roots, and
+    - Amend `sdk/rust/docs/architecture.md`, package-policy tests, cargo-deny roots, and
       `.github/workflows/rust-sdk-security.yml` from one publishable package to the
       approved two-package public graph without publishing either crate.
     - _Requirements: 2.3, 2.5, 17.3, 17.6_

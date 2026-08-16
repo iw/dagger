@@ -265,7 +265,7 @@ Rust citations describe `main` after Feature 5.
   `sdk/rust/crates/dagger-sdk-engine/src/protocol.rs` supplies a pure closed model of
   that probe plus call isolation. Feature 6 generalizes these seams rather than adding
   a second runtime path.
-- **Rust policy:** `sdk/rust/AGENTS.md`, `sdk/rust/ARCHITECTURE.md`, and
+- **Rust policy:** `sdk/rust/AGENTS.md`, `sdk/rust/docs/architecture.md`, and
   `sdk/rust/CONTRIBUTING.md` require Rust-native public APIs, generated-artifact
   ownership, complete public documentation, typed errors, panic-free library paths,
   no unsafe code, target-bound evidence, and direct Rust checks.

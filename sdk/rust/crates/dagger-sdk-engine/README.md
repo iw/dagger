@@ -20,13 +20,13 @@ The crate also owns the typed local-checkpoint planner. Its validated form can c
 only Rust SDK package actions, direct Rust-owned Go ABI tests, generated ownership,
 security, package, and clean-output checks. Engine, Dagger, network-graph, unrelated
 SDK, unscoped-generation, and distribution proposals are rejected before they can be
-rendered as executable work. See [`../../MODULE_AUTHORING.md`](../../MODULE_AUTHORING.md)
+rendered as executable work. See [`../../docs/module-authoring.md`](../../docs/module-authoring.md)
 for the boundary between this local record and completed-engine verification.
 
 For standalone clients, this crate also owns confined Cargo discovery, semantic
 amendments, workspace client preflight, manifest-authorized failure-atomic publication,
 and exact Cargo-process accounting. The planner reuses checked assets and one fixture
 SDK baseline when their owning inputs are current. Its consumer and contributor
-contract is in [`../../CLIENT_GENERATION.md`](../../CLIENT_GENERATION.md).
+contract is in [`../../docs/client-generation.md`](../../docs/client-generation.md).
 
 Licensed under Apache-2.0 as part of the Dagger repository.
