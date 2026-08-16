@@ -977,7 +977,12 @@ fn result_success_type(ty: &Type) -> Option<&Type> {
             _ => None,
         })
         .collect::<Vec<_>>();
-    (types.len() == 2).then_some(types[0])
+    // Same slice-pattern discipline as `result_types`: the eager index panicked
+    // on `Result` spellings whose generics carry no type arguments.
+    match types.as_slice() {
+        [success, _] => Some(success),
+        _ => None,
+    }
 }
 
 fn compile_enum(declaration: &AuthoringDeclaration) -> Result<EnumContract, ModuleDiagnostic> {
@@ -1767,6 +1772,40 @@ mod tests {
                 .iter()
                 .all(|row| !row.rust_form.contains("serde_json"))
         );
+    }
+
+    #[test]
+    fn interface_result_returns_without_type_arguments_are_diagnosed() {
+        // `Result<'static>` carries generics but no type arguments; the eager
+        // index in `result_success_type` panicked on this spelling instead of
+        // letting the resolver reject it.
+        let path = super::super::model::ModuleSourcePath::new("src/lib.rs").unwrap();
+        let declarations = super::super::authoring::AuthoringParser::parse(
+            &path,
+            r#"
+                #[dagger_sdk::object(root)]
+                pub struct Root {}
+
+                #[dagger_sdk::interface]
+                pub trait Broken { fn value(&self) -> Result<'static>; }
+            "#,
+        )
+        .unwrap();
+        let declarations = declarations
+            .into_iter()
+            .map(|declaration| (declaration.rust_symbol.clone(), declaration))
+            .collect::<BTreeMap<_, _>>();
+        let discovery = ModuleDiscovery {
+            root: symbol("crate::Root"),
+            declarations,
+            interface_implementations: BTreeMap::new(),
+            type_aliases: BTreeMap::new(),
+            generated_types: BTreeMap::new(),
+            visited_documents: BTreeSet::from([path]),
+            source_digest: super::super::model::Sha256Digest::hash_bytes(b"arity fixture"),
+        };
+        TypeCatalog::compile(&discovery)
+            .expect_err("a Result interface return without type arguments is rejected");
     }
 
     #[test]

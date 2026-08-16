@@ -551,7 +551,14 @@ fn result_types(ty: &Type) -> Option<(&Type, &Type)> {
             _ => None,
         })
         .collect::<Vec<_>>();
-    (types.len() == 2).then_some((types[0], types[1]))
+    // Bind through a slice pattern so the arity test and the extraction cannot
+    // separate: indexing eagerly inside `then_some` evaluated `types[1]` before
+    // the length check and panicked on one-argument `Result` aliases instead of
+    // reaching the signature diagnostic.
+    match types.as_slice() {
+        [success, error] => Some((success, error)),
+        _ => None,
+    }
 }
 
 fn is_result(ty: &Type) -> bool {
@@ -1066,6 +1073,39 @@ mod tests {
                 prop_assert_eq!(compiled.arguments[0].metadata.documentation.as_deref(), Some("flag"));
             }
         }
+    }
+
+    #[test]
+    fn one_argument_result_returns_reach_the_signature_diagnostic() {
+        // io::Result-style aliases with a single generic argument must land on
+        // the arity diagnostic; the eager index that preceded the length check
+        // panicked here instead.
+        let declarations = parse(
+            r#"
+            #[dagger_sdk::object(root)]
+            pub struct Root {}
+
+            #[dagger_sdk::methods]
+            impl Root {
+                #[dagger(function)]
+                pub fn execute(&self) -> Result<String> { todo!() }
+            }
+        "#,
+        )
+        .unwrap();
+        let (discovery, function) = discovery_and_function(declarations);
+        let catalog = TypeCatalog::default();
+        let compiler = FunctionCompiler::new(TypeResolver::new(&discovery), &catalog);
+        let error = compiler
+            .compile(&discovery.root, &discovery.root, &function)
+            .expect_err("a one-argument Result return is rejected, not accepted");
+        assert!(
+            error
+                .message()
+                .contains("exactly one success and one error type"),
+            "diagnostic names the arity requirement: {}",
+            error.message()
+        );
     }
 
     #[test]
