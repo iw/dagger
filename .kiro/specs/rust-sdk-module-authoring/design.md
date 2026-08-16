@@ -88,15 +88,15 @@ surface therefore requires a small `dagger-sdk-macros` companion which `dagger-s
 re-exports, following the conventional library-plus-proc-macro shape. This is a narrow,
 explicit successor to Feature 5's “`dagger-sdk` is the sole external SDK entry package”
 rule: the externally consumed dependency graph now contains `dagger-sdk` and its
-exact-revision macro companion, while every engine, codegen, bootstrap, and
-completeness crate remains private. Feature 6 makes that graph Git-resolvable but does
+exact-revision macro companion, while every engine, codegen, and bootstrap
+crate remains private. Feature 6 makes that graph Git-resolvable but does
 not release it; Feature 9 owns immutable Git-tagged distribution and stable-release
 presentation.
 
 Local implementation closure is strictly engine-free. It compiles representative
 module crates, drives the production compiler and dispatcher through direct Rust
 fixtures, and checks generated assets without continuously regenerating Core bindings.
-The Dagger engine is used only by the later exact-target SDK sign-off matrix unless a
+The Dagger engine is used only by the later exact-target integration matrix unless a
 separately documented and approved exception proves that a contract cannot be modeled
 locally.
 
@@ -106,7 +106,7 @@ provides comparative—not authoritative—evidence for this split. Its
 without an engine; `.github/workflows/ci.yml` and `ci/pipeline/dagger.json` then use the
 repository SDK from a Zig-authored Dagger module; and `sdk/main.go` retains a narrow Go
 bootstrap. The v0.3.4 failure recorded in
-`docs/blog/v0.3.4-community-update.md` also demonstrates why a real sign-off consumer
+`docs/blog/v0.3.4-community-update.md` also demonstrates why a real packaged consumer
 must resolve only packaged SDK contents. Zig reflection and API decisions do not alter
 the Rust authoring design.
 
@@ -114,9 +114,6 @@ the Rust authoring design.
 
 ### Owning relationships
 
-- Feature 1 owns capability IDs, status transitions, evidence admission, blocker
-  rendering, and target identity. This design supplies the corrected Feature 6 scope,
-  mappings, and evidence subjects but does not mutate ledger status directly.
 - Feature 4 owns the fallible GraphQL schema compiler, `VisibleSchema`, generated Core
   bindings, name planning, `QueryBuilder`, and generated-artifact publication. This
   design consumes those primitives for core, self, and dependency handles rather than
@@ -128,10 +125,8 @@ the Rust authoring design.
 - Feature 7 owns complete standalone client projects and the final dependency-client
   authoring experience. Feature 6 emits the self and dependency types already present
   in the operation's `VisibleSchema`; it does not claim standalone-client closure.
-- Feature 8 owns the exhaustive engine-backed, cross-SDK, and cross-platform
-  conformance matrix, including promotion of the bounded packaged self-consumer into a
-  complete consumer workflow. Feature 6 defines only the representative exact-target
-  sign-off cases needed to admit its capabilities.
+- Broader engine-backed, cross-SDK, and cross-platform conformance is out of scope;
+  Feature 6 defines only the representative exact-target cases it needs.
 - Feature 9 owns immutable Git-tagged distribution, migration guidance, compatibility
   policy, release assets, and stable-release presentation, including any claim that
   the Rust SDK builds, tests, and releases itself. It consumes the Git-resolvable
@@ -252,12 +247,6 @@ sdk/rust/
 │   │       └── diagnostic.rs          # source-located compiler diagnostics
 │   ├── dagger-sdk-engine/
 │   │   └── src/project/source_snapshot.rs
-│   └── dagger-sdk-completeness/
-│       └── src/module_authoring.rs
-├── completeness/
-│   ├── mappings/rust-sdk-module-authoring.json
-│   ├── policies/rust-module-authoring.json
-│   └── evidence/rust-sdk-module-authoring/
 └── fixtures/module-authoring/
     ├── pass/
     ├── fail/
@@ -267,7 +256,7 @@ sdk/rust/
 Generated projects receive only generator-owned content beneath
 `src/dagger_generated/**`, the generic `src/bin/dagger-module.rs`, and the compatible
 manifest entries declared by the Feature 5 operation manifest. User modules do not
-depend on `dagger-codegen`, `dagger-sdk-engine`, or `dagger-sdk-completeness`.
+depend on `dagger-codegen` or `dagger-sdk-engine`.
 
 ## Architecture
 
@@ -360,19 +349,8 @@ secondary close failure.
 
 The local harness substitutes an in-memory `ResultSink` and a fixture transport behind
 the same `Client`/`QueryBuilder` abstraction. It does not substitute the authoring
-compiler, generated registry, codecs, context, dispatcher, or result election. No
-engine process or Go behavioural model participates.
-
-### Capability and evidence plane
-
-The completeness crate owns a target-bound `ModuleAuthoringScope` containing the 79
-retained existing capabilities after the 17 lifecycle rows are returned to Feature 5
-or SDK sign-off, plus the 32 declared Rust policy capabilities. Each row has exactly
-one owning requirement, allowed terminal status, and minimum evidence domain. Local
-compiler, compile-fixture, property, hygiene, and security evidence may close only
-authoring/dispatch claims. Engine registration and invocation observations are admitted
-only from the exact-target sign-off manifest. Reports are always derived from admitted
-evidence and retain every unclosed blocker.
+compiler, generated registry, codecs, context, dispatcher, or outcome publication.
+No engine process or Go behavioural model participates.
 
 ## Components and Interfaces
 
@@ -981,7 +959,7 @@ while bounded canonical-JSON details map in sorted order to the target Error's
 that target object. Transport sources, panic payloads, environment values, and opaque
 debug representations are never inserted automatically.
 
-### Dispatcher and result election (`dagger-sdk/src/module/dispatch.rs`)
+### Dispatcher and outcome publication (`dagger-sdk/src/module/dispatch.rs`)
 
 ```rust
 pub trait DispatchRegistry: Send + Sync {
@@ -1033,19 +1011,21 @@ descriptor-derived registration adapter, and routes invocation to `dispatch`. Th
 production binary and direct harness call that same wrapper; registration is not a
 special harness shortcut.
 
-`dispatch` owns a `ResultElection` state machine. It races user execution only with the
-call's cancellation signal, contains an unwind at the spawned user-future boundary,
-encodes the successful value, and publishes one outcome. Application errors become
+`dispatch` races user execution only with the call's cancellation signal, contains an
+unwind at the spawned user-future boundary, encodes the successful value, and
+publishes one outcome. Application errors become
 structured `ModuleError` values. The engine adapter creates the target
 `Error` object and passes its ID to `FunctionCall.return_error`; values use
 `return_value`. Panic payloads are never rendered verbatim.
 
-The election is `Pending -> Publishing(kind) -> Published(kind)` or
-`Pending -> Cancelled`. Only one transition out of `Pending` can win. A publication
+One terminal `CallOutcome` is selected exactly once before publication: a
+cancellation observed before the authored future completes drops that future and
+publishes a structured cancelled error (`ErrorOutcomeKind::Cancellation`, surfaced as
+`PublishedOutcome::CancelledError`); otherwise the authored result — value,
+application error, or contained panic — is encoded and published. A publication
 failure is terminal and preserves the selected outcome kind and function coordinate;
-dispatch never attempts a second value/error path. Cancellation winning before
-publication prevents success. Cancellation after the sink has accepted an outcome does
-not rewrite it.
+dispatch never attempts a second value/error path. A cancellation that arrives after
+the sink has accepted an outcome does not rewrite it.
 
 User execution and result encoding are separate phases so diagnostics distinguish an
 application error, panic, encoding failure, cancellation, and transport publication
@@ -1066,6 +1046,10 @@ The generated binary's `run` function performs exactly these steps:
 5. publish an invocation's terminal engine result exactly once; and
 6. close the client, preserving primary-operation precedence.
 
+A process-level signal producer installs SIGTERM/SIGINT handlers that trip the call's
+cancellation token for the duration of the serve; Feature 10 owns that
+runtime-integrity contract and the open engine TERM-with-grace follow-up.
+
 An instance call requires a matching nonempty parent state. A constructor/top-level
 call does not reconstruct a receiver even though the engine supplies an empty parent
 object. Core, self, and dependency IDs are re-entered through generated constructors on
@@ -1075,20 +1059,6 @@ The adapter catches only the user-future unwind inside the runtime. A bug before
 boundary still terminates the private process and is reported by the existing Feature 5
 runtime failure path, while the workspace's panic/unwrap policy makes such a path a
 defect rather than normal control flow.
-
-### Completeness integration (`dagger-sdk-completeness/src/module_authoring.rs`)
-
-`ModuleAuthoringScope::derive` verifies the pinned ledger digest, the 17-row lifecycle
-ownership correction, all 79 retained rows, and all 32 Rust policy rows. Each mapping
-records requirement, authority, rationale, allowed terminal status, evidence domain,
-and current blocker state. Duplicate, missing, moved, stale, delegated, or out-of-scope
-rows reject the complete mapping.
-
-Evidence producers emit strict observations for compiler properties, compile fixtures,
-dispatcher properties, hygiene/security gates, and later engine sign-off cases. The
-Feature 1 admission API is the only status mutation route. Local observations cannot
-claim `engine-registration`, `runtime-container`, `sdk-sdk`, or cross-platform domains;
-an engine smoke cannot claim exhaustive source/type/dispatch closure.
 
 ### Engine-free development workflow
 
@@ -1108,7 +1078,7 @@ engine process/module/network graph was started. No other language SDK is built.
 
 An engine exception requires a written contract gap, proof that the direct model cannot
 represent it, a minimal proposed engine observation, explicit approval, and a note that
-the result belongs to sign-off evidence. Convenience, uncertainty, or regeneration is
+the result belongs to the exact-target matrix. Convenience, uncertainty, or regeneration is
 not a valid exception.
 
 ## Data Models and Invariants
@@ -1161,25 +1131,24 @@ coordinate, but diagnostics prefer the authored location.
 
 ### Call lifecycle invariants
 
-Each `CallEnvelope` owns one distinct context and one result election. Its state is:
+Each `CallEnvelope` owns one distinct context and one single-assignment result sink. Its state is:
 
 ```text
 Received
   -> Validated
   -> Running
   -> Encoding
-  -> Publishing(Value | ApplicationError | PanicError)
+  -> Publishing(Value | ApplicationError | PanicError | CancelledError)
   -> Published
-
-Received | Validated | Running | Encoding
-  -> Cancelled
 
 Any non-user phase
   -> Failed(typed diagnostic)
 ```
 
-Validation failure never reaches `Running`. Only `Pending` may elect a result.
-Publication failure never retries through another terminal kind. Client close follows
+A cancellation observed in any phase before publication collapses the call to
+`Publishing(CancelledError)`. Validation failure never reaches `Running`. One terminal
+outcome is selected exactly once before publication. Publication failure never retries
+through another terminal kind. Client close follows
 every operation attempt; it is primary only when the operation otherwise succeeded.
 All child work owned by the SDK and every call-local lease is terminated or released
 before the call returns.
@@ -1215,17 +1184,6 @@ Each property is implemented with `proptest` or, for synchronization state machi
 `loom`, with at least 100 successful generated cases where the library supports an
 iteration count. Fixed target spellings and compiler diagnostics remain example-based
 tests rather than artificial properties.
-
-### Property 1: Capability scope is exact and evidence-local
-
-*For any* pinned completeness ledger and Feature 6 mapping input, derivation SHALL
-either produce exactly the approved 79 retained existing rows plus all 32 Rust policy
-rows with one requirement, terminal status, and minimum evidence domain each, or reject
-the complete mapping; the 17 corrected lifecycle rows, stale evidence, skipped/failed
-observations, sibling claims, and out-of-domain claims SHALL never change ledger state,
-and every unclosed blocker SHALL remain in the derived report.
-
-**Validates: Requirements 1.1–1.10**
 
 ### Property 2: Export is explicit and preserves Rust visibility
 
@@ -1505,13 +1463,13 @@ change the result.
 command is Rust-package scoped, consumes checked assets unless an owning input changed,
 starts no engine process/module/network graph, builds no unrelated SDK, records elapsed
 time and generation decisions, and carries any requested engine use only as a separately
-approved sign-off exception with proof of necessity.
+approved exact-target exception with proof of necessity.
 
 **Validates: Requirements 16.12–16.19**
 
-### Property 29: Implementation closure admits only complete local evidence
+### Property 29: Implementation closure requires the complete local gate
 
-*For any* implementation-closure observation, admission SHALL succeed if and only if
+*For any* implementation-closure claim, closure SHALL be accepted if and only if
 all production compiler/dispatcher properties, compile fixtures, changed-package
 format/check/test/clippy/rustdoc gates, cargo-deny, repository Rust security,
 generated-asset drift, ownership, and clean-worktree checks passed without constructing
@@ -1520,16 +1478,15 @@ close implementation.
 
 **Validates: Requirements 17.1–17.8**
 
-### Property 30: SDK sign-off is exact-target and claim-bounded
+### Property 30: The exact-target matrix is target-bound and claim-bounded
 
-*For any* sign-off observation, admission SHALL require the exact target engine,
+*For any* exact-target run, acceptance SHALL require the exact target engine,
 complete registration, representative constructor/sync/async/unit/value/error/panic/
-context/self/dependency cases, applicable pinned common-harness results, matching
-generated-asset and implementation-evidence digests, and enumerated capability IDs;
-stale, cross-target, skipped, failed, local-only, or overbroad smoke claims SHALL be
-rejected, and the final report SHALL distinguish implementation closure from sign-off.
+context/self/dependency cases, and applicable pinned common-harness results; stale,
+cross-target, skipped, failed, or overbroad smoke claims SHALL be rejected, and the
+final report SHALL distinguish implementation closure from the exact-target matrix.
 
-**Validates: Requirements 17.9–17.18**
+**Validates: Requirements 17.9–17.12, 17.18**
 
 ### Property 31: Public package graph is closed and version-coherent
 
@@ -1564,7 +1521,6 @@ presentation but cannot interpolate unsafe source values.
 
 | Condition | Internal error | External code / behaviour |
 | --- | --- | --- |
-| Capability scope is missing, duplicated, moved, or misclassified | `ModuleScopeInvalid` | `module.scope-invalid`; no evidence or ledger mutation |
 | Evidence target, digest, status, or domain is incompatible | `ModuleEvidenceRejected` | `module.evidence-rejected`; entire observation rejected |
 | No root exists | `RootMissing` | `module.root-missing`; source compilation stops |
 | Multiple roots exist | `RootAmbiguous` | `module.root-ambiguous`; all sorted root coordinates reported |
@@ -1635,13 +1591,12 @@ error.
 ### Property tests
 
 Property tests use `proptest` with at least 100 successful cases and deterministic
-failure persistence. Concurrency elections use `loom` across all modeled scheduler
+failure persistence. Concurrency publication races use `loom` across all modeled scheduler
 interleavings. Strategies live beside their owning pure models and share typed builders;
 the suite does not maintain a second parser/dispatcher implementation.
 
 | Placement | Properties | Principal generated models |
 | --- | --- | --- |
-| `dagger-sdk-completeness/src/module_authoring.rs` | 1, 20, 29, 30 | ledger rows, helper inventory, evidence subjects, closure/sign-off manifests |
 | `dagger-codegen/src/module/authoring.rs` plus macro fixture driver | 2, 3, 27 | marked/unmarked Rust items, metadata tokens, fingerprints, source spans |
 | `dagger-codegen/src/module/source.rs` | 4 | module graphs, cfg expressions, file/declaration permutations, type-reference graphs |
 | `dagger-codegen/src/module/types.rs` and generated codec fixtures | 5–8 | object state, interface IDs, enums/scalars, recursive type/value trees |
@@ -1737,7 +1692,7 @@ The feature-end engine-free checkpoint runs from `sdk/rust` and includes:
 
 1. `cargo fmt --all --check`;
 2. locked package-scoped checks/tests for `dagger-sdk-macros`, `dagger-codegen`,
-   `dagger-sdk`, `dagger-sdk-engine`, and `dagger-sdk-completeness`;
+   `dagger-sdk`, and `dagger-sdk-engine`;
 3. the complete `trybuild`, property, and direct production-dispatch fixture suites;
 4. warning-denied clippy and rustdoc for the changed Rust workspace;
 5. `cargo deny check` and the repository Rust security workflow equivalent;
@@ -1750,12 +1705,11 @@ only when their owning schema/API changes; otherwise the suite consumes checked 
 No unscoped `dagger generate -y`, Dagger engine build, module invocation, other SDK
 build, or sdk-sdk run belongs to implementation closure.
 
-### SDK sign-off exact-target matrix
+### Exact-target integration matrix
 
-SDK sign-off is a separate later gate. It builds engine revision
+The exact-target matrix is a separate later gate. It builds engine revision
 `25300124ca110612edc09c43f89cb5fad6028170` once, reuses that exact content across
-cases, and records target, generated-assets, implementation-evidence, runtime, and case
-digests. Representative cases prove:
+cases, and records target, generated-assets, runtime, and case digests. Representative cases prove:
 
 | Case | Required engine observation |
 | --- | --- |
@@ -1775,10 +1729,9 @@ contracts the pure harness deliberately does not claim. A smoke observation clos
 the enumerated engine capabilities; it cannot replace the exhaustive compiler,
 dispatch, fixture, hygiene, or security evidence.
 
-The packaged self-consumer is a bounded Feature 6 sign-off observation, not the local
-checkpoint runner and not a complete self-hosting claim. Feature 8 expands it into the
-full initialization, development, generation, execution, dependency, and platform
-matrix. Feature 9 owns exact Git-revision installation, release rehearsal, signing,
+The packaged self-consumer is a bounded Feature 6 exact-target observation, not the
+local checkpoint runner and not a complete self-hosting claim. Feature 9 owns exact
+Git-revision installation, release rehearsal, signing,
 attestation, and stable-release automation.
 
 ### Documentation and review gates
@@ -1787,7 +1740,7 @@ Every new Rust module receives a `//!` ownership/invariant introduction. Public
 attributes, context, scalar/error traits, cancellation, and generated query roots
 document their guarantees, restrictions, lifecycle, failure semantics, and generated
 ownership. Inline comments explain canonicalization, fingerprint convergence,
-single-result election, cancellation ordering, session reuse, state identity, and
+single-result publication, cancellation ordering, session reuse, state identity, and
 failure precedence. They do not narrate control flow or cite feature/task labels.
 
 The public API manifest and rustdoc fence the intentional authoring surface. Review must
