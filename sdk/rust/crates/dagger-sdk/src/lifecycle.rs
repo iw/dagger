@@ -269,7 +269,8 @@ impl SessionHandle {
         }
     }
 
-    #[cfg(test)]
+    /// Shared-allocation identity: equal across clones of one session, distinct
+    /// between sessions, and safe to render because it names no resource.
     pub(crate) fn identity(&self) -> usize {
         Arc::as_ptr(&self.shared) as usize
     }
