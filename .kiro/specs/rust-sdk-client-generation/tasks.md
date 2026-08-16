@@ -735,7 +735,7 @@
       candidate after any invalid observation.
     - _Requirements: 10.13-10.19_
 - [x] 22. Document the durable standalone-client and contributor workflow
-  - [x] 22.1 Add `sdk/rust/CLIENT_GENERATION.md`
+  - [x] 22.1 Add `sdk/rust/docs/client-generation.md`
     - Document initialization, `--no-generate`, generation/regeneration, local versus
       pinned remote binding, separately bound dependency clients, `dagger_client`,
       `core`, module namespace, extension trait/prelude, public lifecycle, Cargo and
@@ -745,7 +745,7 @@
     - _Requirements: 2.1-2.13, 3.1-3.13, 4.1-4.17, 5.1-5.17, 6.1-6.15, 9.11-9.12_
   - [x] 22.2 Update architecture, contribution, crate README, and generated guidance
     - Add the pure compiler/reconciler/runtime-bridge/publication boundaries and the
-      engine-free fixture/checkpoint commands to `ARCHITECTURE.md`, `CONTRIBUTING.md`,
+      engine-free fixture/checkpoint commands to `sdk/rust/docs/architecture.md`, `CONTRIBUTING.md`,
       owning crate READMEs, and generated package README regions.
     - Explain change-triggered checked-asset reuse, one materialized fixture SDK
       baseline, scoped Cargo invocations, semantic amendment ownership, and the

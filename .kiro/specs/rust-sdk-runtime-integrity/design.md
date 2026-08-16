@@ -223,7 +223,7 @@ the Result-arity diagnostic at the authored coordinate and SHALL NOT panic.
 - `metadata.rs` unit tests cover the arity diagnostics, including the
   `std::io::Result<()>` and empty-generics shapes.
 - Packaging is proven by offline `cargo package` verification and the Verify
-  entry point's isolated consumer build (`ENGINE_INTEGRATION.md`).
+  entry point's isolated consumer build (`sdk/rust/docs/engine-integration.md`).
 
 ## Iteration and Feedback Notes
 

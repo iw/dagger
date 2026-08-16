@@ -9,7 +9,7 @@ when guidance differs, follow the more specific rule without weakening a
 repository-wide requirement.
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md) for the human-facing workflow and
-[ARCHITECTURE.md](ARCHITECTURE.md) before changing component boundaries.
+[docs/architecture.md](docs/architecture.md) before changing component boundaries.
 
 ## Sources of truth
 

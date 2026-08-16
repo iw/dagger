@@ -32,10 +32,10 @@ and application usage.
 | Standalone clients | Complete Core plus at most one independently pinned module, reusing the public client lifecycle |
 | Engine integration | Rust-owned generation/runtime policy composed into the complete Dagger engine |
 
-Module authors should start with [`MODULE_AUTHORING.md`](MODULE_AUTHORING.md).
-Standalone-client users should read [`CLIENT_GENERATION.md`](CLIENT_GENERATION.md).
-[`ARCHITECTURE.md`](ARCHITECTURE.md) records ownership and safety boundaries, while
-[`CONTRIBUTING.md`](CONTRIBUTING.md) and [`MAINTAINING.md`](MAINTAINING.md) contain the
+Module authors should start with [`docs/module-authoring.md`](docs/module-authoring.md).
+Standalone-client users should read [`docs/client-generation.md`](docs/client-generation.md).
+[`docs/architecture.md`](docs/architecture.md) records ownership and safety boundaries, while
+[`CONTRIBUTING.md`](CONTRIBUTING.md) and [`docs/maintaining.md`](docs/maintaining.md) contain the
 pinned development and maintenance procedures.
 
 A module exports ordinary typed Rust explicitly:
@@ -76,4 +76,4 @@ the two packages and runs one isolated external Rust consumer against that compl
 engine. It creates no tag or release and publishes no crate. Making those artifacts
 available through a manual GitHub Release requires separate, direct authorization.
 The complete builder and retrieval procedure is the
-[`dagger-rust-builder-xl` Namespace runbook](NAMESPACE_BUILD.md).
+[`dagger-rust-builder-xl` Namespace runbook](docs/namespace-build.md).

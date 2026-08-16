@@ -57,7 +57,7 @@ reviewed before enabling publication. It is not a supported replacement for
 Contributors should read the Rust SDK
 [`CONTRIBUTING.md`](https://github.com/dagger/dagger/blob/main/sdk/rust/CONTRIBUTING.md)
 and
-[`ARCHITECTURE.md`](https://github.com/dagger/dagger/blob/main/sdk/rust/ARCHITECTURE.md)
+[`docs/architecture.md`](https://github.com/dagger/dagger/blob/main/sdk/rust/docs/architecture.md)
 before changing schema, projection, rendering, or publication boundaries.
 The end-to-end standalone-client ownership and checkpoint contract is documented in
-[`CLIENT_GENERATION.md`](https://github.com/dagger/dagger/blob/main/sdk/rust/CLIENT_GENERATION.md).
+[`docs/client-generation.md`](https://github.com/dagger/dagger/blob/main/sdk/rust/docs/client-generation.md).

@@ -77,12 +77,12 @@ Module authors use the `object`, `interface`, `enum_type`, `scalar`, and `method
 attributes re-exported from this crate. Their exact-version procedural implementation
 lives in `dagger-sdk-macros`; applications should not add that companion directly.
 The authoring syntax, state/dispatch model, and current verification boundary are
-documented in [`../../MODULE_AUTHORING.md`](../../MODULE_AUTHORING.md).
+documented in [`../../docs/module-authoring.md`](../../docs/module-authoring.md).
 
 Generated standalone clients also reuse this crate's owned lifecycle, Core bindings,
 transport, errors, and IDs by identity. Their `dagger_client` namespace adds one bound
 module without copying Core or merging dependency modules. See
-[`../../CLIENT_GENERATION.md`](../../CLIENT_GENERATION.md).
+[`../../docs/client-generation.md`](../../docs/client-generation.md).
 
 ## Features
 
@@ -104,4 +104,4 @@ live in [`../../examples`](../../examples).
 
 Development and verification commands are documented in
 [`../../CONTRIBUTING.md`](../../CONTRIBUTING.md); generated-client maintenance and
-release assembly are documented in [`../../MAINTAINING.md`](../../MAINTAINING.md).
+release assembly are documented in [`../../docs/maintaining.md`](../../docs/maintaining.md).

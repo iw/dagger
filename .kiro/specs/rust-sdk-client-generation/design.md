@@ -248,7 +248,7 @@ sdk/rust/
 │   ├── dependency-bound/
 │   ├── project-adoption/
 │   └── fail/
-└── CLIENT_GENERATION.md                # durable user/contributor workflow
+└── docs/client-generation.md                # durable user/contributor workflow
 ```
 
 The current `engine/client.rs` baseline becomes a thin `OperationRenderer` adapter over
@@ -981,7 +981,7 @@ VCS credentials, the whole source tree, and generated output. Modern workspace
 generation already receives its workspace directory directly; both paths still use
 the same Rust discovery and reconciliation code.
 
-### Durable workflow guide (`sdk/rust/CLIENT_GENERATION.md`)
+### Durable workflow guide (`sdk/rust/docs/client-generation.md`)
 
 The guide explains:
 
@@ -1680,7 +1680,7 @@ security evidence.
 
 ### Documentation and review gate
 
-The implementation updates `sdk/rust/CLIENT_GENERATION.md`, `sdk/rust/ARCHITECTURE.md`,
+The implementation updates `sdk/rust/docs/client-generation.md`, `sdk/rust/docs/architecture.md`,
 `sdk/rust/CONTRIBUTING.md`, generated-crate READMEs, the umbrella requirements, and the
 Feature 7 closure report together. Review checks that generated and handwritten
 public items follow the repository documentation rule: module-level purpose and

@@ -35,7 +35,7 @@ kinds:
 headerFormat: |-
   This SDK uses 🚙 Engine + 🚗 CLI version `{{.Env.ENGINE_VERSION}}`. [See what changed in that release](https://github.com/dagger/dagger/releases/tag/{{.Env.ENGINE_VERSION}}).
 
-  📦 Released as checked repository artifacts (`dagger-sdk` and `dagger-sdk-macros` crate files plus the complete engine); see sdk/rust/NAMESPACE_BUILD.md.
+  📦 Released as checked repository artifacts (`dagger-sdk` and `dagger-sdk-macros` crate files plus the complete engine); see sdk/rust/docs/namespace-build.md.
 footerFormat: |-
   {{- $contributorSet := dict }}
   {{- $maintainers := list "dependabot[bot]" }}

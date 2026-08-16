@@ -274,7 +274,7 @@ shown explicitly.
 - **Current Rust integration gap:** no Rust entry exists in sdkmeta, loader selection,
   workspace SDK mapping, engine build content, or engine integration fixtures; no Rust
   crate implements a module runtime or an engine-operation adapter.
-- **Current publication policy:** `sdk/rust/ARCHITECTURE.md` and
+- **Current publication policy:** `sdk/rust/docs/architecture.md` and
   `.github/workflows/rust-sdk-security.yml` make `dagger-sdk` the sole publishable Rust
   crate. `dagger-codegen` and `dagger-bootstrap` are private
   repository tooling.
