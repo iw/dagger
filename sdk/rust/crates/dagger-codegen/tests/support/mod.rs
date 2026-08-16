@@ -1,6 +1,9 @@
 //! Shared valid-first generators and deterministic recording doubles for codegen tests.
 
-#![allow(dead_code)]
+#![allow(
+    dead_code,
+    reason = "every integration-test binary compiles this shared fixture module and consumes its own subset"
+)]
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};

@@ -244,7 +244,6 @@ proptest! {
 
     // The selected explicit-local value is resolved against only its captured native
     // snapshot; a lookup failure cannot turn into provisioning or compatibility PATH.
-    // Feature: rust-sdk-transport-observability, Property 5: explicit-local selection is authoritative
     #[test]
     fn property_05_explicit_local_authoritative(
         name in "[A-Za-z0-9][A-Za-z0-9_.-]{0,15}",

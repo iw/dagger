@@ -144,7 +144,6 @@ proptest! {
 
     // Every preflight rejection is decided before a connector-facing effect can be
     // represented, and filesystem rejection also precedes process-input capture.
-    // Feature: rust-sdk-client-lifecycle, Property 12: preflight failure precedes external work
     #[test]
     fn property_12_preflight_failure_precedes_external_work(failure in preflight_failure()) {
         let counts = Arc::new(BoundaryCounts::default());
@@ -284,7 +283,6 @@ proptest! {
 
     // The production launch request is compared with a separate canonical projection,
     // including native ordering and an exact repeated-run byte representation.
-    // Feature: rust-sdk-client-lifecycle, Property 14: CLI launch projection is deterministic and complete
     #[test]
     fn property_14_cli_launch_projection_is_deterministic_and_complete(case in launch_case()) {
         let first_counts = Arc::new(BoundaryCounts::default());
@@ -424,7 +422,6 @@ proptest! {
 
     // The sink is an observation only: ordered safe bytes are delivered until its
     // first failure, and neither errors nor unwinding can alter the owning operation.
-    // Feature: rust-sdk-client-lifecycle, Property 16: diagnostic delivery is ordered and non-fatal
     #[test]
     fn property_16_diagnostic_delivery_is_ordered_and_non_fatal(
         case in diagnostic_sequence(),
@@ -652,7 +649,6 @@ proptest! {
 
     // Source selection follows an independent compatibility table, and ownership of
     // an injected connection crosses at most one boundary without host observation.
-    // Feature: rust-sdk-client-lifecycle, Property 17: source compatibility fails closed
     #[test]
     fn property_17_source_compatibility_fails_closed(
         (source, option, active) in source_option_case(),

@@ -94,7 +94,6 @@ proptest! {
 
     // The parser consumes exactly one bounded record. Only the suffix enters the
     // activated diagnostic path, even when delimiter and suffix share a read chunk.
-    // Feature: rust-sdk-transport-observability, Property 17: control input is parsed once and never diagnosed
     #[test]
     fn property_17_control_input_parsed_once_never_diagnosed(
         case in 0_u8..9,
@@ -180,7 +179,6 @@ proptest! {
 
     // Every acquired pre-session capability is consumed by exactly one terminal edge:
     // cleanup before transfer, or ownership transfer followed by session cleanup.
-    // Feature: rust-sdk-transport-observability, Property 18: pending resources have one owner and one transfer
     #[test]
     fn property_18_pending_resources_one_owner_one_transfer(
         acquired in 0_usize..8,
@@ -214,7 +212,6 @@ proptest! {
 
     // Redaction is channel-local and streaming; callback failure changes only sink
     // availability while bounded sanitized tails continue to drain and remain safe.
-    // Feature: rust-sdk-transport-observability, Property 21: diagnostics are isolated, redacted, bounded, and contained
     #[test]
     fn property_21_diagnostics_isolated_redacted_bounded_contained(
         secret in "CANARY_[A-Za-z0-9]{20,40}",
@@ -278,7 +275,6 @@ proptest! {
 
     // Completion order does not determine observation order, and each component keeps
     // its independently typed terminal outcome through the close boundary.
-    // Feature: rust-sdk-transport-observability, Property 22: background outcomes remain observable
     #[test]
     fn property_22_background_outcomes_remain_observable(
         stderr_first in any::<bool>(),

@@ -219,7 +219,6 @@ fn recursive_projection_preserves_each_list_and_nullable_wrapper() {
 proptest! {
     #![proptest_config(proptest_config())]
 
-    // Feature: rust-sdk-core-codegen, Property 9: Lazy handles preserve the originating lease
     #[test]
     fn property_09_lazy_handles_preserve_originating_lease(
         fields in proptest::collection::vec("[a-z]{1,8}", 0..8),
@@ -249,7 +248,6 @@ proptest! {
         })?;
     }
 
-    // Feature: rust-sdk-core-codegen, Property 10: Nullable handles reflect target presence
     #[test]
     fn property_10_nullable_handles_reflect_target_presence(
         identifier in proptest::option::of("[a-zA-Z0-9_-]{1,24}"),
@@ -284,7 +282,6 @@ proptest! {
         })?;
     }
 
-    // Feature: rust-sdk-core-codegen, Property 11: Object-list re-entry preserves structure
     #[test]
     fn property_11_object_list_reentry_preserves_structure(
         identifiers in proptest::collection::vec(
@@ -328,7 +325,6 @@ proptest! {
         })?;
     }
 
-    // Feature: rust-sdk-core-codegen, Property 15: Typed ID compatibility is closed and all-or-nothing
     #[test]
     fn property_15_typed_id_compatibility_closed_all_or_nothing(
         identifiers in proptest::collection::vec("[a-zA-Z0-9_-]{1,18}", 0..16),
@@ -393,7 +389,6 @@ proptest! {
         })?;
     }
 
-    // Feature: rust-sdk-core-codegen, Property 16: Expected-type self return is type- and selection-safe
     #[test]
     fn property_16_expected_type_self_return_type_selection_safe(
         identifier in "[a-zA-Z0-9_-]{1,24}",
@@ -518,7 +513,6 @@ fn result_coordinate(result: Result<i64, QueryError>) -> String {
 proptest! {
     #![proptest_config(io_proptest_config())]
 
-    // Feature: rust-sdk-core-codegen, Property 12: Executing fields preserve runtime behaviour
     #[test]
     fn property_12_executing_fields_preserve_runtime_behaviour(case in any::<u8>()) {
         let runtime = tokio::runtime::Builder::new_current_thread()

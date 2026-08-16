@@ -1,6 +1,11 @@
 //! Engine-free production-stack and generated-client hygiene properties.
 
+// Shared schema-fixture DSL, compiled into this crate a second time: its
+// include_bytes! paths are file-relative and its proptest regression paths
+// resolve per consuming crate, both intended. Only two items are consumed
+// here, so the rest of the DSL is expectedly unused.
 #[path = "../../dagger-codegen/tests/support/mod.rs"]
+#[allow(dead_code)]
 mod codegen_support;
 
 use std::collections::BTreeMap;

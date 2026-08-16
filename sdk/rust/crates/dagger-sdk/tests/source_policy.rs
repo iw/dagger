@@ -134,35 +134,38 @@ fn generated_modules_match_the_owned_manifest() {
 }
 
 #[test]
-fn handwritten_production_comments_do_not_embed_planning_metadata() {
+fn handwritten_comments_do_not_embed_planning_metadata() {
+    // Test sources are covered too: property identity lives in stable test
+    // names, and spec-phase labels are delivery history, not contract.
     let crates = rust_workspace().join("crates");
     for crate_name in [
         "dagger-bootstrap",
         "dagger-codegen",
         "dagger-sdk",
+        "dagger-sdk-engine",
         "dagger-sdk-macros",
     ] {
-        let source_root = crates.join(crate_name).join("src");
-        for path in rust_sources(&source_root) {
-            if path.starts_with(crates.join("dagger-sdk/src/gen"))
-                || path
-                    .file_stem()
-                    .is_some_and(|name| name.to_string_lossy().ends_with("_tests"))
-            {
+        let crate_root = crates.join(crate_name);
+        for source_root in [crate_root.join("src"), crate_root.join("tests")] {
+            if !source_root.exists() {
                 continue;
             }
-            let source = fs::read_to_string(&path).expect("handwritten source must be UTF-8");
-            let production = source.split("#[cfg(test)]").next().unwrap_or(&source);
-            for line in production
-                .lines()
-                .filter(|line| line.trim_start().starts_with("//"))
-            {
-                for forbidden in ["Feature:", "Task ", "Property "] {
-                    assert!(
-                        !line.contains(forbidden),
-                        "{} embeds planning metadata in production: {line}",
-                        path.display()
-                    );
+            for path in rust_sources(&source_root) {
+                if path.starts_with(crates.join("dagger-sdk/src/gen")) {
+                    continue;
+                }
+                let source = fs::read_to_string(&path).expect("handwritten source must be UTF-8");
+                for line in source
+                    .lines()
+                    .filter(|line| line.trim_start().starts_with("//"))
+                {
+                    for forbidden in ["Feature:", "Task ", "Property "] {
+                        assert!(
+                            !line.contains(forbidden),
+                            "{} embeds planning metadata: {line}",
+                            path.display()
+                        );
+                    }
                 }
             }
         }

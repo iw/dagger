@@ -239,7 +239,6 @@ proptest! {
 
     // Only checksum-manifest release absence enters the compatibility arm; all other
     // failures remain terminal and a PATH startup failure retains the release cause.
-    // Feature: rust-sdk-transport-observability, Property 13: fallback follows the finite policy table
     #[test]
     fn property_13_fallback_finite_policy_table(
         failure_case in 0_u8..8,
@@ -346,7 +345,6 @@ proptest! {
 
     // Executable-busy is the only retry edge. The virtual clock proves both its 100 ms
     // ceiling and cancellation before another process attempt.
-    // Feature: rust-sdk-transport-observability, Property 14: spawn retry is narrow, bounded, and cancellable
     #[test]
     fn property_14_spawn_retry_narrow_bounded_cancellable(
         busy_before_terminal in 0_usize..14,
@@ -425,7 +423,6 @@ proptest! {
 
     // The complete projection retains the canonical request, adds its fixed labels,
     // pipes every stream, and gives managed ambient values deterministic precedence.
-    // Feature: rust-sdk-transport-observability, Property 16: CLI launch projection is complete and collision-free
     #[test]
     fn property_16_cli_launch_projection_complete_collision_free(
         explicit_runner in prop::option::of(1_u16..60000),

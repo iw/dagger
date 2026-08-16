@@ -418,7 +418,6 @@ mod tests {
     proptest! {
         #![proptest_config(naming_config())]
 
-        // Feature: rust-sdk-core-codegen, Property 20: Rust naming is valid, exact, and collision-free
         #[test]
         fn property_20_rust_naming_valid_exact_collision_free(
             source in "[A-Za-z_][A-Za-z0-9_]{0,47}",
