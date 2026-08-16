@@ -309,12 +309,35 @@ impl CliSessionStart {
 }
 
 /// Exact process inputs passed to a native spawn attempt.
-#[derive(Clone, Debug, Eq, PartialEq)]
+///
+/// The environment vector carries the runner token, so `Debug` is hand-written
+/// to render key names and counts only; a formatted projection can never print
+/// a credential value.
+#[derive(Clone, Eq, PartialEq)]
 pub(crate) struct CliLaunchProjection {
     executable: PathBuf,
     arguments: Vec<OsString>,
     environment: Vec<(OsString, OsString)>,
     stdio: StdioProjection,
+}
+
+impl fmt::Debug for CliLaunchProjection {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter
+            .debug_struct("CliLaunchProjection")
+            .field("executable", &self.executable)
+            .field("argument_count", &self.arguments.len())
+            .field(
+                "environment_keys",
+                &self
+                    .environment
+                    .iter()
+                    .map(|(key, _)| key.as_os_str())
+                    .collect::<Vec<_>>(),
+            )
+            .field("stdio", &self.stdio)
+            .finish()
+    }
 }
 
 impl CliLaunchProjection {
