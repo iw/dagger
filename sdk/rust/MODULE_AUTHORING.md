@@ -70,10 +70,16 @@ For invocation, parent state and the complete named argument set are validated b
 user code runs. Context parameters are injected and absent from TypeDefs.
 
 Each call owns its parent, decoded values, session context, cancellation signal, and
-single-assignment result sink. Successful values and unit, structured application
-errors, contained panics, cancellation, encoding failures, publication failures, and
-session-close failures remain distinct. The first terminal election is immutable;
-cancellation or publication failure never triggers a second result path. Diagnostics
+result sink. The entrypoint installs a termination-signal producer, so `SIGTERM` and
+`SIGINT` trip the same `ModuleCancellation` the dispatcher and authored code observe —
+an intentional extension beyond the definitive Go SDK, which offers module authors no
+cancellation. A cancellation that wins while the authored future is running drops that
+future and publishes one structured cancelled error as the call's terminal record;
+once the authored future has completed, its outcome is published without racing
+cancellation. Successful values and unit, structured application errors, contained
+panics, cancellation, encoding failures, publication failures, and session-close
+failures remain distinct, and every call still publishes at most one terminal
+outcome. Diagnostics
 retain authored and wire coordinates plus typed safe causes without rendering tokens,
 credential-bearing URLs, arbitrary panic payloads, host paths, or unbounded values.
 

@@ -28,9 +28,8 @@ pub mod __private {
     pub use super::dispatch::{
         CallCoordinate, CallOutcome, CallPreparationError, CallReceipt, DispatchError,
         DispatchRegistry, ErrorOutcomeKind, InvocationError, PreparedCall, PublishedOutcome,
-        RegistrationError, RegistrationSink, ResultElection, ResultElectionState,
-        ResultPublishError, ResultSink, apply_close_precedence, dispatch, handle_call,
-        prepare_call,
+        RegistrationError, RegistrationSink, ResultPublishError, ResultSink,
+        apply_close_precedence, dispatch, handle_call, prepare_call,
     };
     pub use super::error::ModuleError;
     pub use super::view::{

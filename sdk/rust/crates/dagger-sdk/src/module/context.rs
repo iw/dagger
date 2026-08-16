@@ -41,9 +41,10 @@ impl ModuleCancellation {
             if self.is_cancelled() {
                 return;
             }
+            // notify_waiters only wakes Notified futures that already exist, so
+            // the future is created before the second observation; a cancellation
+            // between the two checks therefore cannot be missed.
             let notified = self.0.notification.notified();
-            // Register the waiter before the second observation so a cancellation
-            // between the two checks cannot be missed.
             if self.is_cancelled() {
                 return;
             }

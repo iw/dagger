@@ -1,0 +1,7 @@
+kind: Added
+body: |
+    Module cancellation is now real: the entrypoint installs a termination-signal producer, so SIGTERM/SIGINT trip the `ModuleCancellation` that authored code and the dispatcher observe. A cancelled call publishes one structured cancelled error as its terminal record, completed results are published without racing cancellation, and the unreachable result-election scaffolding was removed. (The definitive Go SDK offers no module cancellation; this is an intentional Rust extension. Engine-side SIGTERM-with-grace for function-call execs is the documented follow-up that makes engine teardown trigger it.)
+time: 2026-08-16T00:00:05Z
+custom:
+    Author: iw
+    PR: ""

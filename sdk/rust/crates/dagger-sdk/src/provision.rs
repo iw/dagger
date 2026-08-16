@@ -14,9 +14,9 @@
 use std::fs::{self, File, OpenOptions, TryLockError};
 use std::future::Future;
 use std::io::{Seek, SeekFrom, Write};
-use std::time::Duration;
 use std::path::{Path, PathBuf};
 use std::pin::Pin;
+use std::time::Duration;
 
 use futures::{Stream, StreamExt};
 use semver::Version;
@@ -189,7 +189,10 @@ impl<H> DefaultCliProvisioner<H, NoopProvisioningObserver> {
 }
 
 impl<H, O> DefaultCliProvisioner<H, O, SystemRetentionRemover> {
-    #[cfg_attr(not(test), expect(dead_code, reason = "test constructor for cache-root injection"))]
+    #[cfg_attr(
+        not(test),
+        expect(dead_code, reason = "test constructor for cache-root injection")
+    )]
     pub(crate) fn with_cache_root(http: H, cache_root: PathBuf, observer: O) -> Self {
         Self {
             http,
@@ -246,8 +249,9 @@ where
         let expected = self.acquire_manifest(descriptor, cancellation).await?;
         let archive_root = self.cache_root.clone();
         let mut archive = run_blocking(ProvisionErrorKind::ArchiveRead, move || {
-            NamedTempFile::new_in(archive_root)
-                .map_err(|error| ProvisionError::with_source(ProvisionErrorKind::ArchiveRead, error))
+            NamedTempFile::new_in(archive_root).map_err(|error| {
+                ProvisionError::with_source(ProvisionErrorKind::ArchiveRead, error)
+            })
         })
         .await?;
         let actual = self
@@ -271,9 +275,12 @@ where
         let extract_cancellation = cancellation.clone();
         let extract_observer = self.observer.clone();
         let executable = run_blocking(ProvisionErrorKind::ArchiveFormat, move || {
-            archive.as_file_mut().seek(SeekFrom::Start(0)).map_err(|error| {
-                ProvisionError::with_source(ProvisionErrorKind::ArchiveFormat, error)
-            })?;
+            archive
+                .as_file_mut()
+                .seek(SeekFrom::Start(0))
+                .map_err(|error| {
+                    ProvisionError::with_source(ProvisionErrorKind::ArchiveFormat, error)
+                })?;
             let mut executable = NamedTempFile::new_in(executable_root).map_err(|error| {
                 ProvisionError::with_source(ProvisionErrorKind::CachePublication, error)
             })?;
@@ -381,9 +388,10 @@ where
         // Writes go through an async clone of the same file description so the
         // download loop never blocks the runtime thread; the shared cursor is
         // rewound by the caller before extraction.
-        let writer = destination.as_file().try_clone().map_err(|error| {
-            ProvisionError::with_source(ProvisionErrorKind::ArchiveRead, error)
-        })?;
+        let writer = destination
+            .as_file()
+            .try_clone()
+            .map_err(|error| ProvisionError::with_source(ProvisionErrorKind::ArchiveRead, error))?;
         let mut writer = tokio::fs::File::from_std(writer);
         let mut body = response.body;
         let mut observed = 0_u64;
@@ -587,8 +595,7 @@ impl CliCache {
         cancellation.check()?;
         let path = self.root.join(CACHE_LOCK_NAME);
         let file = run_blocking(ProvisionErrorKind::CacheLock, move || {
-            if fs::symlink_metadata(&path).is_ok_and(|metadata| metadata.file_type().is_symlink())
-            {
+            if fs::symlink_metadata(&path).is_ok_and(|metadata| metadata.file_type().is_symlink()) {
                 return Err(ProvisionError::new(ProvisionErrorKind::CacheLock));
             }
             let file = OpenOptions::new()

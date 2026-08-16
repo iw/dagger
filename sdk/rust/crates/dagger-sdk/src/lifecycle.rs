@@ -136,8 +136,9 @@ impl SharedSession {
                 return result.clone();
             }
 
-            // Notify does not retain permits for notify_waiters. Registering before
-            // the second terminal check closes the otherwise possible lost-wake gap.
+            // notify_waiters retains no permit and only wakes Notified futures
+            // that already exist, so the future is created before the second
+            // terminal check to close the lost-wake gap.
             let notified = self.closed.notified();
             if self.state() == LifecycleState::Closed
                 && let Some(result) = self.terminal.get()

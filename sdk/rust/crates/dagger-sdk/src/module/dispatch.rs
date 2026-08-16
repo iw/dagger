@@ -9,7 +9,6 @@ use std::error::Error;
 use std::fmt;
 use std::panic::AssertUnwindSafe;
 use std::sync::Arc;
-use std::sync::atomic::{AtomicU8, Ordering};
 
 use futures::FutureExt;
 
@@ -240,6 +239,8 @@ pub enum ErrorOutcomeKind {
     Application,
     /// Contained unwind from the authored user future.
     Panic,
+    /// Cooperative cancellation observed before the authored future completed.
+    Cancellation,
 }
 
 /// One terminal outcome selected before publication.
@@ -265,6 +266,8 @@ pub enum PublishedOutcome {
     ApplicationError,
     /// A contained panic error was accepted.
     PanicError,
+    /// A structured cancellation error was accepted.
+    CancelledError,
 }
 
 impl CallOutcome {
@@ -279,6 +282,10 @@ impl CallOutcome {
                 kind: ErrorOutcomeKind::Panic,
                 ..
             } => PublishedOutcome::PanicError,
+            Self::Error {
+                kind: ErrorOutcomeKind::Cancellation,
+                ..
+            } => PublishedOutcome::CancelledError,
         }
     }
 }
@@ -490,113 +497,6 @@ impl Error for DispatchError {
     }
 }
 
-/// Observable state of one call-local result election.
-#[doc(hidden)]
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum ResultElectionState {
-    /// Neither cancellation nor publication has started.
-    Pending = 0,
-    /// One outcome is being offered to the sink.
-    Publishing = 1,
-    /// The sink accepted the selected outcome.
-    Published = 2,
-    /// Cancellation won before sink acceptance.
-    Cancelled = 3,
-    /// The sink rejected the selected outcome.
-    PublicationFailed = 4,
-}
-
-impl ResultElectionState {
-    fn from_raw(value: u8) -> Self {
-        match value {
-            0 => Self::Pending,
-            1 => Self::Publishing,
-            2 => Self::Published,
-            3 => Self::Cancelled,
-            _ => Self::PublicationFailed,
-        }
-    }
-}
-
-/// Cloneable call-local state machine with one terminal winner.
-#[doc(hidden)]
-#[derive(Clone, Debug)]
-pub struct ResultElection(Arc<AtomicU8>);
-
-impl Default for ResultElection {
-    fn default() -> Self {
-        Self(Arc::new(AtomicU8::new(ResultElectionState::Pending as u8)))
-    }
-}
-
-impl ResultElection {
-    /// Returns the current monotonic election state.
-    #[must_use]
-    pub fn state(&self) -> ResultElectionState {
-        ResultElectionState::from_raw(self.0.load(Ordering::Acquire))
-    }
-
-    /// Moves a pending election into its one publication attempt.
-    #[doc(hidden)]
-    pub fn begin_publication(&self) -> bool {
-        self.0
-            .compare_exchange(
-                ResultElectionState::Pending as u8,
-                ResultElectionState::Publishing as u8,
-                Ordering::AcqRel,
-                Ordering::Acquire,
-            )
-            .is_ok()
-    }
-
-    /// Records sink acceptance if cancellation has not already won.
-    #[doc(hidden)]
-    pub fn accept_publication(&self) -> bool {
-        self.0
-            .compare_exchange(
-                ResultElectionState::Publishing as u8,
-                ResultElectionState::Published as u8,
-                Ordering::AcqRel,
-                Ordering::Acquire,
-            )
-            .is_ok()
-    }
-
-    /// Records terminal rejection of the selected sink outcome.
-    #[doc(hidden)]
-    pub fn fail_publication(&self) {
-        let _ = self.0.compare_exchange(
-            ResultElectionState::Publishing as u8,
-            ResultElectionState::PublicationFailed as u8,
-            Ordering::AcqRel,
-            Ordering::Acquire,
-        );
-    }
-
-    /// Elects cancellation while publication remains unaccepted.
-    #[doc(hidden)]
-    pub fn cancel(&self) -> bool {
-        let mut observed = self.0.load(Ordering::Acquire);
-        loop {
-            if !matches!(
-                ResultElectionState::from_raw(observed),
-                ResultElectionState::Pending | ResultElectionState::Publishing
-            ) {
-                return false;
-            }
-            match self.0.compare_exchange_weak(
-                observed,
-                ResultElectionState::Cancelled as u8,
-                Ordering::AcqRel,
-                Ordering::Acquire,
-            ) {
-                Ok(_) => return true,
-                Err(next) => observed = next,
-            }
-        }
-    }
-}
-
 /// Routes registration and invocation through the same production wrapper.
 #[doc(hidden)]
 pub async fn handle_call<R, G, S>(
@@ -657,7 +557,18 @@ where
     tokio::pin!(invocation);
 
     let outcome = tokio::select! {
-        _ = cancellation.cancelled() => return Err(DispatchError::Cancelled(coordinate)),
+        _ = cancellation.cancelled() => {
+            // The authored future is dropped here. A structured cancelled error
+            // is still offered to the engine so the call has a terminal record
+            // instead of an unexplained runtime exit; the publication is
+            // best-effort because the session may already be closing.
+            let cancelled = CallOutcome::Error {
+                error: ModuleError::new("module function cancelled"),
+                kind: ErrorOutcomeKind::Cancellation,
+            };
+            let _ = sink.publish(cancelled).await;
+            return Err(DispatchError::Cancelled(coordinate));
+        }
         result = &mut invocation => match result {
             Ok(Ok(value)) => CallOutcome::Value(value),
             Ok(Err(InvocationError::Application(error))) => CallOutcome::Error {
@@ -672,42 +583,28 @@ where
         }
     };
 
+    // Once the authored future has completed, its outcome is delivered without
+    // racing cancellation: publication is one bounded loopback request, and
+    // abandoning a computed result mid-write would leave the engine with less
+    // information than finishing. The select above is the single point where
+    // cancellation wins, which is what makes the terminal outcome immutable.
     let published = outcome.published_kind();
-    let election = ResultElection::default();
-    if !election.begin_publication() {
-        return Err(DispatchError::Cancelled(coordinate));
-    }
-    let publication = sink.publish(outcome);
-    tokio::pin!(publication);
-    tokio::select! {
-        _ = cancellation.cancelled() => {
-            if election.cancel() {
-                Err(DispatchError::Cancelled(coordinate))
+    match sink.publish(outcome).await {
+        Ok(()) => {
+            if published == PublishedOutcome::PanicError {
+                Err(DispatchError::Panicked(coordinate))
             } else {
-                Ok(CallReceipt { identity, outcome: Some(published) })
-            }
-        }
-        result = &mut publication => match result {
-            Ok(()) => {
-                if election.accept_publication() {
-                    if published == PublishedOutcome::PanicError {
-                        Err(DispatchError::Panicked(coordinate))
-                    } else {
-                        Ok(CallReceipt { identity, outcome: Some(published) })
-                    }
-                } else {
-                    Err(DispatchError::Cancelled(coordinate))
-                }
-            }
-            Err(source) => {
-                election.fail_publication();
-                Err(DispatchError::Publication {
-                    coordinate,
-                    outcome: published,
-                    source,
+                Ok(CallReceipt {
+                    identity,
+                    outcome: Some(published),
                 })
             }
         }
+        Err(source) => Err(DispatchError::Publication {
+            coordinate,
+            outcome: published,
+            source,
+        }),
     }
 }
 
@@ -1322,65 +1219,145 @@ mod tests {
             prop_assert!(aborts.iter().all(|aborts| aborts.load(Ordering::SeqCst) == 1));
         }
 
-        #[test]
-        fn property_22_cancellation_publication_one_winner_inputs(
-            cancel_first in any::<bool>(),
-            publication_fails in any::<bool>(),
-        ) {
-            let election = ResultElection::default();
-            prop_assert!(election.begin_publication());
-            if cancel_first {
-                prop_assert!(election.cancel());
-                prop_assert!(!election.accept_publication());
-                prop_assert_eq!(election.state(), ResultElectionState::Cancelled);
-            } else if publication_fails {
-                election.fail_publication();
-                prop_assert!(!election.cancel());
-                prop_assert_eq!(election.state(), ResultElectionState::PublicationFailed);
-            } else {
-                prop_assert!(election.accept_publication());
-                prop_assert!(!election.cancel());
-                prop_assert_eq!(election.state(), ResultElectionState::Published);
-            }
-        }
     }
 
-    #[test]
-    fn property_22_cancellation_publication_one_winner() {
-        loom::model(|| {
-            use loom::sync::Arc;
-            use loom::sync::atomic::{AtomicU8, Ordering};
-
-            let state = Arc::new(AtomicU8::new(ResultElectionState::Publishing as u8));
-            let cancel_state = Arc::clone(&state);
-            let publish_state = Arc::clone(&state);
-            let cancel = loom::thread::spawn(move || {
-                cancel_state
-                    .compare_exchange(
-                        ResultElectionState::Publishing as u8,
-                        ResultElectionState::Cancelled as u8,
-                        Ordering::AcqRel,
-                        Ordering::Acquire,
-                    )
-                    .is_ok()
-            });
-            let publish = loom::thread::spawn(move || {
-                publish_state
-                    .compare_exchange(
-                        ResultElectionState::Publishing as u8,
-                        ResultElectionState::Published as u8,
-                        Ordering::AcqRel,
-                        Ordering::Acquire,
-                    )
-                    .is_ok()
-            });
-            let cancelled = cancel.join().expect("cancel model joins");
-            let published = publish.join().expect("publish model joins");
-            assert_ne!(cancelled, published);
-            assert!(matches!(
-                ResultElectionState::from_raw(state.load(Ordering::Acquire)),
-                ResultElectionState::Cancelled | ResultElectionState::Published
-            ));
+    // Cancellation during the authored future publishes exactly one structured
+    // cancelled outcome before the dispatcher reports the cancellation.
+    #[tokio::test]
+    async fn property_22_cancellation_publishes_one_terminal_cancelled_outcome() {
+        let registry = Arc::new(Registry {
+            behavior: Behavior::Value,
+            user_events: Arc::new(AtomicUsize::new(0)),
+            // A two-party barrier with a single caller pends the authored future
+            // deterministically, without sleeping.
+            barrier: Some(Arc::new(tokio::sync::Barrier::new(2))),
         });
+        let cancellation = ModuleCancellation::default();
+        let (context, _aborts) = context("cancel-mid-call", cancellation.clone());
+        let envelope = envelope(
+            "cancel-mid-call",
+            Some(json!({"fixture_root": "/fixture/cancel"})),
+            vec![argument("name", json!("cancel"))],
+        );
+        let outcomes = Arc::new(Mutex::new(Vec::new()));
+        let sink = Arc::new(Sink {
+            outcomes: Arc::clone(&outcomes),
+            fail: false,
+        });
+        let dispatch_registry = Arc::clone(&registry);
+        let dispatch_sink = Arc::clone(&sink);
+        let call = tokio::spawn(async move {
+            dispatch(
+                dispatch_registry.as_ref(),
+                envelope,
+                context,
+                dispatch_sink.as_ref(),
+            )
+            .await
+        });
+        tokio::task::yield_now().await;
+        cancellation.cancel();
+        let result = call.await.expect("dispatch task joins");
+        assert!(matches!(result, Err(DispatchError::Cancelled(_))));
+        let outcomes = outcomes.lock().expect("outcome lock");
+        assert_eq!(outcomes.len(), 1);
+        assert!(matches!(
+            outcomes.first(),
+            Some(CallOutcome::Error {
+                kind: ErrorOutcomeKind::Cancellation,
+                ..
+            })
+        ));
+    }
+
+    // A cancellation arriving before dispatch starts publishes nothing: the call
+    // never ran, so there is no terminal outcome to record.
+    #[tokio::test]
+    async fn pre_cancelled_dispatch_reports_cancelled_without_publishing() {
+        let registry = Registry {
+            behavior: Behavior::Value,
+            user_events: Arc::new(AtomicUsize::new(0)),
+            barrier: None,
+        };
+        let cancellation = ModuleCancellation::default();
+        cancellation.cancel();
+        let (context, _aborts) = context("pre-cancelled", cancellation);
+        let envelope = envelope(
+            "pre-cancelled",
+            Some(json!({"fixture_root": "/fixture/pre"})),
+            vec![argument("name", json!("pre"))],
+        );
+        let outcomes = Arc::new(Mutex::new(Vec::new()));
+        let sink = Sink {
+            outcomes: Arc::clone(&outcomes),
+            fail: false,
+        };
+        let result = dispatch(&registry, envelope, context, &sink).await;
+        assert!(matches!(result, Err(DispatchError::Cancelled(_))));
+        assert!(outcomes.lock().expect("outcome lock").is_empty());
+    }
+
+    // Once the authored future completes, cancellation no longer races the
+    // publication: the computed outcome is delivered and the receipt reports it.
+    #[tokio::test]
+    async fn cancellation_after_completion_still_publishes_the_computed_outcome() {
+        struct GatedSink {
+            outcomes: Arc<Mutex<Vec<CallOutcome>>>,
+            release: Arc<tokio::sync::Notify>,
+        }
+        impl ResultSink for GatedSink {
+            fn publish<'a>(
+                &'a self,
+                outcome: CallOutcome,
+            ) -> ModuleBoxFuture<'a, Result<(), ResultPublishError>> {
+                Box::pin(async move {
+                    self.release.notified().await;
+                    self.outcomes.lock().expect("outcome lock").push(outcome);
+                    Ok(())
+                })
+            }
+        }
+        let registry = Arc::new(Registry {
+            behavior: Behavior::Value,
+            user_events: Arc::new(AtomicUsize::new(0)),
+            barrier: None,
+        });
+        let cancellation = ModuleCancellation::default();
+        let (context, _aborts) = context("late-cancel", cancellation.clone());
+        let envelope = envelope(
+            "late-cancel",
+            Some(json!({"fixture_root": "/fixture/late"})),
+            vec![argument("name", json!("late"))],
+        );
+        let outcomes = Arc::new(Mutex::new(Vec::new()));
+        let release = Arc::new(tokio::sync::Notify::new());
+        let sink = Arc::new(GatedSink {
+            outcomes: Arc::clone(&outcomes),
+            release: Arc::clone(&release),
+        });
+        let dispatch_registry = Arc::clone(&registry);
+        let dispatch_sink = Arc::clone(&sink);
+        let call = tokio::spawn(async move {
+            dispatch(
+                dispatch_registry.as_ref(),
+                envelope,
+                context,
+                dispatch_sink.as_ref(),
+            )
+            .await
+        });
+        // The authored future completes immediately; publication is now gated.
+        tokio::task::yield_now().await;
+        cancellation.cancel();
+        release.notify_one();
+        let result = call.await.expect("dispatch task joins");
+        assert!(matches!(
+            result,
+            Ok(CallReceipt {
+                outcome: Some(PublishedOutcome::Value),
+                ..
+            })
+        ));
+        assert_eq!(outcomes.lock().expect("outcome lock").len(), 1);
     }
 }
