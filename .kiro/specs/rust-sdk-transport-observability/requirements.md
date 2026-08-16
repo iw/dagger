@@ -24,23 +24,24 @@ Feature 3 consumes Feature 2's validated Connection_Plan, owned Shared_Session,
 Diagnostic_Sink, Raw_Request, and Raw_Response. It supplies the concrete connector that
 turns an implicit plan into one transferred Session_Resource. Feature 4 owns complete
 schema-derived bindings, although Feature 3 maps engine-authored execution extensions
-already represented by Feature 2's lossless raw response. Feature 8 owns the closing
-live platform, conformance, and security matrices; Feature 9 owns migration and release
-publication. Feature 3 implements Linux, macOS, and Windows archive logic and proves it
-with deterministic fixtures, but does not claim Feature 8's multi-platform live gate.
+already represented by Feature 2's lossless raw response. Feature 9 owns migration and
+release assembly; Feature 10 owns the runtime-integrity extensions layered onto this
+transport (blocking-pool scheduling for provisioning filesystem work and the
+cancellable cache-lock poll). Feature 3 implements Linux, macOS, and Windows archive
+logic and proves it with deterministic fixtures without claiming a multi-platform
+live gate.
 
 The current `sdk-sdk` harness remains authoritative for the common checks it actually
 defines. Its pinned checks do not exercise client-side source selection, CLI download,
 session control lines, HTTP authentication, trace propagation, or transport errors.
 Feature 3 therefore requires dedicated deterministic conformance fixtures and
-target-scoped live engine evidence. An unrelated green harness check is not
-Verification_Evidence for a Feature 3 status change.
+target-scoped live engine tests; an unrelated green harness check proves nothing
+about a transport capability.
 
 ## Glossary
 
 - **Archive_Descriptor:** The platform-specific release archive name, format, and
   expected executable member for one CLI_Target.
-- **Blocking_Status:** `Missing` or `Partial` under the Feature 1 status policy.
 - **Cache_Lock:** The cross-process exclusion mechanism protecting cache validation,
   first publication, and managed retention.
 - **CLI_Source:** Exactly one of Explicit_Local_CLI, Verified_Download, or
@@ -49,8 +50,6 @@ Verification_Evidence for a Feature 3 status change.
   architecture used to select one release artifact.
 - **Compatibility_PATH_Fallback:** A `dagger` executable resolved from `PATH` only
   after checksum metadata proves that the compiled release is unavailable.
-- **Complete_Status:** `Implemented`, `Idiomatic_Equivalent`, or a justified
-  `Inapplicable` classification under the Feature 1 status policy.
 - **Connection_Plan:** Feature 2's deterministic, validated decision to use an
   Explicit_Connection, Existing_Session, or New_CLI.
 - **Control_Line:** The first newline-terminated CLI stdout record containing a JSON
@@ -61,8 +60,8 @@ Verification_Evidence for a Feature 3 status change.
   shutdown failure without retaining an unbounded CLI stream.
 - **Engine_Domain_Error:** A GraphQL error whose extensions identify a typed
   engine-authored failure such as `EXEC_ERROR`.
-- **Exact_Target:** The single Target_Descriptor declared by
-  `sdk/rust/completeness/compatibility.json` for Rust SDK `1.0.0-beta.10`.
+- **Exact_Target:** The single Target_Descriptor declared by the checked target
+  identity (today `sdk/rust/codegen/target.json`).
 - **Existing_Session:** A Dagger session selected when `DAGGER_SESSION_PORT` is present
   and authenticated by `DAGGER_SESSION_TOKEN`.
 - **Explicit_Connection:** Feature 2's caller-supplied Engine_Connection, selected
@@ -186,9 +185,9 @@ revision is stated. Citations to the Feature 2 foundation use merge commit
   `sdk/go/client_test.go:230-260` verifies the typed execution fields.
 - **Engine target identity:** `core/schema/query.go:100-125` defines public
   `Query.version` as the current full engine version; its Go binding is
-  `sdk/go/dagger.gen.go:12894-12901`. Feature 1's exact compatibility claim and typed
-  outside-range capability are recorded in
-  `sdk/rust/completeness/compatibility.json:1-15`.
+  `sdk/go/dagger.gen.go:12894-12901`. The exact compatibility claim and typed
+  outside-range capability are recorded in the checked target identity (today
+  `sdk/rust/codegen/target.json`).
 - **Current stable Rust seam:** at the Feature 2 merge commit,
   `sdk/rust/crates/dagger-sdk/src/preflight.rs:138-236` produces validated Existing or
   New_CLI requests and preserves every CLI-only option. Explicit injection is selected
@@ -226,102 +225,18 @@ revision is stated. Citations to the Feature 2 foundation use merge commit
   Raw_Response for GraphQL errors. It does not yet distinguish provisioning phases,
   HTTP status, background session failure, unsupported target, or typed engine-domain
   extensions.
-- **Harness limitation:** `sdk/rust/completeness/harness-mappings.json` maps the pinned
-  `sdk-sdk` checks only to their own common capability IDs. No mapped check proves a
-  Feature 3 transport capability.
+- **Harness limitation:** the pinned `sdk-sdk` checks cover only their own common
+  lifecycle scope. No mapped check proves a Feature 3 transport capability.
 - **Rust policy:** `sdk/rust/AGENTS.md` requires typed public errors, panic-free library
   paths, no unsafe code, secret-safe diagnostics, documented public contracts,
   bounded resource behaviour, and WHY comments for lifecycle and concurrency
   invariants.
 
-## Completeness Contract Policy
+## Transport Policy Statements
 
-### Existing Capability_IDs Whose Status Feature 3 Intends to Change
-
-The following 32 IDs are the exact current-ledger status scope. It contains all 21
-currently Feature 3-owned rows and the 11 Feature 2-owned rows whose recorded residual
-gap is Feature 3 live behaviour. The scope digest is
-`sha256:0b4246157f75b8ce179d8fec3476256fa939ccdf69d29d1fcafaf93f160013b3`,
-computed over the compact JSON encoding of this lexicographically sorted list.
-
-```text
-behavior/go-client/source%2Fgo-client%2Fgo-const%2Fengineconn%2F%2543%254%43%2549%2556ersion
-behavior/go-client/source%2Fgo-client%2Fgo-function%2Fdagger%2F%2543onnect
-behavior/go-client/source%2Fgo-client%2Fgo-function%2Fdagger%2F%2557ith%254%43oad%2557orkspace%254%44odules
-behavior/go-client/source%2Fgo-client%2Fgo-function%2Fdagger%2F%2557ith%254%43og%254%46utput
-behavior/go-client/source%2Fgo-client%2Fgo-function%2Fdagger%2F%2557ith%2545nvironment%2556ariable
-behavior/go-client/source%2Fgo-client%2Fgo-function%2Fdagger%2F%2557ith%2552unner%2548ost
-behavior/go-client/source%2Fgo-client%2Fgo-function%2Fdagger%2F%2557ith%2553kip%2557orkspace%254%44odules
-behavior/go-client/source%2Fgo-client%2Fgo-function%2Fdagger%2F%2557ith%2556erbosity
-behavior/go-client/source%2Fgo-client%2Fgo-function%2Fdagger%2F%2557ith%2556ersion%254%46verride
-behavior/go-client/source%2Fgo-client%2Fgo-function%2Fdagger%2F%2557ith%2557orkdir
-behavior/go-client/source%2Fgo-client%2Fgo-function%2Fdagger%2F%2557ith%2557orkspace
-behavior/go-client/source%2Fgo-client%2Fgo-function%2Fengineconn%2F%2546rom%254%43ocal%2543%254%43%2549
-behavior/go-client/source%2Fgo-client%2Fgo-function%2Fengineconn%2F%2546rom%2544ownloaded%2543%254%43%2549
-behavior/go-client/source%2Fgo-client%2Fgo-function%2Fengineconn%2F%2546rom%2553ession%2545nv
-behavior/go-client/source%2Fgo-client%2Fgo-function%2Fengineconn%2F%2547et
-behavior/go-client/source%2Fgo-client%2Fgo-method%2Fdagger%2F%2543lient%2F%2543lose
-behavior/go-client/source%2Fgo-client%2Fgo-method%2Fengineconn%2F%2543%254%43%2549%2544ownloader%2F%2544ownload
-behavior/go-client/source%2Fgo-client%2Fgo-method%2Fengineconn%2F%2552ound%2554ripper%2546unc%2F%2552ound%2554rip
-behavior/go-client/source%2Fgo-client%2Fgo-test%2Fengineconn%2F%2554est%254%44issing%2541rchive%2544oes%254%45ot%2546allback
-behavior/go-client/source%2Fgo-client%2Fgo-test%2Fengineconn%2F%2554est%254%45o%2546allback%2554o%254%43ocal%2543%254%43%2549%2546or%254%46ther%2545rrors
-behavior/go-client/source%2Fgo-client%2Fgo-test%2Fengineconn%2F%2554est%2543%254%43%2549%2553ession%2541rgs%2549nclude%254%43oad%2557orkspace%254%44odules
-behavior/go-client/source%2Fgo-client%2Fgo-test%2Fengineconn%2F%2554est%2543%254%43%2549%2553ession%2541rgs%2549nclude%2557orkspace
-behavior/go-client/source%2Fgo-client%2Fgo-test%2Fengineconn%2F%2554est%2543hecksum%254%44ap%254%44arks%2555navailable
-behavior/go-client/source%2Fgo-client%2Fgo-test%2Fengineconn%2F%2554est%2546allback%2554o%254%43ocal%2543%254%43%2549
-behavior/go-client/source%2Fgo-client%2Fgo-test%2Fengineconn%2F%2554est%2547et%2552ejects%2557orkspace%254%44odule%254%43oading%2546or%2545xisting%2553ession
-behavior/go-client/source%2Fgo-client%2Fgo-test%2Fengineconn%2F%2554est%2547et%2552ejects%2557orkspace%2546or%2545xisting%2553ession
-behavior/go-client/source%2Fgo-client%2Fgo-type%2Fengineconn%2F%2543%254%43%2549%2544ownloader
-behavior/go-client/source%2Fgo-client%2Fgo-type%2Fengineconn%2F%2543onnect%2550arams
-behavior/go-client/source%2Fgo-client%2Fgo-type%2Fengineconn%2F%2552ound%2554ripper%2546unc
-behavior/go-client/source%2Fgo-client%2Fgo-var%2Fengineconn%2F%254%46verride%2543%254%43%2549%2541rchive%2555%2552%254%43
-behavior/go-client/source%2Fgo-client%2Fgo-var%2Fengineconn%2F%254%46verride%2543hecksums%2555%2552%254%43
-behavior/go-engine-sdk/typed-outside-target-response
-```
-
-The two Feature 2 test rows whose remaining gap is Feature 8 live verification are not
-in this scope. Feature 3 must not relabel them complete merely because deterministic
-CLI projection or a single target run succeeds.
-
-### Omitted Policy_Capabilities to Add and Complete
-
-F1 did not inventory transport obligations that have no one-to-one Go declaration.
-The following 26 stable IDs are added under the `rust-policy` authority before Feature
-3 status changes are accepted:
-
-```text
-policy/rust-policy/transport-background-failure-observation
-policy/rust-policy/transport-cache-atomic-publication
-policy/rust-policy/transport-cache-permission-safety
-policy/rust-policy/transport-cache-retention
-policy/rust-policy/transport-cli-archive-bounds
-policy/rust-policy/transport-cli-trace-propagation
-policy/rust-policy/transport-cli-version-selection
-policy/rust-policy/transport-control-line-isolation
-policy/rust-policy/transport-diagnostic-bounds
-policy/rust-policy/transport-diagnostic-failure-containment
-policy/rust-policy/transport-download-fallback-boundary
-policy/rust-policy/transport-engine-error-extensions
-policy/rust-policy/transport-error-taxonomy
-policy/rust-policy/transport-existing-session-validation
-policy/rust-policy/transport-http-trace-propagation
-policy/rust-policy/transport-local-cli-no-fallback
-policy/rust-policy/transport-loopback-authentication
-policy/rust-policy/transport-no-query-retry
-policy/rust-policy/transport-platform-archive-selection
-policy/rust-policy/transport-session-labels
-policy/rust-policy/transport-session-protocol
-policy/rust-policy/transport-shutdown-bound
-policy/rust-policy/transport-source-precedence
-policy/rust-policy/transport-startup-retry-boundary
-policy/rust-policy/transport-unsupported-target-response
-policy/rust-policy/transport-verified-cli-download
-```
-
-### Rust Transport Policy Anchors
-
-The completeness extractor selects these exact, stable policy statements. Their IDs
-are semantic coordinates; source line numbers are evidence locators only.
+These stable policy statements govern the transport contract. Their identifiers are
+semantic coordinates used by tests and reviews; source line numbers are locators
+only.
 
 - `transport-background-failure-observation`: Every owned process and stream task failure is retained for typed startup or shutdown inspection.
 - `transport-cache-atomic-publication`: Concurrent provisioners expose either no cache entry or one complete verified executable, never partial bytes.
@@ -490,40 +405,6 @@ extensions. Typed mapping never discards partial data, sibling errors, response-
 extensions, or unknown members.
 
 ## Requirements
-
-### Requirement 1: Exact Completeness Scope
-
-**User Story:** As a Rust SDK maintainer, I want Feature 3 tied to exact ledger
-capabilities, so that transport work raises the honest completeness count without
-claiming Feature 8's platform and release gates.
-
-#### Acceptance Criteria
-
-1. WHEN Feature 3 implementation begins, THE contract tooling SHALL validate the 32
-   existing Capability_IDs listed in this document as the exact status-change scope.
-2. WHEN Feature 3 implementation begins, THE contract tooling SHALL validate the
-   existing-capability scope digest recorded in this document.
-3. WHEN omitted transport policies are inventoried, THE Canonical_Inventory SHALL
-   contain the 26 Policy_Capability IDs listed in this document.
-4. WHEN a Feature 3 status becomes complete, THE Completeness_Ledger SHALL record
-   target-scoped implementation evidence in the same change.
-5. WHEN a Feature 3 status becomes complete, THE Completeness_Ledger SHALL record
-   status-appropriate Verification_Evidence in the same change.
-6. WHEN a Go test-control global is expressed through a private Rust seam, THE
-   Completeness_Ledger SHALL classify the capability as an Idiomatic_Equivalent with
-   decision evidence.
-7. WHEN an `sdk-sdk` Harness_Check does not exercise a Feature 3 assertion, THE
-   Completeness_Ledger SHALL exclude that check from Feature 3 Verification_Evidence.
-8. WHEN a Feature 2 row's exact residual Feature 3 gap is verified, THE
-   Completeness_Ledger SHALL update that row in the same evidence-bearing change.
-9. WHEN a Feature 2 row retains a Feature 8 live-verification gap, THE
-   Completeness_Ledger SHALL preserve its Blocking_Status.
-10. IF a Feature 3 behaviour still lacks target-scoped verification, THEN THE
-    Completeness_Ledger SHALL retain its exact residual Blocking_Status.
-11. WHEN all Feature 3 requirements are verified, THE 21 Feature 3-owned existing rows
-    SHALL contain no Blocking_Status.
-12. WHEN all Feature 3 requirements are verified, THE 26 new transport policy rows
-    SHALL contain no Blocking_Status.
 
 ### Requirement 2: Deterministic End-to-End Source Selection
 
@@ -1087,11 +968,11 @@ security, or lifecycle guarantees.
 - PATH fallback remains intentionally narrow. General retries or “try something else”
   behaviour would hide integrity and configuration failures and could repeat mutating
   GraphQL operations.
-- The exact runtime target handshake is required by Feature 1's compatibility claim.
+- The exact runtime target handshake is required by the checked target identity.
   It does not imply that every future Rust release must remain exact-target-only; a
   future target transition may widen the range only with its own boundary evidence.
-- Linux, macOS, and Windows archive logic belongs here. Feature 8 still owns live
-  platform-matrix evidence and must retain its blockers until those runs exist.
+- Linux, macOS, and Windows archive logic belongs here; live platform-matrix
+  verification remains release-gate work under Feature 9.
 - The design must derive executable properties for source determinism, fallback
   monotonicity, archive bounds, atomic publication, protocol isolation, redaction,
   at-most-once requests, resource cleanup, error preservation, and target compatibility
