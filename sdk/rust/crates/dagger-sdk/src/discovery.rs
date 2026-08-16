@@ -147,7 +147,7 @@ impl Drop for CacheExecutionLease {
         if Arc::strong_count(&self.lock) == 1 {
             // A concurrent fork inherits the descriptor until exec, so explicitly
             // release the shared flock before closing our final Rust handle.
-            let _ = fs4::FileExt::unlock(self.lock.as_ref());
+            let _ = self.lock.as_ref().unlock();
         }
     }
 }

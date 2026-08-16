@@ -40,7 +40,6 @@ tracing-opentelemetry.workspace = true
 async-trait.workspace = true
 url.workspace = true
 zip.workspace = true
-fs4.workspace = true
 
 [dev-dependencies]
 loom.workspace = true

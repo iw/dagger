@@ -998,11 +998,13 @@ fn cache_execution_lease_holds_the_cross_process_lock() {
         .open(fixture.path().join(".rust-sdk-cli-cache.lock"))
         .expect("contender opens lock file");
     assert!(matches!(
-        fs4::FileExt::try_lock(&contender),
-        Err(fs4::TryLockError::WouldBlock)
+        contender.try_lock(),
+        Err(std::fs::TryLockError::WouldBlock)
     ));
     drop(executable);
-    fs4::FileExt::try_lock(&contender).expect("dropping the lease releases the lock");
+    contender
+        .try_lock()
+        .expect("dropping the lease releases the lock");
 }
 
 #[test]

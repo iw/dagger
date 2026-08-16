@@ -5,18 +5,24 @@
 //! one bounded member into private state, then revalidate and atomically publish while
 //! locked. The lock remains leased through process spawn so retention cannot reopen the
 //! validation-to-execution race.
+//!
+//! Every filesystem step runs on the blocking pool and the cache lock is a
+//! cancellable try-lock poll. Module entrypoints run a current-thread runtime whose
+//! only thread also drives the CLI's stdout and stderr drains, so provisioning must
+//! never occupy the runtime thread or park a detached blocking thread on a lock.
 
-use std::fs::{self, File, OpenOptions};
+use std::fs::{self, File, OpenOptions, TryLockError};
 use std::future::Future;
 use std::io::{Seek, SeekFrom, Write};
+use std::time::Duration;
 use std::path::{Path, PathBuf};
 use std::pin::Pin;
 
-use fs4::FileExt;
 use futures::{Stream, StreamExt};
 use semver::Version;
 use sha2::{Digest, Sha256};
 use tempfile::NamedTempFile;
+use tokio::io::AsyncWriteExt;
 use url::Url;
 
 use crate::archive::{
@@ -35,6 +41,7 @@ const RELEASE_HOST: &str = "dl.dagger.io";
 const CACHE_DIRECTORY: &str = "dagger";
 const CACHE_LOCK_NAME: &str = ".rust-sdk-cli-cache.lock";
 const MANAGED_PREFIX: &str = "dagger-";
+const LOCK_RETRY_INTERVAL: Duration = Duration::from_millis(50);
 
 pub(crate) type DownloadChunks =
     Pin<Box<dyn Stream<Item = Result<Vec<u8>, ProvisionError>> + Send>>;
@@ -213,8 +220,8 @@ impl<H, O, R> DefaultCliProvisioner<H, O, R> {
 impl<H, O, R> DefaultCliProvisioner<H, O, R>
 where
     H: ProvisioningHttp,
-    O: ProvisioningObserver,
-    R: RetentionRemover,
+    O: ProvisioningObserver + Clone + 'static,
+    R: RetentionRemover + Clone + 'static,
 {
     pub(crate) async fn acquire(
         &self,
@@ -226,15 +233,23 @@ where
             .cli_version()
             .map_err(|_| ProvisionError::new(ProvisionErrorKind::InvalidReleaseUrl))?;
         let cache = CliCache::new(self.cache_root.clone(), cli_version, descriptor.format());
-        cache.prepare()?;
+        let cache = run_blocking(ProvisionErrorKind::CacheDirectory, move || {
+            cache.prepare()?;
+            Ok(cache)
+        })
+        .await?;
 
         if let Some(executable) = cache.lease_existing(cancellation, &self.observer).await? {
             return Ok(executable);
         }
 
         let expected = self.acquire_manifest(descriptor, cancellation).await?;
-        let mut archive = NamedTempFile::new_in(&self.cache_root)
-            .map_err(|error| ProvisionError::with_source(ProvisionErrorKind::ArchiveRead, error))?;
+        let archive_root = self.cache_root.clone();
+        let mut archive = run_blocking(ProvisionErrorKind::ArchiveRead, move || {
+            NamedTempFile::new_in(archive_root)
+                .map_err(|error| ProvisionError::with_source(ProvisionErrorKind::ArchiveRead, error))
+        })
+        .await?;
         let actual = self
             .acquire_archive(descriptor, &mut archive, cancellation)
             .await?;
@@ -250,24 +265,30 @@ where
             ProvisionCheckpoint::ChecksumAccepted,
         )?;
 
-        archive
-            .as_file_mut()
-            .seek(SeekFrom::Start(0))
-            .map_err(|error| {
+        let executable_root = self.cache_root.clone();
+        let format = descriptor.format();
+        let member = descriptor.member_name().to_owned();
+        let extract_cancellation = cancellation.clone();
+        let extract_observer = self.observer.clone();
+        let executable = run_blocking(ProvisionErrorKind::ArchiveFormat, move || {
+            archive.as_file_mut().seek(SeekFrom::Start(0)).map_err(|error| {
                 ProvisionError::with_source(ProvisionErrorKind::ArchiveFormat, error)
             })?;
-        let mut executable = NamedTempFile::new_in(&self.cache_root).map_err(|error| {
-            ProvisionError::with_source(ProvisionErrorKind::CachePublication, error)
-        })?;
-        extract_expected(
-            archive.as_file_mut(),
-            executable.as_file_mut(),
-            descriptor.format(),
-            descriptor.member_name(),
-            EXECUTABLE_LIMIT,
-            cancellation,
-            &self.observer,
-        )?;
+            let mut executable = NamedTempFile::new_in(executable_root).map_err(|error| {
+                ProvisionError::with_source(ProvisionErrorKind::CachePublication, error)
+            })?;
+            extract_expected(
+                archive.as_file_mut(),
+                executable.as_file_mut(),
+                format,
+                &member,
+                EXECUTABLE_LIMIT,
+                &extract_cancellation,
+                &extract_observer,
+            )?;
+            Ok(executable)
+        })
+        .await?;
         checkpoint(&self.observer, cancellation, ProvisionCheckpoint::Extracted)?;
 
         cache
@@ -357,6 +378,13 @@ where
             return Err(ProvisionError::new(ProvisionErrorKind::ArchiveTooLarge));
         }
 
+        // Writes go through an async clone of the same file description so the
+        // download loop never blocks the runtime thread; the shared cursor is
+        // rewound by the caller before extraction.
+        let writer = destination.as_file().try_clone().map_err(|error| {
+            ProvisionError::with_source(ProvisionErrorKind::ArchiveRead, error)
+        })?;
+        let mut writer = tokio::fs::File::from_std(writer);
         let mut body = response.body;
         let mut observed = 0_u64;
         let mut hasher = Sha256::new();
@@ -383,19 +411,31 @@ where
                 return Err(ProvisionError::new(ProvisionErrorKind::ArchiveTooLarge));
             }
             hasher.update(&chunk);
-            destination
-                .as_file_mut()
-                .write_all(&chunk)
-                .map_err(|error| {
-                    ProvisionError::with_source(ProvisionErrorKind::ArchiveRead, error)
-                })?;
+            writer.write_all(&chunk).await.map_err(|error| {
+                ProvisionError::with_source(ProvisionErrorKind::ArchiveRead, error)
+            })?;
             observed = next;
         }
-        destination
-            .as_file_mut()
+        writer
             .flush()
+            .await
             .map_err(|error| ProvisionError::with_source(ProvisionErrorKind::ArchiveRead, error))?;
         Ok(hasher.finalize().into())
+    }
+}
+
+/// Runs filesystem work on the blocking pool; a torn blocking task maps to the
+/// caller's phase kind rather than a panic.
+async fn run_blocking<T>(
+    kind: ProvisionErrorKind,
+    work: impl FnOnce() -> Result<T, ProvisionError> + Send + 'static,
+) -> Result<T, ProvisionError>
+where
+    T: Send + 'static,
+{
+    match tokio::task::spawn_blocking(work).await {
+        Ok(result) => result,
+        Err(_) => Err(ProvisionError::new(kind)),
     }
 }
 
@@ -441,6 +481,7 @@ async fn read_response<O: ProvisioningObserver>(
     }
 }
 
+#[derive(Clone)]
 struct CliCache {
     root: PathBuf,
     selected_name: String,
@@ -477,54 +518,65 @@ impl CliCache {
         observer: &O,
     ) -> Result<Option<LaunchExecutable>, ProvisionError> {
         let lock = self.acquire_lock(cancellation, observer).await?;
-        match validate_cache_entry(&self.selected_path())? {
+        let path = self.selected_path();
+        let (state, path) = run_blocking(ProvisionErrorKind::CacheDirectory, move || {
+            Ok((validate_cache_entry(&path)?, path))
+        })
+        .await?;
+        match state {
             CacheEntryState::Absent => Ok(None),
-            CacheEntryState::Accepted => {
-                Ok(Some(LaunchExecutable::cached(self.selected_path(), lock)))
-            }
+            CacheEntryState::Accepted => Ok(Some(LaunchExecutable::cached(path, lock))),
         }
     }
 
     async fn publish<O, R>(
         &self,
-        mut temporary: NamedTempFile,
+        temporary: NamedTempFile,
         cancellation: &ProvisioningCancellation,
         observer: &O,
         retention_remover: &R,
     ) -> Result<LaunchExecutable, ProvisionError>
     where
-        O: ProvisioningObserver,
-        R: RetentionRemover,
+        O: ProvisioningObserver + Clone + 'static,
+        R: RetentionRemover + Clone + 'static,
     {
         let lock = self.acquire_lock(cancellation, observer).await?;
-        if validate_cache_entry(&self.selected_path())? == CacheEntryState::Accepted {
-            return Ok(LaunchExecutable::cached(self.selected_path(), lock));
-        }
-
-        checkpoint(observer, cancellation, ProvisionCheckpoint::Flush)?;
-        set_executable_permissions(temporary.as_file())?;
-        temporary
-            .as_file_mut()
-            .flush()
-            .map_err(|_| ProvisionError::new(ProvisionErrorKind::CachePublication))?;
-        temporary
-            .as_file()
-            .sync_all()
-            .map_err(|_| ProvisionError::new(ProvisionErrorKind::CachePublication))?;
-        checkpoint(observer, cancellation, ProvisionCheckpoint::Publication)?;
-
+        let cache = self.clone();
         let final_path = self.selected_path();
-        // Close the writable handle before rename so no successful publisher can
-        // mutate bytes after the final path becomes observable.
-        temporary
-            .into_temp_path()
-            .persist(&final_path)
-            .map_err(|_| ProvisionError::new(ProvisionErrorKind::CachePublication))?;
-        if validate_cache_entry(&final_path)? != CacheEntryState::Accepted {
-            return Err(ProvisionError::new(ProvisionErrorKind::CachePublication));
-        }
-        self.prune_managed(&final_path, retention_remover);
-        Ok(LaunchExecutable::cached(final_path, lock))
+        let cancellation = cancellation.clone();
+        let observer = observer.clone();
+        let remover = retention_remover.clone();
+        run_blocking(ProvisionErrorKind::CachePublication, move || {
+            let mut temporary = temporary;
+            if validate_cache_entry(&final_path)? == CacheEntryState::Accepted {
+                return Ok(LaunchExecutable::cached(final_path, lock));
+            }
+
+            checkpoint(&observer, &cancellation, ProvisionCheckpoint::Flush)?;
+            set_executable_permissions(temporary.as_file())?;
+            temporary
+                .as_file_mut()
+                .flush()
+                .map_err(|_| ProvisionError::new(ProvisionErrorKind::CachePublication))?;
+            temporary
+                .as_file()
+                .sync_all()
+                .map_err(|_| ProvisionError::new(ProvisionErrorKind::CachePublication))?;
+            checkpoint(&observer, &cancellation, ProvisionCheckpoint::Publication)?;
+
+            // Close the writable handle before rename so no successful publisher can
+            // mutate bytes after the final path becomes observable.
+            temporary
+                .into_temp_path()
+                .persist(&final_path)
+                .map_err(|_| ProvisionError::new(ProvisionErrorKind::CachePublication))?;
+            if validate_cache_entry(&final_path)? != CacheEntryState::Accepted {
+                return Err(ProvisionError::new(ProvisionErrorKind::CachePublication));
+            }
+            cache.prune_managed(&final_path, &remover);
+            Ok(LaunchExecutable::cached(final_path, lock))
+        })
+        .await
     }
 
     async fn acquire_lock<O: ProvisioningObserver>(
@@ -534,33 +586,51 @@ impl CliCache {
     ) -> Result<File, ProvisionError> {
         cancellation.check()?;
         let path = self.root.join(CACHE_LOCK_NAME);
-        if fs::symlink_metadata(&path).is_ok_and(|metadata| metadata.file_type().is_symlink()) {
-            return Err(ProvisionError::new(ProvisionErrorKind::CacheLock));
-        }
-        let file = OpenOptions::new()
-            .create(true)
-            .truncate(false)
-            .read(true)
-            .write(true)
-            .open(path)
-            .map_err(|error| ProvisionError::with_source(ProvisionErrorKind::CacheLock, error))?;
-        set_lock_permissions(&file)?;
-
-        let mut task = tokio::task::spawn_blocking(move || {
-            FileExt::lock(&file)
-                .map(|()| file)
-                .map_err(|error| ProvisionError::with_source(ProvisionErrorKind::CacheLock, error))
-        });
-        let lock = tokio::select! {
-            result = &mut task => result
-                .map_err(|_| ProvisionError::new(ProvisionErrorKind::CacheLock))??,
-            () = cancellation.cancelled() => {
-                drop(task);
-                return Err(ProvisionError::new(ProvisionErrorKind::Cancelled));
+        let file = run_blocking(ProvisionErrorKind::CacheLock, move || {
+            if fs::symlink_metadata(&path).is_ok_and(|metadata| metadata.file_type().is_symlink())
+            {
+                return Err(ProvisionError::new(ProvisionErrorKind::CacheLock));
             }
-        };
+            let file = OpenOptions::new()
+                .create(true)
+                .truncate(false)
+                .read(true)
+                .write(true)
+                .open(path)
+                .map_err(|error| {
+                    ProvisionError::with_source(ProvisionErrorKind::CacheLock, error)
+                })?;
+            set_lock_permissions(&file)?;
+            Ok(file)
+        })
+        .await?;
+
+        // A cancellable try-lock poll replaces the kernel-blocking flock, whose
+        // spawn_blocking thread was detached on cancellation and could park a pool
+        // thread forever on a lock another process held. The definitive Go SDK
+        // serializes CLI publication by atomic rename alone, so polling fairness
+        // is sufficient here.
+        loop {
+            match file.try_lock() {
+                Ok(()) => break,
+                Err(TryLockError::WouldBlock) => {
+                    tokio::select! {
+                        () = tokio::time::sleep(LOCK_RETRY_INTERVAL) => {}
+                        () = cancellation.cancelled() => {
+                            return Err(ProvisionError::new(ProvisionErrorKind::Cancelled));
+                        }
+                    }
+                }
+                Err(TryLockError::Error(error)) => {
+                    return Err(ProvisionError::with_source(
+                        ProvisionErrorKind::CacheLock,
+                        error,
+                    ));
+                }
+            }
+        }
         checkpoint(observer, cancellation, ProvisionCheckpoint::CacheLock)?;
-        Ok(lock)
+        Ok(file)
     }
 
     fn prune_managed<R: RetentionRemover>(&self, selected: &Path, remover: &R) {
