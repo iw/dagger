@@ -246,7 +246,6 @@ proptest! {
 
     // Construction is a total pure normalization: any rejection is typed and no
     // injected connection or diagnostic boundary can be observed.
-    // Feature: rust-sdk-client-lifecycle, Property 11: configuration construction is total and side-effect free
     #[test]
     fn property_11_configuration_construction_is_total_and_side_effect_free(case in config_case()) {
         let counts = Arc::new(BoundaryCounts::default());
@@ -346,7 +345,6 @@ proptest! {
 
     // Native environment validation is an ASCII-only reference normalization which
     // preserves accepted order and never renders caller values.
-    // Feature: rust-sdk-client-lifecycle, Property 15: additional environment validation is portable
     #[test]
     fn property_15_additional_environment_validation_is_portable(case in environment_case()) {
         let entries = apply_environment_mutation(&case);
@@ -385,7 +383,6 @@ proptest! {
 
     // The production codec must be a lossless representation of every public raw
     // request/response coordinate, including absent versus explicit null data.
-    // Feature: rust-sdk-client-lifecycle, Property 19: raw GraphQL round-trips protocol information
     #[test]
     fn property_19_raw_graphql_round_trips_protocol_information(
         (request, response) in raw_exchange(),

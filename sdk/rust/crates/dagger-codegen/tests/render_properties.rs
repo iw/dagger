@@ -84,7 +84,6 @@ fn encode_options(
 proptest! {
     #![proptest_config(property_config())]
 
-    // Feature: rust-sdk-core-codegen, Property 14: Options are owned, wire-exact, and reusable
     #[test]
     fn property_14_options_owned_wire_exact_reusable(
         field_index in any::<usize>(),
@@ -159,7 +158,6 @@ proptest! {
         prop_assert!(!compact_sources.contains(&lifetime_pattern));
     }
 
-    // Feature: rust-sdk-core-codegen, Property 22: The supported public surface respects release policy
     #[test]
     fn property_22_supported_public_surface_respects_release_policy(
         symbol_index in any::<usize>(),
@@ -182,7 +180,6 @@ proptest! {
         prop_assert_eq!(exact_plan().target().rust_edition().as_str(), "2024");
     }
 
-    // Feature: rust-sdk-core-codegen, Property 28: Query projection covers every wire coordinate
     #[test]
     fn property_28_query_projection_covers_every_wire_coordinate(
         field_index in any::<usize>(),

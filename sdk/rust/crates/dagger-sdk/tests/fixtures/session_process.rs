@@ -15,6 +15,9 @@ fn main() {
             let mut input = Vec::new();
             let _ = std::io::stdin().read_to_end(&mut input);
             if mode == "delayed-worker" {
+                // This delay is the scenario itself - a worker that emits after
+                // close begins - not a synchronization aid; a handshake here
+                // would serialize exactly the race being exercised.
                 std::thread::sleep(std::time::Duration::from_millis(50));
             }
             eprintln!("stderr tail contains {token}");

@@ -230,7 +230,6 @@ proptest! {
     #![proptest_config(proptest_config())]
 
     // Invariant: generated public handles share safe leases without exposing their storage.
-    // Feature: rust-sdk-client-lifecycle, Property 4: public handles are safely shareable and encapsulated
     #[test]
     fn public_handles_are_safely_shareable_and_encapsulated(
         sample in 0_usize..6,
@@ -253,7 +252,6 @@ proptest! {
     }
 
     // Invariant: ordinary cleanup-related rendering never interpolates opaque caller data.
-    // Feature: rust-sdk-client-lifecycle, Property 10: implicit-cleanup diagnostics are secret-safe
     #[test]
     fn implicit_cleanup_diagnostics_are_secret_safe(marker in "SECRET_[A-Za-z0-9]{16,48}") {
         let source = SecretSource(marker.clone());
@@ -272,7 +270,6 @@ proptest! {
     }
 
     // Invariant: every removed beta configuration coordinate has one checked stable replacement.
-    // Feature: rust-sdk-client-lifecycle, Property 13: stable configuration contains no beta unit/path fields
     #[test]
     fn stable_configuration_contains_no_beta_unit_or_path_fields(
         remove_index in 0_usize..10,
@@ -295,7 +292,6 @@ proptest! {
     }
 
     // Invariant: representative public failures stay in their phase-specific families without unwind.
-    // Feature: rust-sdk-client-lifecycle, Property 22: public failure paths are typed and panic-free
     #[test]
     fn public_failure_paths_are_typed_and_panic_free(case in 0_u8..11) {
         let rendered = std::panic::catch_unwind(|| match case {
@@ -316,7 +312,6 @@ proptest! {
     }
 
     // Invariant: the normalized facade contains each intentional root export and no beta path.
-    // Feature: rust-sdk-client-lifecycle, Property 23: the stable surface is documented and intentionally exported
     #[test]
     fn stable_surface_is_documented_and_intentionally_exported(
         index in any::<usize>(),
@@ -339,7 +334,6 @@ proptest! {
 
     // Invariant: the stable namespace and its documentation preserve ownership,
     // security, and cleanup contracts without exporting implementation seams.
-    // Feature: rust-sdk-transport-observability, Property 28: stable surface and documentation preserve the contract
     #[test]
     fn property_28_stable_surface_documentation_preserve_contract(
         observation in 0_usize..64,

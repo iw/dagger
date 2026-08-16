@@ -113,7 +113,7 @@ pub(crate) fn proptest_config() -> Config {
         cases: PROPTEST_CASES,
         failure_persistence: Some(Box::new(FileFailurePersistence::Direct(concat!(
             env!("CARGO_MANIFEST_DIR"),
-            "/proptest-regressions/client-lifecycle.txt"
+            "/proptest-regressions/client-lifecycle-integration.txt"
         )))),
         ..Config::default()
     }

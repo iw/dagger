@@ -102,7 +102,6 @@ fn expected_change(
 proptest! {
     #![proptest_config(property_config(256, "generation-ownership"))]
 
-    // Feature: rust-sdk-core-codegen, Property 23: Provenance and output ownership are exhaustive
     #[test]
     fn property_23_provenance_output_ownership_exhaustive(
         candidate_alpha in any::<bool>(),
@@ -221,7 +220,6 @@ proptest! {
 proptest! {
     #![proptest_config(property_config(128, "generation-check-purity"))]
 
-    // Feature: rust-sdk-core-codegen, Property 24: Verification is pure, complete, and concurrency-safe
     #[test]
     fn property_24_verification_pure_complete_concurrency_safe(
         current_state in 0_u8..3,
@@ -312,7 +310,6 @@ impl PublicationObserver for FailureSchedule {
 proptest! {
     #![proptest_config(property_config(128, "generation-publication"))]
 
-    // Feature: rust-sdk-core-codegen, Property 25: Publication is atomic and failure-preserving
     #[test]
     fn property_25_publication_atomic_failure_preserving(
         phase in 0_u8..7,
@@ -462,7 +459,6 @@ fn format_cases() -> &'static [FormatCase] {
 proptest! {
     #![proptest_config(property_config(256, "generation-formatting"))]
 
-    // Feature: rust-sdk-core-codegen, Property 26: Semantic source and formatting have single owners
     #[test]
     fn property_26_semantic_source_formatting_single_owners(pair_seed in any::<usize>()) {
         let cases = format_cases();
@@ -501,7 +497,6 @@ impl CandidateFormatter for RejectFormatter {
 proptest! {
     #![proptest_config(property_config(128, "generation-input-failure"))]
 
-    // Feature: rust-sdk-core-codegen, Property 27: Bootstrap input failure is diagnostic
     #[test]
     fn property_27_bootstrap_input_failure_diagnostic(kind in 0_u8..9) {
         let fixture = Fixture::new();

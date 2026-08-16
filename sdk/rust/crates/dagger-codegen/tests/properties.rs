@@ -22,7 +22,6 @@ fn property_config() -> Config {
 proptest! {
     #![proptest_config(property_config())]
 
-    // Feature: rust-sdk-core-codegen, Property 3: Target identity gates all publication
     #[test]
     fn property_03_target_identity_gates_publication(
         mutation in 0_u8..6,

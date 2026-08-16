@@ -196,7 +196,6 @@ fn close_class(result: &Result<(), CloseError>) -> &'static str {
 proptest! {
     #![proptest_config(proptest_config())]
 
-    // Feature: rust-sdk-client-lifecycle, Property 5: close linearizes once
     #[test]
     fn close_linearizes_once(
         callers in 1_usize..12,
@@ -246,7 +245,6 @@ proptest! {
         })?;
     }
 
-    // Feature: rust-sdk-client-lifecycle, Property 7: the close fence prevents new transport work
     #[test]
     fn close_fence_prevents_new_transport_work(request_before_close in any::<bool>()) {
         let runtime = tokio::runtime::Builder::new_multi_thread()
@@ -278,7 +276,6 @@ proptest! {
         })?;
     }
 
-    // Feature: rust-sdk-client-lifecycle, Property 8: only the final lease initiates implicit cleanup
     #[test]
     fn only_final_lease_initiates_cleanup(
         leases in 1_usize..32,
@@ -321,7 +318,6 @@ proptest! {
         }
     }
 
-    // Feature: rust-sdk-client-lifecycle, Property 18: injected execution preserves its abstraction
     #[test]
     fn injected_execution_preserves_requests(
         requests in proptest::collection::vec(("[a-zA-Z0-9_ {}]{1,64}", prop::option::of("[a-zA-Z_]{1,12}")), 0..12),
@@ -381,7 +377,6 @@ proptest! {
         })?;
     }
 
-    // Feature: rust-sdk-client-lifecycle, Property 21: timeout phases are independent and non-poisoning
     #[test]
     fn timeout_phases_are_independent_and_non_poisoning(
         startup_ms in 1_u64..4,

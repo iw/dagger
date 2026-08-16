@@ -87,7 +87,6 @@ mod tests {
     proptest! {
         #![proptest_config(ProptestConfig::with_cases(256))]
 
-        // Feature: rust-sdk-core-codegen, Property 21: Generated documentation is complete and warning-free
         #[test]
         fn property_21_generated_documentation_complete_warning_free(
             paragraphs in prop::collection::vec("[A-Za-z0-9 _./:<>{}\\[\\]-]{0,48}", 0..8),

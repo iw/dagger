@@ -88,7 +88,6 @@ fn enums(plan: &ProjectionPlan) -> Vec<&EnumProjection> {
 proptest! {
     #![proptest_config(property_config())]
 
-    // Feature: rust-sdk-core-codegen, Property 6: Recursive wrappers preserve independent absence
     #[test]
     fn property_06_recursive_wrappers_preserve_independent_absence(
         type_use in wrapper_strategy(),
@@ -112,7 +111,6 @@ proptest! {
         );
     }
 
-    // Feature: rust-sdk-core-codegen, Property 7: Scalar projection and decoding are exact
     #[test]
     fn property_07_scalar_projection_decoding_exact(
         scalar_index in any::<usize>(),
@@ -168,7 +166,6 @@ proptest! {
         prop_assert_eq!(scalar.accepts_wire(&value), valid);
     }
 
-    // Feature: rust-sdk-core-codegen, Property 8: Named-type and field projection is exhaustive
     #[test]
     fn property_08_named_type_field_projection_exhaustive(
         field_index in any::<usize>(),
@@ -242,7 +239,6 @@ proptest! {
         prop_assert_eq!(select_field_strategy(input), expected);
     }
 
-    // Feature: rust-sdk-core-codegen, Property 13: Argument omission is distinct from zero-like values
     #[test]
     fn property_13_argument_omission_distinct_zero_like_values(
         argument_index in any::<usize>(),
@@ -276,7 +272,6 @@ proptest! {
         }
     }
 
-    // Feature: rust-sdk-core-codegen, Property 17: Enum mapping preserves canonical wire values and aliases
     #[test]
     fn property_17_enum_mapping_preserves_canonical_values_aliases(
         enum_index in any::<usize>(),
@@ -302,7 +297,6 @@ proptest! {
         );
     }
 
-    // Feature: rust-sdk-core-codegen, Property 18: Input objects preserve requiredness and concrete values
     #[test]
     fn property_18_input_objects_preserve_requiredness_concrete_values(
         field_index in any::<usize>(),
@@ -329,7 +323,6 @@ proptest! {
         }
     }
 
-    // Feature: rust-sdk-core-codegen, Property 19: Directive projection is explicit and drift-sensitive
     #[test]
     fn property_19_directive_projection_explicit_drift_sensitive(
         directive_index in any::<usize>(),

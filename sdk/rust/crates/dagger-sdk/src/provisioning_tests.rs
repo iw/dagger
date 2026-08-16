@@ -292,7 +292,6 @@ proptest! {
     #![proptest_config(proptest_config())]
 
     // Invariant: a manifest selects one exact, syntactically valid SHA-256 entry or a typed error.
-    // Feature: rust-sdk-transport-observability, Property 7: manifest parsing is bounded and total
     #[test]
     fn property_07_manifest_parsing_bounded_total(
         archive_name in "dagger_v[0-9]{1,3}_[a-z]{3,8}_[a-z0-9]{3,8}\\.(tar\\.gz|zip)",
@@ -352,7 +351,6 @@ proptest! {
     #![proptest_config(io_proptest_config())]
 
     // Invariant: archive bytes reach output only through one verified, regular, bounded member.
-    // Feature: rust-sdk-transport-observability, Property 8: archive acceptance is integrity-gated, bounded, and confined
     #[test]
     fn property_08_archive_integrity_bounded_confined(
         zip in any::<bool>(),
@@ -422,7 +420,6 @@ proptest! {
     }
 
     // Invariant: cancellation at every acquisition boundary leaves only durable cache metadata.
-    // Feature: rust-sdk-transport-observability, Property 9: provisioning cancellation removes private state
     #[test]
     fn property_09_provisioning_cancellation_removes_private_state(
         checkpoint_index in 0_u8..10,
@@ -471,7 +468,6 @@ proptest! {
     #![proptest_config(io_proptest_config())]
 
     // Invariant: no-follow cache validation accepts only private regular files and cache hits perform no HTTP.
-    // Feature: rust-sdk-transport-observability, Property 10: cache validation is no-follow and network-free on hits
     #[test]
     fn property_10_cache_validation_no_follow_network_free(
         shape in 0_u8..4,
@@ -524,7 +520,6 @@ proptest! {
     }
 
     // Invariant: independent publishers converge on one complete executable and expose no partial final file.
-    // Feature: rust-sdk-transport-observability, Property 11: concurrent publication has one atomic result
     #[test]
     fn property_11_concurrent_publication_one_atomic_result(
         payload in proptest::collection::vec(any::<u8>(), 1..96),
@@ -613,7 +608,6 @@ proptest! {
     }
 
     // Invariant: retention removes only obsolete managed regular files and failure is non-fatal.
-    // Feature: rust-sdk-transport-observability, Property 12: retention is locked, confined, and non-destructive
     #[test]
     fn property_12_retention_locked_confined_non_destructive(
         unrelated_name in "unrelated-[a-z0-9]{1,12}",

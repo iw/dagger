@@ -67,7 +67,6 @@ proptest! {
     #![proptest_config(proptest_config())]
 
     // Invariant: every derived public handle remains a lease on the original session.
-    // Feature: rust-sdk-client-lifecycle, Property 3: handles share exactly one session
     #[test]
     fn handles_share_exactly_one_session(
         client_clones in 0_usize..16,
@@ -119,7 +118,6 @@ proptest! {
     }
 
     // Invariant: raw, generated, and compositional requests meet at one concurrent executor.
-    // Feature: rust-sdk-client-lifecycle, Property 20: every query surface uses the same session concurrently
     #[test]
     fn every_query_surface_uses_the_same_session_concurrently(
         raw_count in 1_usize..8,

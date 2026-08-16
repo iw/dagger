@@ -90,7 +90,6 @@ async fn guarded_task(ended: Arc<AtomicUsize>) {
 proptest! {
     #![proptest_config(proptest_config())]
 
-    // Feature: rust-sdk-client-lifecycle, Property 6: close respects resource ownership
     #[test]
     fn close_respects_resource_ownership(cli_owned in any::<bool>(), close_fails in any::<bool>()) {
         let runtime = tokio::runtime::Builder::new_current_thread()
@@ -137,7 +136,6 @@ proptest! {
         })?;
     }
 
-    // Feature: rust-sdk-client-lifecycle, Property 9: pending connection resources cannot escape cancellation
     #[test]
     fn pending_resources_end_at_every_stage(
         io_task_count in 0_usize..8,

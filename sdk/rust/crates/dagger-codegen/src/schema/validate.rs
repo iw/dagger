@@ -1856,7 +1856,6 @@ mod tests {
     proptest! {
         #![proptest_config(property_config(concat!(env!("CARGO_MANIFEST_DIR"), "/proptest-regressions/schema-validation.txt")))]
 
-        // Feature: rust-sdk-core-codegen, Property 4: Schema validation is total and coordinate-complete
         #[test]
         fn property_04_schema_validation_total_coordinate_complete(
             mutation in 0_u8..13,
@@ -1900,7 +1899,6 @@ mod tests {
     proptest! {
         #![proptest_config(property_config(concat!(env!("CARGO_MANIFEST_DIR"), "/proptest-regressions/schema-order.txt")))]
 
-        // Feature: rust-sdk-core-codegen, Property 5: Canonicalization and rendering ignore source order
         #[test]
         fn property_05_canonicalization_rendering_ignore_source_order(
             keys in any::<[u8; 10]>(),

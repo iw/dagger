@@ -362,7 +362,6 @@ proptest! {
 
     // One execution owns a one-shot transmission state; no terminal stage has an edge
     // back to the unsent state from which a second body could be created.
-    // Feature: rust-sdk-transport-observability, Property 15: request transmission is at most once
     #[test]
     fn property_15_request_transmission_at_most_once(
         failure_stage in 0_u8..8,
@@ -386,7 +385,6 @@ proptest! {
 
     // The only constructible authority is fixed IPv4 loopback with `/query`; safe
     // failure formatting never gains access to the authentication credential.
-    // Feature: rust-sdk-transport-observability, Property 19: implicit HTTP is confined and authenticated
     #[test]
     fn property_19_implicit_http_confined_authenticated(
         port in 1_u16..=u16::MAX,
@@ -417,7 +415,6 @@ proptest! {
 
     // Official instance-local propagators canonicalize valid inherited carriers and
     // omit invalid trace state without consulting mutable process-global telemetry.
-    // Feature: rust-sdk-transport-observability, Property 20: W3C propagation has coherent precedence and request isolation
     #[test]
     fn property_20_w3c_propagation_coherent_isolated(
         trace_id in any::<u128>().prop_filter("trace id is non-zero", |value| *value != 0),
@@ -444,7 +441,6 @@ proptest! {
 
     // Every public runtime layer has stable formatting independent of opaque source
     // text, and cloning or formatting adversarial failures cannot unwind.
-    // Feature: rust-sdk-transport-observability, Property 23: failure taxonomy is total, stable, and panic-free
     #[test]
     fn property_23_failure_taxonomy_total_stable_panic_free(
         layer in 0_u8..6,
@@ -503,7 +499,6 @@ proptest! {
 
     // Recognition requires the exact marker and well-typed known fields; successful
     // mapping retains every unknown extension and the unchanged complete response.
-    // Feature: rust-sdk-transport-observability, Property 24: engine-domain mapping is lossless and conservative
     #[test]
     fn property_24_engine_domain_mapping_lossless_conservative(
         exact_marker in any::<bool>(),
@@ -556,7 +551,6 @@ proptest! {
 
     // Exact compatibility is the conjunction of semantic identity and the generated
     // clean revision prefix; known mismatches never enter the unverified bypass class.
-    // Feature: rust-sdk-transport-observability, Property 25: compatibility accepts exactly the declared target
     #[test]
     fn property_25_compatibility_accepts_exact_declared_target(
         case in 0_u8..9,
@@ -666,7 +660,6 @@ proptest! {
 
     // Every terminal caller observes one converged operation sequence, and aggregate
     // failure categories are deterministic regardless of injected completion order.
-    // Feature: rust-sdk-transport-observability, Property 26: shutdown is bounded, exhaustive, and repeatable
     #[test]
     fn property_26_shutdown_bounded_exhaustive_repeatable(
         callers in prop::collection::vec(0_u8..3, 1..24),

@@ -90,7 +90,7 @@ proptest! {
 
     // Symlink traversal is rejected before an outside file can become an operation input.
     #[test]
-    fn property_11_filesystem_paths_remain_inside_the_operation_root(seed in any::<u16>()) {
+    fn property_28_filesystem_paths_remain_inside_the_operation_root(seed in any::<u16>()) {
         let temporary = tempfile::tempdir().unwrap();
         let outside = tempfile::tempdir().unwrap();
         fs::write(outside.path().join("secret"), seed.to_string()).unwrap();
