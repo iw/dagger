@@ -5,7 +5,6 @@
 // resolve per consuming crate, both intended. Only two items are consumed
 // here, so the rest of the DSL is expectedly unused.
 #[path = "../../dagger-codegen/tests/support/mod.rs"]
-#[allow(dead_code)]
 mod codegen_support;
 
 use std::collections::BTreeMap;
