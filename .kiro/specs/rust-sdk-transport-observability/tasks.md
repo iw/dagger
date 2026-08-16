@@ -1,63 +1,7 @@
 # Implementation Plan
 
-- [x] 1. Establish the exact transport contract and Rust test foundations
-  - [x] 1.1 Generalize completeness feature-scope validation
-    - Replace Feature 2 constants embedded in `contract.rs` and `traceability.rs` with
-      a data-driven `FeatureScopePolicy` covering heading, status IDs, scope digest,
-      policy IDs, and the expected prior blocking owner of each row.
-    - Preserve Feature 2's accepted declaration exactly through a descriptor and golden
-      fixtures; reject duplicate, reordered, omitted, extra, malformed, and cross-owner
-      declarations without weakening its existing integrity checks.
-    - Add Feature 3's exact 32 status IDs and digest
-      `sha256:0b4246157f75b8ce179d8fec3476256fa939ccdf69d29d1fcafaf93f160013b3`.
-    - _Requirements: 1.1, 1.2, 1.4, 1.8, 1.9_
-  - [x] 1.2 Register the transport authority and policy inventory
-    - Add the approved requirements source to `authorities.json` and extract all 26
-      transport policy anchors by exact stable ID and normalized statement.
-    - Add the 21 Feature 3-owned and 11 Feature 2-owned prior-blocker expectations;
-      keep both Feature 8-only rows outside this scope.
-    - Add digest-fenced source/test routing candidates without changing a status until
-      its routed implementation, test, and target evidence exists.
-    - Add fixtures proving an unrelated `sdk-sdk` result cannot satisfy a transport
-      evidence route.
-    - _Requirements: 1.2-1.12_
-  - [x] 1.3 Register minimal production and development dependencies
-    - Add workspace-pinned `opentelemetry`, minimally featured `opentelemetry_sdk`,
-      `tracing-opentelemetry`, `zip`, and `fs4`; keep the OpenTelemetry family on one
-      compatible version line and disable unused SDK signals/runtime/exporters.
-    - Retain `async-trait` only for the existing object-safe `Connector` and
-      `EngineConnection` boundaries; use native `async fn` for new statically dispatched
-      private traits.
-    - Update the locked graph and cargo-deny policy where required; preserve
-      Apache-2.0 licensing, Rust 1.97.1, edition 2024, publishing boundaries, and
-      `unsafe_code = "deny"`.
-    - _Requirements: 4.13-4.15, 9.7-9.12, 14.9, 14.20_
-  - [x] 1.4 Add shared transport strategies and recording components
-    - Add valid-first `proptest` strategies for process snapshots, native paths,
-      target descriptors, byte streams/chunking, manifests, archives, GraphQL values,
-      version identities, diagnostics, and phase-specific failure schedules.
-    - Add statically dispatched recording provisioner, launcher, transport, clock, and
-      HTTP components plus event logs; do not add mutable production globals or a
-      runtime `Arc<dyn Trait>` dependency graph.
-    - Persist minimized regressions and centralize the 256-case pure / 128-case I/O
-      defaults while keeping every property at or above 100 generated cases.
-    - _Requirements: 4.13-4.15, 14.1-14.12_
-  - [x] 1.5 Property test: Property 1 — exact feature-scope extraction
-    - Implement a reference-contract `proptest` with at least 256 generated mutations
-      of status IDs, order, digest, policy IDs, and normalized statements; accept only
-      the exact declaration.
-    - Test identifier: `property_01_exact_feature_scope_extraction`.
-    - _Requirements: 1.1-1.3_
-  - [x] 1.6 Property test: Property 2 — evidence-closed and owner-correct transitions
-    - Implement a reference-status `proptest` with at least 256 candidate transitions
-      across prior owners, implementation/test/target evidence, residual blockers, and
-      out-of-scope rows; require the approved cross-feature owner map and complete
-      routed evidence.
-    - Test identifier: `property_02_evidence_closed_owner_correct_transitions`.
-    - _Requirements: 1.4-1.12_
-
 - [x] 2. Checkpoint: contract, dependencies, and test scaffolding are green
-  - Run formatting, locked checking, completeness unit/property tests, clippy, and
+  - Run formatting, locked checking, clippy, and
     cargo-deny; require Feature 2's accepted scope to remain byte-for-byte equivalent,
     all 26 policies to extract exactly, and no pre-existing capability status to change at
     this checkpoint.
@@ -65,7 +9,7 @@
 - [x] 3. Implement exact targets, source planning, native discovery, and descriptors
   - [x] 3.1 Generate and fence the exact runtime target
     - Generate private engine version, CLI version, and Dagger revision constants from
-      `completeness/target.json`; fail checking when either generated output or target
+      `codegen/target.json`; fail checking when either generated output or target
       metadata drifts independently.
     - Parse the target once into validated SemVer and revision newtypes and reject an
       internal mismatch before cache, process, or network work.
@@ -130,7 +74,7 @@
     - _Requirements: 4.1-4.15_
 
 - [x] 4. Checkpoint: target and source foundations are green
-  - Run formatting, locked SDK/completeness unit and property tests, clippy, rustdoc,
+  - Run formatting, locked SDK unit and property tests, clippy, rustdoc,
     public error formatting tests, and cargo-deny; require deterministic source
     snapshots, exact target generation, and no lower-source work on failure.
 
@@ -484,14 +428,7 @@
     - Test identifier: `property_28_stable_surface_documentation_preserve_contract`.
     - _Requirements: 4.13-4.15, 14.17-14.24_
 
-- [ ] 17. Close the completeness ledger with reproducible exact-target evidence
-  - [x] 17.1 Add deterministic transport observation records
-    - Define machine-readable evidence for source, acquisition, cache, launch, protocol,
-      HTTP, propagation, compatibility, error mapping, and shutdown observations; record
-      only values actually asserted by tests and reject stale/unknown evidence shapes.
-    - Keep records reproducible and non-live: no credentials, timestamps, host paths,
-      ports, network responses, or nondeterministic ordering.
-    - _Requirements: 14.1-14.3, 14.12-14.16_
+- [ ] 17. Prove the exact published target end to end
   - [ ] 17.2 Add the isolated exact-target conformance path
     - In a sanitized helper process, clear Existing Session and explicit-local inputs,
       run the stable default connector so it downloads/starts the exact CLI, execute
@@ -504,25 +441,8 @@
       correctly rejects the installed v0.21.0 CLI, so this subtask remains open until the
       exact published CLI can be downloaded and observed end to end.
     - _Requirements: 14.1-14.3, 14.12-14.16_
-  - [x] 17.3 Update Feature 3 completeness candidates truthfully
-    - Attach accepted deterministic evidence only to the 58 scoped candidate
-      capabilities, derive each status/reason/owner through the policy engine, leave all
-      out-of-scope rows—including Feature 8—unchanged, and regenerate committed reports.
-    - Add regression fixtures for evidence removal, owner mismatch, partial observation,
-      exact observation, target drift, and untouched-ledger identity.
-    - _Requirements: 1.1-1.12, 14.1-14.3, 14.12-14.16_
-  - [x] 17.4 Property test: Property 27 — evidence declares what it actually observes
-    - Generate at least 256 evidence/observation/target/status combinations; independently
-      recompute claims and assert no record can overstate an observation, drifted or
-      partial evidence cannot implement a capability, and every out-of-scope row remains
-      byte-equivalent.
-    - Test identifier: `property_27_evidence_declares_actual_observations`.
-    - _Requirements: 14.1-14.3, 14.12-14.16_
-
 - [ ] 18. Final checkpoint: Feature 3 is releasable
-  - Run `cargo test -p dagger-sdk`, `cargo test -p dagger-sdk-completeness`,
-    `cargo test -p dagger-sdk --doc`, `cargo deny check`, the repository's Rust format,
-    clippy, Dagger Rust test, and Dagger Rust completeness commands.
+  - Run the canonical workspace gate and the repository Dagger Rust SDK checks.
   - Require all 28 property identifiers, portable integration suites, public API/doc
     fences, exact-target evidence, regenerated reports, security checks, and the
     untouched-scope guard to pass with a clean worktree diff.

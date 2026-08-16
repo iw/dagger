@@ -41,16 +41,12 @@ but every background I/O outcome is recorded for startup and shutdown reporting.
 The common `sdk-sdk` harness remains authoritative for the checks it defines, but it
 does not exercise this transport boundary. Feature 3 therefore uses deterministic
 process, HTTP, archive, cache, clock, and propagation fixtures plus one exact-target
-live connection. Completeness status changes are admitted only when those scoped
-artifacts satisfy Feature 1's evidence rules.
+live connection.
 
 ## Dependencies and Non-Goals
 
 ### Owning relationships
 
-- Feature 1 owns ledger schema, status policy, evidence validation, and derived
-  completeness artifacts. Feature 3 extends its generic traceability machinery; it
-  does not create a separate parity inventory.
 - Feature 2 owns `Client`, configuration preflight, `ConnectionPlan`,
   `PendingConnection`, `SessionResource`, `SharedSession`, raw GraphQL values,
   diagnostics contracts, and single-flight close. Feature 3 implements the implicit
@@ -61,8 +57,8 @@ artifacts satisfy Feature 1's evidence rules.
   transport diagnostics, compatibility validation, and engine-domain error mapping.
 - Feature 4 owns schema-complete generated operations. Mapping an already-represented
   `EXEC_ERROR` extension is transport error semantics and belongs here.
-- Feature 8 owns the closing live platform, conformance, and security matrices.
-  Deterministic Linux, macOS, and Windows archive fixtures here do not claim that gate.
+- Feature 9 owns release assembly and the final gate; Feature 10 owns the
+  runtime-integrity scheduling and cancellation extensions.
 - Feature 9 owns migration guidance, immutable Git-tagged distribution, and verified
   release assets for the complete SDK.
 
@@ -100,8 +96,10 @@ constraints throughout this design:
   update is accepted.
 - Add `zip` for bounded Windows release extraction. Existing `tar` and `flate2`
   continue to handle Linux and macOS release archives.
-- Add `fs4` for portable advisory cache-file locking. Blocking lock acquisition runs
-  on Tokio's blocking pool and remains cancellation-safe through an owned guard.
+- Use the standard library's advisory file locking (stable since Rust 1.89) for the
+  cache lock; acquisition is a cancellable try-lock poll and every provisioning
+  filesystem step runs on Tokio's blocking pool (Feature 10 owns that scheduling
+  contract).
 - Reuse `reqwest`, `sha2`, `semver`, `tempfile`, `tokio`, `serde`, `serde_json`,
   `thiserror`, `url`, `which`, `futures`, and `tracing` already present in the
   workspace.
@@ -175,616 +173,8 @@ sdk/rust/crates/dagger-sdk/tests/
 ├── error_api.rs            # taxonomy, redaction and lossless EXEC_ERROR mapping
 └── support/session_fixture.rs
 
-sdk/rust/completeness/src/
-├── contract.rs             # generic feature-scope policy extraction
-└── traceability.rs         # reusable declarations and evidence-closed status changes
-
-sdk/rust/completeness/
-├── authorities.json        # includes this approved requirements source
-├── classifications.json    # 26 new policies plus routed status changes
-├── evidence.json           # deterministic and exact-target evidence records
-├── compatibility.json      # exact target descriptor
-└── target.json             # pinned source revisions and generated constants authority
-```
-
-`core/downloader.rs` and `core/cli_session.rs` are removed when the new pipeline is
-connected. Keeping either reachable would create a second source order and cleanup
-model, so migration is completed atomically at the connector boundary.
-
-## Architecture
-
-```mermaid
-flowchart LR
-    App["connect_with(ClientConfig)"] --> Preflight["Feature 2 preflight"]
-    Preflight --> Plan{"ConnectionPlan"}
-    Plan -->|"Explicit"| Shared["SharedSession"]
-    Plan -->|"Existing session"| Existing["Validate env session"]
-    Plan -->|"New CLI"| Source{"CLI source plan"}
-    Source -->|"configured local"| Resolve["Resolve regular executable"]
-    Source -->|"compiled target"| Provision["Provisioning transaction"]
-    Provision --> Manifest["Bounded manifest"]
-    Manifest --> Download["Stream + hash archive"]
-    Download --> Extract["Bounded expected-member extraction"]
-    Extract --> Lock["Lock, revalidate, publish, retain"]
-    Manifest -->|"403 or 404 only"| Path["PATH compatibility fallback"]
-    Resolve --> Launch["CLI session launcher"]
-    Lock --> Launch
-    Path --> Launch
-    Existing --> Transport["Loopback HTTP transport"]
-    Launch --> Control["Bounded control line"]
-    Control --> Gate["Token-aware diagnostic gate"]
-    Gate --> Transport
-    Transport --> Probe["Exact-target version probe"]
-    Probe --> Pending["PendingConnection commit"]
-    Pending --> Shared
-```
-
-### Connection and source pipeline
-
-Feature 2 preflight snapshots the relevant process environment once. It continues to
-choose `ExplicitConnection` before consulting process inputs. For an implicit plan it
-captures `DAGGER_SESSION_PORT`, `DAGGER_SESSION_TOKEN`,
-`_EXPERIMENTAL_DAGGER_CLI_BIN`, runner variables, and propagation variables as raw
-`OsString` values. No later component re-reads these variables, so concurrent process
-environment mutation cannot produce a hybrid decision.
-
-The source decision is pure and presence-based:
-
-1. A present session port selects `ExistingSession`; validation failures terminate
-   that path and never consult the local CLI or downloader.
-2. Otherwise, a present explicit CLI variable selects `ExplicitLocalCli`; an empty,
-   unresolved, non-regular, or non-executable target is a discovery error. Native
-   executable resolution may follow a symlink to that target.
-3. Otherwise, the compiled exact target selects `VerifiedDownload`.
-4. Only a typed `ReleaseUnavailable` from a checksum-manifest HTTP 403 or 404 may
-   replace the final source with `CompatibilityPathFallback`.
-
-Every decision records a credential-free source kind for diagnostics and errors. Raw
-environment values and resolved tokens never implement revealing `Debug` or `Display`.
-
-### Provisioning transaction
-
-Provisioning advances through an explicit internal state machine:
-
-```text
-Targeted -> CacheChecked -> ExistingEntryReused
-                       \-> ManifestAccepted -> ArchiveVerified -> ExecutableExtracted
-                          -> CacheRechecked -> ExistingEntryReused | EntryPublished
-                          -> RetentionComplete
-```
-
-The archive request is not made until a bounded manifest has produced exactly one
-digest for the expected archive. The archive body is streamed to a private temporary
-file while counting compressed bytes and updating SHA-256. A digest mismatch deletes
-the temporary state before any extraction begins. Extraction accepts only the one
-platform descriptor member, rejects links and special files, normalizes no attacker
-controlled path, and stops before output would exceed one GiB.
-
-Before any network request, the provisioner acquires the cache-wide lock and validates
-the expected final entry without following links. A valid hit is returned with the
-lock converted into its execution lease; an unsafe entry fails; absence releases the
-lock before download. After download and extraction, the publisher reacquires the lock
-and revalidates. A valid winner entry is reused; otherwise the verified temporary
-executable is permissioned, durably flushed, and atomically renamed within the cache
-filesystem. Retention then removes only parseable SDK-managed regular files while the
-same lock is held. The active target and lock file are never candidates.
-
-The resulting `LaunchExecutable` retains an execution lease on that lock until
-`Command::spawn` has either opened the executable successfully or definitively failed.
-This closes the validation-to-execution window in which another conforming
-provisioner could otherwise retain a different target and delete this path. Network
-I/O and control-line waiting never occur while the lock is held.
-
-An owned `ProvisioningAttempt` tracks every temporary path, blocking worker, and lock
-guard. Cancellation signals extraction workers to stop between bounded reads, awaits
-their outcome through a cleanup task, releases the lock, and removes incomplete files.
-The guard's destructor is a backstop; successful publication is the only operation
-that disarms removal of an artifact.
-
-A blocking lock-acquisition task owns its file handle and sends the acquired guard
-through a one-shot channel. If the async receiver has been cancelled by the time the
-lock becomes available, the task drops the guard immediately. The task itself is part
-of `ProvisioningAttempt`, so cancellation cannot detach a future lock owner.
-
-### Session startup and diagnostic flow
-
-The launcher builds one canonical argument and environment projection, then starts the
-selected executable. It retries only the platform-equivalent text-file-busy error and
-only within the fixed ten-attempt schedule. Each failed attempt owns no surviving
-child. All other errors return immediately.
-
-`PendingResources` owns the child, its stdin, and typed stdout/stderr task handles
-before any asynchronous reader begins. Stdout reads one newline-terminated record
-through a 64-KiB limiting reader. The record must decode into a port in `1..=65535`
-and a non-empty token; unknown JSON fields are ignored. No byte from this record is
-diagnostic output.
-
-Before the token is known, stderr enters a bounded sealed buffer rather than the sink.
-Once control validation succeeds, the token is installed in `SecretRedactor`, the
-buffer is redacted and flushed, and both stream tasks enter normal diagnostic mode.
-If startup fails before a trustworthy token exists, buffered raw bytes are discarded;
-the safe retained snapshot may therefore be empty. This is preferable to exposing an
-unknown credential. Sink panic or error is isolated, recorded once, and disables only
-that sink, never the stream drain.
-
-The connector constructs the transport and runs the compatibility probe while the
-pending guard remains armed. Only after both succeed does `PendingResources` become a
-`CliSessionResource` and move into the `SharedSession`.
-
-### HTTP request and compatibility pipeline
-
-The implicit Reqwest client is constructed with proxy use disabled and redirect
-policy set to none. Its base URL is produced internally as
-`http://127.0.0.1:<port>/query`; no user-controlled authority is accepted. Every
-request receives Basic authentication whose username is the session token and whose
-password is empty, plus W3C `traceparent`, `tracestate`, and `baggage` generated from
-the request's active context. Request bodies are transmitted once and never replayed.
-
-After an implicit transport is usable, the connector sends the constant raw query
-`query RustSdkCompatibility { version }`. The response must contain one semantically
-valid version matching `v1.0.0-beta.10` after SemVer normalization. Its build metadata
-must be the clean Dagger form `+25300124`, whose eight lowercase hexadecimal
-characters equal the Target Revision prefix. Absent, malformed, or dirty provenance
-is unverified rather than assumed compatible; a different well-formed revision is a
-known mismatch. Known mismatch and unprovable identity are separate public error
-kinds.
-
-This handshake is inside the session-startup timeout. Failure leaves the pending guard
-armed: SDK-created CLI sessions are gracefully closed or killed and reaped, whereas an
-existing external session has no child to terminate. Explicit connections bypass the
-probe because the caller has explicitly supplied transport and compatibility policy.
-
-### Shutdown convergence
-
-Feature 2 remains the sole close election. Feature 3's CLI resource implementation
-performs these bounded operations when elected:
-
-1. close child stdin to request graceful engine shutdown;
-2. wait up to 300 seconds for process exit while continuing to drain both streams;
-3. kill and reap a child that exceeds the bound;
-4. await all registered background outcomes;
-5. return one deterministically ordered aggregate containing process, stream,
-   diagnostic, and forced-termination failures plus a redacted bounded tail.
-
-Drop never performs a blocking wait. Its kill-on-drop child backstop prevents an
-orphan, while Feature 2's runtime-aware cleanup task performs the complete sequence
-whenever possible.
-
-## Components and Interfaces
-
-The signatures below are representative. Public names, ownership, error layers, and
-security boundaries are normative; private helper shapes may be refined without
-weakening the properties.
-
-### Exact target and process snapshot
-
-```rust
-pub(crate) const TARGET_ENGINE_VERSION: &str = "v1.0.0-beta.10";
-pub(crate) const TARGET_CLI_VERSION: &str = "1.0.0-beta.10";
-pub(crate) const TARGET_REVISION: &str =
-    "25300124ca110612edc09c43f89cb5fad6028170";
-
-pub(crate) struct ProcessInputs {
-    pub session_port: Option<OsString>,
-    pub session_token: Option<OsString>,
-    pub explicit_cli: Option<OsString>,
-    pub runner_host: Option<OsString>,
-    pub runner_token: Option<OsString>,
-    pub discovery: NativeDiscoveryInputs,
-    pub propagation: PropagationEnvironment,
-}
-
-pub(crate) struct NativeDiscoveryInputs {
-    pub path: Option<OsString>,
-    pub path_ext: Option<OsString>,
-    pub home_dir: Option<PathBuf>,
-    pub current_dir: Result<PathBuf, NativeContextError>,
-}
-
-pub(crate) enum CliSourcePlan {
-    ExplicitLocal { configured: OsString },
-    CompiledRelease { target: CliTarget },
-}
-```
-
-The three constants are generated from the repository target transition and checked
-against `completeness/target.json`; hand editing either side fails verification.
-`ProcessInputs` has a redacted custom `Debug` and is constructed once per connect.
-
-### Native CLI discovery
-
-```rust
-fn resolve_explicit_cli(
-    configured: OsString,
-    inputs: &NativeDiscoveryInputs,
-) -> Result<LaunchExecutable, CliDiscoveryError>;
-
-fn resolve_compatibility_path_cli(
-    inputs: &NativeDiscoveryInputs,
-) -> Result<LaunchExecutable, CliDiscoveryError>;
-```
-
-Discovery is a pair of pure functions over one native snapshot, not a service. A
-leading home marker is expanded from the captured home directory. A bare executable
-name is resolved against captured `PATH`, current directory, and Windows `PATHEXT`
-semantics; a path-shaped value is validated directly. The compatibility function
-resolves only the platform's canonical Dagger executable name. Both return
-`ExecutableLease::Unmanaged`, and neither can access provisioning.
-
-Snapshotting records a safe current-directory error as data rather than returning it.
-That error is consulted only if the selected discovery form needs a current directory,
-so Existing Session and absolute explicit-local paths cannot fail because of an
-irrelevant host observation.
-
-### Connector orchestration
-
-```rust
-#[async_trait]
-pub(crate) trait Connector: Send + Sync {
-    async fn connect(
-        &self,
-        plan: ImplicitConnectionPlan,
-    ) -> Result<PendingConnection, ConnectError>;
-}
-
-pub(crate) struct DefaultConnector {
-    core: ConnectorCore<
-        DefaultCliProvisioner<ReqwestProvisioningHttp>,
-        TokioSessionLauncher,
-        ReqwestLoopbackFactory,
-    >,
-}
-
-struct ConnectorCore<P, L, T> {
-    provisioner: P,
-    launcher: L,
-    transport: T,
-    propagation: W3cPropagation,
-    compatibility: CompatibilityValidator,
-}
-```
-
-`DefaultConnector` owns concrete production components by value. `ConnectorCore`
-implements `Connector` for the small private trait bounds actually needed by its
-algorithm; tests instantiate that generic core with recording components. The one
-object-safe `Connector` trait remains because Feature 2 deliberately accepts a
-type-erased connector at its test boundary, just as public explicit connection
-injection requires a type-erased `EngineConnection`. Internal production composition
-does not use an `Arc<dyn Trait>` service graph.
-
-`W3cPropagation` and `CompatibilityValidator` are concrete stateless/value components,
-not replaceable services. There is no mutable global URL, environment, clock,
-filesystem, command, or telemetry hook. `PendingConnection` remains Feature 2's
-cleanup guard and is disarmed only by `SharedSession` construction.
-
-### Platform and release descriptor
-
-```rust
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub(crate) enum OperatingSystem { Linux, Darwin, Windows }
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub(crate) enum Architecture { Amd64, Arm64 }
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub(crate) enum ArchiveFormat { TarGz, Zip }
-
-pub(crate) struct CliTarget {
-    version: Version,
-    os: OperatingSystem,
-    arch: Architecture,
-}
-
-pub(crate) struct ArchiveDescriptor {
-    archive_name: String,
-    member_name: &'static str,
-    format: ArchiveFormat,
-    manifest_url: Url,
-    archive_url: Url,
-}
-```
-
-`ArchiveDescriptor::for_target` is a total mapping only for the six supported target
-pairs. Linux and Darwin select `.tar.gz`; Windows selects `.zip` and member
-`dagger.exe`. Unsupported values fail before filesystem or network side effects.
-
-### Provisioning adapters and transaction
-
-```rust
-type DownloadChunks =
-    Pin<Box<dyn Stream<Item = Result<Vec<u8>, DownloadReadError>> + Send>>;
-
-pub(crate) struct DownloadResponse {
-    status: u16,
-    content_length: Option<u64>,
-    body: DownloadChunks,
-}
-
-pub(crate) trait ProvisioningHttp: Send + Sync {
-    async fn get(&self, url: Url) -> Result<DownloadResponse, ProvisioningHttpError>;
-}
-
-pub(crate) trait CliProvisioner: Send + Sync {
-    async fn acquire(&self, target: CliTarget) -> Result<LaunchExecutable, ProvisionError>;
-}
-
-pub(crate) struct DefaultCliProvisioner<H> {
-    http: H,
-    cache: CliCache,
-}
-
-pub(crate) struct LaunchExecutable {
-    path: PathBuf,
-    origin: CliOrigin,
-    lease: ExecutableLease,
-}
-
-enum ExecutableLease {
-    Unmanaged,
-    Cache(CacheExecutionLease),
-}
-```
-
-The private async traits above are generic compile-time boundaries, not trait objects;
-native `async fn` in traits is used for them. `DefaultCliProvisioner<H>` is
-monomorphized with `ReqwestProvisioningHttp` in production and with a deterministic
-stream source in tests.
-
-`DownloadChunks` is boxed only to erase the concrete streaming-body type returned by
-the HTTP library. It has one owner and one consumer; it is not a shared service or a
-dependency-injection mechanism.
-
-`LaunchExecutable` is the owned capability to start one selected CLI. Explicit-local
-and PATH sources use `ExecutableLease::Unmanaged`; a cache source carries its
-`CacheExecutionLease`. The launcher consumes the whole value and releases the lease
-only after the spawn result is known, so no path and optional coordination flag can be
-separated accidentally.
-
-The production HTTP adapter accepts only fixed HTTPS `dl.dagger.io` URLs. A limiting
-reader enforces eight MiB for the manifest and one GiB each for compressed input and
-extracted executable, regardless of absent or dishonest `Content-Length` headers.
-Manifest parsing is line-oriented and accepts exactly one well-formed SHA-256 entry
-for the descriptor's basename.
-
-The cache implementation uses real private filesystem operations even in most tests,
-rooted in `TempDir`; only platform, HTTP, clock, and deliberate filesystem-failure
-points need adapters. This keeps atomic rename and cross-process lock evidence close
-to production semantics.
-
-### Session process and streams
-
-```rust
-pub(crate) struct CliSessionStart {
-    executable: LaunchExecutable,
-    options: CliLaunchRequest,
-    labels: SessionLabels,
-    propagation_environment: Vec<(OsString, OsString)>,
-}
-
-pub(crate) struct SessionLabels {
-    sdk_name: &'static str,
-    sdk_version: &'static str,
-}
-
-pub(crate) trait SessionLauncher: Send + Sync {
-    async fn launch(
-        &self,
-        request: CliSessionStart,
-    ) -> Result<PendingResources, SessionStartError>;
-}
-
-pub(crate) struct SessionParameters {
-    port: NonZeroU16,
-    token: SecretString,
-}
-
-pub(crate) enum StreamKind { Stdout, Stderr }
-
-pub(crate) struct StreamOutcome {
-    kind: StreamKind,
-    bytes_seen: u64,
-    failure: Option<BackgroundFailure>,
-}
-
-pub(crate) struct PendingResources {
-    child: Child,
-    stdin: Option<ChildStdin>,
-    stdout: JoinHandle<StreamOutcome>,
-    stderr: JoinHandle<StreamOutcome>,
-    diagnostics: DiagnosticRouter,
-}
-```
-
-`CliLaunchRequest` remains Feature 2's validated native argument, environment,
-diagnostic, and timeout projection. Feature 3 wraps it rather than replacing it with a
-second options model. `SessionLabels` is a fixed two-field value, so duplicate or
-caller-overridden SDK labels are unrepresentable. The diagnostic router derives its
-initial redaction values from the validated environment before the child starts and
-adds the control token after parsing; there is no separately maintained redaction
-copy on the launch request.
-
-`PendingResources` is constructed with all ownership fields before tasks can yield.
-Ordinary failure paths consume it through async cleanup and join both tasks. If the
-owning future is cancelled, drop transfers the intact bundle to the connection cleanup
-supervisor; abort-on-drop task wrappers and the child's kill-on-drop setting are the
-no-runtime backstop. No path merely drops a Tokio `JoinHandle` and detaches its task.
-The production launcher is tested with a Rust fixture binary that can emit split
-control lines, oversized input, invalid UTF-8, token-bearing diagnostics, early exit,
-long-running output, and delayed termination without relying on shell behaviour.
-
-### Redaction and diagnostics
-
-```rust
-pub(crate) struct SecretRedactor { /* escaped byte patterns, longest first */ }
-
-pub(crate) enum DiagnosticGate {
-    Sealed { stderr: BoundedTail },
-    Active { redactor: SecretRedactor, tail: BoundedTail },
-    Disabled { tail: BoundedTail, failure: BackgroundFailure },
-}
-
-impl DiagnosticGate {
-    fn activate(&mut self, secrets: impl IntoIterator<Item = SecretString>);
-    fn route(&mut self, kind: StreamKind, chunk: &[u8]);
-    fn snapshot(&self) -> DiagnosticSnapshot;
-}
-```
-
-Redaction works on bytes with carry-over sufficient for a secret spanning adjacent
-chunks. It knows the session token, runner token, authorization encodings, and other
-SDK-owned secret forms. It bounds both pre-token stderr and the retained redacted tail
-to one MiB. `DiagnosticSnapshot`, `Debug`, `Display`, and error sources contain only
-already-redacted material.
-
-### Propagation and HTTP transport
-
-```rust
-pub(crate) struct W3cPropagation {
-    propagator: TextMapCompositePropagator,
-}
-
-impl W3cPropagation {
-    fn child_environment(
-        &self,
-        inherited: &PropagationEnvironment,
-    ) -> Vec<(OsString, OsString)>;
-
-    fn inject_request_headers(&self, headers: &mut HeaderMap);
-}
-
-pub(crate) trait LoopbackTransportFactory: Send + Sync {
-    type Connection: EngineConnection;
-
-    fn loopback(
-        &self,
-        params: SessionParameters,
-        connect_timeout: Option<Duration>,
-    ) -> Result<Self::Connection, EngineConnectionError>;
-}
-```
-
-`W3cPropagation` owns a local composite of the official W3C Trace Context and Baggage
-propagators. It first asks the current `tracing` span for its OpenTelemetry context,
-then checks an explicitly attached OpenTelemetry `Context`; a valid active span wins
-over inherited process values as one coherent source. When no valid active span
-exists, it extracts valid inherited values and re-emits canonical fields. Invalid
-inherited values are omitted rather than forwarded. Request injection consults the
-active context for every execution, so concurrent requests do not share mutable
-carriers. It never reads or changes OpenTelemetry's global text-map propagator.
-
-`ReqwestLoopbackFactory` implements the private `LoopbackTransportFactory` compile-time
-boundary. It accepts already-validated parameters and creates a Reqwest client with
-`no_proxy`, no redirect following, and a connection-only timeout. Its connection
-implementation owns the base URL and secret; neither is publicly accessible.
-
-### Compatibility validation
-
-```rust
-pub(crate) struct CompatibilityValidator {
-    expected_version: Version,
-    expected_revision: Revision,
-}
-
-pub(crate) enum CompatibilityOutcome {
-    Exact,
-    VersionMismatch { actual: Version },
-    RevisionMismatch { actual: Revision },
-    Unverified { reason: CompatibilityEvidenceGap },
-}
-
-impl CompatibilityValidator {
-    async fn validate<C: EngineConnection + ?Sized>(
-        &self,
-        connection: &C,
-    ) -> Result<(), CompatibilityError>;
-}
-```
-
-The validator executes a constant raw request rather than depending on generated
-schema coverage. It treats response errors, missing or non-string data, invalid
-SemVer, absent revision evidence, dirty builds, and unknown build formats as typed
-failures. It never logs the full response body.
-
-### Public error and engine-domain API
-
-```rust
-#[non_exhaustive]
-#[derive(Clone, Debug, Error)]
-pub enum ConnectError {
-    ExistingSession(ExistingSessionError),
-    Discovery(CliDiscoveryError),
-    Provisioning(ProvisionError),
-    Process(SessionStartError),
-    Protocol(SessionProtocolError),
-    Transport(EngineConnectionError),
-    Compatibility(CompatibilityError),
-    StartupTimeout(StartupTimeoutError),
-}
-
-#[non_exhaustive]
-#[derive(Clone, Debug, Error)]
-pub enum QueryError {
-    Request(RequestError),
-    GraphQl { response: RawResponse },
-    Exec { error: ExecError, response: RawResponse },
-    Decode { path: Vec<PathSegment>, message: String, response: RawResponse },
-}
-
-#[derive(Clone)]
-pub struct ExecError { /* private parsed extension fields */ }
-
-impl ExecError {
-    pub fn message(&self) -> &str;
-    pub fn exit_code(&self) -> Option<i32>;
-    pub fn command(&self) -> Option<&[String]>;
-    pub fn stdout(&self) -> Option<&str>;
-    pub fn stderr(&self) -> Option<&str>;
-    pub fn extensions(&self) -> &Map<String, Value>;
-}
-```
-
-Leaf errors expose a non-exhaustive `kind()` enum and safe contextual accessors while
-holding implementation sources in `Arc` where cloneability is required by Feature 2's
-terminal close result. Custom `Debug` and `Display` implementations omit secret,
-authorization, raw environment, command output, and unredacted response content.
-
-`EXEC_ERROR` detection is conservative: it requires the definitive extension type
-marker and parses known fields without rejecting unknown fields. A successful mapping
-returns `QueryError::Exec` with both the typed view and the original `RawResponse`.
-Malformed known fields leave the response as `QueryError::GraphQl`; they never panic
+sdk/rust/codegen/            # checked target identity (target.json, schema.json)
 or discard data.
-
-### Completeness traceability
-
-```rust
-pub(crate) struct FeatureScopePolicy {
-    feature: FeatureId,
-    heading: &'static str,
-    expected_scope_digest: &'static str,
-    expected_status_ids: &'static [CapabilityId],
-    expected_policy_ids: &'static [PolicyId],
-    allowed_blocking_owners: &'static BTreeMap<CapabilityId, FeatureId>,
-}
-
-pub(crate) fn validate_feature_scope(
-    repository: &RepositoryModel,
-    policy: &FeatureScopePolicy,
-) -> Result<FeatureScopeDeclaration, ContractError>;
-```
-
-The Feature 2 special case becomes a descriptor passed to this generic validator.
-Feature 3 supplies its own descriptor for the approved 32 status-change IDs and 26
-new policies. Eleven declared status rows may retain Feature 2 as their blocking owner
-until Feature 3 supplies the missing transport evidence; the validator therefore
-checks the exact approved owner map rather than assuming that every scoped row is
-owned by the current feature. Feature 8 rows remain untouched.
-
-The requirements source is added to `authorities.json`. Policy extraction validates
-exact identifiers and normalized text, not merely a count. Status changes require
-routed implementation, test, and target evidence whose observed target matches
-`target.json`; unrelated harness success cannot satisfy the route.
-
-## Data Models and Invariants
 
 ### Source decision
 
@@ -955,49 +345,11 @@ record and replay one stable terminal result to every caller. A forced terminati
 reported even when kill and reap subsequently succeed. The diagnostic snapshot is
 already bounded and redacted before it enters the cloneable close result.
 
-## Authority-to-Implementation Tracing
-
-| Definitive authority | Rust owner | Preserved observation |
-|---|---|---|
-| `sdk/go/engineconn/engineconn.go` `Get` | `preflight.rs`, `connector.rs` | exact source order and terminal selected-source failure |
-| `sdk/go/engineconn/env.go` | `preflight.rs`, `transport.rs` | port-presence selection, validated token, external ownership |
-| `sdk/go/engineconn/cli.go` | `discovery.rs`, `provision.rs`, `archive.rs` | local authority, compiled version, narrow PATH fallback, verified release |
-| `sdk/go/engineconn/session.go` | `session.rs`, `diagnostic.rs` | launch projection, retry bound, control line, child ownership and close |
-| `sdk/go/engineconn/otel.go` | `telemetry.rs`, `transport.rs` | active-context precedence, environment fallback, per-request W3C injection |
-| `sdk/go/dagger/client.gen.go` error mapping | `query.rs`, `graphql.rs`, `errors.rs` | typed `EXEC_ERROR` without loss of raw GraphQL response |
-| `core/schema/query.go` `Query.version` | `target.rs`, `connector.rs` | public constant handshake independent of generated coverage |
-| `completeness/target.json` | generated `target.rs` constants | one exact engine version, CLI version, and revision claim |
-
-Rust-strengthened mechanisms are traced to explicit policy capabilities rather than
-misrepresented as Go declarations. Those include bounded inputs, cross-process first
-publication, private permissions, cancellation cleanup, redaction gating, sink-panic
-containment, at-most-once transmission, exact compatibility rejection, and aggregate
-shutdown evidence.
-
 ## Correctness Properties
 
 Every property below is an executable invariant. Property tests use at least 100
 generated cases unless the property describes an exhaustive finite matrix, a modeled
 concurrent schedule, or an external live target.
-
-### Property 1: Exact feature-scope extraction
-
-For any mutation of the approved status list, scope digest, policy identifier, or
-normalized policy statement, contract validation rejects the declaration; the exact
-32 status IDs, digest
-`sha256:0b4246157f75b8ce179d8fec3476256fa939ccdf69d29d1fcafaf93f160013b3`, and 26
-policies are accepted.
-
-**Validates: Requirements 1.1-1.3**
-
-### Property 2: Evidence-closed and owner-correct status transitions
-
-For any scoped capability, a complete transition is accepted if and only if its
-routed implementation, test, and target evidence is valid and its prior blocking
-owner matches the approved owner map. The 11 cross-feature rows may transition from
-their declared Feature 2 owner; Feature 8-only rows and unverified rows cannot change.
-
-**Validates: Requirements 1.4-1.12**
 
 ### Property 3: Source precedence is a pure reference function
 
@@ -1320,43 +672,12 @@ The compatibility query itself uses the same HTTP and raw GraphQL codecs, but ma
 failure into `CompatibilityError::Unverified` with a safe categorical cause. This
 prevents a transport parsing detail from being mistaken for positive target evidence.
 
-## Completeness Contract Integration
-
-The current completeness parser hard-codes Feature 2's heading, counts, digest, policy
-list, and owner assumption. It is refactored into data-driven `FeatureScopePolicy`
-instances without weakening Feature 2 validation. Both descriptors are exercised in
-the same fixture suite, so generalization cannot silently accept drift in the already
-merged feature.
-
-Feature 3 integration performs these steps as one contract change:
-
-1. add this approved requirements document as a pinned `rust-policy` authority;
-2. extract the exact 26 policy anchors by stable identifier and normalized statement;
-3. validate the exact 32-row status declaration and its recorded digest;
-4. validate the approved current blocking-owner map, including the 11 Feature 2 rows;
-5. route the 21 Feature 3-owned Go declarations and the new policy rows to concrete
-   Rust source and tests with digest-fenced selectors;
-6. attach deterministic evidence only to the behaviours each fixture observes;
-7. attach live evidence only to the exact-target default-connector run; and
-8. transition a row only after its complete routed evidence set passes.
-
-The candidate change set is 58 rows: 32 existing declarations plus 26 new policies.
-That is a scope ceiling, not a promised status count. A row whose residual evidence is
-still missing remains `Partial` or `Missing` with an exact blocker. The two Feature 2
-rows reserved for Feature 8 live verification are outside the descriptor and any
-attempt to change them fails integrity validation.
-
-Generated reports remain pure projections of the ledger. Neither implementation nor
-tests edit them by hand, and the candidate report must reproduce from the checked-in
-authorities, classifications, evidence, and target metadata.
-
 ## Testing Strategy
 
 ### Test placement
 
 | Properties | Production owner | Primary test placement and library |
 |---|---|---|
-| 1-2 | `dagger-sdk-completeness/contract.rs`, `traceability.rs` | completeness crate property fixtures with `proptest` |
 | 3-5 | `preflight.rs`, `discovery.rs`, `connector.rs` | `tests/source_selection.rs` with `proptest` and recording adapters |
 | 6 | `target.rs`, `provision.rs` descriptor model | provisioning module unit properties plus `tests/provisioning.rs` |
 | 7-9 | `provision.rs`, `archive.rs` | module parser properties and `tests/provisioning.rs` with `proptest` |
@@ -1369,7 +690,6 @@ authorities, classifications, evidence, and target metadata.
 | 23-24 | `errors.rs`, `graphql.rs`, `query.rs` | module properties, `error_api.rs`, and `trybuild` cases |
 | 25 | `target.rs`, `connector.rs` | `compatibility.rs` with generated identities and pending-resource fixture |
 | 26 | `session.rs`, `lifecycle.rs` | `shutdown.rs`, paused time, process fixture, and lifecycle model |
-| 27 | completeness evidence and live connector | completeness fixtures plus exact-target integration test |
 | 28 | public modules and `lib.rs` | rustdoc, public API snapshot, `trybuild`, and syntax-aware source audit |
 
 Every numbered property has one primary property test named
@@ -1492,15 +812,8 @@ No shell quoting, signal name, or Unix-only helper is part of the protocol suite
   atomic publication, cancellation handoff, secret carry-over redaction, redirect
   confinement, and shutdown ordering. Obvious control flow remains uncommented.
 
-### Completeness and exact-target verification
+### Exact-target verification
 
-- Contract fixtures mutate one heading, scope ID, digest, policy ID, policy statement,
-  prior owner, route, evidence reference, observed target, and generated target
-  constant at a time. Each mutation must produce its deterministic integrity category.
-- Feature 2 and Feature 3 descriptors run through the same generic parser. Golden
-  tests prove Feature 2's accepted scope is unchanged by the refactor.
-- Each deterministic evidence record names the property, fixture, platform model, and
-  absence of an executed engine. It cannot satisfy a live-only evidence selector.
 - The exact-target live test launches an isolated Rust test process with session and
   explicit-local variables absent. That process calls the stable default connector,
   provisions/starts the compiled CLI target, completes the implicit compatibility
@@ -1510,10 +823,6 @@ No shell quoting, signal name, or Unix-only helper is part of the protocol suite
   real child identity and wait completion. The parent verifies successful process
   exit and reaping; this observer is neither public API nor a replacement process
   adapter.
-- The live evidence record pins Rust package version, compiled CLI version, observed
-  engine version/provenance, Dagger target revision, host platform, request success,
-  close result, and child-reap observation. Any unknown field leaves affected ledger
-  rows blocking.
 - The common `sdk-sdk` harness is still run and recorded for its common checks. Its
   result is never routed to source selection, provisioning, session protocol,
   authentication, propagation, transport error, or shutdown assertions that it does
@@ -1525,14 +834,13 @@ Implementation checkpoints use focused host commands while iterating, followed b
 repository Dagger toolchain as the evidence boundary:
 
 ```text
-cargo test -p dagger-sdk
-cargo test -p dagger-sdk-completeness
-cargo test -p dagger-sdk --doc
+cargo fmt --all --check
+cargo check --workspace --all-features --locked
+cargo test --workspace --all-features --locked
+cargo clippy --workspace --all-targets --all-features --locked -- -D warnings
+RUSTDOCFLAGS="-D warnings" cargo doc --workspace --all-features --no-deps --locked
 cargo deny check
-
-dagger call -m toolchains/rust-sdk-dev check --source=.
-dagger call -m toolchains/rust-sdk-dev test --source=.
-dagger call -m toolchains/rust-sdk-dev completeness-verify --source=.
+dagger -m .dagger/modules/rust-client-dev api call build --platform=linux/amd64 verify
 ```
 
 The repository Rust security workflow, formatting, Clippy-with-warnings-denied,
