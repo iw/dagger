@@ -826,6 +826,12 @@ fn render_execution(
                 body.push_str(&format!("query.generated_core_handle::<{target_type}>()\n"));
             }
         }
+        // Void results ride the dedicated execution path — the engine
+        // answers them with an empty object, which strict unit decode
+        // refuses.
+        FieldStrategy::ExecuteValue {
+            output: RustType::Unit,
+        } => body.push_str("query.execute_void().await\n"),
         FieldStrategy::ExecuteValue { .. } => body.push_str("query.execute().await\n"),
         FieldStrategy::NullableHandle { target, .. }
         | FieldStrategy::ReenterList { target, .. } => {

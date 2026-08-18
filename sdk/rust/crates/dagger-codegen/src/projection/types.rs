@@ -127,7 +127,8 @@ pub enum ScalarKind {
     Json,
     /// GraphQL `Platform`.
     Platform,
-    /// GraphQL `Void`, represented by JSON null.
+    /// GraphQL `Void`, prescribed as JSON null — the type's own description
+    /// and its null literal encoding agree.
     Void,
     /// Module-defined scalar represented by its exact GraphQL string value.
     Custom,
