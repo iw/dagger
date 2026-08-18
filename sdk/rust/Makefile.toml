@@ -1,13 +1,20 @@
+# Regenerates crates/dagger-sdk/src/gen/ and codegen/generated.json from the
+# checked target and schema. `dagger-bootstrap` ships two binaries, so the
+# binary must be named explicitly.
 [tasks.codegen]
 command = "cargo"
 args = [
   "run",
+  "-q",
   "-p",
   "dagger-bootstrap",
+  "--bin",
+  "dagger-rust",
   "--",
   "generate",
-  "--output",
-  "crates/dagger-sdk/src/gen.rs",
+  "--workspace",
+  ".",
+  "--update",
 ]
 workspace = false
 
