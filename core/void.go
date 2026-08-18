@@ -1,6 +1,7 @@
 package core
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/vektah/gqlparser/v2/ast"
@@ -45,4 +46,15 @@ var _ dagql.ScalarType = Void{}
 func (Void) DecodeInput(val any) (dagql.Input, error) {
 	// void types cannot be constructed - they have no corresponding valid values
 	return nil, fmt.Errorf("cannot convert %T to Void", val)
+}
+
+var _ json.Marshaler = Void{}
+
+// MarshalJSON encodes Void as JSON null, matching the scalar's meaning ("A
+// Null Void is used as a placeholder…") and its null literal encoding.
+// Without it, encoding/json's default empty-struct encoding ({}) reaches
+// the wire, which strict clients rightly refuse to decode as an absent
+// value.
+func (Void) MarshalJSON() ([]byte, error) {
+	return []byte("null"), nil
 }
