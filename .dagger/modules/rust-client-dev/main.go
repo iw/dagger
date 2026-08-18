@@ -1101,8 +1101,10 @@ func (t *RustClientDev) GeneratedCoreIntegration(ctx context.Context) error {
 }
 
 func (t *RustClientDev) coreTargetEngine() *dagger.DaggerEngine {
-	// Keep the immutable Core contract and revision while giving this fork's engine and
-	// CLI binaries the release version that the Rust client validates at connection time.
+	// Schema-conformance engine only: the immutable upstream Core contract at the
+	// pinned v1.0.0 lineage revision, with the release version stamped for the client
+	// connection handshake. The shipped release artifact is NOT built from this pin —
+	// Build assembles it from the fork workspace so fork core corrections ship.
 	source := dag.Git(coreTargetRepository).
 		Commit(coreTargetRevision).
 		Tree(dagger.GitCommitTreeOpts{DiscardGitDir: true}).
@@ -1120,13 +1122,16 @@ type RustSdkBuild struct {
 	// this build object has no publication operation.
 	Packages *dagger.Directory
 
-	// CompleteEngine contains the standard engine binaries and all standard SDK content,
-	// with the Rust content produced from the current workspace.
+	// CompleteEngine contains the engine binaries built from this fork's workspace
+	// source and all standard SDK content, with the Rust content produced from the
+	// same workspace.
 	CompleteEngine *dagger.Container
 
 	Version string
 
-	Checker      *dagger.File         // +private
+	Checker *dagger.File // +private
+	// TargetEngine holds the fork-workspace engine construction that installs the
+	// verify client CLI; the upstream-pinned conformance engine no longer flows here.
 	TargetEngine *dagger.DaggerEngine // +private
 	NetworkCIDR  string               // +private
 	Consumer     *dagger.Directory    // +private
@@ -1172,8 +1177,12 @@ func (t *RustClientDev) Build(
 	if err != nil {
 		return nil, fmt.Errorf("build reusable Rust engine content: %w", err)
 	}
-	target := t.coreTargetEngine()
-	completeEngine := target.ContainerWithRustSdkcontent(
+	// The shipped engine is built from this fork's workspace source: the upstream
+	// v1.0.0 tag lineage arrives by merging upstream into main, so the artifact stays
+	// on the upstream base while carrying the fork's own engine corrections. The
+	// upstream-pinned coreTargetEngine remains the schema-conformance contract only;
+	// shipping it would silently exclude fork core fixes from the release artifact.
+	completeEngine := content.Engine.ContainerWithRustSdkcontent(
 		content.Built,
 		dagger.DaggerEngineContainerWithRustSdkcontentOpts{
 			Platform: platform,
@@ -1204,7 +1213,7 @@ func (t *RustClientDev) Build(
 	if _, err := engineCheck.Sync(ctx); err != nil {
 		return nil, fmt.Errorf("validate complete engine Rust content: %w", err)
 	}
-	networkCIDR, err := target.NetworkCidr(ctx)
+	networkCIDR, err := content.Engine.NetworkCidr(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("resolve complete engine network: %w", err)
 	}
@@ -1214,7 +1223,7 @@ func (t *RustClientDev) Build(
 		CompleteEngine: completeEngine,
 		Version:        version,
 		Checker:        checker,
-		TargetEngine:   target,
+		TargetEngine:   content.Engine,
 		NetworkCIDR:    networkCIDR,
 		Consumer: t.Ws.Directory(
 			".dagger/modules/rust-client-dev/testdata/external-consumer",

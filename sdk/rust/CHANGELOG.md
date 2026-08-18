@@ -12,6 +12,8 @@ This SDK uses 🚙 Engine + 🚗 CLI version `v1.0.0-beta.11.rust.2`, built from
 
 📦 Released as checked repository artifacts (`dagger-sdk` and `dagger-sdk-macros` crate files plus the complete engine); see sdk/rust/docs/namespace-build.md.
 
+> **Erratum (2026-08-18):** the engine artifact attached to this release was assembled from the upstream-pinned conformance revision and does **not** carry the Void null-encoding correction described below; bare `Void` fields (for example `Container.exportImage`) still return `{}` from it, which this release's strict crates refuse. Superseded by `sdk/rust/v1.0.0-beta.11.rust.3`, whose engine is built from the fork workspace.
+
 ### Fixed
 - Void-typed bindings decode correctly: a dedicated `execute_void` path (generated core and standalone clients alike) decodes the prescribed JSON null and refuses any other shape loudly, replacing the strict serde unit decode that failed against live engines. Thirteen call sites across six generated types were affected, `Container.exportImage` among them by @iw in https://github.com/iw/dagger/pull/81 \
   The release verification consumer now exercises one Void-typed field against the completed engine — the wire encoding of a custom scalar is invisible in schema bytes, so engine/SDK agreement on it is provable only there.
