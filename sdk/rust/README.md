@@ -2,7 +2,7 @@
 
 This workspace contains Dagger's beta Rust SDK, code generator, module-authoring
 runtime, standalone-client generator, and engine integration. The current SDK version
-is `1.0.0-beta.11.rust.1` and targets
+is `1.0.0-beta.11.rust.2` and targets
 the Dagger `v1.0.0-beta.11` engine contract.
 
 Application users normally depend on [`dagger-sdk`](crates/dagger-sdk). The client is

@@ -176,8 +176,8 @@ understand the Rust-first, engine-free development path and the separate engine 
    Ownership_Manifest rather than completeness/evidence registries.
 3. WHEN release preparation is documented, IT SHALL describe artifact creation only and
    SHALL NOT promise crates.io publication.
-4. WHEN Release_Identity is used, IT SHALL map exactly to source version
-   `1.0.0-beta.11.rust.1`.
+4. WHEN Release_Identity is used, IT SHALL map exactly to the workspace source
+   version (first release: `1.0.0-beta.11.rust.1`).
 5. WHILE this specification is executed, THE operator SHALL NOT add TUF, GitHub Actions,
    automated publication, release credentials, or a new readiness policy engine.
 6. UNTIL the user directly authorizes publication, THE operator SHALL NOT create or push

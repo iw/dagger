@@ -1,7 +1,0 @@
-kind: Fixed
-body: |
-    The engine encodes `Void`-typed results as JSON null on the wire. `core.Void` previously fell through to Go's default empty-struct encoding (`{}`), which strict clients refuse to decode as an absent value; the scalar now carries an explicit marshaller matching its meaning and its null literal encoding, with a regression test pinning the wire shape. The complete engine shipped with this release carries the correction.
-time: 2026-08-18T00:00:01Z
-custom:
-    Author: iw
-    PR: 79

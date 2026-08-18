@@ -560,15 +560,15 @@ proptest! {
         let validator = CompatibilityValidator::exact().expect("generated target is valid");
         let expected_revision = validator.expected_revision_prefix().to_owned();
         let value = match case {
-            0 => format!("v1.0.0-beta.11.rust.1+{expected_revision}"),
-            1 => format!("1.0.0-beta.11.rust.1+{expected_revision}"),
+            0 => format!("v1.0.0-beta.11.rust.2+{expected_revision}"),
+            1 => format!("1.0.0-beta.11.rust.2+{expected_revision}"),
             2 => format!("v1.0.1-beta.10+{expected_revision}"),
-            3 => "v1.0.0-beta.11.rust.1".to_owned(),
-            4 => format!("v1.0.0-beta.11.rust.1+{expected_revision}.dirty"),
-            5 => format!("v1.0.0-beta.11.rust.1+{}", other_revision.to_ascii_uppercase()),
+            3 => "v1.0.0-beta.11.rust.2".to_owned(),
+            4 => format!("v1.0.0-beta.11.rust.2+{expected_revision}.dirty"),
+            5 => format!("v1.0.0-beta.11.rust.2+{}", other_revision.to_ascii_uppercase()),
             6 => "not-semver".to_owned(),
             7 => format!("v1.0.0-beta.9+{expected_revision}"),
-            _ => format!("v1.0.0-beta.11.rust.1+{other_revision}"),
+            _ => format!("v1.0.0-beta.11.rust.2+{other_revision}"),
         };
         let result = validator.validate_version(&value);
         let expected_kind = result.as_ref().err().map(|error| error.kind());
