@@ -1150,6 +1150,12 @@ fn method_execution(
                     .await
             })
         }
+        // Void results ride the dedicated execution path: the engine's wire
+        // representation of `Void` is an empty object, not null, and strict
+        // unit decoding refuses it.
+        FieldStrategy::ExecuteValue {
+            output: RustType::Unit,
+        } => Ok(quote! { query.execute_void(#session).await }),
         FieldStrategy::ExecuteValue { .. } => Ok(quote! { query.execute(#session).await }),
         FieldStrategy::ExpectedTypeSelf { parent, .. } => {
             let parent_ident = handle_type_ident(plan, parent, &field.coordinate)?;
