@@ -12,6 +12,16 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // provable only here, against the composed engine. Strict null decoding
     // makes any deviation fail this step.
     client.query().engine().local_cache().prune().await?;
+    // Bare (non-nullable) Void is the discriminating canary: prune above travels the
+    // engine's Nullable[Void] path, which was JSON null even on pre-correction
+    // engines, but a bare core.Void result was Go's default `{}` until the engine
+    // carried its explicit null marshaller. Strict decoding refuses `{}`, so this
+    // line fails against any engine whose core predates that correction.
+    client
+        .container()
+        .with_new_file("void canary", "/rust-sdk-void-canary")
+        .export_image("rust-sdk-void-canary:verify")
+        .await?;
     client.close().await?;
     println!("{version}");
     Ok(())
