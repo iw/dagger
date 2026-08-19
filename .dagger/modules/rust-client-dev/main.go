@@ -123,6 +123,7 @@ func New(
 			"!engine/distconsts/consts.go",
 			"!internal/cmd/dagger",
 			"!internal/version/VERSION",
+			"!internal/version/FORK",
 			"!.dagger/modules/engine-dev/build/**",
 			"!future/sdk-tests.md",
 			"!.kiro/specs/rust-sdk-completeness-contract/requirements.md",
