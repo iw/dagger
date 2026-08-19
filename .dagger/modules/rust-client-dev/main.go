@@ -401,7 +401,10 @@ func (t *RustClientDev) EngineContent(ctx context.Context) (*RustEngineContent, 
 		Ws:                 t.Ws,
 		VcsRepository:      t.EngineRepository,
 	}).WithSource(t.focusedEngineSource())
-	contentOptions := dagger.DaggerEngineRustSdkcontentOpts{Version: coreTargetVersion}
+	// The content build validates its version against the checked target's engine
+	// version, which carries only the upstream tag; the release identity stays on
+	// the artifact annotations.
+	contentOptions := dagger.DaggerEngineRustSdkcontentOpts{Version: coreTargetEngineVersion}
 	if t.SDKDependencyRevision != "" {
 		contentOptions.DependencyRepository = t.EngineRepository
 		contentOptions.DependencyRevision = t.SDKDependencyRevision
