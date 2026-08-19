@@ -23,7 +23,12 @@ const (
 	goHelperDigest          = "sha256:ab3d6955bbc813a0f3fdf220c1d817dd89c0b3f283777db8ece4a32fe7858edd"
 	coreTargetRepository    = "https://github.com/dagger/dagger.git"
 	coreTargetRevision      = "501b57e0476dee5881b99a064c3c04173134ecc7"
-	coreTargetVersion       = "v1.0.0-beta.11.rust.2"
+	// coreTargetVersion is the fork release identity used for artifact annotations
+	// and content labels; coreTargetEngineVersion is the upstream engine tag that the
+	// engine's semantic version carries (fork iteration and commit travel in build
+	// metadata) and that module configurations pin for version gating.
+	coreTargetVersion       = "v1.0.0-beta.11.rust.3"
+	coreTargetEngineVersion = "v1.0.0-beta.11"
 	focusedEngineBaseImage  = "registry.dagger.io/engine:v1.0.0-beta.9@sha256:de22dbf0c848d618efa9243f76fd47364110d31bb2e24cce063b702e91e1b73e"
 	focusedEngineBaseCommit = "1c6e07b197327c57e9db8584deb36e5166278677"
 	defaultEngineRepository = "https://github.com/dagger/dagger"
@@ -494,7 +499,7 @@ func (content *RustEngineContent) runResolution(
 		return "", fmt.Errorf("installed SDK listing omitted canonical Rust entry")
 	}
 	rejected := second.WithExec(
-		[]string{"dagger", "-y", "sdk", "install", "rust@v1.0.0-beta.11.rust.2"},
+		[]string{"dagger", "-y", "sdk", "install", "rust@v1.0.0-beta.11.rust.3"},
 		dagger.ContainerWithExecOpts{Expect: dagger.ReturnTypeAny},
 	)
 	exitCode, err := rejected.ExitCode(ctx)
@@ -695,7 +700,7 @@ func (content *RustEngineContent) runEngineIntegrationCase(
 		if err != nil {
 			return "", fmt.Errorf("read operations workspace config: %w", err)
 		}
-		fixture, err := enginefixture.NewOperationsPlan(workspaceConfig, coreTargetVersion)
+		fixture, err := enginefixture.NewOperationsPlan(workspaceConfig, coreTargetEngineVersion)
 		if err != nil {
 			return "", fmt.Errorf("plan operations fixture: %w", err)
 		}
@@ -729,7 +734,7 @@ func (content *RustEngineContent) runEngineIntegrationCase(
 				"dagger", "-y", "module", "init", "rust", "runtime-legacy", "--path", "modules/runtime-legacy", "--no-generate",
 			}).
 			WithExec([]string{"rm", "modules/runtime-legacy/dagger-module.toml"}).
-			WithNewFile("/work/modules/runtime-legacy/dagger.json", `{"name":"runtime-legacy","engineVersion":"v1.0.0-beta.11.rust.2","sdk":{"source":"rust"}}`)
+			WithNewFile("/work/modules/runtime-legacy/dagger.json", `{"name":"runtime-legacy","engineVersion":"v1.0.0-beta.11","sdk":{"source":"rust"}}`)
 		functions, err := result.WithExec([]string{
 			"dagger", "-m", "modules/runtime-legacy", "functions",
 		}).Stdout(ctx)
@@ -1108,7 +1113,7 @@ func (t *RustClientDev) coreTargetEngine() *dagger.DaggerEngine {
 	source := dag.Git(coreTargetRepository).
 		Commit(coreTargetRevision).
 		Tree(dagger.GitCommitTreeOpts{DiscardGitDir: true}).
-		WithNewFile("internal/version/VERSION", coreTargetVersion+"\n")
+		WithNewFile("internal/version/VERSION", coreTargetEngineVersion+"\n")
 	return dag.DaggerEngine(dagger.DaggerEngineOpts{
 		ClientDockerConfig: t.ClientDockerConfig,
 		Ws:                 t.Ws,
@@ -1287,11 +1292,21 @@ func (build *RustSdkBuild) Verify(ctx context.Context) error {
 			UseEntrypoint:            true,
 			InsecureRootCapabilities: true,
 		})
+	// The consumer asserts the engine's fork iteration explicitly: the SDK's own
+	// connection validator accepts the bare-commit metadata of conformance engines,
+	// so release verification is where a missing fork identity must fail.
+	forkIteration := build.Version
+	if index := strings.LastIndex(forkIteration, ".rust."); index >= 0 {
+		forkIteration = "rust." + forkIteration[index+len(".rust."):]
+	} else {
+		return fmt.Errorf("release version %q carries no fork iteration", build.Version)
+	}
 	runner := build.TargetEngine.InstallClient(
 		rustBaseContainer().
 			WithDirectory("/work/consumer", build.Consumer).
 			WithDirectory("/work/vendor", vendor).
-			WithWorkdir("/work/consumer"),
+			WithWorkdir("/work/consumer").
+			WithEnvVariable("RUST_SDK_EXPECTED_ENGINE_FORK", forkIteration),
 		dagger.DaggerEngineInstallClientOpts{
 			Service: service,
 			Version: coreTargetVersion,

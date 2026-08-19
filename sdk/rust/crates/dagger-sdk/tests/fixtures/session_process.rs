@@ -119,7 +119,7 @@ fn serve_request(mut stream: TcpStream) {
         }
     }
 
-    let body = br#"{"data":{"version":"v1.0.0-beta.11.rust.2+501b57e0"}}"#;
+    let body = br#"{"data":{"version":"v1.0.0-beta.11+rust.3.501b57e0"}}"#;
     let response = format!(
         "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n",
         body.len()

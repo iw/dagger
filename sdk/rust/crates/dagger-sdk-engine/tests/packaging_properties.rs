@@ -216,14 +216,14 @@ proptest! {
             ]),
         };
         if dependency_shape == 1 {
-            let valid = registry_dependency("1.0.0-beta.11.rust.2", "dagger-sdk");
+            let valid = registry_dependency("1.0.0-beta.11.rust.3", "dagger-sdk");
             let mut invalid = serde_json::to_value(valid).unwrap();
             invalid["package"] = serde_json::json!("dagger-codegen");
             prop_assert!(decode_canonical::<PublishedSdkDependency>(&canonical_bytes(&invalid).unwrap()).is_err());
             return Ok(());
         }
         let dependency = match dependency_shape {
-            0 => registry_dependency("1.0.0-beta.11.rust.2", "dagger-sdk"),
+            0 => registry_dependency("1.0.0-beta.11.rust.3", "dagger-sdk"),
             _ => PublishedSdkDependency::Git {
                 url: value("https://github.com/acme/dagger"),
                 revision: revision(seed),
@@ -475,13 +475,13 @@ fn package_identity(seed: u8, fork: bool) -> PackageIdentity {
             package: value("dagger-sdk"),
         }
     } else {
-        registry_dependency("1.0.0-beta.11.rust.2", "dagger-sdk")
+        registry_dependency("1.0.0-beta.11.rust.3", "dagger-sdk")
     };
     PackageIdentity {
         repository,
         dagger_revision,
-        engine_version: value("1.0.0-beta.11.rust.2"),
-        rust_sdk_version: value("1.0.0-beta.11.rust.2"),
+        engine_version: value("1.0.0-beta.11"),
+        rust_sdk_version: value("1.0.0-beta.11.rust.3"),
         rust_toolchain: value("1.97.1"),
         sdk_dependency,
         core_schema_digest: digest(seed, 200),

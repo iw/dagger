@@ -7,6 +7,19 @@ async fn main() -> Result<(), Box<dyn Error>> {
     if version.trim().is_empty() {
         return Err("complete engine returned an empty version".into());
     }
+    // The SDK's connection validator accepts conformance engines built from the
+    // unmodified upstream tree (bare-commit metadata), so the release gate asserts
+    // the fork iteration itself: a complete engine missing `+rust.<N>.` was not
+    // built from this fork's workspace and must not ship.
+    let expected_fork = std::env::var("RUST_SDK_EXPECTED_ENGINE_FORK")
+        .map_err(|_| "RUST_SDK_EXPECTED_ENGINE_FORK is not set")?;
+    let marker = format!("+{expected_fork}.");
+    if !version.contains(&marker) {
+        return Err(format!(
+            "complete engine version {version:?} does not carry fork metadata {marker:?}"
+        )
+        .into());
+    }
     // One Void-typed field per verification: the wire encoding of a custom
     // scalar is invisible in schema bytes, so engine/SDK agreement on it is
     // provable only here, against the composed engine. Strict null decoding

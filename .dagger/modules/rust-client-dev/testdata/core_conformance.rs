@@ -13,7 +13,7 @@ use serde::Serialize;
 use serde_json::json;
 
 const TARGET_REVISION: &str = "501b57e0476dee5881b99a064c3c04173134ecc7";
-const TARGET_VERSION: &str = "v1.0.0-beta.11.rust.2";
+const TARGET_VERSION: &str = "v1.0.0-beta.11";
 
 #[derive(Serialize)]
 struct Observation {

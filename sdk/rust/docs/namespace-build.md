@@ -265,7 +265,7 @@ env PATH=/vendor/docker:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:
   "$RUST_SDK_DAGGER" -m .dagger/modules/rust-client-dev api call \
   build --platform=linux/amd64 complete-engine export \
   --media-types=OCI \
-  --path="$RUST_SDK_OUTPUT/dagger-engine-v1.0.0-beta.11.rust.2-linux-amd64.oci.tar"
+  --path="$RUST_SDK_OUTPUT/dagger-engine-v1.0.0-beta.11.rust.3-linux-amd64.oci.tar"
 ```
 
 These Build calls use the same immutable checkout, platform, module, runner setting,
@@ -277,12 +277,12 @@ Require the expected two crate names and one engine archive:
 
 ```console
 cd "$RUST_SDK_OUTPUT"
-test -f dagger-sdk-macros-1.0.0-beta.11.rust.2.crate
-test -f dagger-sdk-1.0.0-beta.11.rust.2.crate
-test -f dagger-engine-v1.0.0-beta.11.rust.2-linux-amd64.oci.tar
+test -f dagger-sdk-macros-1.0.0-beta.11.rust.3.crate
+test -f dagger-sdk-1.0.0-beta.11.rust.3.crate
+test -f dagger-engine-v1.0.0-beta.11.rust.3-linux-amd64.oci.tar
 test "$(find . -maxdepth 1 -type f | wc -l)" -eq 3
-tar -tf dagger-engine-v1.0.0-beta.11.rust.2-linux-amd64.oci.tar | grep -Fx oci-layout
-tar -tf dagger-engine-v1.0.0-beta.11.rust.2-linux-amd64.oci.tar | grep -Fx index.json
+tar -tf dagger-engine-v1.0.0-beta.11.rust.3-linux-amd64.oci.tar | grep -Fx oci-layout
+tar -tf dagger-engine-v1.0.0-beta.11.rust.3-linux-amd64.oci.tar | grep -Fx index.json
 ```
 
 Create `SHA256SUMS` over only those three files, verify it on the builder, then require
@@ -290,9 +290,9 @@ exactly four output files:
 
 ```console
 sha256sum \
-  dagger-sdk-macros-1.0.0-beta.11.rust.2.crate \
-  dagger-sdk-1.0.0-beta.11.rust.2.crate \
-  dagger-engine-v1.0.0-beta.11.rust.2-linux-amd64.oci.tar \
+  dagger-sdk-macros-1.0.0-beta.11.rust.3.crate \
+  dagger-sdk-1.0.0-beta.11.rust.3.crate \
+  dagger-engine-v1.0.0-beta.11.rust.3-linux-amd64.oci.tar \
   > SHA256SUMS
 sha256sum --check SHA256SUMS
 test "$(find . -maxdepth 1 -type f | wc -l)" -eq 4
@@ -331,16 +331,16 @@ The `--container_name` option is documented in the
 
 ```console
 nsc instance download "$RUST_SDK_NS_INSTANCE" \
-  "$RUST_SDK_REMOTE_OUTPUT/dagger-sdk-macros-1.0.0-beta.11.rust.2.crate" \
-  "$RUST_SDK_LOCAL_OUTPUT/dagger-sdk-macros-1.0.0-beta.11.rust.2.crate" \
+  "$RUST_SDK_REMOTE_OUTPUT/dagger-sdk-macros-1.0.0-beta.11.rust.3.crate" \
+  "$RUST_SDK_LOCAL_OUTPUT/dagger-sdk-macros-1.0.0-beta.11.rust.3.crate" \
   --container_name "$RUST_SDK_NS_CONTAINER"
 nsc instance download "$RUST_SDK_NS_INSTANCE" \
-  "$RUST_SDK_REMOTE_OUTPUT/dagger-sdk-1.0.0-beta.11.rust.2.crate" \
-  "$RUST_SDK_LOCAL_OUTPUT/dagger-sdk-1.0.0-beta.11.rust.2.crate" \
+  "$RUST_SDK_REMOTE_OUTPUT/dagger-sdk-1.0.0-beta.11.rust.3.crate" \
+  "$RUST_SDK_LOCAL_OUTPUT/dagger-sdk-1.0.0-beta.11.rust.3.crate" \
   --container_name "$RUST_SDK_NS_CONTAINER"
 nsc instance download "$RUST_SDK_NS_INSTANCE" \
-  "$RUST_SDK_REMOTE_OUTPUT/dagger-engine-v1.0.0-beta.11.rust.2-linux-amd64.oci.tar" \
-  "$RUST_SDK_LOCAL_OUTPUT/dagger-engine-v1.0.0-beta.11.rust.2-linux-amd64.oci.tar" \
+  "$RUST_SDK_REMOTE_OUTPUT/dagger-engine-v1.0.0-beta.11.rust.3-linux-amd64.oci.tar" \
+  "$RUST_SDK_LOCAL_OUTPUT/dagger-engine-v1.0.0-beta.11.rust.3-linux-amd64.oci.tar" \
   --container_name "$RUST_SDK_NS_CONTAINER"
 nsc instance download "$RUST_SDK_NS_INSTANCE" \
   "$RUST_SDK_REMOTE_OUTPUT/SHA256SUMS" \
