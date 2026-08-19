@@ -468,7 +468,7 @@ fn registry_dependency() -> PublishedSdkDependency {
     PublishedSdkDependency::Registry {
         registry: CanonicalRegistry::new("crates-io".to_owned()).unwrap(),
         package: SdkPackageName::new("dagger-sdk".to_owned()).unwrap(),
-        exact_version: ExactVersion::new("1.0.0-beta.11.rust.2".to_owned()).unwrap(),
+        exact_version: ExactVersion::new("1.0.0-beta.11.rust.3".to_owned()).unwrap(),
     }
 }
 

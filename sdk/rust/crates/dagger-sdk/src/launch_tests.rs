@@ -577,6 +577,6 @@ fn compatibility_warning_names_the_version_and_the_caveat() {
             .expect("one compatibility warning is delivered"),
     )
     .into_owned();
-    assert!(warning.contains("1.0.0-beta.11.rust.2"));
+    assert!(warning.contains("1.0.0-beta.11"));
     assert!(warning.contains("version compatibility is not guaranteed"));
 }

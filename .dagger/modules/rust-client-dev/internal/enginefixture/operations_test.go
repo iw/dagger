@@ -18,7 +18,7 @@ path = ".dagger/modules/operations"
 func TestOperationsPlanSeparatesCheckedGenerationFromSchemaLoading(t *testing.T) {
 	t.Parallel()
 
-	plan, err := NewOperationsPlan(installedWorkspace, "v1.0.0-beta.11.rust.2")
+	plan, err := NewOperationsPlan(installedWorkspace, "v1.0.0-beta.11")
 	if err != nil {
 		t.Fatalf("construct operations plan: %v", err)
 	}
@@ -48,10 +48,10 @@ func TestOperationsPlanRejectsInvalidPreconditions(t *testing.T) {
 		version string
 	}{
 		"empty version": {config: installedWorkspace},
-		"missing SDK":   {config: "[modules.other]\nsource = \"go\"\n", version: "v1.0.0-beta.11.rust.2"},
+		"missing SDK":   {config: "[modules.other]\nsource = \"go\"\n", version: "v1.0.0-beta.11"},
 		"malformed TOML": {
 			config:  "[modules.dagger-rust-sdk\n",
-			version: "v1.0.0-beta.11.rust.2",
+			version: "v1.0.0-beta.11",
 		},
 	} {
 		fixture := fixture

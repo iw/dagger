@@ -1,9 +1,0 @@
-kind: Fixed
-body: |
-    The shipped complete engine is now built from this fork's workspace source instead of the upstream-pinned conformance revision, so fork engine corrections (the Void null encoding among them) actually ship in the release artifact. The upstream pin remains as the schema-conformance contract, and upstream `v1.0.0` bumps continue to arrive by merging upstream tags into main.
-
-    Release verification now carries a discriminating canary: the external consumer exercises a bare `Void` field (`Container.exportImage`), whose pre-correction `{}` encoding strict decoding refuses — the nullable `Void` path checked previously was JSON null on both engine generations and could not catch the regression. The `sdk/rust/v1.0.0-beta.11.rust.2` engine artifact was affected: its notes carry an erratum, and its crates pair correctly only with this release's engine.
-time: 2026-08-18T00:00:02Z
-custom:
-    Author: iw
-    PR: "84"

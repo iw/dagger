@@ -20,11 +20,21 @@ import (
 //go:embed VERSION
 var raw string
 
+//go:embed FORK
+var forkRaw string
+
 // version is the bare semantic version of this Dagger build (e.g. "0.21.3"),
 // read from the embedded VERSION file with any leading "v" stripped. It is
 // unexported so the "v"-prefix choice is always made explicitly at the call
 // site, via Version's options.
 var version string
+
+// fork is this fork's iteration label (e.g. "rust.3"), read from the embedded
+// FORK file. The semantic version stays the upstream tag so every version
+// comparison sees upstream lineage; the fork iteration travels only in build
+// metadata, ahead of the commit (e.g. "1.0.0-beta.11+rust.3.42424242").
+// Empty when the FORK file is blank.
+var fork string
 
 // Commit is the VCS commit hash this binary was built from, or "" if unknown.
 var Commit string
@@ -37,6 +47,7 @@ var Dirty bool
 
 func init() {
 	version = strings.TrimPrefix(strings.TrimSpace(raw), "v")
+	fork = strings.TrimSpace(forkRaw)
 
 	info, ok := buildinfo.ReadBuildInfo()
 	if !ok {
@@ -92,7 +103,11 @@ func Version(opts ...Opt) string {
 		out = "v" + out
 	}
 	if o.commit && Commit != "" {
-		out += "+" + ShortCommit()
+		out += "+"
+		if fork != "" {
+			out += fork + "."
+		}
+		out += ShortCommit()
 		if Dirty {
 			out += ".dirty"
 		}

@@ -31,7 +31,9 @@ use crate::target::{
     Architecture, ArchiveDescriptor, ArchiveFormat, OperatingSystem, exact_target,
     exact_target_from_parts,
 };
-use crate::target_generated::{TARGET_CLI_VERSION, TARGET_ENGINE_VERSION, TARGET_REVISION};
+use crate::target_generated::{
+    TARGET_CLI_VERSION, TARGET_ENGINE_VERSION, TARGET_FORK_ITERATION, TARGET_REVISION,
+};
 use crate::test_support::{TransportEventLog, proptest_config};
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -308,13 +310,13 @@ proptest! {
     ) {
         let (engine, cli, revision) = match drift_case {
             0 => (TARGET_ENGINE_VERSION, TARGET_CLI_VERSION, TARGET_REVISION),
-            1 => ("1.0.0-beta.11.rust.2", TARGET_CLI_VERSION, TARGET_REVISION),
+            1 => ("1.0.0-beta.11", TARGET_CLI_VERSION, TARGET_REVISION),
             2 => (TARGET_ENGINE_VERSION, "not-semver", TARGET_REVISION),
             3 => (TARGET_ENGINE_VERSION, TARGET_CLI_VERSION, "ABCDEF"),
-            _ => (TARGET_ENGINE_VERSION, "1.0.0-beta.11", TARGET_REVISION),
+            _ => (TARGET_ENGINE_VERSION, "1.0.0-beta.10", TARGET_REVISION),
         };
         let events = TransportEventLog::default();
-        let target = exact_target_from_parts(engine, cli, revision);
+        let target = exact_target_from_parts(engine, cli, revision, TARGET_FORK_ITERATION);
         if drift_case != 0 {
             prop_assert!(target.is_err());
             prop_assert!(events.events().is_empty());
@@ -350,14 +352,14 @@ proptest! {
                     Architecture::Arm64 => "arm64",
                 };
                 let extension = if os == OperatingSystem::Windows { "zip" } else { "tar.gz" };
-                let expected_name = format!("dagger_v1.0.0-beta.11.rust.2_{os_name}_{arch_name}.{extension}");
+                let expected_name = format!("dagger_v1.0.0-beta.11_{os_name}_{arch_name}.{extension}");
                 prop_assert_eq!(descriptor.archive_name(), expected_name.as_str());
                 prop_assert_eq!(
                     descriptor.member_name(),
                     if os == OperatingSystem::Windows { "dagger.exe" } else { "dagger" }
                 );
-                prop_assert_eq!(descriptor.manifest_url().as_str(), "https://dl.dagger.io/dagger/releases/1.0.0-beta.11.rust.2/checksums.txt");
-                prop_assert_eq!(descriptor.archive_url().as_str(), format!("https://dl.dagger.io/dagger/releases/1.0.0-beta.11.rust.2/{expected_name}"));
+                prop_assert_eq!(descriptor.manifest_url().as_str(), "https://dl.dagger.io/dagger/releases/1.0.0-beta.11/checksums.txt");
+                prop_assert_eq!(descriptor.archive_url().as_str(), format!("https://dl.dagger.io/dagger/releases/1.0.0-beta.11/{expected_name}"));
             }
             (Err(error), _) => prop_assert_eq!(error.kind(), PlatformErrorKind::UnsupportedOperatingSystem),
             (_, Err(error)) => prop_assert_eq!(error.kind(), PlatformErrorKind::UnsupportedArchitecture),
@@ -372,12 +374,22 @@ fn generated_target_matches_checked_repository_metadata() {
         serde_json::from_str(include_str!("../../../codegen/target.json"))
             .expect("the checked target metadata is valid JSON");
     assert_eq!(target["engine_version"], TARGET_ENGINE_VERSION);
-    assert_eq!(target["rust_sdk_version"], TARGET_CLI_VERSION);
+    assert_eq!(target["rust_sdk_version"], env!("CARGO_PKG_VERSION"));
     assert_eq!(target["dagger_revision"], TARGET_REVISION);
+
+    // The fork iteration is the `.rust.N` tail of the SDK version; engine builds carry
+    // it in build metadata, so the constants must agree with the packaged identity.
+    let rust_sdk_version = env!("CARGO_PKG_VERSION");
+    let fork_tail = rust_sdk_version
+        .rsplit_once(".rust.")
+        .map(|(_, digits)| format!("rust.{digits}"))
+        .expect("the fork SDK version carries a .rust.N iteration");
+    assert_eq!(TARGET_FORK_ITERATION, fork_tail);
 
     let parsed = exact_target().expect("the generated target parses once");
     assert_eq!(parsed.engine_version().to_string(), TARGET_CLI_VERSION);
     assert_eq!(parsed.cli_version().to_string(), TARGET_CLI_VERSION);
+    assert_eq!(parsed.fork_iteration(), TARGET_FORK_ITERATION);
     assert_eq!(parsed.revision().bytes().len(), 20);
 }
 
@@ -385,32 +397,50 @@ fn generated_target_matches_checked_repository_metadata() {
 fn exact_target_rejects_each_independent_drift_shape() {
     let cases = [
         (
-            "1.0.0-beta.11.rust.2",
+            "1.0.0-beta.11",
             TARGET_CLI_VERSION,
             TARGET_REVISION,
+            TARGET_FORK_ITERATION,
             TargetErrorKind::InvalidEngineVersion,
         ),
         (
             TARGET_ENGINE_VERSION,
             "invalid",
             TARGET_REVISION,
+            TARGET_FORK_ITERATION,
             TargetErrorKind::InvalidCliVersion,
         ),
         (
             TARGET_ENGINE_VERSION,
             TARGET_CLI_VERSION,
             "25300124CA110612EDC09C43F89CB5FAD6028170",
+            TARGET_FORK_ITERATION,
             TargetErrorKind::InvalidRevision,
         ),
         (
             TARGET_ENGINE_VERSION,
-            "1.0.0-beta.11",
+            "1.0.0-beta.10",
             TARGET_REVISION,
+            TARGET_FORK_ITERATION,
             TargetErrorKind::VersionMismatch,
         ),
+        (
+            TARGET_ENGINE_VERSION,
+            TARGET_CLI_VERSION,
+            TARGET_REVISION,
+            "rust.",
+            TargetErrorKind::InvalidForkIteration,
+        ),
+        (
+            TARGET_ENGINE_VERSION,
+            TARGET_CLI_VERSION,
+            TARGET_REVISION,
+            "go.3",
+            TargetErrorKind::InvalidForkIteration,
+        ),
     ];
-    for (engine, cli, revision, expected) in cases {
-        let error = exact_target_from_parts(engine, cli, revision)
+    for (engine, cli, revision, fork, expected) in cases {
+        let error = exact_target_from_parts(engine, cli, revision, fork)
             .expect_err("the drift fixture must fail");
         assert_eq!(error.kind(), expected);
     }
@@ -477,13 +507,13 @@ fn six_release_descriptors_match_the_published_naming_policy() {
         } else {
             "tar.gz"
         };
-        let archive = format!("dagger_v1.0.0-beta.11.rust.2_{os_name}_{arch_name}.{extension}");
+        let archive = format!("dagger_v1.0.0-beta.11_{os_name}_{arch_name}.{extension}");
         assert_eq!(descriptor.archive_name(), archive);
         assert_eq!(descriptor.member_name(), member);
         assert_eq!(descriptor.format(), format);
         assert_eq!(
             descriptor.archive_url().as_str(),
-            format!("https://dl.dagger.io/dagger/releases/1.0.0-beta.11.rust.2/{archive}")
+            format!("https://dl.dagger.io/dagger/releases/1.0.0-beta.11/{archive}")
         );
     }
 }
@@ -495,8 +525,8 @@ fn explicit_discovery_expands_home_resolves_symlinks_and_ignores_irrelevant_cwd(
         r"C:\Users\operator\bin\dagger.EXE",
     );
     let resolved = native_fixture_path(
-        "/opt/dagger-v1.0.0-beta.11.rust.2",
-        r"C:\tools\dagger-v1.0.0-beta.11.rust.2.exe",
+        "/opt/dagger-v1.0.0-beta.11",
+        r"C:\tools\dagger-v1.0.0-beta.11.exe",
     );
     let filesystem = TestDiscoveryFileSystem::new().executable(absolute.clone(), resolved.clone());
     let inputs = NativeDiscoveryInputs::new(
