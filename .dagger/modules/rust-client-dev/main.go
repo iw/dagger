@@ -1190,7 +1190,15 @@ func (t *RustClientDev) Build(
 	// on the upstream base while carrying the fork's own engine corrections. The
 	// upstream-pinned coreTargetEngine remains the schema-conformance contract only;
 	// shipping it would silently exclude fork core fixes from the release artifact.
-	completeEngine := content.Engine.ContainerWithRustSdkcontent(
+	// The complete distribution packages every standard SDK's runtime assets, so it
+	// builds from the full workspace source; the focused boundary stays with the
+	// content build, where cache tightness matters.
+	fullEngine := dag.DaggerEngine(dagger.DaggerEngineOpts{
+		ClientDockerConfig: t.ClientDockerConfig,
+		Ws:                 t.Ws,
+		VcsRepository:      t.EngineRepository,
+	})
+	completeEngine := fullEngine.ContainerWithRustSdkcontent(
 		content.Built,
 		dagger.DaggerEngineContainerWithRustSdkcontentOpts{
 			Platform: platform,
@@ -1221,7 +1229,7 @@ func (t *RustClientDev) Build(
 	if _, err := engineCheck.Sync(ctx); err != nil {
 		return nil, fmt.Errorf("validate complete engine Rust content: %w", err)
 	}
-	networkCIDR, err := content.Engine.NetworkCidr(ctx)
+	networkCIDR, err := fullEngine.NetworkCidr(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("resolve complete engine network: %w", err)
 	}
@@ -1231,7 +1239,7 @@ func (t *RustClientDev) Build(
 		CompleteEngine: completeEngine,
 		Version:        version,
 		Checker:        checker,
-		TargetEngine:   content.Engine,
+		TargetEngine:   fullEngine,
 		NetworkCIDR:    networkCIDR,
 		Consumer: t.Ws.Directory(
 			".dagger/modules/rust-client-dev/testdata/external-consumer",
