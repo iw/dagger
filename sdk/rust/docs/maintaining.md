@@ -110,16 +110,12 @@ Do not duplicate or abbreviate that sequence here.
 
 ## Release identity
 
-The fork carries two coupled version identities. The SDK release identity is the
-workspace version (`1.0.0-beta.11.rust.N`): crate versions, Git tags, changelog
-sections, and artifact filenames use it, and each release bumps `N`. The engine and
-CLI semantic version stays the upstream tag (`internal/version/VERSION`, currently
-`v1.0.0-beta.11`): every version comparison — module `engineVersion` gating,
-client/engine minimums — sees upstream lineage, and upstream `v1.0.0` bumps arrive by
-merging upstream tags into main. The fork iteration and build commit travel in build
-metadata (`internal/version/FORK`, reported as `v1.0.0-beta.11+rust.N.<commit8>`), so
-`dagger version` distinguishes fork builds without affecting comparisons. A release
-bump therefore touches the workspace version, `FORK`, `codegen/target.json`'s
-`rust_sdk_version`, the `target_generated.rs` mirror (including
-`TARGET_FORK_ITERATION`), the dev module's `coreTargetVersion`, and the runbook's
-artifact names — while `engine_version` sites move only when the upstream base moves.
+Every release carries one identity: the workspace version (`1.0.0-beta.11.rust.N`).
+Crate versions, the Git tag, the changelog section, artifact filenames, the checked
+target, and `internal/version/VERSION` all state it, and each release bumps `N`
+together. The complete engine is built from this repository at the pushed release
+commit — the upstream engine build with the repository and commit substituted, which
+the content-addressed build ties to that exact source by construction — so
+`dagger version` reports the release identity plus the commit it was built from
+(`v1.0.0-beta.11.rust.N+<commit8>`). Upstream `v1.0.0` bumps arrive
+by merging upstream tags into main and move the shared `beta.X` component.

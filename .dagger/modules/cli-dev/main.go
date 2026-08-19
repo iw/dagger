@@ -27,7 +27,6 @@ func New(
 	//   "!**/go.mod",
 	//   "!**/*.go",
 	//   "!**/VERSION",
-	//   "!**/FORK",
 	//   "!vendor/**/*",
 	//   "!**.graphql",
 	//   "!.changes",

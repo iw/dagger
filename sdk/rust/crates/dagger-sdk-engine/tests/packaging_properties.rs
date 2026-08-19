@@ -480,7 +480,7 @@ fn package_identity(seed: u8, fork: bool) -> PackageIdentity {
     PackageIdentity {
         repository,
         dagger_revision,
-        engine_version: value("1.0.0-beta.11"),
+        engine_version: value("1.0.0-beta.11.rust.3"),
         rust_sdk_version: value("1.0.0-beta.11.rust.3"),
         rust_toolchain: value("1.97.1"),
         sdk_dependency,

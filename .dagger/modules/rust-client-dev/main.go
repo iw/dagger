@@ -22,13 +22,11 @@ const (
 	goHelperImage           = "golang:1.26.1-bookworm"
 	goHelperDigest          = "sha256:ab3d6955bbc813a0f3fdf220c1d817dd89c0b3f283777db8ece4a32fe7858edd"
 	coreTargetRepository    = "https://github.com/dagger/dagger.git"
+	// forkRepository is the source of release engine builds: the upstream engine
+	// build pointed at this fork's repository at the supplied release commit.
+	forkRepository = "https://github.com/iw/dagger.git"
 	coreTargetRevision      = "501b57e0476dee5881b99a064c3c04173134ecc7"
-	// coreTargetVersion is the fork release identity used for artifact annotations
-	// and content labels; coreTargetEngineVersion is the upstream engine tag that the
-	// engine's semantic version carries (fork iteration and commit travel in build
-	// metadata) and that module configurations pin for version gating.
 	coreTargetVersion       = "v1.0.0-beta.11.rust.3"
-	coreTargetEngineVersion = "v1.0.0-beta.11"
 	focusedEngineBaseImage  = "registry.dagger.io/engine:v1.0.0-beta.9@sha256:de22dbf0c848d618efa9243f76fd47364110d31bb2e24cce063b702e91e1b73e"
 	focusedEngineBaseCommit = "1c6e07b197327c57e9db8584deb36e5166278677"
 	defaultEngineRepository = "https://github.com/dagger/dagger"
@@ -123,7 +121,6 @@ func New(
 			"!engine/distconsts/consts.go",
 			"!internal/cmd/dagger",
 			"!internal/version/VERSION",
-			"!internal/version/FORK",
 			"!.dagger/modules/engine-dev/build/**",
 			"!future/sdk-tests.md",
 			"!.kiro/specs/rust-sdk-completeness-contract/requirements.md",
@@ -402,10 +399,7 @@ func (t *RustClientDev) EngineContent(ctx context.Context) (*RustEngineContent, 
 		Ws:                 t.Ws,
 		VcsRepository:      t.EngineRepository,
 	}).WithSource(t.focusedEngineSource())
-	// The content build validates its version against the checked target's engine
-	// version, which carries only the upstream tag; the release identity stays on
-	// the artifact annotations.
-	contentOptions := dagger.DaggerEngineRustSdkcontentOpts{Version: coreTargetEngineVersion}
+	contentOptions := dagger.DaggerEngineRustSdkcontentOpts{Version: coreTargetVersion}
 	if t.SDKDependencyRevision != "" {
 		contentOptions.DependencyRepository = t.EngineRepository
 		contentOptions.DependencyRevision = t.SDKDependencyRevision
@@ -704,7 +698,7 @@ func (content *RustEngineContent) runEngineIntegrationCase(
 		if err != nil {
 			return "", fmt.Errorf("read operations workspace config: %w", err)
 		}
-		fixture, err := enginefixture.NewOperationsPlan(workspaceConfig, coreTargetEngineVersion)
+		fixture, err := enginefixture.NewOperationsPlan(workspaceConfig, coreTargetVersion)
 		if err != nil {
 			return "", fmt.Errorf("plan operations fixture: %w", err)
 		}
@@ -738,7 +732,7 @@ func (content *RustEngineContent) runEngineIntegrationCase(
 				"dagger", "-y", "module", "init", "rust", "runtime-legacy", "--path", "modules/runtime-legacy", "--no-generate",
 			}).
 			WithExec([]string{"rm", "modules/runtime-legacy/dagger-module.toml"}).
-			WithNewFile("/work/modules/runtime-legacy/dagger.json", `{"name":"runtime-legacy","engineVersion":"v1.0.0-beta.11","sdk":{"source":"rust"}}`)
+			WithNewFile("/work/modules/runtime-legacy/dagger.json", `{"name":"runtime-legacy","engineVersion":"v1.0.0-beta.11.rust.3","sdk":{"source":"rust"}}`)
 		functions, err := result.WithExec([]string{
 			"dagger", "-m", "modules/runtime-legacy", "functions",
 		}).Stdout(ctx)
@@ -1117,7 +1111,7 @@ func (t *RustClientDev) coreTargetEngine() *dagger.DaggerEngine {
 	source := dag.Git(coreTargetRepository).
 		Commit(coreTargetRevision).
 		Tree(dagger.GitCommitTreeOpts{DiscardGitDir: true}).
-		WithNewFile("internal/version/VERSION", coreTargetEngineVersion+"\n")
+		WithNewFile("internal/version/VERSION", coreTargetVersion+"\n")
 	return dag.DaggerEngine(dagger.DaggerEngineOpts{
 		ClientDockerConfig: t.ClientDockerConfig,
 		Ws:                 t.Ws,
@@ -1131,16 +1125,16 @@ type RustSdkBuild struct {
 	// this build object has no publication operation.
 	Packages *dagger.Directory
 
-	// CompleteEngine contains the engine binaries built from this fork's workspace
-	// source and all standard SDK content, with the Rust content produced from the
-	// same workspace.
+	// CompleteEngine contains the engine binaries built from the fork repository at
+	// the supplied release commit and all standard SDK content, with the Rust
+	// content produced from the current workspace.
 	CompleteEngine *dagger.Container
 
 	Version string
 
 	Checker *dagger.File // +private
-	// TargetEngine holds the fork-workspace engine construction that installs the
-	// verify client CLI; the upstream-pinned conformance engine no longer flows here.
+	// TargetEngine holds the release engine construction — the fork repository at
+	// the supplied commit — which also installs the verify client CLI.
 	TargetEngine *dagger.DaggerEngine // +private
 	NetworkCIDR  string               // +private
 	Consumer     *dagger.Directory    // +private
@@ -1148,11 +1142,37 @@ type RustSdkBuild struct {
 
 // Build creates the two public Rust packages and the ordinary complete engine.
 // It validates both outputs and performs no publication or external mutation.
+func isLowerHex(value string) bool {
+	for _, r := range value {
+		if (r < '0' || r > '9') && (r < 'a' || r > 'f') {
+			return false
+		}
+	}
+	return true
+}
+
 func (t *RustClientDev) Build(
 	ctx context.Context,
 	// +optional
 	platform dagger.Platform,
 ) (*RustSdkBuild, error) {
+	// The release commit is the workspace's own HEAD — the checkout the release
+	// runbook pins, verifies clean, and requires pushed. It drives the engine
+	// source, the provenance stamp, and the verification expectation.
+	commit, err := t.Ws.Git().Head().Commit(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("resolve workspace release commit: %w", err)
+	}
+	if len(commit) != 40 || !isLowerHex(commit) {
+		return nil, fmt.Errorf("release build requires a checkout at a full commit, got %q", commit)
+	}
+	clean, err := t.Ws.Git().Uncommitted().IsEmpty(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("resolve workspace clean state: %w", err)
+	}
+	if !clean {
+		return nil, fmt.Errorf("release build requires a clean checkout")
+	}
 	version, err := t.workspacePackageVersion(ctx)
 	if err != nil {
 		return nil, err
@@ -1191,15 +1211,17 @@ func (t *RustClientDev) Build(
 	// on the upstream base while carrying the fork's own engine corrections. The
 	// upstream-pinned coreTargetEngine remains the schema-conformance contract only;
 	// shipping it would silently exclude fork core fixes from the release artifact.
-	// The complete distribution packages every standard SDK's runtime assets, so it
-	// builds from the full workspace source; the focused boundary stays with the
-	// content build, where cache tightness matters.
-	fullEngine := dag.DaggerEngine(dagger.DaggerEngineOpts{
+	// The release engine is the upstream engine build with the repository and
+	// commit substituted: a complete git tree of this repository at the release
+	// commit, whose own VERSION file is the release identity and whose commit
+	// becomes the provenance stamp. The tree is complete, so the build needs no
+	// source curation and no version override; the Rust content keeps its focused
+	// workspace build.
+	forkEngine := dag.DaggerEngine(dagger.DaggerEngineOpts{
 		ClientDockerConfig: t.ClientDockerConfig,
 		Ws:                 t.Ws,
-		VcsRepository:      t.EngineRepository,
-	})
-	completeEngine := fullEngine.ContainerWithRustSdkcontent(
+	}).WithGitSource(forkRepository, commit)
+	completeEngine := forkEngine.ContainerWithRustSdkcontent(
 		content.Built,
 		dagger.DaggerEngineContainerWithRustSdkcontentOpts{
 			Platform: platform,
@@ -1230,7 +1252,7 @@ func (t *RustClientDev) Build(
 	if _, err := engineCheck.Sync(ctx); err != nil {
 		return nil, fmt.Errorf("validate complete engine Rust content: %w", err)
 	}
-	networkCIDR, err := fullEngine.NetworkCidr(ctx)
+	networkCIDR, err := forkEngine.NetworkCidr(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("resolve complete engine network: %w", err)
 	}
@@ -1240,7 +1262,7 @@ func (t *RustClientDev) Build(
 		CompleteEngine: completeEngine,
 		Version:        version,
 		Checker:        checker,
-		TargetEngine:   fullEngine,
+		TargetEngine:   forkEngine,
 		NetworkCIDR:    networkCIDR,
 		Consumer: t.Ws.Directory(
 			".dagger/modules/rust-client-dev/testdata/external-consumer",
@@ -1304,21 +1326,17 @@ func (build *RustSdkBuild) Verify(ctx context.Context) error {
 			UseEntrypoint:            true,
 			InsecureRootCapabilities: true,
 		})
-	// The consumer asserts the engine's fork iteration explicitly: the SDK's own
-	// connection validator accepts the bare-commit metadata of conformance engines,
-	// so release verification is where a missing fork identity must fail.
-	forkIteration := build.Version
-	if index := strings.LastIndex(forkIteration, ".rust."); index >= 0 {
-		forkIteration = "rust." + forkIteration[index+len(".rust."):]
-	} else {
-		return fmt.Errorf("release version %q carries no fork iteration", build.Version)
-	}
+	// The consumer's workspace-export canary needs a local Git workspace, exactly
+	// as the resolution flow already provides for its own session.
 	runner := build.TargetEngine.InstallClient(
 		rustBaseContainer().
 			WithDirectory("/work/consumer", build.Consumer).
 			WithDirectory("/work/vendor", vendor).
 			WithWorkdir("/work/consumer").
-			WithEnvVariable("RUST_SDK_EXPECTED_ENGINE_FORK", forkIteration),
+			WithExec([]string{"git", "init"}).
+			WithExec([]string{"git", "config", "user.name", "Rust SDK Check"}).
+			WithExec([]string{"git", "config", "user.email", "rust-sdk-check@dagger.invalid"}).
+			WithExec([]string{"git", "commit", "--allow-empty", "-m", "initialize workspace"}),
 		dagger.DaggerEngineInstallClientOpts{
 			Service: service,
 			Version: coreTargetVersion,

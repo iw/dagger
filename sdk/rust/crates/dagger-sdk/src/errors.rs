@@ -453,8 +453,6 @@ pub enum TargetErrorKind {
     InvalidRevision,
     /// The generated engine and CLI versions identify different releases.
     VersionMismatch,
-    /// The generated fork iteration is malformed.
-    InvalidForkIteration,
 }
 
 impl TargetErrorKind {
@@ -464,7 +462,6 @@ impl TargetErrorKind {
             Self::InvalidCliVersion => "the compiled CLI target is invalid",
             Self::InvalidRevision => "the compiled Dagger revision is invalid",
             Self::VersionMismatch => "the compiled Dagger targets do not match",
-            Self::InvalidForkIteration => "the generated fork iteration is malformed",
         }
     }
 }

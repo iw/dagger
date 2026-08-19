@@ -1162,7 +1162,7 @@ mod tests {
                 "501b57e0476dee5881b99a064c3c04173134ecc7".to_owned(),
             )
             .expect("revision must parse"),
-            engine_version: exact("1.0.0-beta.11"),
+            engine_version: exact("1.0.0-beta.11.rust.3"),
             rust_sdk_version: exact("1.0.0-beta.11.rust.3"),
             rust_toolchain: ExactRustToolchain::new("1.97.1".to_owned())
                 .expect("toolchain must parse"),

@@ -16,7 +16,7 @@ func TestGenerationRequestKeepsAuthoringSemanticsInRust(t *testing.T) {
 		FormatVersion:    1,
 		Repository:       "https://github.com/dagger/dagger",
 		DaggerRevision:   strings.Repeat("a", 40),
-		EngineVersion:    "1.0.0-beta.11",
+		EngineVersion:    "1.0.0-beta.11.rust.3",
 		RustSDKVersion:   "1.0.0-beta.11.rust.3",
 		RustToolchain:    "1.97.1",
 		CoreSchemaDigest: "sha256:" + strings.Repeat("b", 64),
@@ -65,7 +65,7 @@ func TestGenerationRequestKeepsAuthoringSemanticsInRust(t *testing.T) {
 func TestProperty19ModernLegacyGenerationSemanticallyConverge(t *testing.T) {
 	descriptor := metadata.EngineSource{
 		FormatVersion: 1, Repository: "https://github.com/dagger/dagger",
-		DaggerRevision: strings.Repeat("a", 40), EngineVersion: "1.0.0-beta.11",
+		DaggerRevision: strings.Repeat("a", 40), EngineVersion: "1.0.0-beta.11.rust.3",
 		RustSDKVersion: "1.0.0-beta.11.rust.3", RustToolchain: "1.97.1",
 		CoreSchemaDigest: "sha256:" + strings.Repeat("b", 64),
 		SDKDependency: metadata.PublishedSDKDependency{
@@ -132,7 +132,7 @@ func TestClientPackageNameIsDeterministicAndConfined(t *testing.T) {
 func TestInitClientRequestDoesNotForwardModuleReference(t *testing.T) {
 	descriptor := metadata.EngineSource{
 		FormatVersion: 1, Repository: "https://github.com/dagger/dagger",
-		DaggerRevision: strings.Repeat("a", 40), EngineVersion: "1.0.0-beta.11",
+		DaggerRevision: strings.Repeat("a", 40), EngineVersion: "1.0.0-beta.11.rust.3",
 		RustSDKVersion: "1.0.0-beta.11.rust.3", RustToolchain: "1.97.1",
 		CoreSchemaDigest: "sha256:" + strings.Repeat("b", 64),
 		SDKDependency: metadata.PublishedSDKDependency{

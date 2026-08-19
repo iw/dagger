@@ -21,7 +21,6 @@ const COMPATIBILITY_QUERY: &str = "query RustSdkCompatibility { version }";
 pub(crate) struct CompatibilityValidator {
     expected_version: Version,
     expected_revision_prefix: String,
-    expected_fork: String,
 }
 
 impl CompatibilityValidator {
@@ -34,7 +33,6 @@ impl CompatibilityValidator {
         Ok(Self {
             expected_version: target.engine_version().clone(),
             expected_revision_prefix,
-            expected_fork: target.fork_iteration().to_owned(),
         })
     }
 
@@ -141,37 +139,13 @@ impl CompatibilityValidator {
         {
             return Err(self.unverified_observed(CompatibilityEvidenceGap::DirtyRevision, observed));
         }
-        // The semantic version above carries only the upstream tag, so the build
-        // metadata is the fork's identity channel: either the bare 8-hex commit of an
-        // engine built from the unmodified upstream tree (the schema-conformance
-        // engine), or `rust.<N>.<commit8>` from this fork's builds. The commit cannot
-        // be pinned ahead of the release commit that contains this expectation, so it
-        // is validated by form; the fork iteration is validated by equality.
-        let components: Vec<&str> = metadata.split('.').collect();
-        let revision = match components.as_slice() {
-            [revision] => *revision,
-            [fork_kind, fork_number, revision] => {
-                let observed_fork = format!("{fork_kind}.{fork_number}");
-                if observed_fork != self.expected_fork {
-                    return Err(CompatibilityError::mismatch(
-                        CompatibilityErrorKind::RevisionMismatch,
-                        self.expected_version.clone(),
-                        Some(observed),
-                        self.expected_fork.clone(),
-                        Some(observed_fork),
-                    ));
-                }
-                *revision
-            }
-            _ => {
-                return Err(self.unverified_observed(
-                    CompatibilityEvidenceGap::UnknownRevisionFormat,
-                    observed,
-                ));
-            }
-        };
-        if revision.len() != 8
-            || !revision
+        // The metadata is the commit the engine was built from. Which commit is
+        // correct is established by construction: the content-addressed build makes
+        // the release engine the product of its declared source commit, so the
+        // runtime validator requires clean, well-formed provenance and no pairing
+        // assertion.
+        if metadata.len() != 8
+            || !metadata
                 .bytes()
                 .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
         {
@@ -206,12 +180,6 @@ impl CompatibilityValidator {
             observed,
             self.expected_revision_prefix.clone(),
         )
-    }
-
-    #[cfg(test)]
-    #[cfg(test)]
-    pub(crate) fn expected_fork(&self) -> &str {
-        &self.expected_fork
     }
 
     #[cfg(test)]

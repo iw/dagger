@@ -38,42 +38,12 @@ func TestVersion(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			swap(t, &version, tt.version)
-			swap(t, &fork, "")
 			swap(t, &Commit, tt.commit)
 			swapBool(t, &Dirty, tt.dirty)
 
 			got := Version(tt.opts...)
 			if got != tt.want {
 				t.Errorf("Version(%v) = %q, want %q", tt.opts, got, tt.want)
-			}
-		})
-	}
-}
-
-func TestVersionForkMetadata(t *testing.T) {
-	tests := []struct {
-		name   string
-		fork   string
-		commit string
-		dirty  bool
-		want   string
-	}{
-		{"fork ahead of commit", "rust.3", "42424242deadbeef", false, "v1.0.0-beta.11+rust.3.42424242"},
-		{"fork dirty", "rust.3", "42424242deadbeef", true, "v1.0.0-beta.11+rust.3.42424242.dirty"},
-		{"no fork keeps upstream layout", "", "42424242deadbeef", false, "v1.0.0-beta.11+42424242"},
-		{"fork without commit stays bare", "rust.3", "", false, "v1.0.0-beta.11"},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			swap(t, &version, "1.0.0-beta.11")
-			swap(t, &fork, tt.fork)
-			swap(t, &Commit, tt.commit)
-			swapBool(t, &Dirty, tt.dirty)
-
-			got := Version(WithV(), WithCommit())
-			if got != tt.want {
-				t.Errorf("Version(WithV(), WithCommit()) = %q, want %q", got, tt.want)
 			}
 		})
 	}

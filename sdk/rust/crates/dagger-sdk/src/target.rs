@@ -10,9 +10,7 @@ use semver::Version;
 use url::Url;
 
 use crate::errors::{PlatformError, PlatformErrorKind, TargetError, TargetErrorKind};
-use crate::target_generated::{
-    TARGET_CLI_VERSION, TARGET_ENGINE_VERSION, TARGET_FORK_ITERATION, TARGET_REVISION,
-};
+use crate::target_generated::{TARGET_CLI_VERSION, TARGET_ENGINE_VERSION, TARGET_REVISION};
 
 const RELEASE_ORIGIN: &str = "https://dl.dagger.io/dagger/releases/";
 
@@ -22,16 +20,10 @@ pub(crate) struct ExactTarget {
     engine_version: Version,
     cli_version: Version,
     revision: DaggerRevision,
-    fork_iteration: String,
 }
 
 impl ExactTarget {
-    fn parse(
-        engine_version: &str,
-        cli_version: &str,
-        revision: &str,
-        fork_iteration: &str,
-    ) -> Result<Self, TargetError> {
+    fn parse(engine_version: &str, cli_version: &str, revision: &str) -> Result<Self, TargetError> {
         let engine_version = engine_version
             .strip_prefix('v')
             .ok_or_else(|| TargetError::new(TargetErrorKind::InvalidEngineVersion))
@@ -46,21 +38,11 @@ impl ExactTarget {
         if engine_version != cli_version {
             return Err(TargetError::new(TargetErrorKind::VersionMismatch));
         }
-        // The semantic versions above carry only the upstream tag; the fork iteration
-        // is the fork's own release counter and must stay a closed shape because the
-        // compatibility validator matches it against engine build metadata.
-        let iteration_digits = fork_iteration
-            .strip_prefix("rust.")
-            .filter(|digits| !digits.is_empty() && digits.bytes().all(|b| b.is_ascii_digit()));
-        if iteration_digits.is_none() {
-            return Err(TargetError::new(TargetErrorKind::InvalidForkIteration));
-        }
 
         Ok(Self {
             engine_version,
             cli_version,
             revision,
-            fork_iteration: fork_iteration.to_owned(),
         })
     }
 
@@ -74,10 +56,6 @@ impl ExactTarget {
 
     pub(crate) fn revision(&self) -> &DaggerRevision {
         &self.revision
-    }
-
-    pub(crate) fn fork_iteration(&self) -> &str {
-        &self.fork_iteration
     }
 }
 
@@ -120,12 +98,7 @@ pub(crate) fn exact_target() -> Result<&'static ExactTarget, TargetError> {
     static TARGET: OnceLock<Result<ExactTarget, TargetError>> = OnceLock::new();
     TARGET
         .get_or_init(|| {
-            ExactTarget::parse(
-                TARGET_ENGINE_VERSION,
-                TARGET_CLI_VERSION,
-                TARGET_REVISION,
-                TARGET_FORK_ITERATION,
-            )
+            ExactTarget::parse(TARGET_ENGINE_VERSION, TARGET_CLI_VERSION, TARGET_REVISION)
         })
         .as_ref()
         .map_err(Clone::clone)
@@ -279,7 +252,6 @@ pub(crate) fn exact_target_from_parts(
     engine_version: &str,
     cli_version: &str,
     revision: &str,
-    fork_iteration: &str,
 ) -> Result<ExactTarget, TargetError> {
-    ExactTarget::parse(engine_version, cli_version, revision, fork_iteration)
+    ExactTarget::parse(engine_version, cli_version, revision)
 }

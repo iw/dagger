@@ -549,32 +549,28 @@ proptest! {
         }
     }
 
-    // Exact compatibility is the conjunction of the upstream-tag semantic identity
-    // and the fork's build-metadata channel: `rust.<N>.<commit8>` from fork builds or
-    // a bare well-formed commit from the unmodified conformance tree. The commit is
-    // validated by form because a release commit cannot pin itself; the fork
-    // iteration is validated by equality, and known mismatches never enter the
-    // unverified bypass class.
+    // Exact compatibility is the semantic identity plus clean, well-formed commit
+    // provenance; the pairing itself is guaranteed by the content-addressed release
+    // build, not asserted at runtime. Known mismatches never enter the unverified
+    // bypass class.
     #[test]
     fn property_25_compatibility_accepts_exact_declared_target(
-        case in 0_u8..10,
+        case in 0_u8..9,
         other_revision in "[0-9a-f]{8}",
         allow_unverified in any::<bool>(),
     ) {
         let validator = CompatibilityValidator::exact().expect("generated target is valid");
         let expected_revision = validator.expected_revision_prefix().to_owned();
-        let expected_fork = validator.expected_fork().to_owned();
         let value = match case {
-            0 => format!("v1.0.0-beta.11+{expected_fork}.{expected_revision}"),
-            1 => format!("1.0.0-beta.11+{expected_fork}.{expected_revision}"),
+            0 => format!("v1.0.0-beta.11.rust.3+{expected_revision}"),
+            1 => format!("1.0.0-beta.11.rust.3+{expected_revision}"),
             2 => format!("v1.0.1-beta.10+{expected_revision}"),
-            3 => "v1.0.0-beta.11".to_owned(),
-            4 => format!("v1.0.0-beta.11+{expected_fork}.{expected_revision}.dirty"),
-            5 => format!("v1.0.0-beta.11+{expected_fork}.{}", other_revision.to_ascii_uppercase()),
+            3 => "v1.0.0-beta.11.rust.3".to_owned(),
+            4 => format!("v1.0.0-beta.11.rust.3+{expected_revision}.dirty"),
+            5 => format!("v1.0.0-beta.11.rust.3+{}", other_revision.to_ascii_uppercase()),
             6 => "not-semver".to_owned(),
             7 => format!("v1.0.0-beta.9+{expected_revision}"),
-            8 => format!("v1.0.0-beta.11+{expected_fork}.{other_revision}"),
-            _ => format!("v1.0.0-beta.11+rust.999.{expected_revision}"),
+            _ => format!("v1.0.0-beta.11.rust.3+{other_revision}"),
         };
         let result = validator.validate_version(&value);
         let expected_kind = result.as_ref().err().map(|error| error.kind());
@@ -594,7 +590,6 @@ proptest! {
         if let Err(error) = result {
             match case {
                 2 | 7 => prop_assert_eq!(error.kind(), CompatibilityErrorKind::VersionMismatch),
-                9 => prop_assert_eq!(error.kind(), CompatibilityErrorKind::RevisionMismatch),
                 _ => prop_assert_eq!(error.kind(), CompatibilityErrorKind::Unverified),
             }
         }

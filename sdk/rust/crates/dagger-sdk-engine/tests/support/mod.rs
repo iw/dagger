@@ -78,7 +78,7 @@ fn build_corpus(seed: u8, use_registry: bool, operation: u8, content: Vec<u8>) -
         format_version: FormatVersion,
         repository: value("https://github.com/dagger/dagger"),
         dagger_revision: value(&format!("{seed:040x}")),
-        engine_version: value("1.0.0-beta.11"),
+        engine_version: value("1.0.0-beta.11.rust.3"),
         rust_sdk_version: value("1.0.0-beta.11.rust.3"),
         rust_toolchain: value("1.97.1"),
         core_schema_digest: digest(seed, 2),
