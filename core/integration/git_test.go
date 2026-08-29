@@ -253,7 +253,7 @@ func requireSampleGitRepo(ctx context.Context, t *testctx.T, c *dagger.Client, r
 		"v0.6.1^{}",
 	})
 	// latest tag
-	latestTag := repo.LatestVersion()
+	latestTag := repo.Latest()
 	requireSampleGitRootDir(ctx, t, c, latestTag.Tree())
 	requireGitRefIsTag(ctx, t, c, `^refs/tags/v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$`, "", latestTag)
 	// sample tag
@@ -1274,7 +1274,7 @@ func (GitSuite) TestServiceStableDigest(ctx context.Context, t *testctx.T) {
 	require.Equal(t, hostname(c1), hostname(c2))
 }
 
-func (GitSuite) TestGitLatestVersion(ctx context.Context, t *testctx.T) {
+func (GitSuite) TestGitLatest(ctx context.Context, t *testctx.T) {
 	c := connect(ctx, t)
 	ctr := c.Container().
 		From(alpineImage).
@@ -1282,19 +1282,48 @@ func (GitSuite) TestGitLatestVersion(ctx context.Context, t *testctx.T) {
 		With(gitUserConfig).
 		WithWorkdir("/src").
 		WithExec([]string{"git", "init"}).
-		WithExec([]string{"sh", "-c", `touch xyz && git add xyz && git commit -m "xyz" && git tag v2.0 && touch abc && git add abc && git commit -m "abc" && git tag v1.0`})
-	v2commit, err := ctr.WithExec([]string{"git", "rev-parse", "HEAD~"}).Stdout(ctx)
+		WithExec([]string{"sh", "-c", `touch xyz && git add xyz && git commit -m "xyz" && git tag 2.0 && touch abc && git add abc && git commit -m "abc" && git tag v1.0`})
+	latestCommit, err := ctr.WithExec([]string{"git", "rev-parse", "HEAD~"}).Stdout(ctx)
 	require.NoError(t, err)
-	v2commit = strings.TrimSpace(v2commit)
+	latestCommit = strings.TrimSpace(latestCommit)
 
 	git := ctr.Directory(".").AsGit()
 
-	ref, err := git.LatestVersion().Name(ctx)
+	latest := git.Latest()
+	ref, err := latest.Name(ctx)
 	require.NoError(t, err)
-	require.Equal(t, "refs/tags/v2.0", ref)
-	commit, err := git.LatestVersion().CommitSHA(ctx)
+	require.Equal(t, "refs/tags/2.0", ref)
+	commit, err := latest.CommitSHA(ctx)
 	require.NoError(t, err)
-	require.Equal(t, v2commit, commit)
+	require.Equal(t, latestCommit, commit)
+}
+
+func (GitSuite) TestGitLatestFallsBackToHead(ctx context.Context, t *testctx.T) {
+	c := connect(ctx, t)
+	ctr := c.Container().
+		From(alpineImage).
+		WithExec([]string{"apk", "add", "git"}).
+		With(gitUserConfig).
+		WithWorkdir("/src").
+		WithExec([]string{"git", "init"}).
+		WithExec([]string{"sh", "-c", `touch file && git add file && git commit -m "initial"`})
+
+	headRef, err := ctr.WithExec([]string{"git", "symbolic-ref", "HEAD"}).Stdout(ctx)
+	require.NoError(t, err)
+	headRef = strings.TrimSpace(headRef)
+
+	headCommit, err := ctr.WithExec([]string{"git", "rev-parse", "HEAD"}).Stdout(ctx)
+	require.NoError(t, err)
+	headCommit = strings.TrimSpace(headCommit)
+
+	latest := ctr.Directory(".").AsGit().Latest()
+	ref, err := latest.Name(ctx)
+	require.NoError(t, err)
+	require.Equal(t, headRef, ref)
+
+	commit, err := latest.CommitSHA(ctx)
+	require.NoError(t, err)
+	require.Equal(t, headCommit, commit)
 }
 
 func (GitSuite) TestGitCommitReleaseTags(ctx context.Context, t *testctx.T) {
@@ -1321,23 +1350,37 @@ func (GitSuite) TestGitCommitReleaseTags(ctx context.Context, t *testctx.T) {
 
 	git := ctr.Directory(".").AsGit()
 
-	ancestorStable, err := git.Head().TargetCommit().AncestorReleaseTag().Name(ctx)
+	untaggedRef, err := git.Head().TargetCommit().ReleaseTag(ctx)
+	require.NoError(t, err)
+	require.Nil(t, untaggedRef)
+
+	ancestorStableRef, err := git.Head().TargetCommit().AncestorReleaseTag(ctx)
+	require.NoError(t, err)
+	require.NotNil(t, ancestorStableRef)
+	ancestorStable, err := ancestorStableRef.Name(ctx)
 	require.NoError(t, err)
 	require.Equal(t, "refs/tags/v2.0.0", ancestorStable)
 
-	ancestorPreRelease, err := git.Head().TargetCommit().
-		AncestorReleaseTag(dagger.GitCommitAncestorReleaseTagOpts{IncludePreRelease: true}).
-		Name(ctx)
+	ancestorPreReleaseRef, err := git.Head().TargetCommit().AncestorReleaseTag(ctx,
+		dagger.GitCommitAncestorReleaseTagOpts{IncludePreRelease: true})
+	require.NoError(t, err)
+	require.NotNil(t, ancestorPreReleaseRef)
+	ancestorPreRelease, err := ancestorPreReleaseRef.Name(ctx)
 	require.NoError(t, err)
 	require.Equal(t, "refs/tags/v2.1.0-rc.1", ancestorPreRelease)
 
-	directStable, err := git.Commit(stableSHA).ReleaseTag().Name(ctx)
+	directStableRef, err := git.Commit(stableSHA).ReleaseTag(ctx)
+	require.NoError(t, err)
+	require.NotNil(t, directStableRef)
+	directStable, err := directStableRef.Name(ctx)
 	require.NoError(t, err)
 	require.Equal(t, "refs/tags/v2.0.0", directStable)
 
-	directPreRelease, err := git.Commit(rcSHA).
-		ReleaseTag(dagger.GitCommitReleaseTagOpts{IncludePreRelease: true}).
-		Name(ctx)
+	directPreReleaseRef, err := git.Commit(rcSHA).ReleaseTag(ctx,
+		dagger.GitCommitReleaseTagOpts{IncludePreRelease: true})
+	require.NoError(t, err)
+	require.NotNil(t, directPreReleaseRef)
+	directPreRelease, err := directPreReleaseRef.Name(ctx)
 	require.NoError(t, err)
 	require.Equal(t, "refs/tags/v2.1.0-rc.1", directPreRelease)
 
@@ -1346,7 +1389,10 @@ func (GitSuite) TestGitCommitReleaseTags(ctx context.Context, t *testctx.T) {
 	unreachable := ctr.
 		WithExec([]string{"git", "remote", "add", "origin", "https://invalid.invalid/repo.git"}).
 		Directory(".").AsGit()
-	offlineStable, err := unreachable.Head().TargetCommit().AncestorReleaseTag().Name(ctx)
+	offlineStableRef, err := unreachable.Head().TargetCommit().AncestorReleaseTag(ctx)
+	require.NoError(t, err)
+	require.NotNil(t, offlineStableRef)
+	offlineStable, err := offlineStableRef.Name(ctx)
 	require.NoError(t, err)
 	require.Equal(t, "refs/tags/v2.0.0", offlineStable)
 }
@@ -1396,7 +1442,10 @@ func (GitSuite) TestGitCommitReleaseTagFreshness(ctx context.Context, t *testctx
 		commit := repo.Head().TargetCommit()
 		sha, err = commit.Sha(ctx)
 		require.NoError(t, err)
-		tag, err = commit.ReleaseTag().Name(ctx)
+		tagRef, err := commit.ReleaseTag(ctx)
+		require.NoError(t, err)
+		require.NotNil(t, tagRef)
+		tag, err = tagRef.Name(ctx)
 		require.NoError(t, err)
 		return sha, advertised, tag
 	}

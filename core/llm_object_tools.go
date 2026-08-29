@@ -241,8 +241,8 @@ func (m *MCP) bindWorkspaceModuleTools(ctx context.Context) (*MCP, error) {
 			if !arg.Type.Type().NonNull {
 				continue
 			}
-			if arg.Type.Type().Name() == workspaceTypeName {
-				// Auto-injected from the current workspace.
+			if inputSpecIsWorkspace(arg) {
+				// Supplied from the workspace in scope, not by the caller.
 				continue
 			}
 			constructible = false
@@ -610,12 +610,15 @@ func (m *MCP) callObjectMethod(srv *dagql.Server, typeName string, field *ast.Fi
 		if !ok {
 			return nil, fmt.Errorf("no object of type %q is bound", typeName)
 		}
-		sel, err := buildObjectMethodSelector(srv, recv.ObjectType(), fieldName, args)
+		sel, err := buildObjectMethodSelector(ctx, srv, recv.ObjectType(), fieldName, args)
 		if err != nil {
 			return nil, err
 		}
 		var val dagql.AnyResult
-		if err := srv.Select(ctx, recv, &val, sel); err != nil {
+		// The method call is the real user-facing work of the tool call, not
+		// engine bookkeeping: don't let Select mark it internal, so its spans
+		// (and the logs beneath them) surface in the UI and in toolLogs.
+		if err := srv.Select(dagql.WithNonInternalTelemetry(ctx), recv, &val, sel); err != nil {
 			return nil, err
 		}
 		return m.routeObjectMethodResult(ctx, srv, typeName, val)
@@ -624,8 +627,10 @@ func (m *MCP) callObjectMethod(srv *dagql.Server, typeName string, field *ast.Fi
 
 // buildObjectMethodSelector converts the model's tool arguments into a selector
 // for the method. It decodes each provided argument through the field's input
-// spec; the Workspace argument is omitted here and auto-injected downstream.
-func buildObjectMethodSelector(srv *dagql.Server, recvType dagql.ObjectType, fieldName string, args map[string]any) (dagql.Selector, error) {
+// spec. A declared-optional Workspace argument is omitted and auto-injected
+// downstream; a required one is filled from the LLM's bound workspace, since
+// dagql rejects a missing non-null argument before that injection runs.
+func buildObjectMethodSelector(ctx context.Context, srv *dagql.Server, recvType dagql.ObjectType, fieldName string, args map[string]any) (dagql.Selector, error) {
 	sel := dagql.Selector{View: srv.View, Field: fieldName}
 	field, ok := recvType.FieldSpec(fieldName, srv.View)
 	if !ok {
@@ -638,6 +643,9 @@ func buildObjectMethodSelector(srv *dagql.Server, recvType dagql.ObjectType, fie
 		}
 		val, ok := args[arg.Name]
 		if !ok {
+			if wsInput, ok := boundWorkspaceInput(ctx, srv, arg); ok {
+				sel.Args = append(sel.Args, dagql.NamedInput{Name: arg.Name, Value: wsInput})
+			}
 			continue
 		}
 		delete(provided, arg.Name)
@@ -716,7 +724,9 @@ func (m *MCP) syncObject(ctx context.Context, srv *dagql.Server, obj dagql.AnyOb
 		return nil
 	}
 	var synced dagql.AnyResult
-	return srv.Select(ctx, obj, &synced, dagql.Selector{View: srv.View, Field: "sync"})
+	// Non-internal for the same reason as the tool's method call itself: the
+	// sync runs the object's side effects whose print output we surface.
+	return srv.Select(dagql.WithNonInternalTelemetry(ctx), obj, &synced, dagql.Selector{View: srv.View, Field: "sync"})
 }
 
 // logsOrDone returns whatever the just-executed method printed, or "(done)" when
@@ -735,10 +745,16 @@ func (m *MCP) toolLogs(ctx context.Context) string {
 	if !spanID.IsValid() {
 		return ""
 	}
-	logs, err := m.captureLogs(ctx, spanID.String())
-	if err != nil || len(logs) == 0 {
+	// Exclude service exec span logs: long-lived services stream noise into
+	// the tool-call subtree via cause links, drowning out deliberate prints.
+	// ReadLogs remains the discovery path for service logs.
+	lines, err := m.captureLogLines(ctx, spanID.String(), true)
+	if err != nil || len(lines) == 0 {
 		return ""
 	}
-	logs = limitLines(spanID.String(), logs, llmToolLogsMaxLines, llmLogsMaxLineLen)
+	// Whatever the tool printed itself survives in full — a sub-agent's report
+	// or a tool's summary is the point of the call. Only logs from nested work
+	// beneath it are abridged to a tail.
+	logs := limitIndirectLines(spanID.String(), lines, llmToolLogsMaxLines, llmLogsMaxLineLen)
 	return strings.TrimRight(strings.Join(logs, "\n"), "\n")
 }

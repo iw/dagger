@@ -97,22 +97,18 @@ func (r *Codegen) AsNode() Node {
 // CodegenOpts contains options for Query.Codegen
 type CodegenOpts struct {
 	Source *Directory // codegen (../../../../../:0:0)
-
-	Ws *Workspace // codegen (../../../../../:0:0)
 }
 
-func (r *Query) Codegen(opts ...CodegenOpts) *Codegen { // codegen (../../../../../:0:0)
+func (r *Query) Codegen(ws *Workspace, opts ...CodegenOpts) *Codegen { // codegen (../../../../../:0:0)
+	assertNotNil("ws", ws)
 	q := r.query.Select("codegen")
 	for i := len(opts) - 1; i >= 0; i-- {
 		// `source` optional argument
 		if !querybuilder.IsZeroValue(opts[i].Source) {
 			q = q.Arg("source", opts[i].Source)
 		}
-		// `ws` optional argument
-		if !querybuilder.IsZeroValue(opts[i].Ws) {
-			q = q.Arg("ws", opts[i].Ws)
-		}
 	}
+	q = q.Arg("ws", ws)
 
 	return &Codegen{
 		query: q,

@@ -136,7 +136,6 @@ jobs:
     if: |
       always() &&
       github.repository == 'dagger/dagger' &&
-      !contains(github.ref_name, '-') &&
       (needs.publish.result == 'success' || needs.publish.result == 'skipped')
     runs-on: macos-15-intel
     steps:
@@ -222,7 +221,6 @@ jobs:
     if: |
       always() &&
       github.repository == 'dagger/dagger' &&
-      !contains(github.ref_name, '-') &&
       (needs.publish.result == 'success' || needs.publish.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
@@ -277,7 +275,6 @@ jobs:
     if: |
       always() &&
       github.repository == 'dagger/dagger' &&
-      !contains(github.ref_name, '-') &&
       (needs.publish.result == 'success' || needs.publish.result == 'skipped')
     runs-on: ubuntu-24.04-arm
     steps:
@@ -325,7 +322,6 @@ jobs:
     if: |
       always() &&
       github.repository == 'dagger/dagger' &&
-      !contains(github.ref_name, '-') &&
       (needs.publish.result == 'success' || needs.publish.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
@@ -379,7 +375,6 @@ jobs:
     if: |
       always() &&
       github.repository == 'dagger/dagger' &&
-      !contains(github.ref_name, '-') &&
       (needs.publish.result == 'success' || needs.publish.result == 'skipped')
     runs-on: ubuntu-24.04-arm
     steps:
@@ -427,7 +422,6 @@ jobs:
     if: |
       always() &&
       github.repository == 'dagger/dagger' &&
-      !contains(github.ref_name, '-') &&
       (needs.publish.result == 'success' || needs.publish.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
@@ -490,7 +484,6 @@ jobs:
     if: |
       always() &&
       github.repository == 'dagger/dagger' &&
-      !contains(github.ref_name, '-') &&
       (needs.publish.result == 'success' || needs.publish.result == 'skipped')
     runs-on: ubuntu-24.04-arm
     steps:

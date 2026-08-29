@@ -25,6 +25,7 @@ type currentTypeDefsTestServer struct {
 	deps             *core.SchemaBuilder
 	dag              *dagql.Server
 	mainClient       *engine.ClientMetadata
+	platform         core.Platform
 	workspaceLock    *workspace.Lock
 	workspaceLockOK  bool
 	workspaceLockErr error
@@ -112,7 +113,7 @@ func (s *currentTypeDefsTestServer) Services(context.Context) (*core.Services, e
 	return nil, nil
 }
 
-func (s *currentTypeDefsTestServer) Platform() core.Platform { return core.Platform{} }
+func (s *currentTypeDefsTestServer) Platform() core.Platform { return s.platform }
 
 func (s *currentTypeDefsTestServer) OCIStore() content.Store { return nil }
 
@@ -168,6 +169,6 @@ func (s *currentTypeDefsTestServer) CurrentWorkspaceLock(context.Context, bool) 
 	return s.workspaceLock, s.workspaceLockOK, s.workspaceLockErr
 }
 
-func (s *currentTypeDefsTestServer) SetCurrentWorkspaceLookup(context.Context, string, string, []any, workspace.LookupResult) error {
+func (s *currentTypeDefsTestServer) SetCurrentWorkspaceLookup(context.Context, string, string, []any, string) error {
 	return nil
 }

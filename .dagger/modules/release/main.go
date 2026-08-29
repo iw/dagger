@@ -169,7 +169,7 @@ func (r *Release) Publish( //nolint:gocyclo
 		// this is a public release
 		tags = append(tags, "latest")
 	}
-	err := dag.EngineDev(dagger.EngineDevOpts{Ws: r.Workspace}).Publish(ctx, tags, dagger.EngineDevPublishOpts{
+	err := dag.EngineDev(r.Workspace).Publish(ctx, tags, dagger.EngineDevPublishOpts{
 		Image:            registryImage,
 		RegistryUsername: registryUsername,
 		RegistryPassword: registryPassword,
@@ -228,12 +228,10 @@ func (r *Release) Publish( //nolint:gocyclo
 	}
 
 	isPrerelease := semver.IsValid(version) && semver.Prerelease(version) != ""
-	if isPrerelease {
-		// early-exit if this is a pre-release
-		return &report, nil
-	}
+	// Prereleases publish SDK artifacts, but skip stable release promotion,
+	// release notes, docs, follow-ups, and notifications.
 
-	if semver.IsValid(version) {
+	if semver.IsValid(version) && !isPrerelease {
 		artifact = &ReleaseReportArtifact{
 			Name: "📖 Docs",
 			Link: "https://docs.dagger.io",
@@ -264,13 +262,13 @@ func (r *Release) Publish( //nolint:gocyclo
 			link: "https://pkg.go.dev/dagger.io/dagger@" + cmp.Or(version, "main"),
 			dev:  true,
 			release: func(ctx context.Context) error {
-				return dag.GoClientDev(dagger.GoClientDevOpts{Ws: r.Workspace}).Release(ctx, tag, dagger.GoClientDevReleaseOpts{
+				return dag.GoClientDev(r.Workspace).Release(ctx, tag, dagger.GoClientDevReleaseOpts{
 					GithubToken: githubToken,
 					DestRemote:  goSdkDestRemote,
 				})
 			},
 			dryRun: func(ctx context.Context) error {
-				return dag.GoClientDev(dagger.GoClientDevOpts{Ws: r.Workspace}).ReleaseDryRun(ctx)
+				return dag.GoClientDev(r.Workspace).ReleaseDryRun(ctx)
 			},
 		},
 		{
@@ -279,14 +277,14 @@ func (r *Release) Publish( //nolint:gocyclo
 			tag:  "sdk/python/",
 			link: "https://pypi.org/project/dagger-io/" + strings.TrimPrefix(version, "v"),
 			release: func(ctx context.Context) error {
-				return dag.PythonClientDev(dagger.PythonClientDevOpts{Ws: r.Workspace}).Release(ctx, tag, dagger.PythonClientDevReleaseOpts{
+				return dag.PythonClientDev(r.Workspace).Release(ctx, tag, dagger.PythonClientDevReleaseOpts{
 					PypiRepo:  pypiRepo,
 					PypiURL:   pypiURL,
 					PypiToken: pypiToken,
 				})
 			},
 			dryRun: func(ctx context.Context) error {
-				return dag.PythonClientDev(dagger.PythonClientDevOpts{Ws: r.Workspace}).ReleaseDryRun(ctx)
+				return dag.PythonClientDev(r.Workspace).ReleaseDryRun(ctx)
 			},
 		},
 		{
@@ -295,13 +293,13 @@ func (r *Release) Publish( //nolint:gocyclo
 			tag:  "sdk/typescript/",
 			link: "https://www.npmjs.com/package/@dagger.io/dagger/v/" + strings.TrimPrefix(version, "v"),
 			release: func(ctx context.Context) error {
-				return dag.TypescriptClientDev(dagger.TypescriptClientDevOpts{Ws: r.Workspace}).Release(ctx, tag, dagger.TypescriptClientDevReleaseOpts{
+				return dag.TypescriptClientDev(r.Workspace).Release(ctx, tag, dagger.TypescriptClientDevReleaseOpts{
 					NpmToken:       npmToken,
 					NpmRegistryURL: npmRegistryURL,
 				})
 			},
 			dryRun: func(ctx context.Context) error {
-				return dag.TypescriptClientDev(dagger.TypescriptClientDevOpts{Ws: r.Workspace}).ReleaseDryRun(ctx)
+				return dag.TypescriptClientDev(r.Workspace).ReleaseDryRun(ctx)
 			},
 		},
 		{
@@ -310,13 +308,13 @@ func (r *Release) Publish( //nolint:gocyclo
 			tag:  "sdk/elixir/",
 			link: "https://hex.pm/packages/dagger/" + strings.TrimPrefix(version, "v"),
 			release: func(ctx context.Context) error {
-				return dag.ElixirClientDev(dagger.ElixirClientDevOpts{Ws: r.Workspace}).Publish(ctx, tag, dagger.ElixirClientDevPublishOpts{
+				return dag.ElixirClientDev(r.Workspace).Publish(ctx, tag, dagger.ElixirClientDevPublishOpts{
 					HexAPIKey: hexAPIKey,
 					HexAPIURL: hexAPIURL,
 				})
 			},
 			dryRun: func(ctx context.Context) error {
-				return dag.ElixirClientDev(dagger.ElixirClientDevOpts{Ws: r.Workspace}).ReleaseDryRun(ctx)
+				return dag.ElixirClientDev(r.Workspace).ReleaseDryRun(ctx)
 			},
 		},
 		{
@@ -326,13 +324,13 @@ func (r *Release) Publish( //nolint:gocyclo
 			link: "https://packagist.org/packages/dagger/dagger#" + cmp.Or(version, "dev-main"),
 			dev:  true,
 			release: func(ctx context.Context) error {
-				return dag.PhpClientDev(dagger.PhpClientDevOpts{Ws: r.Workspace}).Release(ctx, tag, dagger.PhpClientDevReleaseOpts{
+				return dag.PhpClientDev(r.Workspace).Release(ctx, tag, dagger.PhpClientDevReleaseOpts{
 					GithubToken: githubToken,
 					Dest:        phpSdkDestRemote,
 				})
 			},
 			dryRun: func(ctx context.Context) error {
-				return dag.PhpClientDev(dagger.PhpClientDevOpts{Ws: r.Workspace}).ReleaseDryRun(ctx)
+				return dag.PhpClientDev(r.Workspace).ReleaseDryRun(ctx)
 			},
 		},
 		{
@@ -357,7 +355,7 @@ func (r *Release) Publish( //nolint:gocyclo
 			// FIXME: use parallel
 			eg.Go(func() error {
 				target := ""
-				if semver.IsValid(version) {
+				if semver.IsValid(version) && !isPrerelease {
 					target = strings.TrimSuffix(component.tag, "/") + "/" + version
 				}
 
@@ -393,8 +391,8 @@ func (r *Release) Publish( //nolint:gocyclo
 					return nil
 				}()
 
-				if semver.IsValid(version) {
-					notes := dag.Changelog().LookupEntry(component.path, version)
+				if semver.IsValid(version) && !isPrerelease {
+					notes := dag.Changelog(r.Workspace).LookupEntry(component.path, version)
 					repo := "https://github.com/dagger/dagger"
 					if githubHost != "" {
 						repo = "https://" + githubHost + "/dagger/dagger"
@@ -419,7 +417,7 @@ func (r *Release) Publish( //nolint:gocyclo
 		report.Artifacts = append(report.Artifacts, artifact)
 	}
 
-	if semver.IsValid(version) {
+	if semver.IsValid(version) && !isPrerelease {
 		report.FollowUps = append(report.FollowUps, &ReleaseReportFollowUp{
 			Name: "❄️ Nix",
 			Link: "https://github.com/dagger/nix",
@@ -444,7 +442,7 @@ func (r *Release) Publish( //nolint:gocyclo
 		})
 	}
 
-	if semver.IsValid(version) && discordWebhook != nil {
+	if semver.IsValid(version) && !isPrerelease && discordWebhook != nil {
 		if err := report.notify(ctx, discordWebhook); err != nil {
 			report.Errors = append(report.Errors, dag.Error(err.Error()))
 		}

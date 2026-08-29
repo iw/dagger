@@ -1204,11 +1204,11 @@ class Check(Type):
         _ctx = self._select("description", _args)
         return await _ctx.execute(str)
 
-    def error(self) -> "Error":
+    async def error(self) -> "Error | None":
         """If the check failed, this is the error"""
         _args: list[Arg] = []
         _ctx = self._select("error", _args)
-        return Error(_ctx)
+        return await _ctx.execute_object(Error)
 
     async def id(self) -> str:
         """A unique identifier for this Check.
@@ -1660,11 +1660,11 @@ class Container(Type):
         _ctx = self._select("directory", _args)
         return Directory(_ctx)
 
-    def docker_healthcheck(self) -> "HealthcheckConfig":
+    async def docker_healthcheck(self) -> "HealthcheckConfig | None":
         """Retrieves this container's configured docker healthcheck."""
         _args: list[Arg] = []
         _ctx = self._select("dockerHealthcheck", _args)
-        return HealthcheckConfig(_ctx)
+        return await _ctx.execute_object(HealthcheckConfig)
 
     async def entrypoint(self) -> list[str]:
         """Return the container's OCI entrypoint.
@@ -1998,7 +1998,10 @@ class Container(Type):
         ----------
         address:
             Address of the container image to download, in standard OCI ref
-            format. Example:"registry.dagger.io/engine:latest"
+            format. Example: "registry.dagger.io/engine:latest".
+            An address without a tag or digest selects the greatest stable
+            release tag, falling back to the literal "latest" tag when no
+            eligible release exists.
         registry_service:
             Service to use as the registry endpoint for the image address.
             The service will be started only for this pull.
@@ -2318,12 +2321,12 @@ class Container(Type):
         _ctx = self._select("rootfs", _args)
         return Directory(_ctx)
 
-    def stat(
+    async def stat(
         self,
         path: str,
         *,
         do_not_follow_symlinks: bool | None = False,
-    ) -> "Stat":
+    ) -> "Stat | None":
         """Return file status
 
         Parameters
@@ -2338,7 +2341,7 @@ class Container(Type):
             Arg("doNotFollowSymlinks", do_not_follow_symlinks, False),
         ]
         _ctx = self._select("stat", _args)
-        return Stat(_ctx)
+        return await _ctx.execute_object(Stat)
 
     async def stderr(self) -> str:
         """The buffered standard error stream of the last executed command
@@ -4890,12 +4893,12 @@ class Directory(Type):
         _ctx = self._select("search", _args)
         return await _ctx.execute_object_list(SearchResult)
 
-    def stat(
+    async def stat(
         self,
         path: str,
         *,
         do_not_follow_symlinks: bool | None = False,
-    ) -> "Stat":
+    ) -> "Stat | None":
         """Return file status
 
         Parameters
@@ -4910,7 +4913,7 @@ class Directory(Type):
             Arg("doNotFollowSymlinks", do_not_follow_symlinks, False),
         ]
         _ctx = self._select("stat", _args)
-        return Stat(_ctx)
+        return await _ctx.execute_object(Stat)
 
     async def sync(self) -> Self:
         """Force evaluation in the engine.
@@ -5933,11 +5936,11 @@ class EnumTypeDef(Type):
         _ctx = self._select("name", _args)
         return await _ctx.execute(str)
 
-    def source_map(self) -> "SourceMap":
+    async def source_map(self) -> "SourceMap | None":
         """The location of this enum declaration."""
         _args: list[Arg] = []
         _ctx = self._select("sourceMap", _args)
-        return SourceMap(_ctx)
+        return await _ctx.execute_object(SourceMap)
 
     async def source_module_name(self) -> str:
         """If this EnumTypeDef is associated with a Module, the name of the
@@ -6072,11 +6075,11 @@ class EnumValueTypeDef(Type):
         _ctx = self._select("name", _args)
         return await _ctx.execute(str)
 
-    def source_map(self) -> "SourceMap":
+    async def source_map(self) -> "SourceMap | None":
         """The location of this enum member declaration."""
         _args: list[Arg] = []
         _ctx = self._select("sourceMap", _args)
-        return SourceMap(_ctx)
+        return await _ctx.execute_object(SourceMap)
 
     async def value(self) -> str:
         """The value of the enum member
@@ -6600,11 +6603,11 @@ class FieldTypeDef(Type):
         _ctx = self._select("name", _args)
         return await _ctx.execute(str)
 
-    def source_map(self) -> "SourceMap":
+    async def source_map(self) -> "SourceMap | None":
         """The location of this field declaration."""
         _args: list[Arg] = []
         _ctx = self._select("sourceMap", _args)
-        return SourceMap(_ctx)
+        return await _ctx.execute_object(SourceMap)
 
     def type_def(self) -> "TypeDef":
         """The type of the field."""
@@ -6894,11 +6897,11 @@ class File(Type):
         _ctx = self._select("size", _args)
         return await _ctx.execute(int)
 
-    def stat(self) -> "Stat":
+    async def stat(self) -> "Stat | None":
         """Return file status"""
         _args: list[Arg] = []
         _ctx = self._select("stat", _args)
-        return Stat(_ctx)
+        return await _ctx.execute_object(Stat)
 
     async def sync(self) -> Self:
         """Force evaluation in the engine.
@@ -7103,11 +7106,11 @@ class Function(Type):
         _ctx = self._select("returnType", _args)
         return TypeDef(_ctx)
 
-    def source_map(self) -> "SourceMap":
+    async def source_map(self) -> "SourceMap | None":
         """The location of this function declaration."""
         _args: list[Arg] = []
         _ctx = self._select("sourceMap", _args)
-        return SourceMap(_ctx)
+        return await _ctx.execute_object(SourceMap)
 
     async def source_module_name(self) -> str:
         """If this function is provided by a module, the name of the module.
@@ -7465,11 +7468,11 @@ class FunctionArg(Type):
         _ctx = self._select("name", _args)
         return await _ctx.execute(str)
 
-    def source_map(self) -> "SourceMap":
+    async def source_map(self) -> "SourceMap | None":
         """The location of this arg declaration."""
         _args: list[Arg] = []
         _ctx = self._select("sourceMap", _args)
-        return SourceMap(_ctx)
+        return await _ctx.execute_object(SourceMap)
 
     def type_def(self) -> "TypeDef":
         """The type of the argument."""
@@ -8099,11 +8102,11 @@ class GeneratorGroup(Type):
 class GitCommit(Type):
     """An immutable git commit."""
 
-    def ancestor_release_tag(
+    async def ancestor_release_tag(
         self,
         *,
         include_pre_release: bool | None = False,
-    ) -> "GitRef":
+    ) -> "GitRef | None":
         """The latest semver release tag reachable from this commit.
 
         Parameters
@@ -8115,7 +8118,7 @@ class GitCommit(Type):
             Arg("includePreRelease", include_pre_release, False),
         ]
         _ctx = self._select("ancestorReleaseTag", _args)
-        return GitRef(_ctx)
+        return await _ctx.execute_object(GitRef)
 
     async def author_email(self) -> str:
         """Git author email.
@@ -8355,11 +8358,11 @@ class GitCommit(Type):
         _ctx = self._select("parentShas", _args)
         return await _ctx.execute(list[str])
 
-    def release_tag(
+    async def release_tag(
         self,
         *,
         include_pre_release: bool | None = False,
-    ) -> "GitRef":
+    ) -> "GitRef | None":
         """The latest semver release tag that points directly at this commit.
 
         Parameters
@@ -8371,7 +8374,7 @@ class GitCommit(Type):
             Arg("includePreRelease", include_pre_release, False),
         ]
         _ctx = self._select("releaseTag", _args)
-        return GitRef(_ctx)
+        return await _ctx.execute_object(GitRef)
 
     async def sha(self) -> str:
         """The full commit SHA.
@@ -8786,10 +8789,15 @@ class GitRepository(Type):
         _ctx = self._select("id", _args)
         return await _ctx.execute(str)
 
-    def latest_version(self) -> GitRef:
-        """Returns details for the latest semver tag."""
+    def latest(self) -> GitRef:
+        """Return the latest stable release tag, falling back to HEAD when no
+        release exists.
+
+        Release selection accepts an optional "v" prefix, incomplete versions,
+        and zero-padded numeric components. This operation is pinned.
+        """
         _args: list[Arg] = []
-        _ctx = self._select("latestVersion", _args)
+        _ctx = self._select("latest", _args)
         return GitRef(_ctx)
 
     def ref(self, name: str) -> GitRef:
@@ -9456,11 +9464,11 @@ class InterfaceTypeDef(Type):
         _ctx = self._select("name", _args)
         return await _ctx.execute(str)
 
-    def source_map(self) -> "SourceMap":
+    async def source_map(self) -> "SourceMap | None":
         """The location of this interface declaration."""
         _args: list[Arg] = []
         _ctx = self._select("sourceMap", _args)
-        return SourceMap(_ctx)
+        return await _ctx.execute_object(SourceMap)
 
     async def source_module_name(self) -> str:
         """If this InterfaceTypeDef is associated with a Module, the name of the
@@ -11142,19 +11150,19 @@ class Module(Type):
         _ctx = self._select("objects", _args)
         return await _ctx.execute_object_list(TypeDef)
 
-    def runtime(self) -> Container:
+    async def runtime(self) -> Container | None:
         """The container that runs the module's entrypoint. It will fail to
         execute if the module doesn't compile.
         """
         _args: list[Arg] = []
         _ctx = self._select("runtime", _args)
-        return Container(_ctx)
+        return await _ctx.execute_object(Container)
 
-    def sdk(self) -> "SDKConfig":
+    async def sdk(self) -> "SDKConfig | None":
         """The SDK config used by this module."""
         _args: list[Arg] = []
         _ctx = self._select("sdk", _args)
-        return SDKConfig(_ctx)
+        return await _ctx.execute_object(SDKConfig)
 
     async def serve(
         self,
@@ -11217,11 +11225,11 @@ class Module(Type):
         _ctx = self._select("services", _args)
         return UpGroup(_ctx)
 
-    def source(self) -> "ModuleSource":
+    async def source(self) -> "ModuleSource | None":
         """The source for the module."""
         _args: list[Arg] = []
         _ctx = self._select("source", _args)
-        return ModuleSource(_ctx)
+        return await _ctx.execute_object(ModuleSource)
 
     async def sync(self) -> Self:
         """Forces evaluation of the module, including any loading into the engine
@@ -11865,11 +11873,11 @@ class ModuleSource(Type):
         _ctx = self._select("repoRootPath", _args)
         return await _ctx.execute(str)
 
-    def sdk(self) -> "SDKConfig":
+    async def sdk(self) -> "SDKConfig | None":
         """The SDK configuration of the module."""
         _args: list[Arg] = []
         _ctx = self._select("sdk", _args)
-        return SDKConfig(_ctx)
+        return await _ctx.execute_object(SDKConfig)
 
     async def source_root_subpath(self) -> str:
         """The path, relative to the context directory, that contains the module
@@ -12320,11 +12328,11 @@ class ModuleSource(Type):
 class ObjectTypeDef(Type):
     """A definition of a custom object defined in a Module."""
 
-    def constructor(self) -> Function:
+    async def constructor(self) -> Function | None:
         """The function used to construct new instances of this object, if any."""
         _args: list[Arg] = []
         _ctx = self._select("constructor", _args)
-        return Function(_ctx)
+        return await _ctx.execute_object(Function)
 
     async def deprecated(self) -> str | None:
         """The reason this enum member is deprecated, if any.
@@ -12429,11 +12437,11 @@ class ObjectTypeDef(Type):
         _ctx = self._select("name", _args)
         return await _ctx.execute(str)
 
-    def source_map(self) -> "SourceMap":
+    async def source_map(self) -> "SourceMap | None":
         """The location of this object declaration."""
         _args: list[Arg] = []
         _ctx = self._select("sourceMap", _args)
-        return SourceMap(_ctx)
+        return await _ctx.execute_object(SourceMap)
 
     async def source_module_name(self) -> str:
         """If this ObjectTypeDef is associated with a Module, the name of the
@@ -13061,13 +13069,13 @@ class Query(Root):
         _ctx = self._select("moduleSource", _args)
         return ModuleSource(_ctx)
 
-    def node(self, id: Type) -> Node:
+    async def node(self, id: Type) -> Node | None:
         """Load any object by its ID."""
         _args = [
             Arg("id", id),
         ]
         _ctx = self._select("node", _args)
-        return _NodeClient(_ctx)
+        return await _ctx.execute_object(_NodeClient)
 
     def schema(self, json: JSON) -> "Schema":
         """Load a GraphQL introspection schema for merging.
@@ -14395,53 +14403,53 @@ class Terminal(Type):
 class TypeDef(Type):
     """A definition of a parameter or return type in a Module."""
 
-    def as_enum(self) -> EnumTypeDef:
+    async def as_enum(self) -> EnumTypeDef | None:
         """If kind is ENUM, the enum-specific type definition. If kind is not
         ENUM, this will be null.
         """
         _args: list[Arg] = []
         _ctx = self._select("asEnum", _args)
-        return EnumTypeDef(_ctx)
+        return await _ctx.execute_object(EnumTypeDef)
 
-    def as_input(self) -> InputTypeDef:
+    async def as_input(self) -> InputTypeDef | None:
         """If kind is INPUT, the input-specific type definition. If kind is not
         INPUT, this will be null.
         """
         _args: list[Arg] = []
         _ctx = self._select("asInput", _args)
-        return InputTypeDef(_ctx)
+        return await _ctx.execute_object(InputTypeDef)
 
-    def as_interface(self) -> InterfaceTypeDef:
+    async def as_interface(self) -> InterfaceTypeDef | None:
         """If kind is INTERFACE, the interface-specific type definition. If kind
         is not INTERFACE, this will be null.
         """
         _args: list[Arg] = []
         _ctx = self._select("asInterface", _args)
-        return InterfaceTypeDef(_ctx)
+        return await _ctx.execute_object(InterfaceTypeDef)
 
-    def as_list(self) -> ListTypeDef:
+    async def as_list(self) -> ListTypeDef | None:
         """If kind is LIST, the list-specific type definition. If kind is not
         LIST, this will be null.
         """
         _args: list[Arg] = []
         _ctx = self._select("asList", _args)
-        return ListTypeDef(_ctx)
+        return await _ctx.execute_object(ListTypeDef)
 
-    def as_object(self) -> ObjectTypeDef:
+    async def as_object(self) -> ObjectTypeDef | None:
         """If kind is OBJECT, the object-specific type definition. If kind is not
         OBJECT, this will be null.
         """
         _args: list[Arg] = []
         _ctx = self._select("asObject", _args)
-        return ObjectTypeDef(_ctx)
+        return await _ctx.execute_object(ObjectTypeDef)
 
-    def as_scalar(self) -> ScalarTypeDef:
+    async def as_scalar(self) -> ScalarTypeDef | None:
         """If kind is SCALAR, the scalar-specific type definition. If kind is not
         SCALAR, this will be null.
         """
         _args: list[Arg] = []
         _ctx = self._select("asScalar", _args)
-        return ScalarTypeDef(_ctx)
+        return await _ctx.execute_object(ScalarTypeDef)
 
     async def id(self) -> str:
         """A unique identifier for this TypeDef.
@@ -15665,6 +15673,28 @@ class Workspace(Type):
         _ctx = self._select("withConfigValue", _args)
         return Workspace(_ctx)
 
+    def with_directory(self, path: str, source: Directory) -> Self:
+        """Return this workspace with a directory merged into the given path,
+        without mutating the source.
+
+        Anything already at the path stays, and files the source carries win,
+        as with Directory.withDirectory. Use withNewDirectory to replace the
+        path instead.
+
+        Parameters
+        ----------
+        path:
+            Path to merge into. Relative paths resolve from the workspace cwd.
+        source:
+            Directory to merge there.
+        """
+        _args = [
+            Arg("path", path),
+            Arg("source", source),
+        ]
+        _ctx = self._select("withDirectory", _args)
+        return Workspace(_ctx)
+
     def with_init_client(
         self,
         path: str,
@@ -15683,7 +15713,8 @@ class Workspace(Type):
         Parameters
         ----------
         path:
-            Workspace-relative output directory for the generated client.
+            Output directory for the generated client, relative to the
+            workspace cwd; a leading "/" is relative to the workspace root.
         sdk:
             Workspace SDK name or module entry name to use.
         module:
@@ -15731,7 +15762,9 @@ class Workspace(Type):
         sdk:
             Workspace SDK name or module entry name to use.
         path:
-            Workspace-relative path for the new module.
+            Path for the new module, relative to the workspace cwd; a leading
+            "/" is relative to the workspace root. Defaults to
+            .dagger/modules/<name> beside the workspace config.
         source:
             Source subpath within the new module.
         include:
@@ -15834,16 +15867,19 @@ class Workspace(Type):
         return Workspace(_ctx)
 
     def with_new_directory(self, path: str, source: Directory) -> Self:
-        """Return this workspace with a directory added, without mutating the
-        source.
+        """Return this workspace with the given path replaced by a directory,
+        without mutating the source.
+
+        The source becomes the entire contents of the path: anything already
+        there that the source does not carry is removed. Use withDirectory to
+        keep it instead.
 
         Parameters
         ----------
         path:
-            Path of the added directory. Relative paths resolve from the
-            workspace cwd.
+            Path to replace. Relative paths resolve from the workspace cwd.
         source:
-            Directory to add.
+            Directory to write there.
         """
         _args = [
             Arg("path", path),

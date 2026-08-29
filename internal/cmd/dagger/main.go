@@ -40,6 +40,7 @@ import (
 
 	"dagger.io/dagger/engineconn"
 	"github.com/dagger/dagger/analytics"
+	"github.com/dagger/dagger/core/workspace"
 	"github.com/dagger/dagger/dagql/dagui"
 	"github.com/dagger/dagger/dagql/idtui"
 	"github.com/dagger/dagger/engine"
@@ -66,7 +67,6 @@ var (
 	expandCompleted          = os.Getenv("DAGGER_EXPAND_COMPLETED") != ""
 	debugFlag                bool
 	progress                 string
-	lockMode                 string
 	interactive              bool
 	interactiveCommand       string
 	interactiveCommandParsed []string
@@ -195,7 +195,6 @@ func init() {
 		queryCmd,
 		apiCmd,
 		traceCmd,
-		lockCmd,
 		settingsCmd,
 		checksCmd,
 		upCmd,
@@ -422,7 +421,6 @@ func installGlobalFlags(flags *pflag.FlagSet) {
 	flags.BoolVarP(&silent, "silent", "s", silent, "Do not show progress at all")
 	flags.BoolVarP(&debugFlag, "debug", "d", debugFlag, "Show debug logs and full verbosity")
 	flags.StringVar(&progress, "progress", "auto", "Progress output format (auto, plain, tty, dots, logs, report)")
-	flags.StringVar(&lockMode, "lock", "", "Lock lookup mode (disabled, live, pinned, frozen). Defaults to disabled.")
 	flags.BoolVarP(&interactive, "interactive", "i", false, "Spawn a terminal on container exec failure")
 	flags.StringVar(&interactiveCommand, "interactive-command", "/bin/sh", "Change the default command for interactive mode")
 	flags.BoolVarP(&web, "web", "w", false, "Open trace URL in a web browser")
@@ -726,8 +724,10 @@ func isObviouslyRemoteWorkspaceRef(ref string) bool {
 		}
 	}
 
-	head, _, hasSlash := strings.Cut(ref, "/")
-	return hasSlash && strings.Contains(head, ".")
+	// A single dotted token ("my.dir") is far more likely a directory that does
+	// not exist yet than a host, so stay conservative and require a path.
+	_, _, hasSlash := strings.Cut(ref, "/")
+	return hasSlash && !workspace.IsLocalRef(ref, "")
 }
 
 func Tracer() trace.Tracer {

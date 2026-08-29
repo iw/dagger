@@ -365,6 +365,25 @@ func TestResolveWorkspacePath(t *testing.T) {
 		got, err := resolveWorkspacePath("../../..", "services/payment")
 		require.ErrorContains(t, err, "escapes workspace root", fmt.Sprintf("got %q instead of an error", got))
 	})
+
+	// A path typed on Windows reaches the Linux engine spelled with
+	// backslashes, where filepath reads the whole thing as one element: the
+	// segments never separate, "\.." never collapses, and the escape guard
+	// above never sees a "..".
+	t.Run("windows separators", func(t *testing.T) {
+		for _, tc := range []struct{ arg, base, want string }{
+			{`src\gen`, "services/payment", "services/payment/src/gen"},
+			{`..\shared`, "services/payment", "services/shared"},
+			{`\shared\config`, "services/payment", "shared/config"},
+		} {
+			got, err := resolveWorkspacePath(tc.arg, tc.base)
+			require.NoError(t, err)
+			require.Equal(t, tc.want, got, tc.arg)
+		}
+
+		got, err := resolveWorkspacePath(`..\..\..`, "services/payment")
+		require.ErrorContains(t, err, "escapes workspace root", fmt.Sprintf("got %q instead of an error", got))
+	})
 }
 
 func TestWorkspacePathInOrLeadingToCwd(t *testing.T) {
@@ -1012,14 +1031,8 @@ func TestWorkspaceMigrationHiddenPath(t *testing.T) {
 
 func TestWorkspaceMigrationFilterLegacyLockDataRemovesModuleResolve(t *testing.T) {
 	lock := workspace.NewLock()
-	require.NoError(t, lock.SetLookup("", "container.from", []any{"alpine:latest", "linux/amd64"}, workspace.LookupResult{
-		Value:  "sha256:deadbeef",
-		Policy: workspace.PolicyPin,
-	}))
-	require.NoError(t, lock.SetLookup("", workspaceMigrationLockModulesResolveOperation, []any{"github.com/acme/mod@main"}, workspace.LookupResult{
-		Value:  "0123456789abcdef0123456789abcdef01234567",
-		Policy: workspace.PolicyFloat,
-	}))
+	require.NoError(t, lock.SetLookup("", "oci-sha", []any{"alpine:latest"}, "sha256:deadbeef"))
+	require.NoError(t, lock.SetLookup("", workspaceMigrationLockModulesResolveOperation, []any{"github.com/acme/mod@main"}, "0123456789abcdef0123456789abcdef01234567"))
 
 	data, err := lock.Marshal()
 	require.NoError(t, err)
@@ -1029,13 +1042,11 @@ func TestWorkspaceMigrationFilterLegacyLockDataRemovesModuleResolve(t *testing.T
 	filtered, err := workspace.ParseLock(filteredData)
 	require.NoError(t, err)
 
-	container, ok, err := filtered.GetLookup("", "container.from", []any{"alpine:latest", "linux/amd64"})
-	require.NoError(t, err)
+	container, ok := filtered.GetLookup("", "oci-sha", []any{"alpine:latest"})
 	require.True(t, ok)
-	require.Equal(t, workspace.LookupResult{Value: "sha256:deadbeef", Policy: workspace.PolicyPin}, container)
+	require.Equal(t, "sha256:deadbeef", container)
 
-	_, ok, err = filtered.GetLookup("", workspaceMigrationLockModulesResolveOperation, []any{"github.com/acme/mod@main"})
-	require.NoError(t, err)
+	_, ok = filtered.GetLookup("", workspaceMigrationLockModulesResolveOperation, []any{"github.com/acme/mod@main"})
 	require.False(t, ok)
 }
 

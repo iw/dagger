@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/dagger/dagger/core/workspace"
 	"github.com/dagger/dagger/dagql/dagui"
 	"github.com/dagger/dagger/engine"
 	"github.com/dagger/dagger/engine/client"
@@ -189,12 +188,6 @@ func finalizeEngineParams(ctx context.Context, params client.Params) (client.Par
 	params.Interactive = interactive
 	params.InteractiveCommand = interactiveCommandParsed
 
-	effectiveLockMode, err := resolveLockMode(params.LockMode, lockMode)
-	if err != nil {
-		return params, err
-	}
-	params.LockMode = effectiveLockMode
-
 	if hasTTY {
 		params.PromptHandler = Frontend
 	}
@@ -217,6 +210,7 @@ func finalizeEngineParams(ctx context.Context, params client.Params) (client.Par
 // session would keep seeing the legacy dagger.json ("run dagger setup first").
 func withSetupSessions(
 	ctx context.Context,
+	before func(context.Context),
 	fn func(ctx context.Context, connect func(context.Context) (*client.Client, func(), error)) error,
 ) (rerr error) {
 	params := client.Params{
@@ -231,7 +225,12 @@ func withSetupSessions(
 	}
 	return Frontend.Run(ctx, opts, func(ctx context.Context) (_ cleanups.CleanupF, rerr error) {
 		var cleanup cleanups.Cleanups
+		if before != nil {
+			before(ctx)
+		}
 
+		// Telemetry deliberately starts after the untraced setup phase (Cloud
+		// login), so credentials established there apply to the whole trace.
 		ctx, cleanupTelemetry := initEngineTelemetry(ctx)
 		otel.SetErrorHandler(otel.ErrorHandlerFunc(func(err error) {
 			if opts.Debug {
@@ -292,22 +291,6 @@ func applyWorkspaceClientParams(params *client.Params) error {
 		params.UserConfigPath = llmconfig.ConfigFile
 	}
 	return nil
-}
-
-func resolveLockMode(paramLockMode, globalLockMode string) (string, error) {
-	effective := paramLockMode
-	if effective == "" {
-		effective = globalLockMode
-	}
-	if effective == "" {
-		return "", nil
-	}
-
-	mode, err := workspace.ParseLockMode(effective)
-	if err != nil {
-		return "", err
-	}
-	return string(mode), nil
 }
 
 // skipSharedTelemetryExporters, when set, makes engineTelemetryConfig leave out
