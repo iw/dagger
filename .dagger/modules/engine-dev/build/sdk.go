@@ -246,6 +246,25 @@ func (build *Builder) RustSDKContent(
 	if len(index.Manifests) != 1 {
 		return nil, fmt.Errorf("Rust SDK OCI content must contain exactly one manifest")
 	}
+	// Content is reused across engine builds (WithRustSDKContent), where the only
+	// identities available are this layout's own files. Record the build platform in
+	// the index so a later composition can refuse a cross-platform reuse
+	// (iw/dagger#90: digest-only validation let an amd64 runtime helper ship inside
+	// the arm64 engine) instead of silently installing a foreign-architecture helper.
+	if index.Manifests[0].Platform == nil {
+		index.Manifests[0].Platform = &ocispecs.Platform{
+			OS:           build.platformSpec.OS,
+			Architecture: build.platformSpec.Architecture,
+		}
+		stamped, err := json.Marshal(index)
+		if err != nil {
+			return nil, fmt.Errorf("encode platform-identified Rust SDK OCI index: %w", err)
+		}
+		// Rewrite only when the stamp was added: an already-identified layout keeps
+		// its original bytes. index.json is not itself digest-referenced, so the
+		// manifest identity the engine validates is unchanged.
+		sdkDir = sdkDir.WithNewFile("index.json", string(stamped))
+	}
 	return &sdkContent{
 		index:         index,
 		sdkDir:        sdkDir,

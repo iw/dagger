@@ -4,6 +4,7 @@ package main
 import (
 	"context"
 	"crypto/rand"
+	"encoding/json"
 	"fmt"
 	"path/filepath"
 	"strings"
@@ -241,6 +242,49 @@ func (dev *EngineDev) ContainerWithRustSDKContent(
 ) (*dagger.Container, error) {
 	if rustSDKContent == nil {
 		return nil, fmt.Errorf("Rust SDK content is required")
+	}
+	// Reused content is identified only by its own layout files, and digest checks
+	// cannot see architecture: a cross-platform reuse previously composed an amd64
+	// runtime helper into the arm64 engine (iw/dagger#90). The seal step stamps the
+	// build platform into the index; refuse composition when it does not match.
+	effective := string(platform)
+	if effective == "" {
+		defaultPlatform, err := dag.DefaultPlatform(ctx)
+		if err != nil {
+			return nil, fmt.Errorf("resolve default platform for Rust SDK content reuse: %w", err)
+		}
+		effective = string(defaultPlatform)
+	}
+	indexContents, err := rustSDKContent.Content.File("index.json").Contents(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("read reused Rust SDK content index: %w", err)
+	}
+	var index struct {
+		Manifests []struct {
+			Platform *struct {
+				OS           string `json:"os"`
+				Architecture string `json:"architecture"`
+			} `json:"platform"`
+		} `json:"manifests"`
+	}
+	if err := json.Unmarshal([]byte(indexContents), &index); err != nil {
+		return nil, fmt.Errorf("decode reused Rust SDK content index: %w", err)
+	}
+	if len(index.Manifests) != 1 || index.Manifests[0].Platform == nil {
+		return nil, fmt.Errorf("reused Rust SDK content does not identify its build platform; rebuild it with RustSDKContent before composing an engine")
+	}
+	contentPlatform := index.Manifests[0].Platform.OS + "/" + index.Manifests[0].Platform.Architecture
+	// Compare os/arch only: platform strings may carry a variant suffix (arm64/v8)
+	// that the stamped index deliberately omits.
+	enginePlatform := effective
+	if parts := strings.SplitN(effective, "/", 3); len(parts) >= 2 {
+		enginePlatform = parts[0] + "/" + parts[1]
+	}
+	if contentPlatform != enginePlatform {
+		return nil, fmt.Errorf(
+			"reused Rust SDK content was built for %s but the engine composition targets %s; build content for the engine platform",
+			contentPlatform, enginePlatform,
+		)
 	}
 	return dev.container(ctx, platform, gpuSupport, version, rustSDKContent)
 }

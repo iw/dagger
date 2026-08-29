@@ -394,12 +394,27 @@ type RustEngineContent struct {
 
 // EngineContent builds the Rust SDK content once and returns its reusable graph object.
 func (t *RustClientDev) EngineContent(ctx context.Context) (*RustEngineContent, error) {
+	return t.engineContentFor(ctx, "")
+}
+
+// engineContentFor builds the packaged SDK content for one engine platform. The
+// public EngineContent keeps its zero-argument shape so the checked module bindings
+// stay valid; Build threads its platform here so packaged content and engine
+// composition can never diverge by architecture (iw/dagger#90 shipped an amd64
+// runtime helper inside the arm64 engine through exactly that divergence).
+func (t *RustClientDev) engineContentFor(
+	ctx context.Context,
+	platform dagger.Platform,
+) (*RustEngineContent, error) {
 	engine := dag.DaggerEngine(dagger.DaggerEngineOpts{
 		ClientDockerConfig: t.ClientDockerConfig,
 		Ws:                 t.Ws,
 		VcsRepository:      t.EngineRepository,
 	}).WithSource(t.focusedEngineSource())
 	contentOptions := dagger.DaggerEngineRustSdkcontentOpts{Version: coreTargetVersion}
+	if platform != "" {
+		contentOptions.Platform = platform
+	}
 	if t.SDKDependencyRevision != "" {
 		contentOptions.DependencyRepository = t.EngineRepository
 		contentOptions.DependencyRevision = t.SDKDependencyRevision
@@ -1202,7 +1217,7 @@ func (t *RustClientDev) Build(
 		Directory("/src/sdk/rust/target/package").
 		Filter(dagger.DirectoryFilterOpts{Include: []string{"*.crate"}})
 
-	content, err := t.EngineContent(ctx)
+	content, err := t.engineContentFor(ctx, platform)
 	if err != nil {
 		return nil, fmt.Errorf("build reusable Rust engine content: %w", err)
 	}
@@ -1346,6 +1361,26 @@ func (build *RustSdkBuild) Verify(ctx context.Context) error {
 		WithExec([]string{"dagger", "run", "cargo", "run", "--locked"}).
 		Sync(ctx); err != nil {
 		return fmt.Errorf("verify external Rust consumer: %w", err)
+	}
+
+	// Module-mode release gate (iw/dagger#90, iw/dagger#91). The client-mode
+	// consumer above cannot observe an unresolvable packaged SDK dependency or a
+	// foreign-architecture runtime helper — both defects shipped in releases whose
+	// verification was client-mode only. Initializing a module against this exact
+	// completed engine exercises the packaged helper on the engine's platform and
+	// resolves the packaged dependency for real, so a candidate that cannot
+	// initialize a module fails verification instead of shipping. The default module
+	// path is deliberate: it also covers the workspace auto-install wiring.
+	gate := runner.
+		WithWorkdir("/work/module-gate").
+		WithExec([]string{"git", "init", "-q"}).
+		WithExec([]string{"git", "config", "user.name", "Rust SDK Check"}).
+		WithExec([]string{"git", "config", "user.email", "rust-sdk-check@dagger.invalid"}).
+		WithExec([]string{"git", "commit", "--allow-empty", "-m", "initialize workspace"}).
+		WithExec([]string{"dagger", "-y", "sdk", "install", "--here", "rust"}).
+		WithExec([]string{"dagger", "-y", "module", "init", "rust", "gate"})
+	if _, err := gate.File("/work/module-gate/.dagger/modules/gate/dagger-module.toml").Contents(ctx); err != nil {
+		return fmt.Errorf("verify module initialization against the completed engine: %w", err)
 	}
 	return nil
 }

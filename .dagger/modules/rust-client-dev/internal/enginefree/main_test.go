@@ -68,9 +68,19 @@ func TestReusableEngineContentBoundaryIsGenerated(t *testing.T) {
 	t.Parallel()
 
 	source := parseGoFile(t, "../../main.go")
-	engineContent := findFunction(t, source, "EngineContent")
+	engineContent := findFunction(t, source, "engineContentFor")
 	if got := selectorCount(engineContent, "DaggerEngine"); got != 1 {
-		t.Fatalf("EngineContent must construct exactly one engine-dev graph, got %d", got)
+		t.Fatalf("engineContentFor must construct exactly one engine-dev graph, got %d", got)
+	}
+	// The public EngineContent keeps its checked zero-argument module shape and
+	// delegates; the single-construction-site invariant lives in the platform-aware
+	// helper Build threads its platform through (iw/dagger#90).
+	delegator := findFunction(t, source, "EngineContent")
+	if got := selectorCount(delegator, "engineContentFor"); got != 1 {
+		t.Fatalf("EngineContent must delegate to engineContentFor exactly once, got %d", got)
+	}
+	if got := selectorCount(delegator, "DaggerEngine"); got != 0 {
+		t.Fatalf("EngineContent must not construct a second engine-dev graph, got %d", got)
 	}
 	resolution := findFunction(t, source, "Resolution")
 	if got := selectorCount(resolution, "RustSdkcontent"); got != 0 {
@@ -140,9 +150,9 @@ func TestEngineIntegrationUsesTheFocusedSourceGraph(t *testing.T) {
 		t.Fatalf("focused engine source must retain the root module's local Go SDK replacement")
 	}
 
-	engineContent := findFunction(t, source, "EngineContent")
+	engineContent := findFunction(t, source, "engineContentFor")
 	if got := selectorCount(engineContent, "WithSource"); got != 1 {
-		t.Fatalf("EngineContent must apply exactly one focused source boundary, got %d", got)
+		t.Fatalf("engineContentFor must apply exactly one focused source boundary, got %d", got)
 	}
 	serviceBoundary := findFunction(t, source, "focusedService")
 	if got := selectorCount(serviceBoundary, "ServiceWithFocusedRustSdkcontent"); got != 1 {
@@ -204,9 +214,9 @@ func TestOperationsFixtureSeparatesCheckedGenerationFromClientSchemaLoading(t *t
 func TestForkSDKDependencyRevisionIsExplicitAndContentChecked(t *testing.T) {
 	t.Parallel()
 
-	engineContent := findFunction(t, parseGoFile(t, "../../main.go"), "EngineContent")
+	engineContent := findFunction(t, parseGoFile(t, "../../main.go"), "engineContentFor")
 	if got := selectorCount(engineContent, "SDKDependencyRevision"); got != 2 {
-		t.Fatalf("EngineContent must test and forward the explicit SDK dependency revision, got %d references", got)
+		t.Fatalf("engineContentFor must test and forward the explicit SDK dependency revision, got %d references", got)
 	}
 
 	generatedClient := findFunction(t, parseGoFile(t, "../dagger/dagger-engine.gen.go"), "RustSdkcontent")
