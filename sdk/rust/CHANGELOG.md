@@ -25,6 +25,7 @@ This SDK uses 🚙 Engine + 🚗 CLI version `v1.0.0-beta.11.rust.4`, built from
 ### Fixed
 - The checked schema is captured at the revision the target pins by @iw in https://github.com/iw/dagger/pull/92 \
   The previous capture predated the pinned `501b57e0` revision (visible as `GitRepository.commit` still returning `GitRef` in the checked document), so the claim and its bytes disagreed; the refresh procedure in sdk/rust/docs/maintaining.md now records the reproducible in-process capture so the pin and the document cannot drift silently again.
+- Fresh Rust module and client initialization now preserves the complete packaged SDK context for generator policy and descriptor reads and scaffolds a compiler-valid root object, so both initialization paths complete against the shipped engine by @iw in https://github.com/iw/dagger/pull/94
 
 ### What to do next
 - Read the [documentation](https://docs.dagger.io/sdk)
