@@ -443,7 +443,7 @@ func invoke(ctx context.Context, parentJSON []byte, parentName string, fnName st
 							dag.TypeDef().WithObject("RustSDK")).
 							WithDescription("New constructs the built-in adapter from the complete packaged SDK content root.").
 							WithSourceMap(dag.SourceMap("main.go", 50, 1)).
-							WithArg("sdkSourceDir", dag.TypeDef().WithObject("Directory").WithOptional(true), dagger.FunctionWithArgOpts{Description: "Complete engine-packaged Rust SDK content, including runtime and dist metadata.", SourceMap: dag.SourceMap("main.go", 54, 2), DefaultPath: "/"}))), nil
+							WithArg("sdkSourceDir", dag.TypeDef().WithObject("Directory").WithOptional(true), dagger.FunctionWithArgOpts{Description: "Complete engine-packaged Rust SDK content, including runtime and dist metadata.", SourceMap: dag.SourceMap("main.go", 54, 2), DefaultPath: ".."}))), nil
 	default:
 		return nil, fmt.Errorf("unknown object %s", parentName)
 	}

@@ -50,7 +50,7 @@ type managedClientPlan struct {
 func New(
 	// Complete engine-packaged Rust SDK content, including runtime and dist metadata.
 	// +optional
-	// +defaultPath="/"
+	// +defaultPath=".."
 	sdkSourceDir *dagger.Directory,
 ) (*RustSDK, error) {
 	if sdkSourceDir == nil {
@@ -69,7 +69,7 @@ func (sdk *RustSDK) GenerateModules(ctx context.Context, ws *dagger.Workspace) (
 	if err != nil {
 		return nil, err
 	}
-	modules, err := dag.CurrentModule().AsSDK(dagger.CurrentModuleAsSDKOpts{Workspace: ws}).Modules(ctx)
+	modules, err := dag.CurrentModule().AsSDK(ws).Modules(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("discover Rust modules: %w", err)
 	}
@@ -108,7 +108,7 @@ func (sdk *RustSDK) GenerateClients(ctx context.Context, ws *dagger.Workspace) (
 	if err != nil {
 		return nil, err
 	}
-	clients, err := dag.CurrentModule().AsSDK(dagger.CurrentModuleAsSDKOpts{Workspace: ws}).Clients(ctx)
+	clients, err := dag.CurrentModule().AsSDK(ws).Clients(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("discover Rust clients: %w", err)
 	}
@@ -668,8 +668,12 @@ func moduleIdentity(ctx context.Context, source *dagger.ModuleSource, configForm
 	if err != nil {
 		return scopedModuleIdentity{}, fmt.Errorf("read module source kind: %w", err)
 	}
+	requiresPin, err := moduleSourceRequiresPin(kind)
+	if err != nil {
+		return scopedModuleIdentity{}, err
+	}
 	resolvedPin := ""
-	if kind == dagger.ModuleSourceKindGit {
+	if requiresPin {
 		resolvedPin, err = source.Pin(ctx)
 		if err != nil {
 			return scopedModuleIdentity{}, fmt.Errorf("read resolved module pin: %w", err)
@@ -677,13 +681,25 @@ func moduleIdentity(ctx context.Context, source *dagger.ModuleSource, configForm
 		if err := validateOptionalRevision(resolvedPin); err != nil || resolvedPin == "" {
 			return scopedModuleIdentity{}, fmt.Errorf("resolved remote module pin is invalid")
 		}
-	} else if kind != dagger.ModuleSourceKindLocal {
-		return scopedModuleIdentity{}, fmt.Errorf("module source kind is unsupported")
 	}
 	return scopedModuleIdentity{
 		Name: name, OriginalName: originalName, SourceSubpath: rebased,
 		SourceDigest: digest, ConfigFormat: configFormat, ResolvedPin: resolvedPin,
 	}, nil
+}
+
+// Directory sources are immutable Dagger snapshots and local sources are bound by
+// the semantic leaf digest above. Only Git sources need a separately authenticated
+// resolved commit in the operation request.
+func moduleSourceRequiresPin(kind dagger.ModuleSourceKind) (bool, error) {
+	switch kind {
+	case dagger.ModuleSourceKindGit:
+		return true, nil
+	case dagger.ModuleSourceKindLocal, dagger.ModuleSourceKindDir:
+		return false, nil
+	default:
+		return false, fmt.Errorf("module source kind is unsupported")
+	}
 }
 
 func optionalString(value *string) string {
