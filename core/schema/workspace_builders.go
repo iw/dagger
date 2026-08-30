@@ -600,12 +600,19 @@ func moduleUnderWorkspaceName(
 		return mod, err
 	}
 	var renamed dagql.ObjectResult[*core.Module]
+	asModuleArgs := []dagql.NamedInput{}
+	if mod.Self().PreferContextSourceForDefaultPath {
+		asModuleArgs = append(asModuleArgs, dagql.NamedInput{
+			Name:  "preferContextSourceForDefaultPath",
+			Value: dagql.Boolean(true),
+		})
+	}
 	if err := dag.Select(ctx, src.Value, &renamed,
 		dagql.Selector{
 			Field: "withName",
 			Args:  []dagql.NamedInput{{Name: "name", Value: dagql.String(name)}},
 		},
-		dagql.Selector{Field: "asModule"},
+		dagql.Selector{Field: "asModule", Args: asModuleArgs},
 	); err != nil {
 		return mod, err
 	}

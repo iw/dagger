@@ -82,10 +82,16 @@ func LoadBuiltinSDKModuleSource(
 	var module dagql.ObjectResult[*core.Module]
 	if err := dag.Select(ctx, moduleSource, &module, dagql.Selector{
 		Field: "asModule",
-		Args: []dagql.NamedInput{{
-			Name:  "forceDefaultFunctionCaching",
-			Value: dagql.Opt(dagql.Boolean(true)),
-		}},
+		Args: []dagql.NamedInput{
+			{
+				Name:  "forceDefaultFunctionCaching",
+				Value: dagql.Opt(dagql.Boolean(true)),
+			},
+			{
+				Name:  "preferContextSourceForDefaultPath",
+				Value: dagql.Boolean(true),
+			},
+		},
 	}); err != nil {
 		return dagql.ObjectResult[*core.ModuleSource]{}, fmt.Errorf("rust SDK provenance: packaged runtime is not loadable as a module: %w", err)
 	}

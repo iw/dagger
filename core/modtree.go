@@ -549,6 +549,9 @@ func (node *ModTreeNode) buildScaleOutModuleQuery(query *querybuilder.Selection)
 	if mod.LegacyDefaultPath {
 		query = query.Arg("legacyDefaultPath", true)
 	}
+	if mod.PreferContextSourceForDefaultPath {
+		query = query.Arg("preferContextSourceForDefaultPath", true)
+	}
 	if mod.ContextSource.Valid {
 		contextSrc := mod.ContextSource.Value.Self()
 		if contextSrc != nil {

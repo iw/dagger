@@ -122,10 +122,11 @@ func (s *ModTreeNodeTestSuite) TestBuildScaleOutModuleQueryPreservesAsModuleOpti
 		},
 	})
 	mod := newTypeDefAttachedResult(t, ctx, cache, dag, "module", &Module{
-		Source:            dagql.NonNull(source),
-		ContextSource:     dagql.NonNull(contextSource),
-		NameField:         "golang",
-		LegacyDefaultPath: true,
+		Source:                            dagql.NonNull(source),
+		ContextSource:                     dagql.NonNull(contextSource),
+		NameField:                         "golang",
+		LegacyDefaultPath:                 true,
+		PreferContextSourceForDefaultPath: true,
 		LegacyArgCustomizations: []*modules.ModuleConfigArgument{
 			{Argument: "selectModule", Default: "e2e/*"},
 		},
@@ -140,6 +141,7 @@ func (s *ModTreeNodeTestSuite) TestBuildScaleOutModuleQueryPreservesAsModuleOpti
 	require.NoError(t, err)
 	require.Contains(t, generated, `legacyNameOverride: "golang"`)
 	require.Contains(t, generated, `legacyDefaultPath: true`)
+	require.Contains(t, generated, `preferContextSourceForDefaultPath: true`)
 	require.Contains(t, generated, `defaultPathContextSourceRef: "/repo"`)
 	require.Contains(t, generated, `legacyWorkspaceConfigJson:`)
 	require.Contains(t, generated, `legacyDefaultsFromDotEnv: true`)

@@ -66,6 +66,12 @@ type Module struct {
 	// module loading.
 	LegacyDefaultPath bool
 
+	// PreferContextSourceForDefaultPath keeps contextual directory arguments
+	// anchored to ContextSource even when a Workspace is bound to the call.
+	// Packaged SDK generators use this for constructor assets that live beside
+	// their runtime module rather than in the workspace being generated.
+	PreferContextSourceForDefaultPath bool
+
 	// LegacyArgCustomizations are workspace dagger.json argument customizations
 	// applied through asModule.
 	LegacyArgCustomizations []*modules.ModuleConfigArgument
@@ -997,24 +1003,25 @@ func (mod *Module) AttachDependencyResults(
 }
 
 type persistedModulePayload struct {
-	SourceResultID                uint64                          `json:"sourceResultID,omitempty"`
-	ContextSourceResultID         uint64                          `json:"contextSourceResultID,omitempty"`
-	RuntimeResultID               uint64                          `json:"runtimeResultID,omitempty"`
-	DepModuleResultIDs            []uint64                        `json:"depModuleResultIDs,omitempty"`
-	IncludeSelfInDeps             bool                            `json:"includeSelfInDeps,omitempty"`
-	NameField                     string                          `json:"nameField,omitempty"`
-	OriginalName                  string                          `json:"originalName,omitempty"`
-	SDKConfig                     *SDKConfig                      `json:"sdkConfig,omitempty"`
-	Description                   string                          `json:"description,omitempty"`
-	ObjectDefResultIDs            []uint64                        `json:"objectDefResultIDs,omitempty"`
-	InterfaceDefResultIDs         []uint64                        `json:"interfaceDefResultIDs,omitempty"`
-	EnumDefResultIDs              []uint64                        `json:"enumDefResultIDs,omitempty"`
-	LegacyDefaultPath             bool                            `json:"legacyDefaultPath,omitempty"`
-	LegacyArgCustomizations       []*modules.ModuleConfigArgument `json:"legacyArgCustomizations,omitempty"`
-	WorkspaceConfig               map[string]any                  `json:"workspaceConfig,omitempty"`
-	DefaultsFromDotEnv            bool                            `json:"defaultsFromDotEnv,omitempty"`
-	DisableDefaultFunctionCaching bool                            `json:"disableDefaultFunctionCaching,omitempty"`
-	AsModuleVariantDigest         string                          `json:"asModuleVariantDigest,omitempty"`
+	SourceResultID                    uint64                          `json:"sourceResultID,omitempty"`
+	ContextSourceResultID             uint64                          `json:"contextSourceResultID,omitempty"`
+	RuntimeResultID                   uint64                          `json:"runtimeResultID,omitempty"`
+	DepModuleResultIDs                []uint64                        `json:"depModuleResultIDs,omitempty"`
+	IncludeSelfInDeps                 bool                            `json:"includeSelfInDeps,omitempty"`
+	NameField                         string                          `json:"nameField,omitempty"`
+	OriginalName                      string                          `json:"originalName,omitempty"`
+	SDKConfig                         *SDKConfig                      `json:"sdkConfig,omitempty"`
+	Description                       string                          `json:"description,omitempty"`
+	ObjectDefResultIDs                []uint64                        `json:"objectDefResultIDs,omitempty"`
+	InterfaceDefResultIDs             []uint64                        `json:"interfaceDefResultIDs,omitempty"`
+	EnumDefResultIDs                  []uint64                        `json:"enumDefResultIDs,omitempty"`
+	LegacyDefaultPath                 bool                            `json:"legacyDefaultPath,omitempty"`
+	PreferContextSourceForDefaultPath bool                            `json:"preferContextSourceForDefaultPath,omitempty"`
+	LegacyArgCustomizations           []*modules.ModuleConfigArgument `json:"legacyArgCustomizations,omitempty"`
+	WorkspaceConfig                   map[string]any                  `json:"workspaceConfig,omitempty"`
+	DefaultsFromDotEnv                bool                            `json:"defaultsFromDotEnv,omitempty"`
+	DisableDefaultFunctionCaching     bool                            `json:"disableDefaultFunctionCaching,omitempty"`
+	AsModuleVariantDigest             string                          `json:"asModuleVariantDigest,omitempty"`
 }
 
 func (mod *Module) EncodePersistedObject(ctx context.Context, cache dagql.PersistedObjectCache) (dagql.PersistedObjectEncoding, error) {
@@ -1089,6 +1096,7 @@ func (mod *Module) EncodePersistedObject(ctx context.Context, cache dagql.Persis
 		persisted.EnumDefResultIDs = append(persisted.EnumDefResultIDs, defID)
 	}
 	persisted.LegacyDefaultPath = mod.LegacyDefaultPath
+	persisted.PreferContextSourceForDefaultPath = mod.PreferContextSourceForDefaultPath
 	persisted.LegacyArgCustomizations = mod.LegacyArgCustomizations
 	persisted.WorkspaceConfig = mod.WorkspaceConfig
 	persisted.DefaultsFromDotEnv = mod.DefaultsFromDotEnv
@@ -1164,21 +1172,22 @@ func (*Module) DecodePersistedObject(ctx context.Context, dag *dagql.Server, _ u
 	}
 
 	mod := &Module{
-		NameField:                     persisted.NameField,
-		OriginalName:                  persisted.OriginalName,
-		SDKConfig:                     persisted.SDKConfig,
-		Deps:                          deps,
-		Description:                   persisted.Description,
-		ObjectDefs:                    objectDefs,
-		InterfaceDefs:                 interfaceDefs,
-		EnumDefs:                      enumDefs,
-		IncludeSelfInDeps:             persisted.IncludeSelfInDeps,
-		LegacyDefaultPath:             persisted.LegacyDefaultPath,
-		LegacyArgCustomizations:       persisted.LegacyArgCustomizations,
-		WorkspaceConfig:               persisted.WorkspaceConfig,
-		DefaultsFromDotEnv:            persisted.DefaultsFromDotEnv,
-		DisableDefaultFunctionCaching: persisted.DisableDefaultFunctionCaching,
-		AsModuleVariantDigest:         persisted.AsModuleVariantDigest,
+		NameField:                         persisted.NameField,
+		OriginalName:                      persisted.OriginalName,
+		SDKConfig:                         persisted.SDKConfig,
+		Deps:                              deps,
+		Description:                       persisted.Description,
+		ObjectDefs:                        objectDefs,
+		InterfaceDefs:                     interfaceDefs,
+		EnumDefs:                          enumDefs,
+		IncludeSelfInDeps:                 persisted.IncludeSelfInDeps,
+		LegacyDefaultPath:                 persisted.LegacyDefaultPath,
+		PreferContextSourceForDefaultPath: persisted.PreferContextSourceForDefaultPath,
+		LegacyArgCustomizations:           persisted.LegacyArgCustomizations,
+		WorkspaceConfig:                   persisted.WorkspaceConfig,
+		DefaultsFromDotEnv:                persisted.DefaultsFromDotEnv,
+		DisableDefaultFunctionCaching:     persisted.DisableDefaultFunctionCaching,
+		AsModuleVariantDigest:             persisted.AsModuleVariantDigest,
 	}
 	if mod.SDKConfig == nil {
 		mod.SDKConfig = &SDKConfig{}

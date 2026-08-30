@@ -243,6 +243,7 @@ func (l *Loader) loadBuiltinSDK(
 				Field: "asModule",
 				Args: []dagql.NamedInput{
 					{Name: "forceDefaultFunctionCaching", Value: dagql.Opt(dagql.Boolean(true))},
+					{Name: "preferContextSourceForDefaultPath", Value: dagql.Boolean(sdk.Source == sdkmeta.Rust)},
 				},
 			},
 		)...,

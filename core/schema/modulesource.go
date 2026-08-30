@@ -4047,6 +4047,11 @@ func (s *moduleSourceSchema) moduleSourceAsModule(
 
 		// DefaultPathContextSourcePin pins DefaultPathContextSourceRef when set.
 		DefaultPathContextSourcePin string `internal:"true" default:""`
+
+		// PreferContextSourceForDefaultPath prevents a bound Workspace from
+		// replacing ContextSource for contextual directory arguments. Packaged
+		// SDK generators use it for constructor assets shipped with the SDK.
+		PreferContextSourceForDefaultPath bool `internal:"true" default:"false"`
 	},
 ) (inst dagql.ObjectResult[*core.Module], err error) {
 	dag, err := core.CurrentDagqlServer(ctx)
@@ -4122,12 +4127,13 @@ func (s *moduleSourceSchema) moduleSourceAsModule(
 	}
 
 	mod := &core.Module{
-		Source:                        dagql.NonNull(execSrc),
-		ContextSource:                 dagql.NonNull(defaultPathContextSrc),
-		NameField:                     originalSrc.Self().ModuleName,
-		OriginalName:                  execSrc.Self().ModuleOriginalName,
-		SDKConfig:                     execSrc.Self().SDK,
-		DisableDefaultFunctionCaching: execSrc.Self().DisableDefaultFunctionCaching,
+		Source:                            dagql.NonNull(execSrc),
+		ContextSource:                     dagql.NonNull(defaultPathContextSrc),
+		NameField:                         originalSrc.Self().ModuleName,
+		OriginalName:                      execSrc.Self().ModuleOriginalName,
+		SDKConfig:                         execSrc.Self().SDK,
+		DisableDefaultFunctionCaching:     execSrc.Self().DisableDefaultFunctionCaching,
+		PreferContextSourceForDefaultPath: args.PreferContextSourceForDefaultPath,
 	}
 	if mod.SDKConfig == nil {
 		mod.SDKConfig = &core.SDKConfig{}
@@ -4157,6 +4163,7 @@ func (s *moduleSourceSchema) moduleSourceAsModule(
 		fmt.Sprintf("%t", args.ForceDefaultFunctionCaching),
 		args.LegacyNameOverride,
 		fmt.Sprintf("%t", args.LegacyDefaultPath),
+		fmt.Sprintf("%t", args.PreferContextSourceForDefaultPath),
 		args.LegacyWorkspaceConfigJSON,
 		fmt.Sprintf("%t", args.LegacyDefaultsFromDotEnv),
 		args.LegacyArgCustomizationsJSON,

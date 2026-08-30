@@ -1439,6 +1439,27 @@ func (src *ModuleSource) LoadContextDir(
 	path string,
 	filter CopyFilter,
 ) (inst dagql.ObjectResult[*Directory], err error) {
+	return src.loadContextDir(ctx, dag, path, filter, true)
+}
+
+// LoadContextDirFromSource loads a contextual directory without allowing a
+// bound Workspace to replace the module's ContextSource.
+func (src *ModuleSource) LoadContextDirFromSource(
+	ctx context.Context,
+	dag *dagql.Server,
+	path string,
+	filter CopyFilter,
+) (inst dagql.ObjectResult[*Directory], err error) {
+	return src.loadContextDir(ctx, dag, path, filter, false)
+}
+
+func (src *ModuleSource) loadContextDir(
+	ctx context.Context,
+	dag *dagql.Server,
+	path string,
+	filter CopyFilter,
+	preferWorkspace bool,
+) (inst dagql.ObjectResult[*Directory], err error) {
 	filterInputs := []dagql.NamedInput{}
 	if len(filter.Include) > 0 {
 		filterInputs = append(filterInputs, dagql.NamedInput{
@@ -1468,7 +1489,7 @@ func (src *ModuleSource) LoadContextDir(
 	//
 	// NOTE: this applies unilaterally, whether the module was loaded from Host,
 	// Git, or a Directory.
-	if ws, ok := WorkspaceFromContext(ctx); ok {
+	if ws, ok := WorkspaceFromContext(ctx); preferWorkspace && ok {
 		inst, err = src.loadContextFromWorkspace(ctx, dag, ws, path, filterInputs)
 	} else {
 		inst, err = src.loadContextFromSource(ctx, dag, path, filterInputs)
