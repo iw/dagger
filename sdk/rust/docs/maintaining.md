@@ -71,20 +71,55 @@ renderer work:
    digest (the SHA-256 of the captured bytes), Rust SDK version, and Rust toolchain —
    and the matching `APPROVED_*` constants in `crates/dagger-codegen/src/target.rs`,
    which are the reviewed second pin.
-3. Reset the binding manifest for the new target: artifact provenance is validated
+3. Hand-carry `crates/dagger-sdk/src/target_generated.rs` to the same identity. It is
+   generated *from* the target descriptor but sits outside the bootstrap generator's
+   owned artifact set, so the direct update never rewrites it; the pairing test
+   `generated_target_matches_checked_repository_metadata` is what refuses a miss.
+4. Reset the binding manifest for the new target: artifact provenance is validated
    against the exact target before regeneration, so a refresh replaces
    `codegen/generated.json` with an empty manifest carrying the new
    `target_revision` and `schema_digest`, and removes the owned generated set
    (`crates/dagger-sdk/src/gen/`, `tests/core_projection.rs`,
    `tests/core_reachability.rs`) so generation republishes it whole.
-4. Run the direct update, inspect the generated source and compact ownership-manifest
-   diff, and repeat local acceptance.
+5. Run the direct update, inspect the generated source and compact ownership-manifest
+   diff.
+6. Sweep the remaining pin surface. The exact target is deliberately asserted in many
+   independent places; a refresh visits every one:
+   - The release identity everywhere it is stated (see *Release identity*). Sweep
+     with a **filterless** `grep -rl` for the outgoing version and revision:
+     extension-filtered searches miss lockfiles, and
+     `testdata/external-consumer/Cargo.lock` plus `examples/*/Cargo.lock` pin the
+     exact crate versions that `--locked` runs refuse to drift past.
+   - The reviewed `EXACT_INVENTORY` counts in `schema/validate.rs`, and their
+     independent duplicates in `tests/exact_target.rs`.
+   - The projection expectations in `tests/projection.rs` (field-strategy counts,
+     named-type kinds, catalog binding totals and per-kind counts, directive record
+     and application counts) and the coverage totals in `tests/render.rs` and
+     `tests/render_properties.rs`. Take the actual values from the projection of the
+     captured schema — never invent them — and review each movement in the diff.
+   - The checked generated-client fixtures: regenerate through the sanctioned path
+     (`DAGGER_UPDATE_GENERATED_CLIENT_FIXTURE=1 cargo test -p dagger-codegen
+     --test client_renderer`), then run the workspace formatter.
+   - Target-derived engine fixtures and compile-contract goldens outside the generated
+     set: update the core-schema digest in
+     `crates/dagger-sdk-engine/tests/client_usability_properties.rs`, and refresh any
+     generated public-type lists in `crates/dagger-sdk/tests/generated-ui/` from the
+     wrapper-free compiler output.
 
 Changed or removed schema coordinates fail closed until their generated and
-compatibility policies are explicit — a new directive needs a
-`DirectivePolicy` registration, and inventory growth needs the reviewed
-`EXACT_INVENTORY` counts in `schema/validate.rs` updated to the captured document.
+compatibility policies are explicit — a new directive needs a `DirectivePolicy`
+registration; inventory growth is admitted deliberately through the counts above.
 Never refresh a digest merely to make a check pass.
+
+Finish by running the complete section-5 acceptance gate with **strict exit
+propagation** — observe each command's own exit status directly, never through a
+pipe filter, which reports the filter's status instead of the command's — and with
+an unwrapped `rustc` in a fresh target directory. The compile-contract suites compare
+compiler diagnostics against checked goldens; merely clearing `RUSTC_WRAPPER` does
+not invalidate artifacts previously produced through a wrapper, so a warm target can
+continue to report remapped source paths after repeated reruns. Any residual failure
+from the fresh target names a pin this list is missing: fix it *and add it to this
+list* in the same change.
 
 ## 4. Recover or roll back as one unit
 
@@ -102,6 +137,8 @@ not recovery tools.
 From `sdk/rust`:
 
 ```console
+export RUSTC_WRAPPER=
+export CARGO_TARGET_DIR="$(mktemp -d "${TMPDIR:-/tmp}/dagger-rust-acceptance.XXXXXX")"
 cargo fmt --all --check
 cargo check --workspace --all-features --locked
 cargo test --workspace --all-features --locked

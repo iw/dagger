@@ -194,7 +194,7 @@ proptest! {
             .cloned()
             .collect::<BTreeSet<_>>();
         prop_assert_eq!(&observed_fields, &expected_fields);
-        prop_assert_eq!(observed_fields.len(), 720);
+        prop_assert_eq!(observed_fields.len(), 759);
 
         let expected_arguments = exact_plan()
             .fields()
@@ -208,7 +208,7 @@ proptest! {
             .flat_map(|field| field.arguments.iter().map(|argument| argument.coordinate.clone()))
             .collect::<BTreeSet<_>>();
         prop_assert_eq!(&observed_arguments, &expected_arguments);
-        prop_assert_eq!(observed_arguments.len(), 611);
+        prop_assert_eq!(observed_arguments.len(), 636);
 
         let fields = exact_plan().fields().values().collect::<Vec<_>>();
         let field = fields[field_index % fields.len()];

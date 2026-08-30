@@ -250,21 +250,15 @@ env PATH=/vendor/docker:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:
   build --platform=linux/amd64 verify
 ```
 
-Repeat the verification for the `linux/arm64` engine. On the amd64 builder this leg
-runs emulated and slowly; prefer an arm64 builder for it when one is provisioned, and
-accept the emulation cost otherwise:
+The `linux/arm64` engine is **built and exported on this builder but verified
+natively** (section 9): BuildKit's bundled QEMU emulates the arm64 *build* fine
+(budget extra time — the platform-checked SDK content compiles its runtime helper
+under emulated rustc), but a freshly built arm64 engine cannot be *served* as
+Verify's service on an amd64 builder — it exits during boot. In-graph `verify` is
+therefore an amd64-only step; arm64 verification happens on Apple Silicon after
+download and gates publication, not export.
 
-```console
-env PATH=/vendor/docker:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
-  DAGGER_NO_NAG=1 \
-  _EXPERIMENTAL_DAGGER_RUNNER_HOST="$RUST_SDK_RUNNER_HOST" \
-  "$RUST_SDK_DAGGER" -m .dagger/modules/rust-client-dev api call \
-  --engine-repository="$RUST_SDK_REPOSITORY" \
-  --sdk-dependency-revision="$RUST_SDK_COMMIT" \
-  build --platform=linux/arm64 verify
-```
-
-Do not export or checksum artifacts unless both terminal verifications succeed.
+Do not export or checksum artifacts unless the amd64 terminal verification succeeds.
 
 ## 6. Export exactly five artifacts
 
@@ -317,6 +311,21 @@ tar -C "$RUST_SDK_TOOLING" \
   dagger-darwin-arm64
 ```
 
+Audit the produced binary before it enters the artifact set. Version and commit
+stamping come from `internal/version/VERSION` plus Go VCS buildinfo, so the build
+must run inside the clean git checkout (a dirty tree degrades `vcs.modified`); the
+`go.mod` toolchain directive auto-downloads the required Go — do not pin the host
+toolchain to satisfy it. The four checks: Mach-O arm64 magic, buildinfo flags and
+provenance, and no builder paths baked into the binary:
+
+```console
+test "$(od -A n -t x1 -N 8 "$RUST_SDK_TOOLING/dagger-darwin-arm64" | tr -d " \n")" = "cffaedfe0c000001"
+go version -m "$RUST_SDK_TOOLING/dagger-darwin-arm64" | grep -F -- "-trimpath=true"
+go version -m "$RUST_SDK_TOOLING/dagger-darwin-arm64" | grep -F "vcs.revision=$RUST_SDK_COMMIT"
+go version -m "$RUST_SDK_TOOLING/dagger-darwin-arm64" | grep -F "vcs.modified=false"
+test -z "$(grep -aoE "/workspaces|/home/[a-z]+|/Users/[a-z]+" "$RUST_SDK_TOOLING/dagger-darwin-arm64" | head -1)"
+```
+
 These Build calls use the same immutable checkout, platform, module, runner setting,
 and content-addressed Dagger graph as verification. They perform no publication.
 
@@ -367,7 +376,7 @@ find "$RUST_SDK_CHECKOUT" -name '._*' -print
 Exit the devbox SSH session, but leave the owned activity marker in place until local
 retrieval is independently verified.
 
-## 8. Download and independently verify all four files
+## 8. Download and independently verify all six files
 
 On the operator workstation, define a new absolute local destination. Do not reuse a
 directory containing older candidate artifacts:
@@ -430,7 +439,71 @@ shasum -a 256 -c SHA256SUMS
 Only one checksum command is required: choose the one provided by the operator
 workstation. A failure invalidates the retrieved candidate.
 
-## 9. Remove the owned marker and pause the devbox
+## 9. Verify the arm64 engine natively on Apple Silicon
+
+The arm64 engine boots only on arm64 hardware, so its verification runs here — after
+independent download verification, before any publication. On an Apple Silicon
+workstation whose Docker service is native arm64 (Docker Desktop or OrbStack), load
+the engine from the verified artifact set; `docker load` reports an untagged image
+ID, so tag it before running:
+
+```console
+cd "$RUST_SDK_LOCAL_OUTPUT"
+IMAGE_ID="$(docker load -i dagger-engine-v1.0.0-beta.11.rust.4-linux-arm64.oci.tar | sed -n 's/^Loaded image ID: //p')"
+docker tag "$IMAGE_ID" dagger-engine:v1.0.0-beta.11.rust.4-linux-arm64
+docker run --detach --name dagger-engine-rust4-arm64-verify --privileged \
+  dagger-engine:v1.0.0-beta.11.rust.4-linux-arm64
+```
+
+Run the external consumer from the shipped crate bytes against the native engine —
+the same consumer section 5 ran against the amd64 engine, now proving the published
+archives pair with the arm64 engine. The consumer takes the two SDK crates as
+`../vendor/` path dependencies, so unpack the verified archives into that layout
+inside a fresh clone at the release commit:
+
+```console
+cd "$RUST_SDK_LOCAL_OUTPUT"
+git clone --quiet https://github.com/iw/dagger.git rust4-native-verify
+git -C rust4-native-verify checkout --quiet --detach "$RUST_SDK_COMMIT"
+install -d rust4-native-verify/.dagger/modules/rust-client-dev/testdata/vendor
+tar -xf dagger-sdk-1.0.0-beta.11.rust.4.crate \
+  -C rust4-native-verify/.dagger/modules/rust-client-dev/testdata/vendor
+tar -xf dagger-sdk-macros-1.0.0-beta.11.rust.4.crate \
+  -C rust4-native-verify/.dagger/modules/rust-client-dev/testdata/vendor
+mv rust4-native-verify/.dagger/modules/rust-client-dev/testdata/vendor/dagger-sdk-1.0.0-beta.11.rust.4 \
+   rust4-native-verify/.dagger/modules/rust-client-dev/testdata/vendor/dagger-sdk
+mv rust4-native-verify/.dagger/modules/rust-client-dev/testdata/vendor/dagger-sdk-macros-1.0.0-beta.11.rust.4 \
+   rust4-native-verify/.dagger/modules/rust-client-dev/testdata/vendor/dagger-sdk-macros
+export _EXPERIMENTAL_DAGGER_RUNNER_HOST=docker-container://dagger-engine-rust4-arm64-verify
+tar -xzf dagger_v1.0.0-beta.11.rust.4_darwin_arm64.tar.gz
+( cd rust4-native-verify/.dagger/modules/rust-client-dev/testdata/external-consumer && \
+  PATH="$RUST_SDK_LOCAL_OUTPUT:$PATH" dagger run cargo run --locked )
+```
+
+Then verify with the release's own native CLI: the strict pair over a live session,
+and the module-initialization gate — the same semantics as section 5's in-graph gate,
+exercising the packaged arm64 runtime helper and the Git dependency resolution at the
+release commit on the engine's own architecture:
+
+```console
+./dagger version
+install -d arm64-gate
+cd arm64-gate
+git init -q
+git -c user.name="Rust SDK Check" -c user.email="rust-sdk-check@dagger.invalid" \
+  commit --allow-empty -q -m "initialize workspace"
+../dagger -y sdk install --here rust
+../dagger -y module init rust gate
+test -f .dagger/modules/gate/dagger-module.toml
+cd ..
+```
+
+`dagger version` must report the release identity and an arm64 platform; both gate
+commands must succeed and leave the initialized module in place. Afterwards stop and
+remove the verification container (`docker rm -f dagger-engine-rust4-arm64-verify`).
+A failure here invalidates the arm64 artifact: do not publish any part of the set.
+
+## 10. Remove the owned marker and pause the devbox
 
 After local checksum verification succeeds, reconnect to the same Namespace devbox and
 remove only this run's exact marker:

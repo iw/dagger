@@ -18,18 +18,18 @@ fn checked_target_compiles_complete_coordinate_inventory() {
     let inventory = plan.schema().inventory();
 
     assert_eq!(inventory.query_roots, 1);
-    assert_eq!(inventory.named_types, 111);
+    assert_eq!(inventory.named_types, 113);
     assert_eq!(inventory.scalars, 8);
-    assert_eq!(inventory.objects, 78);
+    assert_eq!(inventory.objects, 80);
     assert_eq!(inventory.interfaces, 3);
     assert_eq!(inventory.enums, 18);
     assert_eq!(inventory.input_objects, 4);
-    assert_eq!(inventory.fields, 720);
-    assert_eq!(inventory.arguments, 611);
+    assert_eq!(inventory.fields, 759);
+    assert_eq!(inventory.arguments, 636);
     assert_eq!(inventory.input_fields, 14);
     assert_eq!(inventory.enum_values, 84);
-    assert_eq!(inventory.interface_edges, 91);
-    assert_eq!(inventory.directives, 12);
+    assert_eq!(inventory.interface_edges, 95);
+    assert_eq!(inventory.directives, 13);
     assert_eq!(inventory.directive_arguments, 14);
 }
 
