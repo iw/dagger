@@ -1,5 +1,5 @@
 //! Generated bindings owned by GraphQL coordinate `MinimalItem`.
-// @generated {"format":"dagger-rust-standalone-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:9ee1f1eeccf3db6eacb6690f6c097fe6ff27d366c4598025d7df1ddc99134787","target_revision":"a4e1e4ff663e5e51c2b96c2c0772f3d2f00cfb94"}
+// @generated {"format":"dagger-rust-standalone-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:73ae0bb7d0ed95cb3e1b80aff4c2afad04fc7460fdae86c63d2ac8c7315b33b4","target_revision":"a4e1e4ff663e5e51c2b96c2c0772f3d2f00cfb94"}
 #[doc = "Client fixture object MinimalItem."]
 #[derive(Clone)]
 pub struct Item {

@@ -19,7 +19,7 @@ This SDK uses 🚙 Engine + 🚗 CLI version `v1.0.0-beta.11.rust.4`, built from
 - Release verification gains a module-initialization gate against the completed engine: `Verify` installs the builtin Rust SDK and initializes a module, which resolves the packaged SDK dependency for real and executes the runtime helper on the engine's own platform by @iw in https://github.com/iw/dagger/pull/92 \
   A candidate whose packaged dependency cannot resolve (#91) or whose helper is the wrong architecture fails verification instead of shipping. The release invocation passes `--engine-repository`/`--sdk-dependency-revision` so packaged content selects the credential-free Git dependency at the pushed release commit.
 
-### Changed
+### 🔥 Breaking Changes
 - `GitRepository.latestVersion` is renamed to `latest` upstream and now returns the ref itself; generated callers of `latest_version` must move to `latest` — the one breaking change in the claimed surface across the upstream advance by @iw in https://github.com/iw/dagger/pull/92
 
 ### Fixed
