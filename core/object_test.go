@@ -247,13 +247,14 @@ func TestModulePersistedTypeDefsRoundTripPreservesNullableValidity(t *testing.T)
 	enumTypeDefTop := newTypeDefAttachedResult(t, ctx, sc, dag, "enumTopTypeDef", (&TypeDef{}).WithEnumTypeDef(enumDef))
 
 	mod := &Module{
-		NameField:     "Test",
-		OriginalName:  "Test",
-		SDKConfig:     &SDKConfig{},
-		Deps:          NewSchemaBuilder(root, nil),
-		ObjectDefs:    dagql.ObjectResultArray[*TypeDef]{objTypeDef},
-		InterfaceDefs: dagql.ObjectResultArray[*TypeDef]{ifaceTypeDefTop},
-		EnumDefs:      dagql.ObjectResultArray[*TypeDef]{enumTypeDefTop},
+		NameField:                         "Test",
+		OriginalName:                      "Test",
+		SDKConfig:                         &SDKConfig{},
+		Deps:                              NewSchemaBuilder(root, nil),
+		ObjectDefs:                        dagql.ObjectResultArray[*TypeDef]{objTypeDef},
+		InterfaceDefs:                     dagql.ObjectResultArray[*TypeDef]{ifaceTypeDefTop},
+		EnumDefs:                          dagql.ObjectResultArray[*TypeDef]{enumTypeDefTop},
+		PreferContextSourceForDefaultPath: true,
 	}
 
 	payload, err := mod.EncodePersistedObject(ctx, sc)
@@ -279,6 +280,7 @@ func TestModulePersistedTypeDefsRoundTripPreservesNullableValidity(t *testing.T)
 	assert.Equal(t, "Thing", decoded.ObjectDefs[0].Self().AsObject.Value.Self().Name)
 	assert.Equal(t, "Iface", decoded.InterfaceDefs[0].Self().AsInterface.Value.Self().Name)
 	assert.Equal(t, "Choice", decoded.EnumDefs[0].Self().AsEnum.Value.Self().Name)
+	assert.Assert(t, decoded.PreferContextSourceForDefaultPath)
 }
 
 func TestModuleObjectConvertToSDKInputUsesCurrentFieldID(t *testing.T) {

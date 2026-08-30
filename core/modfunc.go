@@ -1066,7 +1066,12 @@ func (fn *ModuleFunction) loadContextualArg(
 
 	switch arg.TypeDef.Self().AsObject.Value.Self().Name {
 	case "Directory":
-		dir, err := fn.mod.Self().ContextSource.Value.Self().LoadContextDir(ctx, dag, arg.DefaultPath, CopyFilter{
+		contextSource := fn.mod.Self().ContextSource.Value.Self()
+		loadDir := contextSource.LoadContextDir
+		if fn.mod.Self().PreferContextSourceForDefaultPath {
+			loadDir = contextSource.LoadContextDirFromSource
+		}
+		dir, err := loadDir(ctx, dag, arg.DefaultPath, CopyFilter{
 			Exclude: arg.Ignore,
 		})
 		if err != nil {
