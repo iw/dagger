@@ -4,6 +4,12 @@ mod support;
 
 use std::collections::{BTreeMap, BTreeSet};
 
+use dagger_codegen::module::{
+    CfgEnvironment, FormatVersion as ModuleFormatVersion, GeneratedTypeRegistry,
+    ModuleCompilationRequest, ModuleCompiler, ModulePackage, ModuleSourcePath,
+    ModuleSourceSnapshot, ModuleTarget, PackageName, Sha256Digest as ModuleDigest, SourceDocument,
+    TargetValue, WireName, source_snapshot_digest,
+};
 use dagger_sdk_engine::initialization::{InitializationInputs, plan_initialization};
 use dagger_sdk_engine::{EngineDiagnosticCode, RelativeOperationPath, ToolchainSelection};
 use proptest::prelude::*;
@@ -48,6 +54,18 @@ proptest! {
             prop_assert!(plan.files.keys().all(|path| !matches!(path.as_str().rsplit('/').next(), Some("dagger.toml" | "dagger-module.toml"))));
             let starter = RelativeOperationPath::parse(&format!("{}/src/lib.rs", module_root.as_str())).unwrap();
             prop_assert_eq!(plan.files.contains_key(&starter), !authored_source);
+            if !authored_source {
+                let source = std::str::from_utf8(plan.files.get(&starter).unwrap()).unwrap();
+                let object_name = format!("Module{seed}");
+                let constructor_name = format!("module{seed}");
+                let package_name = format!("module-{seed}");
+                let object_marker = format!("object(root, rename = \"{}\")", object_name);
+                let constructor_marker = format!("constructor, rename = \"{}\"", constructor_name);
+                prop_assert!(source.contains(&object_marker));
+                prop_assert!(source.contains(&constructor_marker));
+                prop_assert!(syn::parse_file(source).is_ok());
+                prop_assert!(starter_compiles(source, &package_name, &object_name, &constructor_name));
+            }
         } else {
             prop_assert_eq!(result.unwrap_err().code, EngineDiagnosticCode::DependencyResolutionFailed);
         }
@@ -76,6 +94,64 @@ proptest! {
         prop_assert!(right.attachments.iter().all(|identity| identity == &right_identity));
         prop_assert_ne!(&left.configuration as *const _, &right.configuration as *const _);
     }
+}
+
+fn starter_compiles(
+    source: &str,
+    package_name: &str,
+    object_name: &str,
+    constructor_name: &str,
+) -> bool {
+    let path = ModuleSourcePath::new("src/lib.rs").unwrap();
+    let mut snapshot = ModuleSourceSnapshot {
+        format_version: ModuleFormatVersion::current(),
+        package: ModulePackage {
+            name: PackageName::new(package_name).unwrap(),
+            crate_root: path.clone(),
+            edition: TargetValue::new("2024").unwrap(),
+        },
+        cfg: CfgEnvironment {
+            values: BTreeMap::new(),
+            features: BTreeSet::new(),
+        },
+        documents: BTreeMap::from([(path.clone(), SourceDocument::new(path, source.to_owned()))]),
+        digest: ModuleDigest::hash_bytes(b"pending starter snapshot"),
+    };
+    snapshot.digest = source_snapshot_digest(&snapshot).unwrap();
+    let visible_schema_digest = ModuleDigest::hash_bytes(b"starter visible schema");
+    let generated = GeneratedTypeRegistry::empty(visible_schema_digest.clone());
+    let target = ModuleTarget {
+        dagger_revision: TargetValue::new("0123456789abcdef0123456789abcdef01234567").unwrap(),
+        engine_version: TargetValue::new("1.0.0-beta.11.rust.4").unwrap(),
+        rust_sdk_version: TargetValue::new("1.0.0-beta.11.rust.4").unwrap(),
+        rust_toolchain: TargetValue::new("1.97.1").unwrap(),
+        rust_edition: TargetValue::new("2024").unwrap(),
+        visible_schema_digest,
+    };
+    let generator = ModuleDigest::hash_bytes(b"starter generator");
+    let checked_bindings = BTreeMap::new();
+    let visible_type_names = BTreeSet::new();
+    let Ok(compilation) = ModuleCompiler::compile(ModuleCompilationRequest {
+        target: &target,
+        source: &snapshot,
+        generated_types: &generated,
+        visible_type_names: &visible_type_names,
+        generator_digest: &generator,
+        sdk_dependency_alias: "dagger_sdk",
+        checked_bindings: &checked_bindings,
+    }) else {
+        return false;
+    };
+    compilation
+        .descriptor
+        .types
+        .iter()
+        .any(|ty| ty.wire_name == WireName::new(object_name).unwrap())
+        && compilation
+            .descriptor
+            .functions
+            .iter()
+            .any(|function| function.wire_name == WireName::new(constructor_name).unwrap())
 }
 
 #[derive(Clone, Debug, Default, Eq, PartialEq)]

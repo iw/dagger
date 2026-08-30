@@ -9,6 +9,33 @@ import (
 	"github.com/dagger/dagger/dagql"
 )
 
+// packagedSDKModuleSourceSelectors keeps the complete packaged filesystem as the
+// context root while selecting the runtime module beneath it. Rust's workspace
+// generators execute through this ModuleSource and need sibling dist/ assets via
+// constructor +defaultPath inputs; selecting runtime/ as a Directory would seal
+// those assets outside the contextual root.
+func packagedSDKModuleSourceSelectors(source string) []dagql.Selector {
+	if source == sdkmeta.Rust {
+		return []dagql.Selector{{
+			Field: "asModuleSource",
+			Args: []dagql.NamedInput{{
+				Name:  "sourceRootPath",
+				Value: dagql.String("runtime"),
+			}},
+		}}
+	}
+	return []dagql.Selector{
+		{
+			Field: "directory",
+			Args: []dagql.NamedInput{{
+				Name:  "path",
+				Value: dagql.String("runtime"),
+			}},
+		},
+		{Field: "asModuleSource"},
+	}
+}
+
 // LoadBuiltinSDKModuleSource resolves and validates the module source embedded in a
 // built-in SDK content manifest. Workspace installation uses this instead of treating
 // a built-in runtime name as an ambient local path.
@@ -43,13 +70,7 @@ func LoadBuiltinSDKModuleSource(
 		return moduleSource, fmt.Errorf("rust SDK provenance: import packaged content: %w", err)
 	}
 
-	if err := dag.Select(ctx, fullSDKDir, &moduleSource,
-		dagql.Selector{
-			Field: "directory",
-			Args:  []dagql.NamedInput{{Name: "path", Value: dagql.String("runtime")}},
-		},
-		dagql.Selector{Field: "asModuleSource"},
-	); err != nil {
+	if err := dag.Select(ctx, fullSDKDir, &moduleSource, packagedSDKModuleSourceSelectors(source)...); err != nil {
 		return moduleSource, fmt.Errorf("rust SDK provenance: load packaged runtime module source: %w", err)
 	}
 	if moduleSource.Self() == nil || !moduleSource.Self().ConfigExists {

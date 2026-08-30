@@ -7,6 +7,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/dagger/dagger/dagql"
 	"github.com/dagger/dagger/engine"
 	"github.com/stretchr/testify/require"
 )
@@ -242,6 +243,27 @@ func TestRustSDKDescriptorDigestRejectsAbsentAndMalformedProvenance(t *testing.T
 	got, err := rustSDKDescriptorDigest()
 	require.NoError(t, err)
 	require.Equal(t, "sha256:"+strings.Repeat("b", 64), got.String())
+}
+
+func TestPackagedRustSDKModuleSourceKeepsCompleteContentRoot(t *testing.T) {
+	require.Equal(t, []dagql.Selector{{
+		Field: "asModuleSource",
+		Args: []dagql.NamedInput{{
+			Name:  "sourceRootPath",
+			Value: dagql.String("runtime"),
+		}},
+	}}, packagedSDKModuleSourceSelectors("rust"))
+
+	require.Equal(t, []dagql.Selector{
+		{
+			Field: "directory",
+			Args: []dagql.NamedInput{{
+				Name:  "path",
+				Value: dagql.String("runtime"),
+			}},
+		},
+		{Field: "asModuleSource"},
+	}, packagedSDKModuleSourceSelectors("python"))
 }
 
 func TestProperty02DeterministicRustSDKResolutionReplay(t *testing.T) {
