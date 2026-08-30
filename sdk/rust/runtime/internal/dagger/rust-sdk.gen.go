@@ -98,21 +98,6 @@ func (r *RustSDK) GenerateModules(ws *Workspace) *Changeset {
 	}
 }
 
-// InitClient validates the engine-owned record inputs and returns only SDK-owned
-// scaffold changes. The module reference is never forwarded into Rust or generated
-// content; the engine remains responsible for persisting and resolving that record.
-func (r *RustSDK) InitClient(ws *Workspace, path string, module string) *Changeset {
-	assertNotNil("ws", ws)
-	q := r.query.Select("initClient")
-	q = q.Arg("ws", ws)
-	q = q.Arg("path", path)
-	q = q.Arg("module", module)
-
-	return &Changeset{
-		query: q,
-	}
-}
-
 // A unique identifier for this RustSdk.
 func (r *RustSDK) ID(ctx context.Context) (ID, error) {
 	if r.id != nil {
@@ -160,6 +145,21 @@ func (r *RustSDK) UnmarshalJSON(bs []byte) error {
 	}
 	*r = RustSDK{query: selectNode(dag.query, id, "RustSdk")}
 	return nil
+}
+
+// InitClient validates the engine-owned record inputs and returns only SDK-owned
+// scaffold changes. The module reference is never forwarded into Rust or generated
+// content; the engine remains responsible for persisting and resolving that record.
+func (r *RustSDK) InitClient(ws *Workspace, path string, module string) *Changeset {
+	assertNotNil("ws", ws)
+	q := r.query.Select("initClient")
+	q = q.Arg("ws", ws)
+	q = q.Arg("path", path)
+	q = q.Arg("module", module)
+
+	return &Changeset{
+		query: q,
+	}
 }
 
 // InitModule returns only SDK-owned project amendments. The engine independently

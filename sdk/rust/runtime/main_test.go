@@ -8,6 +8,7 @@ import (
 	"strings"
 	"testing"
 
+	"rust-sdk/internal/dagger"
 	"rust-sdk/internal/metadata"
 )
 
@@ -172,6 +173,44 @@ func TestCheckedRuntimeAPIExposesInitClientExactlyOnce(t *testing.T) {
 		if count := strings.Count(string(source), token); count != 1 {
 			t.Fatalf("checked runtime API contains %q %d times; want exactly once", token, count)
 		}
+	}
+}
+
+func TestPackagedRuntimeConstructorUsesCompleteContentRoot(t *testing.T) {
+	source, err := os.ReadFile("main.go")
+	if err != nil {
+		t.Fatalf("read runtime source: %v", err)
+	}
+	entrypoint, err := os.ReadFile("dagger.gen.go")
+	if err != nil {
+		t.Fatalf("read checked module entrypoint: %v", err)
+	}
+	for token, body := range map[string][]byte{
+		`// +defaultPath=".."`: source,
+		`DefaultPath: ".."`:    entrypoint,
+	} {
+		if count := strings.Count(string(body), token); count != 1 {
+			t.Fatalf("packaged content root marker %q occurs %d times; want exactly once", token, count)
+		}
+	}
+}
+
+func TestModuleSourcePinPolicyAcceptsImmutableDirectorySnapshots(t *testing.T) {
+	for _, test := range []struct {
+		kind dagger.ModuleSourceKind
+		want bool
+	}{
+		{kind: dagger.ModuleSourceKindLocal, want: false},
+		{kind: dagger.ModuleSourceKindDir, want: false},
+		{kind: dagger.ModuleSourceKindGit, want: true},
+	} {
+		got, err := moduleSourceRequiresPin(test.kind)
+		if err != nil || got != test.want {
+			t.Fatalf("moduleSourceRequiresPin(%q) = %t, %v; want %t", test.kind, got, err, test.want)
+		}
+	}
+	if _, err := moduleSourceRequiresPin(dagger.ModuleSourceKind("UNKNOWN")); err == nil {
+		t.Fatal("unknown module source kind unexpectedly accepted")
 	}
 }
 
