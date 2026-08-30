@@ -16,15 +16,15 @@ func TestGenerationRequestKeepsAuthoringSemanticsInRust(t *testing.T) {
 		FormatVersion:    1,
 		Repository:       "https://github.com/dagger/dagger",
 		DaggerRevision:   strings.Repeat("a", 40),
-		EngineVersion:    "1.0.0-beta.11.rust.3",
-		RustSDKVersion:   "1.0.0-beta.11.rust.3",
+		EngineVersion:    "1.0.0-beta.11.rust.4",
+		RustSDKVersion:   "1.0.0-beta.11.rust.4",
 		RustToolchain:    "1.97.1",
 		CoreSchemaDigest: "sha256:" + strings.Repeat("b", 64),
 		SDKDependency: metadata.PublishedSDKDependency{
 			Source:       "registry",
 			Registry:     "crates-io",
 			Package:      "dagger-sdk",
-			ExactVersion: "1.0.0-beta.11.rust.3",
+			ExactVersion: "1.0.0-beta.11.rust.4",
 		},
 	}
 	request := generationRequestDocument(
@@ -65,11 +65,11 @@ func TestGenerationRequestKeepsAuthoringSemanticsInRust(t *testing.T) {
 func TestProperty19ModernLegacyGenerationSemanticallyConverge(t *testing.T) {
 	descriptor := metadata.EngineSource{
 		FormatVersion: 1, Repository: "https://github.com/dagger/dagger",
-		DaggerRevision: strings.Repeat("a", 40), EngineVersion: "1.0.0-beta.11.rust.3",
-		RustSDKVersion: "1.0.0-beta.11.rust.3", RustToolchain: "1.97.1",
+		DaggerRevision: strings.Repeat("a", 40), EngineVersion: "1.0.0-beta.11.rust.4",
+		RustSDKVersion: "1.0.0-beta.11.rust.4", RustToolchain: "1.97.1",
 		CoreSchemaDigest: "sha256:" + strings.Repeat("b", 64),
 		SDKDependency: metadata.PublishedSDKDependency{
-			Source: "registry", Registry: "crates-io", Package: "dagger-sdk", ExactVersion: "1.0.0-beta.11.rust.3",
+			Source: "registry", Registry: "crates-io", Package: "dagger-sdk", ExactVersion: "1.0.0-beta.11.rust.4",
 		},
 	}
 	for seed := 0; seed < 256; seed++ {
@@ -132,11 +132,11 @@ func TestClientPackageNameIsDeterministicAndConfined(t *testing.T) {
 func TestInitClientRequestDoesNotForwardModuleReference(t *testing.T) {
 	descriptor := metadata.EngineSource{
 		FormatVersion: 1, Repository: "https://github.com/dagger/dagger",
-		DaggerRevision: strings.Repeat("a", 40), EngineVersion: "1.0.0-beta.11.rust.3",
-		RustSDKVersion: "1.0.0-beta.11.rust.3", RustToolchain: "1.97.1",
+		DaggerRevision: strings.Repeat("a", 40), EngineVersion: "1.0.0-beta.11.rust.4",
+		RustSDKVersion: "1.0.0-beta.11.rust.4", RustToolchain: "1.97.1",
 		CoreSchemaDigest: "sha256:" + strings.Repeat("b", 64),
 		SDKDependency: metadata.PublishedSDKDependency{
-			Source: "registry", Registry: "crates-io", Package: "dagger-sdk", ExactVersion: "1.0.0-beta.11.rust.3",
+			Source: "registry", Registry: "crates-io", Package: "dagger-sdk", ExactVersion: "1.0.0-beta.11.rust.4",
 		},
 	}
 	request := clientInitializationRequestDocument(descriptor, "workspace/clients/example", "example")

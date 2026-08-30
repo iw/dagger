@@ -1,5 +1,5 @@
 //! Generated bindings owned by the GraphQL `LLM` type.
-// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:7d6f61426d0c65454a32059732deed8927471c92e906f4ac7b31dd8ff8214306","target_revision":"501b57e0476dee5881b99a064c3c04173134ecc7"}
+// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:ff790b6fb1eb0a72354a8c293c862f5c2018bcc7526ce048e4ad67e34abc6ffe","target_revision":"a4e1e4ff663e5e51c2b96c2c0772f3d2f00cfb94"}
 #[doc = "A conversation with a large language model (LLM): queue prompts, expose tools, and step the model until it completes its turn."]
 #[derive(Clone)]
 pub struct Llm {
@@ -233,7 +233,7 @@ impl Llm {
         let query = self.selection.select("model");
         query.execute(&self.session).await
     }
-    #[doc = "A portable, self-contained ID for the conversation that node() can resolve in any session. Unlike id, which may return an engine-local runtime handle valid only within the current session, this returns the recipe form suitable for persisting and later restoring the conversation.\n\nSelects GraphQL field `portableID` on `LLM`."]
+    #[doc = "A portable, self-contained ID for the conversation that node() can resolve in any session. Unlike id, which may return an engine-local runtime handle valid only within the current session, this returns the recipe form suitable for persisting and later restoring the conversation. The recipe is flattened: bindings superseded during the session (workspace overlays recorded by each mutating tool call, and re-bound toolsets) are dropped, while the current workspace binding — including any pending, un-exported edits — is preserved.\n\nSelects GraphQL field `portableID` on `LLM`."]
     pub async fn portable_id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("portableID");
         query.execute(&self.session).await
@@ -241,6 +241,11 @@ impl Llm {
     #[doc = "The provider serving the model, e.g. \"anthropic\", \"openai\", \"google\", or \"local\".\n\nSelects GraphQL field `provider` on `LLM`."]
     pub async fn provider(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("provider");
+        query.execute(&self.session).await
+    }
+    #[doc = "The reasoning effort in use, e.g. \"low\", \"medium\", or \"high\". Empty or \"none\" when reasoning is disabled.\n\nSelects GraphQL field `reasoningEffort` on `LLM`."]
+    pub async fn reasoning_effort(&self) -> Result<String, crate::QueryError> {
+        let query = self.selection.select("reasoningEffort");
         query.execute(&self.session).await
     }
     #[doc = "Re-emit telemetry spans for the full message history, so a loaded conversation displays in the TUI.\n\nSelects GraphQL field `replay` on `LLM`."]
@@ -252,6 +257,14 @@ impl Llm {
             id,
             "LLM",
         ))
+    }
+    #[doc = "The skills visible to the model, exactly as the ListSkills tool serves them: engine-embedded skills, skills installed with withSkills, and skills discovered in the workspace.\n\nSelects GraphQL field `skills` on `LLM`."]
+    pub async fn skills(&self) -> Result<Vec<super::LlmSkill>, crate::QueryError> {
+        let query = self.selection.select("skills");
+        let query = query.select("id");
+        query
+            .execute_reentry::<super::LlmSkill, Vec<crate::Id>>(&self.session, "LLMSkill")
+            .await
     }
     #[doc = "Advance the conversation by a single step: send the queued prompt or tool results to the model, evaluate any tool calls it makes, and queue their results. Use loop to step until the model ends its turn.\n\nSelects GraphQL field `step` on `LLM`."]
     #[must_use]
@@ -365,6 +378,16 @@ impl Llm {
             selection: query,
         }
     }
+    #[doc = "Change the reasoning effort for the rest of the conversation, overriding any configured default. The message history is preserved; the new effort takes effect on the next step.\n\nSelects GraphQL field `withReasoningEffort` on `LLM`."]
+    #[must_use]
+    pub fn with_reasoning_effort(&self, effort: impl Into<String>) -> super::Llm {
+        let query = self.selection.select("withReasoningEffort");
+        let query = query.arg("effort", effort.into());
+        super::Llm {
+            session: self.session.clone(),
+            selection: query,
+        }
+    }
     #[doc = "Append an assistant response to the message history without calling the model, e.g. to reconstruct a conversation from another source.\n\nSelects GraphQL field `withResponse` on `LLM`."]
     #[must_use]
     pub fn with_response(&self, content: Vec<super::LlmContentBlockInput>) -> super::Llm {
@@ -409,6 +432,19 @@ impl Llm {
         } else {
             query
         };
+        super::Llm {
+            session: self.session.clone(),
+            selection: query,
+        }
+    }
+    #[doc = "Install skills from a directory, adding them to the skills the model discovers with ListSkills and reads with ReadSkill. Each skill is a directory containing a SKILL.md with name and description frontmatter, discovered anywhere in the tree. Installed skills take precedence over skills discovered in the workspace, but cannot shadow the engine's built-in skills.\n\nSelects GraphQL field `withSkills` on `LLM`."]
+    #[must_use]
+    pub fn with_skills(
+        &self,
+        directory: impl Into<crate::IdInput<super::Directory>>,
+    ) -> super::Llm {
+        let query = self.selection.select("withSkills");
+        let query = query.arg_id_input("directory", directory.into());
         super::Llm {
             session: self.session.clone(),
             selection: query,

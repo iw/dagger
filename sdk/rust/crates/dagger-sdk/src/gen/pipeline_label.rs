@@ -1,5 +1,5 @@
 //! Generated bindings owned by the GraphQL `PipelineLabel` type.
-// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:7d6f61426d0c65454a32059732deed8927471c92e906f4ac7b31dd8ff8214306","target_revision":"501b57e0476dee5881b99a064c3c04173134ecc7"}
+// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:ff790b6fb1eb0a72354a8c293c862f5c2018bcc7526ce048e4ad67e34abc6ffe","target_revision":"a4e1e4ff663e5e51c2b96c2c0772f3d2f00cfb94"}
 #[doc = "Key value object that represents a pipeline label."]
 #[derive(Clone, Debug, PartialEq, serde :: Deserialize, serde :: Serialize)]
 #[non_exhaustive]

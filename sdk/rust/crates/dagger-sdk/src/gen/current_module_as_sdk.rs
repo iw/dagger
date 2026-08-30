@@ -1,6 +1,6 @@
 //! Generated bindings owned by the GraphQL `CurrentModuleAsSDK` type.
-// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:7d6f61426d0c65454a32059732deed8927471c92e906f4ac7b31dd8ff8214306","target_revision":"501b57e0476dee5881b99a064c3c04173134ecc7"}
-#[doc = "The SDK-role data for the currently executing module, as installed in the active workspace."]
+// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:ff790b6fb1eb0a72354a8c293c862f5c2018bcc7526ce048e4ad67e34abc6ffe","target_revision":"a4e1e4ff663e5e51c2b96c2c0772f3d2f00cfb94"}
+#[doc = "The SDK-role data for the currently executing module, as installed in the supplied workspace."]
 #[derive(Clone)]
 pub struct CurrentModuleAsSdk {
     pub(crate) session: crate::lifecycle::SessionHandle,
@@ -53,7 +53,7 @@ impl CurrentModuleAsSdk {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "The workspace-local modules this SDK authors and manages.\n\nSelects GraphQL field `modules` on `CurrentModuleAsSDK`."]
+    #[doc = "The managed modules relevant to the bound workspace cwd: every module at or below it, plus the nearest enclosing module when the cwd itself is not managed.\n\nSelects GraphQL field `modules` on `CurrentModuleAsSDK`."]
     pub async fn modules(&self) -> Result<Vec<super::CurrentModuleAsSdkModule>, crate::QueryError> {
         let query = self.selection.select("modules");
         let query = query.select("id");

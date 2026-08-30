@@ -1,5 +1,5 @@
 //! Generated bindings owned by the GraphQL `GitRepository` type.
-// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:7d6f61426d0c65454a32059732deed8927471c92e906f4ac7b31dd8ff8214306","target_revision":"501b57e0476dee5881b99a064c3c04173134ecc7"}
+// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:ff790b6fb1eb0a72354a8c293c862f5c2018bcc7526ce048e4ad67e34abc6ffe","target_revision":"a4e1e4ff663e5e51c2b96c2c0772f3d2f00cfb94"}
 #[doc = "A git repository."]
 #[derive(Clone)]
 pub struct GitRepository {
@@ -135,10 +135,10 @@ impl GitRepository {
     }
     #[doc = "Returns details of a commit.\n\nSelects GraphQL field `commit` on `GitRepository`."]
     #[must_use]
-    pub fn commit(&self, id: impl Into<String>) -> super::GitRef {
+    pub fn commit(&self, id: impl Into<String>) -> super::GitCommit {
         let query = self.selection.select("commit");
         let query = query.arg("id", id.into());
-        super::GitRef {
+        super::GitCommit {
             session: self.session.clone(),
             selection: query,
         }
@@ -157,10 +157,10 @@ impl GitRepository {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "Returns details for the latest semver tag.\n\nSelects GraphQL field `latestVersion` on `GitRepository`."]
+    #[doc = "Return the latest stable release tag, falling back to HEAD when no release exists.\n\nRelease selection accepts an optional \"v\" prefix, incomplete versions, and zero-padded numeric components. This operation is pinned.\n\nSelects GraphQL field `latest` on `GitRepository`."]
     #[must_use]
-    pub fn latest_version(&self) -> super::GitRef {
-        let query = self.selection.select("latestVersion");
+    pub fn latest(&self) -> super::GitRef {
+        let query = self.selection.select("latest");
         super::GitRef {
             session: self.session.clone(),
             selection: query,

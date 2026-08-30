@@ -1053,7 +1053,7 @@ mod tests {
             output_root: client.clone(),
         };
         let cargo = format!(
-            "[package]\nname = \"dagger-rust-client\"\nversion = \"0.0.0\"\npublish = false\nedition = \"2024\"\nrust-version = \"1.97.1\"\n\n[package.metadata.dagger]\ncontent-domain = \"engine-hook-baseline\"\nvisible-schema-digest = \"{}\"\nmodule-source-digest = \"{}\"\n\n[dependencies]\ndagger-sdk = {{ version = \"=1.0.0-beta.11.rust.3\" }}\n",
+            "[package]\nname = \"dagger-rust-client\"\nversion = \"0.0.0\"\npublish = false\nedition = \"2024\"\nrust-version = \"1.97.1\"\n\n[package.metadata.dagger]\ncontent-domain = \"engine-hook-baseline\"\nvisible-schema-digest = \"{}\"\nmodule-source-digest = \"{}\"\n\n[dependencies]\ndagger-sdk = {{ version = \"=1.0.0-beta.11.rust.4\" }}\n",
             request.visible_schema.digest, module.source_digest
         )
         .into_bytes();
@@ -1119,7 +1119,7 @@ mod tests {
             artifacts,
             post_work: Vec::new(),
             generator: GeneratorIdentity {
-                version: exact("1.0.0-beta.11.rust.3"),
+                version: exact("1.0.0-beta.11.rust.4"),
                 engine_source_digest: sha(5),
             },
             amendments: BTreeMap::new(),
@@ -1159,11 +1159,11 @@ mod tests {
             repository: CanonicalRepositoryUrl::new("https://github.com/dagger/dagger".to_owned())
                 .expect("repository must parse"),
             dagger_revision: FullRevision::new(
-                "501b57e0476dee5881b99a064c3c04173134ecc7".to_owned(),
+                "a4e1e4ff663e5e51c2b96c2c0772f3d2f00cfb94".to_owned(),
             )
             .expect("revision must parse"),
-            engine_version: exact("1.0.0-beta.11.rust.3"),
-            rust_sdk_version: exact("1.0.0-beta.11.rust.3"),
+            engine_version: exact("1.0.0-beta.11.rust.4"),
+            rust_sdk_version: exact("1.0.0-beta.11.rust.4"),
             rust_toolchain: ExactRustToolchain::new("1.97.1".to_owned())
                 .expect("toolchain must parse"),
             core_schema_digest: sha(2),
@@ -1174,7 +1174,7 @@ mod tests {
         PublishedSdkDependency::Registry {
             registry: CanonicalRegistry::new("crates-io".to_owned()).expect("registry must parse"),
             package: SdkPackageName::new("dagger-sdk".to_owned()).expect("package must parse"),
-            exact_version: exact("1.0.0-beta.11.rust.3"),
+            exact_version: exact("1.0.0-beta.11.rust.4"),
         }
     }
 

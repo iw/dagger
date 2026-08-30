@@ -25,7 +25,7 @@ use dagger_sdk_engine::{
 use proptest::prelude::*;
 use sha2::{Digest as _, Sha256};
 
-const REVISION: &str = "501b57e0476dee5881b99a064c3c04173134ecc7";
+const REVISION: &str = "a4e1e4ff663e5e51c2b96c2c0772f3d2f00cfb94";
 const CORE_SCHEMA_DIGEST: &str =
     "sha256:7d6f61426d0c65454a32059732deed8927471c92e906f4ac7b31dd8ff8214306";
 
@@ -182,7 +182,7 @@ fn write_adopted_project(root: &Path) {
     fs::create_dir_all(root.join("src")).unwrap();
     fs::write(
         root.join("Cargo.toml"),
-        "[package]\nname = \"adopted-client\"\nversion = \"0.1.0\"\npublish = false\nedition = \"2024\"\nrust-version = \"1.97.1\"\n\n[dependencies]\ndagger-sdk = \"=1.0.0-beta.11.rust.3\"\n",
+        "[package]\nname = \"adopted-client\"\nversion = \"0.1.0\"\npublish = false\nedition = \"2024\"\nrust-version = \"1.97.1\"\n\n[dependencies]\ndagger-sdk = \"=1.0.0-beta.11.rust.4\"\n",
     )
     .unwrap();
     fs::write(
@@ -374,8 +374,8 @@ fn target() -> TargetIdentity {
         format_version: FormatVersion,
         repository: CanonicalRepositoryUrl::new("https://github.com/dagger/dagger").unwrap(),
         dagger_revision: FullRevision::new(REVISION).unwrap(),
-        engine_version: ExactVersion::new("1.0.0-beta.11.rust.3").unwrap(),
-        rust_sdk_version: ExactVersion::new("1.0.0-beta.11.rust.3").unwrap(),
+        engine_version: ExactVersion::new("1.0.0-beta.11.rust.4").unwrap(),
+        rust_sdk_version: ExactVersion::new("1.0.0-beta.11.rust.4").unwrap(),
         rust_toolchain: ExactRustToolchain::new("1.97.1").unwrap(),
         core_schema_digest: Sha256Digest::new(CORE_SCHEMA_DIGEST).unwrap(),
     }
@@ -385,7 +385,7 @@ fn dependency() -> PublishedSdkDependency {
     PublishedSdkDependency::Registry {
         registry: CanonicalRegistry::new("crates-io").unwrap(),
         package: SdkPackageName::new("dagger-sdk").unwrap(),
-        exact_version: ExactVersion::new("1.0.0-beta.11.rust.3").unwrap(),
+        exact_version: ExactVersion::new("1.0.0-beta.11.rust.4").unwrap(),
     }
 }
 

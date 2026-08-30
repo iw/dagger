@@ -157,7 +157,11 @@ pub(crate) fn project_directives(
             "experimental" => DirectivePolicy::Experimental,
             "enumValue" => DirectivePolicy::EnumValueAlias,
             "sourceMap" => DirectivePolicy::SourceMap,
-            "cache" | "check" | "defaultAddress" | "defaultPath" | "generate"
+            // "agent" (v1.0.0-beta.11): marks module functions as agent middleware.
+            // Definition-only at the exact target — no core-schema coordinate applies
+            // it — so an application appearing in a future target fails closed via
+            // TargetInactiveDirectiveChanged until its client semantics are decided.
+            "agent" | "cache" | "check" | "defaultAddress" | "defaultPath" | "generate"
             | "ignorePatterns" | "up" => DirectivePolicy::TargetInactive,
             _ => {
                 diagnostics.push(diagnostic(

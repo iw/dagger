@@ -1,12 +1,12 @@
-//! Generated bindings owned by the GraphQL `Secret` type.
+//! Generated bindings owned by the GraphQL `Agent` type.
 // @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:ff790b6fb1eb0a72354a8c293c862f5c2018bcc7526ce048e4ad67e34abc6ffe","target_revision":"a4e1e4ff663e5e51c2b96c2c0772f3d2f00cfb94"}
-#[doc = "A reference to a secret value, which can be handled more safely than the value itself."]
+#[doc = "Lazy handle for GraphQL object `Agent`."]
 #[derive(Clone)]
-pub struct Secret {
+pub struct Agent {
     pub(crate) session: crate::lifecycle::SessionHandle,
     pub(crate) selection: crate::query::Selection,
 }
-impl crate::IntoID<crate::Id> for Secret {
+impl crate::IntoID<crate::Id> for Agent {
     fn into_id(
         self,
     ) -> core::pin::Pin<
@@ -15,9 +15,9 @@ impl crate::IntoID<crate::Id> for Secret {
         Box::pin(async move { self.id().await })
     }
 }
-impl crate::loadable::private::Sealed for Secret {
+impl crate::loadable::private::Sealed for Agent {
     fn graphql_type() -> &'static str {
-        "Secret"
+        "Agent"
     }
     fn from_query(
         session: crate::lifecycle::SessionHandle,
@@ -26,39 +26,48 @@ impl crate::loadable::private::Sealed for Secret {
         Self { session, selection }
     }
 }
-impl From<Secret> for crate::IdInput<Secret> {
-    fn from(value: Secret) -> Self {
+impl From<Agent> for crate::IdInput<Agent> {
+    fn from(value: Agent) -> Self {
         crate::IdInput::lazy(value)
     }
 }
-impl From<Secret> for crate::IdInput<super::NodeClient> {
-    fn from(value: Secret) -> Self {
+impl From<Agent> for crate::IdInput<super::NodeClient> {
+    fn from(value: Agent) -> Self {
         crate::IdInput::lazy(value)
     }
 }
-impl Secret {
-    #[doc = "A unique identifier for this Secret.\n\nSelects GraphQL field `id` on `Secret`."]
+impl Agent {
+    #[doc = "The description of the agent\n\nSelects GraphQL field `description` on `Agent`."]
+    pub async fn description(&self) -> Result<String, crate::QueryError> {
+        let query = self.selection.select("description");
+        query.execute(&self.session).await
+    }
+    #[doc = "A unique identifier for this Agent.\n\nSelects GraphQL field `id` on `Agent`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "The name of this secret.\n\nSelects GraphQL field `name` on `Secret`."]
+    #[doc = "Return the fully qualified name of the agent\n\nSelects GraphQL field `name` on `Agent`."]
     pub async fn name(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("name");
         query.execute(&self.session).await
     }
-    #[doc = "The value of this secret.\n\nSelects GraphQL field `plaintext` on `Secret`."]
-    pub async fn plaintext(&self) -> Result<String, crate::QueryError> {
-        let query = self.selection.select("plaintext");
-        query.execute(&self.session).await
+    #[doc = "The original module in which the agent has been defined\n\nSelects GraphQL field `originalModule` on `Agent`."]
+    #[must_use]
+    pub fn original_module(&self) -> super::Module {
+        let query = self.selection.select("originalModule");
+        super::Module {
+            session: self.session.clone(),
+            selection: query,
+        }
     }
-    #[doc = "The URI of this secret.\n\nSelects GraphQL field `uri` on `Secret`."]
-    pub async fn uri(&self) -> Result<String, crate::QueryError> {
-        let query = self.selection.select("uri");
+    #[doc = "The path of the agent within its module\n\nSelects GraphQL field `path` on `Agent`."]
+    pub async fn path(&self) -> Result<Vec<String>, crate::QueryError> {
+        let query = self.selection.select("path");
         query.execute(&self.session).await
     }
 }
-impl super::Node for Secret {
+impl super::Node for Agent {
     fn id(
         &self,
     ) -> impl core::future::Future<Output = Result<crate::Id, crate::QueryError>> + Send {

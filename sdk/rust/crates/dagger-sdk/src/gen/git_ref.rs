@@ -1,5 +1,5 @@
 //! Generated bindings owned by the GraphQL `GitRef` type.
-// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:7d6f61426d0c65454a32059732deed8927471c92e906f4ac7b31dd8ff8214306","target_revision":"501b57e0476dee5881b99a064c3c04173134ecc7"}
+// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:ff790b6fb1eb0a72354a8c293c862f5c2018bcc7526ce048e4ad67e34abc6ffe","target_revision":"a4e1e4ff663e5e51c2b96c2c0772f3d2f00cfb94"}
 #[doc = "A git ref (tag, branch, or commit)."]
 #[derive(Clone)]
 pub struct GitRef {
@@ -18,6 +18,37 @@ impl GitRefAsWorkspaceOpts {
     #[must_use]
     pub fn with_cwd(mut self, value: impl Into<String>) -> Self {
         self.cwd = Some(value.into());
+        self
+    }
+}
+#[doc = "Owned optional arguments for GraphQL operation `GitRef.log`; reuse does not mutate caller state."]
+#[derive(Clone, Debug, Default)]
+#[non_exhaustive]
+pub struct GitRefLogOpts {
+    #[doc = "Exclude commits reachable from this ref, i.e. only list commits added on top of it.\n\n`None` omits GraphQL field `base`."]
+    pub base: Option<crate::IdInput<super::GitRef>>,
+    #[doc = "Maximum number of commits to return.\n\n`None` omits GraphQL field `limit` and preserves engine default `Int(10)`."]
+    pub limit: Option<i64>,
+    #[doc = "Only include commits touching these paths, relative to the root of the repository.\n\n`None` omits GraphQL field `paths`."]
+    pub paths: Option<Vec<String>>,
+}
+impl GitRefLogOpts {
+    #[doc = "Sets GraphQL argument `base` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_base(mut self, value: crate::IdInput<super::GitRef>) -> Self {
+        self.base = Some(value);
+        self
+    }
+    #[doc = "Sets GraphQL argument `limit` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_limit(mut self, value: i64) -> Self {
+        self.limit = Some(value);
+        self
+    }
+    #[doc = "Sets GraphQL argument `paths` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_paths(mut self, value: Vec<impl Into<String>>) -> Self {
+        self.paths = Some(value.into_iter().map(Into::into).collect());
         self
     }
 }
@@ -106,9 +137,15 @@ impl GitRef {
             selection: query,
         }
     }
-    #[doc = "The resolved commit id at this ref.\n\nSelects GraphQL field `commit` on `GitRef`."]
+    #[doc = "The resolved commit id at this ref.\n\nSelects GraphQL field `commit` on `GitRef`.\n\n**Deprecated:** Use \"commitSHA\" instead."]
+    #[deprecated(note = "Use \"commitSHA\" instead.")]
     pub async fn commit(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("commit");
+        query.execute(&self.session).await
+    }
+    #[doc = "The resolved commit SHA at this ref.\n\nSelects GraphQL field `commitSHA` on `GitRef`."]
+    pub async fn commit_sha(&self) -> Result<String, crate::QueryError> {
+        let query = self.selection.select("commitSHA");
         query.execute(&self.session).await
     }
     #[doc = "Find the best common ancestor between this ref and another ref.\n\nSelects GraphQL field `commonAncestor` on `GitRef`."]
@@ -129,10 +166,59 @@ impl GitRef {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "The resolved ref name at this ref.\n\nSelects GraphQL field `ref` on `GitRef`."]
+    #[doc = "Commits reachable from this ref, newest first, starting with the commit this ref resolves to.\n\nSelects GraphQL field `log` on `GitRef`."]
+    pub async fn log(&self) -> Result<Vec<super::GitCommit>, crate::QueryError> {
+        let query = self.selection.select("log");
+        let query = query.select("id");
+        query
+            .execute_reentry::<super::GitCommit, Vec<crate::Id>>(&self.session, "GitCommit")
+            .await
+    }
+    #[doc = "Executes GraphQL operation `log` with a borrowed, reusable `GitRefLogOpts` value."]
+    pub async fn log_opts(
+        &self,
+        opts: &GitRefLogOpts,
+    ) -> Result<Vec<super::GitCommit>, crate::QueryError> {
+        let query = self.selection.select("log");
+        let query = if let Some(value) = &opts.base {
+            query.arg_id_input("base", value.clone())
+        } else {
+            query
+        };
+        let query = if let Some(value) = &opts.limit {
+            query.arg("limit", value)
+        } else {
+            query
+        };
+        let query = if let Some(value) = &opts.paths {
+            query.arg("paths", value)
+        } else {
+            query
+        };
+        let query = query.select("id");
+        query
+            .execute_reentry::<super::GitCommit, Vec<crate::Id>>(&self.session, "GitCommit")
+            .await
+    }
+    #[doc = "The resolved name of this ref.\n\nSelects GraphQL field `name` on `GitRef`."]
+    pub async fn name(&self) -> Result<String, crate::QueryError> {
+        let query = self.selection.select("name");
+        query.execute(&self.session).await
+    }
+    #[doc = "The resolved ref name at this ref.\n\nSelects GraphQL field `ref` on `GitRef`.\n\n**Deprecated:** Use \"name\" instead."]
+    #[deprecated(note = "Use \"name\" instead.")]
     pub async fn r#ref(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("ref");
         query.execute(&self.session).await
+    }
+    #[doc = "The commit this ref resolves to.\n\nSelects GraphQL field `targetCommit` on `GitRef`."]
+    #[must_use]
+    pub fn target_commit(&self) -> super::GitCommit {
+        let query = self.selection.select("targetCommit");
+        super::GitCommit {
+            session: self.session.clone(),
+            selection: query,
+        }
     }
     #[doc = "The filesystem tree at this ref.\n\nSelects GraphQL field `tree` on `GitRef`."]
     #[must_use]

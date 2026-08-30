@@ -1,10 +1,40 @@
 //! Generated bindings owned by the GraphQL `Workspace` type.
-// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:7d6f61426d0c65454a32059732deed8927471c92e906f4ac7b31dd8ff8214306","target_revision":"501b57e0476dee5881b99a064c3c04173134ecc7"}
+// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:ff790b6fb1eb0a72354a8c293c862f5c2018bcc7526ce048e4ad67e34abc6ffe","target_revision":"a4e1e4ff663e5e51c2b96c2c0772f3d2f00cfb94"}
 #[doc = "A Dagger workspace detected from the current working directory or constructed from a Directory."]
 #[derive(Clone)]
 pub struct Workspace {
     pub(crate) session: crate::lifecycle::SessionHandle,
     pub(crate) selection: crate::query::Selection,
+}
+#[doc = "Owned optional arguments for GraphQL operation `Workspace.agents`; reuse does not mutate caller state."]
+#[derive(Clone, Debug, Default)]
+#[non_exhaustive]
+pub struct WorkspaceAgentsOpts {
+    #[doc = "Only include agents matching the specified patterns\n\n`None` omits GraphQL field `include`."]
+    pub include: Option<Vec<String>>,
+}
+impl WorkspaceAgentsOpts {
+    #[doc = "Sets GraphQL argument `include` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_include(mut self, value: Vec<impl Into<String>>) -> Self {
+        self.include = Some(value.into_iter().map(Into::into).collect());
+        self
+    }
+}
+#[doc = "Owned optional arguments for GraphQL operation `Workspace.changes`; reuse does not mutate caller state."]
+#[derive(Clone, Debug, Default)]
+#[non_exhaustive]
+pub struct WorkspaceChangesOpts {
+    #[doc = "An earlier workspace state to compare against.\n\n`None` omits GraphQL field `from`."]
+    pub from: Option<crate::IdInput<super::Workspace>>,
+}
+impl WorkspaceChangesOpts {
+    #[doc = "Sets GraphQL argument `from` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_from(mut self, value: crate::IdInput<super::Workspace>) -> Self {
+        self.from = Some(value);
+        self
+    }
 }
 #[doc = "Owned optional arguments for GraphQL operation `Workspace.checks`; reuse does not mutate caller state."]
 #[derive(Clone, Debug, Default)]
@@ -88,6 +118,29 @@ impl WorkspaceDirectoryOpts {
     #[must_use]
     pub fn with_include(mut self, value: Vec<impl Into<String>>) -> Self {
         self.include = Some(value.into_iter().map(Into::into).collect());
+        self
+    }
+}
+#[doc = "Owned optional arguments for GraphQL operation `Workspace.findRoots`; reuse does not mutate caller state."]
+#[derive(Clone, Debug, Default)]
+#[non_exhaustive]
+pub struct WorkspaceFindRootsOpts {
+    #[doc = "Glob patterns pruning the walk below start (e.g. \\[\"**/node_modules/**\"\\]).\n\n`None` omits GraphQL field `exclude` and preserves engine default `List(\\[\\])`."]
+    pub exclude: Option<Vec<String>>,
+    #[doc = "Directory to start from. Relative paths resolve from the workspace cwd.\n\n`None` omits GraphQL field `start` and preserves engine default `String(\".\")`."]
+    pub start: Option<String>,
+}
+impl WorkspaceFindRootsOpts {
+    #[doc = "Sets GraphQL argument `exclude` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_exclude(mut self, value: Vec<impl Into<String>>) -> Self {
+        self.exclude = Some(value.into_iter().map(Into::into).collect());
+        self
+    }
+    #[doc = "Sets GraphQL argument `start` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_start(mut self, value: impl Into<String>) -> Self {
+        self.start = Some(value.into());
         self
     }
 }
@@ -304,7 +357,7 @@ pub struct WorkspaceWithInitModuleOpts {
     pub include: Option<Vec<String>>,
     #[doc = "Skip running the SDK's generators for the new module.\n\n`None` omits GraphQL field `noGenerate` and preserves engine default `Boolean(false)`."]
     pub no_generate: Option<bool>,
-    #[doc = "Workspace-relative path for the new module.\n\n`None` omits GraphQL field `path` and preserves engine default `String(\"\")`."]
+    #[doc = "Path for the new module, relative to the workspace cwd; a leading \"/\" is relative to the workspace root. Defaults to .dagger/modules/&lt;name&gt; beside the workspace config.\n\n`None` omits GraphQL field `path` and preserves engine default `String(\"\")`."]
     pub path: Option<String>,
     #[doc = "Source subpath within the new module.\n\n`None` omits GraphQL field `source` and preserves engine default `String(\"\")`."]
     pub source: Option<String>,
@@ -512,10 +565,47 @@ impl Workspace {
         let query = self.selection.select("address");
         query.execute(&self.session).await
     }
-    #[doc = "Return this workspace's pending overlay changes.\n\nSelects GraphQL field `changes` on `Workspace`."]
+    #[doc = "Return all agent middlewares from modules loaded in the workspace.\n\nSelects GraphQL field `agents` on `Workspace`."]
+    #[must_use]
+    pub fn agents(&self) -> super::AgentGroup {
+        let query = self.selection.select("agents");
+        super::AgentGroup {
+            session: self.session.clone(),
+            selection: query,
+        }
+    }
+    #[doc = "Executes GraphQL operation `agents` with a borrowed, reusable `WorkspaceAgentsOpts` value."]
+    #[must_use]
+    pub fn agents_opts(&self, opts: &WorkspaceAgentsOpts) -> super::AgentGroup {
+        let query = self.selection.select("agents");
+        let query = if let Some(value) = &opts.include {
+            query.arg("include", value)
+        } else {
+            query
+        };
+        super::AgentGroup {
+            session: self.session.clone(),
+            selection: query,
+        }
+    }
+    #[doc = "Return this workspace's changes, with paths relative to its working directory.\n\nPass from to compare against an earlier workspace state. Omitting it preserves the cumulative behavior used by clients from before this argument was added.\n\nSelects GraphQL field `changes` on `Workspace`."]
     #[must_use]
     pub fn changes(&self) -> super::Changeset {
         let query = self.selection.select("changes");
+        super::Changeset {
+            session: self.session.clone(),
+            selection: query,
+        }
+    }
+    #[doc = "Executes GraphQL operation `changes` with a borrowed, reusable `WorkspaceChangesOpts` value."]
+    #[must_use]
+    pub fn changes_opts(&self, opts: &WorkspaceChangesOpts) -> super::Changeset {
+        let query = self.selection.select("changes");
+        let query = if let Some(value) = &opts.from {
+            query.arg_id_input("from", value.clone())
+        } else {
+            query
+        };
         super::Changeset {
             session: self.session.clone(),
             selection: query,
@@ -646,6 +736,37 @@ impl Workspace {
             selection: query,
         }
     }
+    #[doc = "Find project roots marked by any of the given filenames, starting from a path relative to the workspace cwd.\n\nReturns cwd-relative directory paths for every marked directory at or below start, plus the nearest marked ancestor when start itself is not marked.\n\nEach returned path is usable as-is with other workspace APIs, e.g. directory(path).\n\nSelects GraphQL field `findRoots` on `Workspace`."]
+    pub async fn find_roots(
+        &self,
+        markers: Vec<impl Into<String>>,
+    ) -> Result<Vec<String>, crate::QueryError> {
+        let query = self.selection.select("findRoots");
+        let markers = markers.into_iter().map(Into::into).collect::<Vec<String>>();
+        let query = query.arg("markers", markers);
+        query.execute(&self.session).await
+    }
+    #[doc = "Executes GraphQL operation `findRoots` with a borrowed, reusable `WorkspaceFindRootsOpts` value."]
+    pub async fn find_roots_opts(
+        &self,
+        markers: Vec<impl Into<String>>,
+        opts: &WorkspaceFindRootsOpts,
+    ) -> Result<Vec<String>, crate::QueryError> {
+        let query = self.selection.select("findRoots");
+        let query = if let Some(value) = &opts.exclude {
+            query.arg("exclude", value)
+        } else {
+            query
+        };
+        let markers = markers.into_iter().map(Into::into).collect::<Vec<String>>();
+        let query = query.arg("markers", markers);
+        let query = if let Some(value) = &opts.start {
+            query.arg("start", value)
+        } else {
+            query
+        };
+        query.execute(&self.session).await
+    }
     #[doc = "Search for a file or directory by walking up from the start path within the workspace.\n\nReturns the absolute workspace path if found, or null if not found.\n\nRelative start paths resolve from the workspace cwd.\n\nThe search stops at the workspace root and will not traverse above it.\n\nSelects GraphQL field `findUp` on `Workspace`."]
     pub async fn find_up(
         &self,
@@ -722,7 +843,7 @@ impl Workspace {
             selection: query,
         }
     }
-    #[doc = "Return a module defined in the workspace configuration.\n\nSelects GraphQL field `module` on `Workspace`."]
+    #[doc = "Return a module defined in the workspace configuration.\n\nReflects the selected env's effective view.\n\nSelects GraphQL field `module` on `Workspace`."]
     #[must_use]
     pub fn module(&self, name: impl Into<String>) -> super::WorkspaceModule {
         let query = self.selection.select("module");
@@ -742,7 +863,7 @@ impl Workspace {
             selection: query,
         }
     }
-    #[doc = "List modules defined in the workspace configuration.\n\nSelects GraphQL field `modules` on `Workspace`."]
+    #[doc = "List modules defined in the workspace configuration.\n\nReflects the selected env's effective view.\n\nSelects GraphQL field `modules` on `Workspace`."]
     pub async fn modules(&self) -> Result<Vec<super::WorkspaceModule>, crate::QueryError> {
         let query = self.selection.select("modules");
         let query = query.select("id");
@@ -752,6 +873,15 @@ impl Workspace {
                 "WorkspaceModule",
             )
             .await
+    }
+    #[doc = "Return this workspace with its cached host reads invalidated, so subsequent file and directory reads re-read the live host instead of a snapshot cached earlier in the session.\n\nSelects GraphQL field `reloaded` on `Workspace`."]
+    #[must_use]
+    pub fn reloaded(&self) -> super::Workspace {
+        let query = self.selection.select("reloaded");
+        super::Workspace {
+            session: self.session.clone(),
+            selection: query,
+        }
     }
     #[doc = "An installed SDK, by name.\n\nSelects GraphQL field `sdk` on `Workspace`."]
     #[must_use]
@@ -911,7 +1041,7 @@ impl Workspace {
             selection: query,
         }
     }
-    #[doc = "Return this workspace with a configuration value written.\n\nSelects GraphQL field `withConfigValue` on `Workspace`."]
+    #[doc = "Return this workspace with a configuration value written.\n\nWhen the session selects an env, the key is scoped to that env's overlay and the env is created if missing.\n\nSelects GraphQL field `withConfigValue` on `Workspace`."]
     #[must_use]
     pub fn with_config_value(
         &self,
@@ -947,6 +1077,21 @@ impl Workspace {
         } else {
             query
         };
+        super::Workspace {
+            session: self.session.clone(),
+            selection: query,
+        }
+    }
+    #[doc = "Return this workspace with a directory merged into the given path, without mutating the source.\n\nAnything already at the path stays, and files the source carries win, as with Directory.withDirectory. Use withNewDirectory to replace the path instead.\n\nSelects GraphQL field `withDirectory` on `Workspace`."]
+    #[must_use]
+    pub fn with_directory(
+        &self,
+        path: impl Into<String>,
+        source: impl Into<crate::IdInput<super::Directory>>,
+    ) -> super::Workspace {
+        let query = self.selection.select("withDirectory");
+        let query = query.arg("path", path.into());
+        let query = query.arg_id_input("source", source.into());
         super::Workspace {
             session: self.session.clone(),
             selection: query,
@@ -1063,7 +1208,7 @@ impl Workspace {
             selection: query,
         }
     }
-    #[doc = "Return this workspace with a module installed in its config.\n\nSelects GraphQL field `withModule` on `Workspace`."]
+    #[doc = "Return this workspace with a module installed in its config.\n\nWhen the session selects an env, the module is recorded in that env's overlay and the env is created if missing.\n\nSelects GraphQL field `withModule` on `Workspace`."]
     #[must_use]
     pub fn with_module(&self, r#ref: impl Into<String>) -> super::Workspace {
         let query = self.selection.select("withModule");
@@ -1097,7 +1242,37 @@ impl Workspace {
             selection: query,
         }
     }
-    #[doc = "Return this workspace with a directory added, without mutating the source.\n\nSelects GraphQL field `withNewDirectory` on `Workspace`."]
+    #[doc = "Return this workspace with a directory mounted read-only at the given path, without mutating the source.\n\nMounted content is readable through the normal workspace file tools but shadows the source at the mount path and stays out of the pending changeset: it never appears in changes, is never exported, and cannot be modified.\n\nSelects GraphQL field `withMountedDirectory` on `Workspace`."]
+    #[must_use]
+    pub fn with_mounted_directory(
+        &self,
+        path: impl Into<String>,
+        source: impl Into<crate::IdInput<super::Directory>>,
+    ) -> super::Workspace {
+        let query = self.selection.select("withMountedDirectory");
+        let query = query.arg("path", path.into());
+        let query = query.arg_id_input("source", source.into());
+        super::Workspace {
+            session: self.session.clone(),
+            selection: query,
+        }
+    }
+    #[doc = "Return this workspace with a file mounted read-only at the given path, without mutating the source.\n\nMounted content is readable through the normal workspace file tools but shadows the source at the mount path and stays out of the pending changeset: it never appears in changes, is never exported, and cannot be modified.\n\nSelects GraphQL field `withMountedFile` on `Workspace`."]
+    #[must_use]
+    pub fn with_mounted_file(
+        &self,
+        path: impl Into<String>,
+        source: impl Into<crate::IdInput<super::File>>,
+    ) -> super::Workspace {
+        let query = self.selection.select("withMountedFile");
+        let query = query.arg("path", path.into());
+        let query = query.arg_id_input("source", source.into());
+        super::Workspace {
+            session: self.session.clone(),
+            selection: query,
+        }
+    }
+    #[doc = "Return this workspace with the given path replaced by a directory, without mutating the source.\n\nThe source becomes the entire contents of the path: anything already there that the source does not carry is removed. Use withDirectory to keep it instead.\n\nSelects GraphQL field `withNewDirectory` on `Workspace`."]
     #[must_use]
     pub fn with_new_directory(
         &self,
@@ -1235,7 +1410,7 @@ impl Workspace {
             selection: query,
         }
     }
-    #[doc = "Return this workspace with a configuration value removed.\n\nErrors when the key is not currently set.\n\nSelects GraphQL field `withoutConfigValue` on `Workspace`."]
+    #[doc = "Return this workspace with a configuration value removed.\n\nErrors when the key is not currently set.\n\nWhen the session selects an env, the key is scoped to that env's overlay.\n\nSelects GraphQL field `withoutConfigValue` on `Workspace`."]
     #[must_use]
     pub fn without_config_value(&self, key: impl Into<String>) -> super::Workspace {
         let query = self.selection.select("withoutConfigValue");
@@ -1284,7 +1459,7 @@ impl Workspace {
             selection: query,
         }
     }
-    #[doc = "Return this workspace with a module removed from its config.\n\nSelects GraphQL field `withoutModule` on `Workspace`."]
+    #[doc = "Return this workspace with a module removed from its config.\n\nWhen the session selects an env, only that env's overlay entry is removed.\n\nSelects GraphQL field `withoutModule` on `Workspace`."]
     #[must_use]
     pub fn without_module(&self, name: impl Into<String>) -> super::Workspace {
         let query = self.selection.select("withoutModule");

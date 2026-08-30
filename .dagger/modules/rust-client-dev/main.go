@@ -25,8 +25,8 @@ const (
 	// forkRepository is the source of release engine builds: the upstream engine
 	// build pointed at this fork's repository at the supplied release commit.
 	forkRepository = "https://github.com/iw/dagger.git"
-	coreTargetRevision      = "501b57e0476dee5881b99a064c3c04173134ecc7"
-	coreTargetVersion       = "v1.0.0-beta.11.rust.3"
+	coreTargetRevision      = "a4e1e4ff663e5e51c2b96c2c0772f3d2f00cfb94"
+	coreTargetVersion       = "v1.0.0-beta.11.rust.4"
 	focusedEngineBaseImage  = "registry.dagger.io/engine:v1.0.0-beta.9@sha256:de22dbf0c848d618efa9243f76fd47364110d31bb2e24cce063b702e91e1b73e"
 	focusedEngineBaseCommit = "1c6e07b197327c57e9db8584deb36e5166278677"
 	defaultEngineRepository = "https://github.com/dagger/dagger"
@@ -512,7 +512,7 @@ func (content *RustEngineContent) runResolution(
 		return "", fmt.Errorf("installed SDK listing omitted canonical Rust entry")
 	}
 	rejected := second.WithExec(
-		[]string{"dagger", "-y", "sdk", "install", "rust@v1.0.0-beta.11.rust.3"},
+		[]string{"dagger", "-y", "sdk", "install", "rust@v1.0.0-beta.11.rust.4"},
 		dagger.ContainerWithExecOpts{Expect: dagger.ReturnTypeAny},
 	)
 	exitCode, err := rejected.ExitCode(ctx)
@@ -747,7 +747,7 @@ func (content *RustEngineContent) runEngineIntegrationCase(
 				"dagger", "-y", "module", "init", "rust", "runtime-legacy", "--path", "modules/runtime-legacy", "--no-generate",
 			}).
 			WithExec([]string{"rm", "modules/runtime-legacy/dagger-module.toml"}).
-			WithNewFile("/work/modules/runtime-legacy/dagger.json", `{"name":"runtime-legacy","engineVersion":"v1.0.0-beta.11.rust.3","sdk":{"source":"rust"}}`)
+			WithNewFile("/work/modules/runtime-legacy/dagger.json", `{"name":"runtime-legacy","engineVersion":"v1.0.0-beta.11.rust.4","sdk":{"source":"rust"}}`)
 		functions, err := result.WithExec([]string{
 			"dagger", "-m", "modules/runtime-legacy", "functions",
 		}).Stdout(ctx)
@@ -880,7 +880,7 @@ edition = "2024"
 rust-version = "1.97.1"
 
 [dependencies]
-dagger-sdk = { git = "https://user:` + credential + `@github.com/iw/dagger", rev = "501b57e0476dee5881b99a064c3c04173134ecc7" }
+dagger-sdk = { git = "https://user:` + credential + `@github.com/iw/dagger", rev = "a4e1e4ff663e5e51c2b96c2c0772f3d2f00cfb94" }
 `
 	fixture := installed.
 		WithNewFile("/work/modules/credential-failure/Cargo.toml", manifest).

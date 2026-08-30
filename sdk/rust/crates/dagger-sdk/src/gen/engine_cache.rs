@@ -1,5 +1,5 @@
 //! Generated bindings owned by the GraphQL `EngineCache` type.
-// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:7d6f61426d0c65454a32059732deed8927471c92e906f4ac7b31dd8ff8214306","target_revision":"501b57e0476dee5881b99a064c3c04173134ecc7"}
+// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:ff790b6fb1eb0a72354a8c293c862f5c2018bcc7526ce048e4ad67e34abc6ffe","target_revision":"a4e1e4ff663e5e51c2b96c2c0772f3d2f00cfb94"}
 #[doc = "A cache storage for the Dagger engine"]
 #[derive(Clone)]
 pub struct EngineCache {
@@ -25,18 +25,28 @@ impl EngineCacheEntrySetOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct EngineCachePruneOpts {
+    #[doc = "Override the maximum structural metadata estimate in absolute bytes. Explicit values must be positive; the configured/default value is used when omitted.\n\n`None` omits GraphQL field `maxEstimatedBytes`."]
+    pub max_estimated_bytes: Option<i64>,
     #[doc = "Override the maximum disk space to keep before pruning (e.g. \"200GB\" or \"80%\").\n\n`None` omits GraphQL field `maxUsedSpace` and preserves engine default `String(\"\")`."]
     pub max_used_space: Option<String>,
     #[doc = "Override the minimum free disk space target during pruning (e.g. \"20GB\" or \"20%\").\n\n`None` omits GraphQL field `minFreeSpace` and preserves engine default `String(\"\")`."]
     pub min_free_space: Option<String>,
     #[doc = "Override the minimum disk space to retain during pruning (e.g. \"500GB\" or \"10%\").\n\n`None` omits GraphQL field `reservedSpace` and preserves engine default `String(\"\")`."]
     pub reserved_space: Option<String>,
+    #[doc = "Override the structural metadata estimate to target in absolute bytes. Explicit values must be positive and lower than the resolved maximum; the configured/default value is used when omitted.\n\n`None` omits GraphQL field `targetEstimatedBytes`."]
+    pub target_estimated_bytes: Option<i64>,
     #[doc = "Override the target disk space to keep after pruning (e.g. \"200GB\" or \"50%\").\n\n`None` omits GraphQL field `targetSpace` and preserves engine default `String(\"\")`."]
     pub target_space: Option<String>,
-    #[doc = "Use the engine-wide default pruning policy if true, otherwise prune the whole cache of any releasable entries.\n\n`None` omits GraphQL field `useDefaultPolicy` and preserves engine default `Boolean(false)`."]
+    #[doc = "Use enabled engine-wide default disk and structural policies. If no default disk policy is enabled, the disk stage falls back to pruning all releasable disk-cache entries. If false, explicit options select stages; with no options, all releasable disk-cache entries are pruned.\n\n`None` omits GraphQL field `useDefaultPolicy` and preserves engine default `Boolean(false)`."]
     pub use_default_policy: Option<bool>,
 }
 impl EngineCachePruneOpts {
+    #[doc = "Sets GraphQL argument `maxEstimatedBytes` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_max_estimated_bytes(mut self, value: i64) -> Self {
+        self.max_estimated_bytes = Some(value);
+        self
+    }
     #[doc = "Sets GraphQL argument `maxUsedSpace` to a concrete value instead of omitting it."]
     #[must_use]
     pub fn with_max_used_space(mut self, value: impl Into<String>) -> Self {
@@ -53,6 +63,12 @@ impl EngineCachePruneOpts {
     #[must_use]
     pub fn with_reserved_space(mut self, value: impl Into<String>) -> Self {
         self.reserved_space = Some(value.into());
+        self
+    }
+    #[doc = "Sets GraphQL argument `targetEstimatedBytes` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_target_estimated_bytes(mut self, value: i64) -> Self {
+        self.target_estimated_bytes = Some(value);
         self
     }
     #[doc = "Sets GraphQL argument `targetSpace` to a concrete value instead of omitting it."]
@@ -145,6 +161,11 @@ impl EngineCache {
     #[doc = "Executes GraphQL operation `prune` with a borrowed, reusable `EngineCachePruneOpts` value."]
     pub async fn prune_opts(&self, opts: &EngineCachePruneOpts) -> Result<(), crate::QueryError> {
         let query = self.selection.select("prune");
+        let query = if let Some(value) = &opts.max_estimated_bytes {
+            query.arg("maxEstimatedBytes", value)
+        } else {
+            query
+        };
         let query = if let Some(value) = &opts.max_used_space {
             query.arg("maxUsedSpace", value)
         } else {
@@ -157,6 +178,11 @@ impl EngineCache {
         };
         let query = if let Some(value) = &opts.reserved_space {
             query.arg("reservedSpace", value)
+        } else {
+            query
+        };
+        let query = if let Some(value) = &opts.target_estimated_bytes {
+            query.arg("targetEstimatedBytes", value)
         } else {
             query
         };

@@ -1,25 +1,10 @@
 //! Generated bindings owned by the GraphQL `CurrentModule` type.
-// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:7d6f61426d0c65454a32059732deed8927471c92e906f4ac7b31dd8ff8214306","target_revision":"501b57e0476dee5881b99a064c3c04173134ecc7"}
+// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:ff790b6fb1eb0a72354a8c293c862f5c2018bcc7526ce048e4ad67e34abc6ffe","target_revision":"a4e1e4ff663e5e51c2b96c2c0772f3d2f00cfb94"}
 #[doc = "Reflective module API provided to functions at runtime."]
 #[derive(Clone)]
 pub struct CurrentModule {
     pub(crate) session: crate::lifecycle::SessionHandle,
     pub(crate) selection: crate::query::Selection,
-}
-#[doc = "Owned optional arguments for GraphQL operation `CurrentModule.asSDK`; reuse does not mutate caller state."]
-#[derive(Clone, Debug, Default)]
-#[non_exhaustive]
-pub struct CurrentModuleAsSdkOpts {
-    #[doc = "The workspace to resolve SDK-role data against. Defaults to the current workspace.\n\n`None` omits GraphQL field `workspace`."]
-    pub workspace: Option<crate::IdInput<super::Workspace>>,
-}
-impl CurrentModuleAsSdkOpts {
-    #[doc = "Sets GraphQL argument `workspace` to a concrete value instead of omitting it."]
-    #[must_use]
-    pub fn with_workspace(mut self, value: crate::IdInput<super::Workspace>) -> Self {
-        self.workspace = Some(value);
-        self
-    }
 }
 #[doc = "Owned optional arguments for GraphQL operation `CurrentModule.generators`; reuse does not mutate caller state."]
 #[derive(Clone, Debug, Default)]
@@ -100,22 +85,12 @@ impl From<CurrentModule> for crate::IdInput<super::NodeClient> {
 impl CurrentModule {
     #[doc = "Treat the currently executing module as an SDK installed in the given workspace, exposing the modules and clients it manages.\n\nErrors if the current module is not installed as an SDK in this workspace.\n\nSelects GraphQL field `asSDK` on `CurrentModule`."]
     #[must_use]
-    pub fn as_sdk(&self) -> super::CurrentModuleAsSdk {
+    pub fn as_sdk(
+        &self,
+        workspace: impl Into<crate::IdInput<super::Workspace>>,
+    ) -> super::CurrentModuleAsSdk {
         let query = self.selection.select("asSDK");
-        super::CurrentModuleAsSdk {
-            session: self.session.clone(),
-            selection: query,
-        }
-    }
-    #[doc = "Executes GraphQL operation `asSDK` with a borrowed, reusable `CurrentModuleAsSdkOpts` value."]
-    #[must_use]
-    pub fn as_sdk_opts(&self, opts: &CurrentModuleAsSdkOpts) -> super::CurrentModuleAsSdk {
-        let query = self.selection.select("asSDK");
-        let query = if let Some(value) = &opts.workspace {
-            query.arg_id_input("workspace", value.clone())
-        } else {
-            query
-        };
+        let query = query.arg_id_input("workspace", workspace.into());
         super::CurrentModuleAsSdk {
             session: self.session.clone(),
             selection: query,

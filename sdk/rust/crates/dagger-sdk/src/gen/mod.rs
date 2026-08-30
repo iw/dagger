@@ -1,7 +1,11 @@
 //! Generated Dagger core-schema bindings and stable public re-exports.
-// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:7d6f61426d0c65454a32059732deed8927471c92e906f4ac7b31dd8ff8214306","target_revision":"501b57e0476dee5881b99a064c3c04173134ecc7"}
+// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:ff790b6fb1eb0a72354a8c293c862f5c2018bcc7526ce048e4ad67e34abc6ffe","target_revision":"a4e1e4ff663e5e51c2b96c2c0772f3d2f00cfb94"}
 #[path = "address.rs"]
 mod address;
+#[path = "agent.rs"]
+mod agent;
+#[path = "agent_group.rs"]
+mod agent_group;
 #[path = "build_arg.rs"]
 mod build_arg;
 #[path = "cache_sharing_mode.rs"]
@@ -84,6 +88,8 @@ mod generated_code;
 mod generator;
 #[path = "generator_group.rs"]
 mod generator_group;
+#[path = "git_commit.rs"]
+mod git_commit;
 #[path = "git_ref.rs"]
 mod git_ref;
 #[path = "git_repository.rs"]
@@ -120,6 +126,8 @@ mod llm_content_block_kind;
 mod llm_message;
 #[path = "llm_message_role.rs"]
 mod llm_message_role;
+#[path = "llm_skill.rs"]
+mod llm_skill;
 #[path = "llm_token_usage.rs"]
 mod llm_token_usage;
 #[path = "module.rs"]
@@ -203,6 +211,8 @@ mod workspace_module_setting;
 #[path = "workspace_sdk.rs"]
 mod workspace_sdk;
 pub use address::*;
+pub use agent::*;
+pub use agent_group::*;
 pub use build_arg::*;
 pub use cache_sharing_mode::*;
 pub use cache_volume::*;
@@ -244,6 +254,7 @@ pub use function_call_arg_value::*;
 pub use generated_code::*;
 pub use generator::*;
 pub use generator_group::*;
+pub use git_commit::*;
 pub use git_ref::*;
 pub use git_repository::*;
 pub use healthcheck_config::*;
@@ -262,6 +273,7 @@ pub use llm_content_block_input::*;
 pub use llm_content_block_kind::*;
 pub use llm_message::*;
 pub use llm_message_role::*;
+pub use llm_skill::*;
 pub use llm_token_usage::*;
 pub use module::*;
 pub use module_config_client::*;

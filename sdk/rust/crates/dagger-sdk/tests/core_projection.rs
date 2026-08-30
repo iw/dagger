@@ -1,5 +1,5 @@
 //! Structured field and argument inventory for exhaustive query verification.
-// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:7d6f61426d0c65454a32059732deed8927471c92e906f4ac7b31dd8ff8214306","target_revision":"501b57e0476dee5881b99a064c3c04173134ecc7"}
+// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:ff790b6fb1eb0a72354a8c293c862f5c2018bcc7526ce048e4ad67e34abc6ffe","target_revision":"a4e1e4ff663e5e51c2b96c2c0772f3d2f00cfb94"}
 #![cfg(feature = "gen")]
 const FIELDS: &[(&str, &str, &str, &str, &str)] = &[
     (
@@ -31,6 +31,20 @@ const FIELDS: &[(&str, &str, &str, &str, &str)] = &[
     ("Address.socket", "Address", "socket", "lazy", "Socket"),
     ("Address.value", "Address", "value", "execute", ""),
     ("Address.volume", "Address", "volume", "lazy", "Volume"),
+    ("Agent.description", "Agent", "description", "execute", ""),
+    ("Agent.id", "Agent", "id", "execute", ""),
+    ("Agent.name", "Agent", "name", "execute", ""),
+    (
+        "Agent.originalModule",
+        "Agent",
+        "originalModule",
+        "lazy",
+        "Module",
+    ),
+    ("Agent.path", "Agent", "path", "execute", ""),
+    ("AgentGroup.compose", "AgentGroup", "compose", "lazy", "LLM"),
+    ("AgentGroup.id", "AgentGroup", "id", "execute", ""),
+    ("AgentGroup.list", "AgentGroup", "list", "reenter", "Agent"),
     ("CacheVolume.id", "CacheVolume", "id", "execute", ""),
     (
         "Changeset.addedPaths",
@@ -1294,6 +1308,13 @@ const FIELDS: &[(&str, &str, &str, &str, &str)] = &[
         "",
     ),
     (
+        "Function.withAgent",
+        "Function",
+        "withAgent",
+        "lazy",
+        "Function",
+    ),
+    (
         "Function.withArg",
         "Function",
         "withArg",
@@ -1559,6 +1580,88 @@ const FIELDS: &[(&str, &str, &str, &str, &str)] = &[
         "GeneratorGroup",
     ),
     (
+        "GitCommit.ancestorReleaseTag",
+        "GitCommit",
+        "ancestorReleaseTag",
+        "probe",
+        "GitRef",
+    ),
+    (
+        "GitCommit.authorEmail",
+        "GitCommit",
+        "authorEmail",
+        "execute",
+        "",
+    ),
+    (
+        "GitCommit.authorName",
+        "GitCommit",
+        "authorName",
+        "execute",
+        "",
+    ),
+    (
+        "GitCommit.authoredDate",
+        "GitCommit",
+        "authoredDate",
+        "execute",
+        "",
+    ),
+    (
+        "GitCommit.committedDate",
+        "GitCommit",
+        "committedDate",
+        "execute",
+        "",
+    ),
+    (
+        "GitCommit.committerEmail",
+        "GitCommit",
+        "committerEmail",
+        "execute",
+        "",
+    ),
+    (
+        "GitCommit.committerName",
+        "GitCommit",
+        "committerName",
+        "execute",
+        "",
+    ),
+    ("GitCommit.id", "GitCommit", "id", "execute", ""),
+    ("GitCommit.message", "GitCommit", "message", "execute", ""),
+    (
+        "GitCommit.messageBody",
+        "GitCommit",
+        "messageBody",
+        "execute",
+        "",
+    ),
+    (
+        "GitCommit.messageHeadline",
+        "GitCommit",
+        "messageHeadline",
+        "execute",
+        "",
+    ),
+    (
+        "GitCommit.parentShas",
+        "GitCommit",
+        "parentShas",
+        "execute",
+        "",
+    ),
+    (
+        "GitCommit.releaseTag",
+        "GitCommit",
+        "releaseTag",
+        "probe",
+        "GitRef",
+    ),
+    ("GitCommit.sha", "GitCommit", "sha", "execute", ""),
+    ("GitCommit.shortSha", "GitCommit", "shortSha", "execute", ""),
+    ("GitCommit.tree", "GitCommit", "tree", "lazy", "Directory"),
+    (
         "GitRef.asWorkspace",
         "GitRef",
         "asWorkspace",
@@ -1566,6 +1669,7 @@ const FIELDS: &[(&str, &str, &str, &str, &str)] = &[
         "Workspace",
     ),
     ("GitRef.commit", "GitRef", "commit", "execute", ""),
+    ("GitRef.commitSHA", "GitRef", "commitSHA", "execute", ""),
     (
         "GitRef.commonAncestor",
         "GitRef",
@@ -1574,7 +1678,16 @@ const FIELDS: &[(&str, &str, &str, &str, &str)] = &[
         "GitRef",
     ),
     ("GitRef.id", "GitRef", "id", "execute", ""),
+    ("GitRef.log", "GitRef", "log", "reenter", "GitCommit"),
+    ("GitRef.name", "GitRef", "name", "execute", ""),
     ("GitRef.ref", "GitRef", "ref", "execute", ""),
+    (
+        "GitRef.targetCommit",
+        "GitRef",
+        "targetCommit",
+        "lazy",
+        "GitCommit",
+    ),
     ("GitRef.tree", "GitRef", "tree", "lazy", "Directory"),
     (
         "GitRepository.asWorkspace",
@@ -1602,7 +1715,7 @@ const FIELDS: &[(&str, &str, &str, &str, &str)] = &[
         "GitRepository",
         "commit",
         "lazy",
-        "GitRef",
+        "GitCommit",
     ),
     (
         "GitRepository.head",
@@ -1613,9 +1726,9 @@ const FIELDS: &[(&str, &str, &str, &str, &str)] = &[
     ),
     ("GitRepository.id", "GitRepository", "id", "execute", ""),
     (
-        "GitRepository.latestVersion",
+        "GitRepository.latest",
         "GitRepository",
-        "latestVersion",
+        "latest",
         "lazy",
         "GitRef",
     ),
@@ -1836,7 +1949,15 @@ const FIELDS: &[(&str, &str, &str, &str, &str)] = &[
     ("LLM.model", "LLM", "model", "execute", ""),
     ("LLM.portableID", "LLM", "portableID", "execute", ""),
     ("LLM.provider", "LLM", "provider", "execute", ""),
+    (
+        "LLM.reasoningEffort",
+        "LLM",
+        "reasoningEffort",
+        "execute",
+        "",
+    ),
     ("LLM.replay", "LLM", "replay", "self-return", "LLM"),
+    ("LLM.skills", "LLM", "skills", "reenter", "LLMSkill"),
     ("LLM.step", "LLM", "step", "lazy", "LLM"),
     ("LLM.sync", "LLM", "sync", "self-return", "LLM"),
     (
@@ -1852,7 +1973,15 @@ const FIELDS: &[(&str, &str, &str, &str, &str)] = &[
     ("LLM.withModel", "LLM", "withModel", "lazy", "LLM"),
     ("LLM.withPrompt", "LLM", "withPrompt", "lazy", "LLM"),
     ("LLM.withPromptFile", "LLM", "withPromptFile", "lazy", "LLM"),
+    (
+        "LLM.withReasoningEffort",
+        "LLM",
+        "withReasoningEffort",
+        "lazy",
+        "LLM",
+    ),
     ("LLM.withResponse", "LLM", "withResponse", "lazy", "LLM"),
+    ("LLM.withSkills", "LLM", "withSkills", "lazy", "LLM"),
     (
         "LLM.withSystemPrompt",
         "LLM",
@@ -1951,6 +2080,15 @@ const FIELDS: &[(&str, &str, &str, &str, &str)] = &[
         "lazy",
         "LLMTokenUsage",
     ),
+    (
+        "LLMSkill.description",
+        "LLMSkill",
+        "description",
+        "execute",
+        "",
+    ),
+    ("LLMSkill.id", "LLMSkill", "id", "execute", ""),
+    ("LLMSkill.name", "LLMSkill", "name", "execute", ""),
     (
         "LLMTokenUsage.cachedTokenReads",
         "LLMTokenUsage",
@@ -2193,6 +2331,13 @@ const FIELDS: &[(&str, &str, &str, &str, &str)] = &[
         "engineVersion",
         "execute",
         "",
+    ),
+    (
+        "ModuleSource.generate",
+        "ModuleSource",
+        "generate",
+        "lazy",
+        "Workspace",
     ),
     (
         "ModuleSource.generateLocalDependencies",
@@ -2880,6 +3025,13 @@ const FIELDS: &[(&str, &str, &str, &str, &str)] = &[
     ("Volume.id", "Volume", "id", "execute", ""),
     ("Workspace.address", "Workspace", "address", "execute", ""),
     (
+        "Workspace.agents",
+        "Workspace",
+        "agents",
+        "lazy",
+        "AgentGroup",
+    ),
+    (
         "Workspace.changes",
         "Workspace",
         "changes",
@@ -2918,6 +3070,13 @@ const FIELDS: &[(&str, &str, &str, &str, &str)] = &[
     ("Workspace.envList", "Workspace", "envList", "execute", ""),
     ("Workspace.export", "Workspace", "export", "execute", ""),
     ("Workspace.file", "Workspace", "file", "lazy", "File"),
+    (
+        "Workspace.findRoots",
+        "Workspace",
+        "findRoots",
+        "execute",
+        "",
+    ),
     ("Workspace.findUp", "Workspace", "findUp", "execute", ""),
     (
         "Workspace.generators",
@@ -2956,6 +3115,13 @@ const FIELDS: &[(&str, &str, &str, &str, &str)] = &[
         "modules",
         "reenter",
         "WorkspaceModule",
+    ),
+    (
+        "Workspace.reloaded",
+        "Workspace",
+        "reloaded",
+        "lazy",
+        "Workspace",
     ),
     ("Workspace.sdk", "Workspace", "sdk", "lazy", "WorkspaceSDK"),
     (
@@ -3001,6 +3167,13 @@ const FIELDS: &[(&str, &str, &str, &str, &str)] = &[
         "Workspace",
     ),
     (
+        "Workspace.withDirectory",
+        "Workspace",
+        "withDirectory",
+        "lazy",
+        "Workspace",
+    ),
+    (
         "Workspace.withInitClient",
         "Workspace",
         "withInitClient",
@@ -3018,6 +3191,20 @@ const FIELDS: &[(&str, &str, &str, &str, &str)] = &[
         "Workspace.withModule",
         "Workspace",
         "withModule",
+        "lazy",
+        "Workspace",
+    ),
+    (
+        "Workspace.withMountedDirectory",
+        "Workspace",
+        "withMountedDirectory",
+        "lazy",
+        "Workspace",
+    ),
+    (
+        "Workspace.withMountedFile",
+        "Workspace",
+        "withMountedFile",
         "lazy",
         "Workspace",
     ),
@@ -3250,34 +3437,6 @@ const FIELDS: &[(&str, &str, &str, &str, &str)] = &[
     ),
     ("WorkspaceSDK.name", "WorkspaceSDK", "name", "execute", ""),
     ("WorkspaceSDK.ref", "WorkspaceSDK", "ref", "execute", ""),
-    (
-        "_DirectiveApplication.args",
-        "_DirectiveApplication",
-        "args",
-        "private",
-        "",
-    ),
-    (
-        "_DirectiveApplication.name",
-        "_DirectiveApplication",
-        "name",
-        "private",
-        "",
-    ),
-    (
-        "_DirectiveApplicationArg.name",
-        "_DirectiveApplicationArg",
-        "name",
-        "private",
-        "",
-    ),
-    (
-        "_DirectiveApplicationArg.value",
-        "_DirectiveApplicationArg",
-        "value",
-        "private",
-        "",
-    ),
 ];
 const ARGUMENTS: &[(&str, &str, bool, bool)] = &[
     ("Address.directory(exclude:)", "exclude", false, false),
@@ -3288,6 +3447,7 @@ const ARGUMENTS: &[(&str, &str, bool, bool)] = &[
     ("Address.file(gitignore:)", "gitignore", false, false),
     ("Address.file(include:)", "include", false, false),
     ("Address.file(noCache:)", "noCache", false, false),
+    ("AgentGroup.compose(base:)", "base", false, true),
     ("Changeset.export(path:)", "path", true, false),
     ("Changeset.withChangeset(changes:)", "changes", true, true),
     (
@@ -3924,7 +4084,7 @@ const ARGUMENTS: &[(&str, &str, bool, bool)] = &[
         true,
         false,
     ),
-    ("CurrentModule.asSDK(workspace:)", "workspace", false, true),
+    ("CurrentModule.asSDK(workspace:)", "workspace", true, true),
     (
         "CurrentModule.generators(include:)",
         "include",
@@ -4119,6 +4279,12 @@ const ARGUMENTS: &[(&str, &str, bool, bool)] = &[
     ("Directory.withoutFiles(paths:)", "paths", true, false),
     ("EngineCache.entrySet(key:)", "key", false, false),
     (
+        "EngineCache.prune(maxEstimatedBytes:)",
+        "maxEstimatedBytes",
+        false,
+        false,
+    ),
+    (
         "EngineCache.prune(maxUsedSpace:)",
         "maxUsedSpace",
         false,
@@ -4133,6 +4299,12 @@ const ARGUMENTS: &[(&str, &str, bool, bool)] = &[
     (
         "EngineCache.prune(reservedSpace:)",
         "reservedSpace",
+        false,
+        false,
+    ),
+    (
+        "EngineCache.prune(targetEstimatedBytes:)",
+        "targetEstimatedBytes",
         false,
         false,
     ),
@@ -4267,8 +4439,31 @@ const ARGUMENTS: &[(&str, &str, bool, bool)] = &[
         false,
         false,
     ),
+    (
+        "GitCommit.ancestorReleaseTag(includePreRelease:)",
+        "includePreRelease",
+        false,
+        false,
+    ),
+    (
+        "GitCommit.releaseTag(includePreRelease:)",
+        "includePreRelease",
+        false,
+        false,
+    ),
+    ("GitCommit.tree(depth:)", "depth", false, false),
+    (
+        "GitCommit.tree(discardGitDir:)",
+        "discardGitDir",
+        false,
+        false,
+    ),
+    ("GitCommit.tree(includeTags:)", "includeTags", false, false),
     ("GitRef.asWorkspace(cwd:)", "cwd", false, false),
     ("GitRef.commonAncestor(other:)", "other", true, true),
+    ("GitRef.log(base:)", "base", false, true),
+    ("GitRef.log(limit:)", "limit", false, false),
+    ("GitRef.log(paths:)", "paths", false, false),
     ("GitRef.tree(depth:)", "depth", false, false),
     ("GitRef.tree(discardGitDir:)", "discardGitDir", false, false),
     ("GitRef.tree(includeTags:)", "includeTags", false, false),
@@ -4319,6 +4514,7 @@ const ARGUMENTS: &[(&str, &str, bool, bool)] = &[
     ("LLM.withModel(provider:)", "provider", false, false),
     ("LLM.withPrompt(prompt:)", "prompt", true, false),
     ("LLM.withPromptFile(file:)", "file", true, true),
+    ("LLM.withReasoningEffort(effort:)", "effort", true, false),
     (
         "LLM.withResponse(cachedTokenReads:)",
         "cachedTokenReads",
@@ -4350,6 +4546,7 @@ const ARGUMENTS: &[(&str, &str, bool, bool)] = &[
         false,
         false,
     ),
+    ("LLM.withSkills(directory:)", "directory", true, true),
     ("LLM.withSystemPrompt(prompt:)", "prompt", true, false),
     ("LLM.withToolResult(callId:)", "callId", true, false),
     ("LLM.withToolResult(content:)", "content", true, false),
@@ -4380,6 +4577,7 @@ const ARGUMENTS: &[(&str, &str, bool, bool)] = &[
     ("Module.withInterface(iface:)", "iface", true, true),
     ("Module.withObject(object:)", "object", true, true),
     ("ModuleSource.directory(path:)", "path", true, false),
+    ("ModuleSource.generate(workspace:)", "workspace", true, true),
     (
         "ModuleSource.generateLocalDependencies(workspace:)",
         "workspace",
@@ -4683,6 +4881,8 @@ const ARGUMENTS: &[(&str, &str, bool, bool)] = &[
         false,
     ),
     ("TypeDef.withScalar(name:)", "name", true, false),
+    ("Workspace.agents(include:)", "include", false, false),
+    ("Workspace.changes(from:)", "from", false, true),
     ("Workspace.checks(include:)", "include", false, false),
     ("Workspace.checks(noGenerate:)", "noGenerate", false, false),
     (
@@ -4698,6 +4898,9 @@ const ARGUMENTS: &[(&str, &str, bool, bool)] = &[
     ("Workspace.directory(include:)", "include", false, false),
     ("Workspace.directory(path:)", "path", true, false),
     ("Workspace.file(path:)", "path", true, false),
+    ("Workspace.findRoots(exclude:)", "exclude", false, false),
+    ("Workspace.findRoots(markers:)", "markers", true, false),
+    ("Workspace.findRoots(start:)", "start", false, false),
     ("Workspace.findUp(from:)", "from", false, false),
     ("Workspace.findUp(name:)", "name", true, false),
     ("Workspace.generators(include:)", "include", false, false),
@@ -4734,6 +4937,8 @@ const ARGUMENTS: &[(&str, &str, bool, bool)] = &[
     ("Workspace.withConfigValue(key:)", "key", true, false),
     ("Workspace.withConfigValue(value:)", "value", true, false),
     ("Workspace.withConfigValue(values:)", "values", false, false),
+    ("Workspace.withDirectory(path:)", "path", true, false),
+    ("Workspace.withDirectory(source:)", "source", true, true),
     ("Workspace.withInitClient(args:)", "args", false, false),
     ("Workspace.withInitClient(here:)", "here", false, false),
     ("Workspace.withInitClient(module:)", "module", true, false),
@@ -4766,6 +4971,15 @@ const ARGUMENTS: &[(&str, &str, bool, bool)] = &[
     ("Workspace.withModule(here:)", "here", false, false),
     ("Workspace.withModule(name:)", "name", false, false),
     ("Workspace.withModule(ref:)", "ref", true, false),
+    ("Workspace.withMountedDirectory(path:)", "path", true, false),
+    (
+        "Workspace.withMountedDirectory(source:)",
+        "source",
+        true,
+        true,
+    ),
+    ("Workspace.withMountedFile(path:)", "path", true, false),
+    ("Workspace.withMountedFile(source:)", "source", true, true),
     ("Workspace.withNewDirectory(path:)", "path", true, false),
     ("Workspace.withNewDirectory(source:)", "source", true, true),
     ("Workspace.withNewFile(contents:)", "contents", true, false),
@@ -4809,8 +5023,8 @@ impl RecordingExecutor {
 }
 #[test]
 fn generated_query_projection_inventory_is_exhaustive() {
-    assert_eq!(FIELDS.len(), 720usize);
-    assert_eq!(ARGUMENTS.len(), 611usize);
+    assert_eq!(FIELDS.len(), 759usize);
+    assert_eq!(ARGUMENTS.len(), 636usize);
     assert!(FIELDS.windows(2).all(|pair| pair[0].0 < pair[1].0));
     assert!(ARGUMENTS.windows(2).all(|pair| pair[0].0 < pair[1].0));
     for field in FIELDS {

@@ -134,7 +134,7 @@ mod tests {
     fn immutable_credential_free_repository_url_is_admitted() {
         validate_client_boundary(
             ClientBoundaryArtifactKind::Dependency,
-            br#"git = "https://github.com/dagger/dagger", rev = "501b57e0476dee5881b99a064c3c04173134ecc7""#,
+            br#"git = "https://github.com/dagger/dagger", rev = "a4e1e4ff663e5e51c2b96c2c0772f3d2f00cfb94""#,
         )
         .unwrap();
     }

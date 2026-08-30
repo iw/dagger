@@ -22,13 +22,13 @@ pub const MAX_SCHEMA_BYTES: usize = 8 * 1024 * 1024;
 // structurally valid descriptor is insufficient when it names a different authority.
 const APPROVED_CONTRACT_FORMAT_VERSION: &str = "1.0.0";
 const APPROVED_DAGGER_REPOSITORY: &str = "github.com/dagger/dagger";
-const APPROVED_DAGGER_REVISION: &str = "501b57e0476dee5881b99a064c3c04173134ecc7";
-const APPROVED_ENGINE_VERSION: &str = "v1.0.0-beta.11.rust.3";
+const APPROVED_DAGGER_REVISION: &str = "a4e1e4ff663e5e51c2b96c2c0772f3d2f00cfb94";
+const APPROVED_ENGINE_VERSION: &str = "v1.0.0-beta.11.rust.4";
 const APPROVED_RUST_EDITION: &str = "2024";
-const APPROVED_RUST_SDK_VERSION: &str = "1.0.0-beta.11.rust.3";
+const APPROVED_RUST_SDK_VERSION: &str = "1.0.0-beta.11.rust.4";
 const APPROVED_RUST_VERSION: &str = "1.97.1";
 const APPROVED_SCHEMA_DIGEST: &str =
-    "sha256:7d6f61426d0c65454a32059732deed8927471c92e906f4ac7b31dd8ff8214306";
+    "sha256:ff790b6fb1eb0a72354a8c293c862f5c2018bcc7526ce048e4ad67e34abc6ffe";
 const APPROVED_SCHEMA_VERSION: &str = "v1.0.0";
 
 #[derive(Debug, Deserialize)]

@@ -1,5 +1,5 @@
 //! Compile-only reachability proof for every generated public Rust symbol.
-// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:7d6f61426d0c65454a32059732deed8927471c92e906f4ac7b31dd8ff8214306","target_revision":"501b57e0476dee5881b99a064c3c04173134ecc7"}
+// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:ff790b6fb1eb0a72354a8c293c862f5c2018bcc7526ce048e4ad67e34abc6ffe","target_revision":"a4e1e4ff663e5e51c2b96c2c0772f3d2f00cfb94"}
 #![cfg(feature = "gen")]
 use dagger_sdk::*;
 fn generated_value<T>() -> T {
@@ -38,6 +38,24 @@ fn reach_address(value: &Address) {
     drop(value.socket());
     drop(value.value());
     drop(value.volume());
+}
+#[allow(deprecated)]
+fn reach_agent(value: &Agent) {
+    drop(value.description());
+    drop(value.id());
+    drop(value.name());
+    drop(value.original_module());
+    drop(value.path());
+}
+#[allow(deprecated)]
+fn reach_agentgroup(value: &AgentGroup) {
+    drop(value.compose());
+    let opts = AgentGroupComposeOpts::default();
+    drop(value.compose_opts(&opts));
+    let _ = &opts.base;
+    drop(AgentGroupComposeOpts::default().with_base(Id::from("generated-id").into()));
+    drop(value.id());
+    drop(value.list());
 }
 #[allow(deprecated)]
 fn reach_buildarg_input(value: &BuildArg) {
@@ -608,11 +626,7 @@ fn reach_container(value: &Container) {
 }
 #[allow(deprecated)]
 fn reach_currentmodule(value: &CurrentModule) {
-    drop(value.as_sdk());
-    let opts = CurrentModuleAsSdkOpts::default();
-    drop(value.as_sdk_opts(&opts));
-    let _ = &opts.workspace;
-    drop(CurrentModuleAsSdkOpts::default().with_workspace(Id::from("generated-id").into()));
+    drop(value.as_sdk(Id::from("generated-id")));
     drop(value.dependencies());
     drop(value.generated_context_directory());
     drop(value.generators());
@@ -867,12 +881,16 @@ fn reach_enginecache(value: &EngineCache) {
     drop(value.prune());
     let opts = EngineCachePruneOpts::default();
     drop(value.prune_opts(&opts));
+    let _ = &opts.max_estimated_bytes;
+    drop(EngineCachePruneOpts::default().with_max_estimated_bytes(generated_value::<i64>()));
     let _ = &opts.max_used_space;
     drop(EngineCachePruneOpts::default().with_max_used_space(String::new()));
     let _ = &opts.min_free_space;
     drop(EngineCachePruneOpts::default().with_min_free_space(String::new()));
     let _ = &opts.reserved_space;
     drop(EngineCachePruneOpts::default().with_reserved_space(String::new()));
+    let _ = &opts.target_estimated_bytes;
+    drop(EngineCachePruneOpts::default().with_target_estimated_bytes(generated_value::<i64>()));
     let _ = &opts.target_space;
     drop(EngineCachePruneOpts::default().with_target_space(String::new()));
     let _ = &opts.use_default_policy;
@@ -1049,6 +1067,7 @@ fn reach_function(value: &Function) {
     drop(value.return_type());
     drop(value.source_map());
     drop(value.source_module_name());
+    drop(value.with_agent());
     drop(value.with_arg(String::new(), Id::from("generated-id")));
     let opts = FunctionWithArgOpts::default();
     drop(value.with_arg_opts(String::new(), Id::from("generated-id"), &opts));
@@ -1149,6 +1168,44 @@ fn reach_generatorgroup(value: &GeneratorGroup) {
     drop(value.run());
 }
 #[allow(deprecated)]
+fn reach_gitcommit(value: &GitCommit) {
+    drop(value.ancestor_release_tag());
+    let opts = GitCommitAncestorReleaseTagOpts::default();
+    drop(value.ancestor_release_tag_opts(&opts));
+    let _ = &opts.include_pre_release;
+    drop(
+        GitCommitAncestorReleaseTagOpts::default()
+            .with_include_pre_release(generated_value::<bool>()),
+    );
+    drop(value.author_email());
+    drop(value.author_name());
+    drop(value.authored_date());
+    drop(value.committed_date());
+    drop(value.committer_email());
+    drop(value.committer_name());
+    drop(value.id());
+    drop(value.message());
+    drop(value.message_body());
+    drop(value.message_headline());
+    drop(value.parent_shas());
+    drop(value.release_tag());
+    let opts = GitCommitReleaseTagOpts::default();
+    drop(value.release_tag_opts(&opts));
+    let _ = &opts.include_pre_release;
+    drop(GitCommitReleaseTagOpts::default().with_include_pre_release(generated_value::<bool>()));
+    drop(value.sha());
+    drop(value.short_sha());
+    drop(value.tree());
+    let opts = GitCommitTreeOpts::default();
+    drop(value.tree_opts(&opts));
+    let _ = &opts.depth;
+    drop(GitCommitTreeOpts::default().with_depth(generated_value::<i64>()));
+    let _ = &opts.discard_git_dir;
+    drop(GitCommitTreeOpts::default().with_discard_git_dir(generated_value::<bool>()));
+    let _ = &opts.include_tags;
+    drop(GitCommitTreeOpts::default().with_include_tags(generated_value::<bool>()));
+}
+#[allow(deprecated)]
 fn reach_gitref(value: &GitRef) {
     drop(value.as_workspace());
     let opts = GitRefAsWorkspaceOpts::default();
@@ -1156,9 +1213,21 @@ fn reach_gitref(value: &GitRef) {
     let _ = &opts.cwd;
     drop(GitRefAsWorkspaceOpts::default().with_cwd(String::new()));
     drop(value.commit());
+    drop(value.commit_sha());
     drop(value.common_ancestor(Id::from("generated-id")));
     drop(value.id());
+    drop(value.log());
+    let opts = GitRefLogOpts::default();
+    drop(value.log_opts(&opts));
+    let _ = &opts.base;
+    drop(GitRefLogOpts::default().with_base(Id::from("generated-id").into()));
+    let _ = &opts.limit;
+    drop(GitRefLogOpts::default().with_limit(generated_value::<i64>()));
+    let _ = &opts.paths;
+    drop(GitRefLogOpts::default().with_paths(generated_value::<Vec<String>>()));
+    drop(value.name());
     drop(value.r#ref());
+    drop(value.target_commit());
     drop(value.tree());
     let opts = GitRefTreeOpts::default();
     drop(value.tree_opts(&opts));
@@ -1185,7 +1254,7 @@ fn reach_gitrepository(value: &GitRepository) {
     drop(value.commit(String::new()));
     drop(value.head());
     drop(value.id());
-    drop(value.latest_version());
+    drop(value.latest());
     drop(value.r#ref(String::new()));
     drop(value.tag(String::new()));
     drop(value.tags());
@@ -1306,7 +1375,9 @@ fn reach_llm(value: &Llm) {
     drop(value.model());
     drop(value.portable_id());
     drop(value.provider());
+    drop(value.reasoning_effort());
     drop(value.replay());
+    drop(value.skills());
     drop(value.step());
     let opts = LlmStepOpts::default();
     drop(value.step_opts(&opts));
@@ -1324,6 +1395,7 @@ fn reach_llm(value: &Llm) {
     drop(LlmWithModelOpts::default().with_provider(String::new()));
     drop(value.with_prompt(String::new()));
     drop(value.with_prompt_file(Id::from("generated-id")));
+    drop(value.with_reasoning_effort(String::new()));
     drop(value.with_response(generated_value::<Vec<LlmContentBlockInput>>()));
     let opts = LlmWithResponseOpts::default();
     drop(value.with_response_opts(generated_value::<Vec<LlmContentBlockInput>>(), &opts));
@@ -1337,6 +1409,7 @@ fn reach_llm(value: &Llm) {
     drop(LlmWithResponseOpts::default().with_output_tokens(generated_value::<i64>()));
     let _ = &opts.total_tokens;
     drop(LlmWithResponseOpts::default().with_total_tokens(generated_value::<i64>()));
+    drop(value.with_skills(Id::from("generated-id")));
     drop(value.with_system_prompt(String::new()));
     drop(value.with_tool_result(String::new(), String::new(), generated_value::<bool>()));
     drop(value.with_tools(Id::from("generated-id")));
@@ -1390,6 +1463,12 @@ fn reach_llmmessage(value: &LlmMessage) {
     drop(value.id());
     drop(value.role());
     drop(value.token_usage());
+}
+#[allow(deprecated)]
+fn reach_llmskill(value: &LlmSkill) {
+    drop(value.description());
+    drop(value.id());
+    drop(value.name());
 }
 #[allow(deprecated)]
 fn reach_llmtokenusage(value: &LlmTokenUsage) {
@@ -1479,6 +1558,7 @@ fn reach_modulesource(value: &ModuleSource) {
     drop(value.digest());
     drop(value.directory(String::new()));
     drop(value.engine_version());
+    drop(value.generate(Id::from("generated-id")));
     drop(value.generate_local_dependencies(Id::from("generated-id")));
     drop(value.generated_context_changeset());
     drop(value.generated_context_directory());
@@ -1922,7 +2002,16 @@ fn reach_volume(value: &Volume) {
 #[allow(deprecated)]
 fn reach_workspace(value: &Workspace) {
     drop(value.address());
+    drop(value.agents());
+    let opts = WorkspaceAgentsOpts::default();
+    drop(value.agents_opts(&opts));
+    let _ = &opts.include;
+    drop(WorkspaceAgentsOpts::default().with_include(generated_value::<Vec<String>>()));
     drop(value.changes());
+    let opts = WorkspaceChangesOpts::default();
+    drop(value.changes_opts(&opts));
+    let _ = &opts.from;
+    drop(WorkspaceChangesOpts::default().with_from(Id::from("generated-id").into()));
     drop(value.checks());
     let opts = WorkspaceChecksOpts::default();
     drop(value.checks_opts(&opts));
@@ -1953,6 +2042,13 @@ fn reach_workspace(value: &Workspace) {
     drop(value.env_list());
     drop(value.export());
     drop(value.file(String::new()));
+    drop(value.find_roots(generated_value::<Vec<String>>()));
+    let opts = WorkspaceFindRootsOpts::default();
+    drop(value.find_roots_opts(generated_value::<Vec<String>>(), &opts));
+    let _ = &opts.exclude;
+    drop(WorkspaceFindRootsOpts::default().with_exclude(generated_value::<Vec<String>>()));
+    let _ = &opts.start;
+    drop(WorkspaceFindRootsOpts::default().with_start(String::new()));
     drop(value.find_up(String::new()));
     let opts = WorkspaceFindUpOpts::default();
     drop(value.find_up_opts(String::new(), &opts));
@@ -1970,6 +2066,7 @@ fn reach_workspace(value: &Workspace) {
     drop(value.module(String::new()));
     drop(value.module_source(String::new()));
     drop(value.modules());
+    drop(value.reloaded());
     drop(value.sdk(String::new()));
     drop(value.sdks());
     drop(value.search(String::new()));
@@ -2013,6 +2110,7 @@ fn reach_workspace(value: &Workspace) {
     drop(WorkspaceWithConfigValueOpts::default().with_here(generated_value::<bool>()));
     let _ = &opts.values;
     drop(WorkspaceWithConfigValueOpts::default().with_values(generated_value::<Vec<String>>()));
+    drop(value.with_directory(String::new(), Id::from("generated-id")));
     drop(value.with_init_client(String::new(), String::new(), String::new()));
     let opts = WorkspaceWithInitClientOpts::default();
     drop(value.with_init_client_opts(String::new(), String::new(), String::new(), &opts));
@@ -2044,6 +2142,8 @@ fn reach_workspace(value: &Workspace) {
     drop(WorkspaceWithModuleOpts::default().with_here(generated_value::<bool>()));
     let _ = &opts.name;
     drop(WorkspaceWithModuleOpts::default().with_name(String::new()));
+    drop(value.with_mounted_directory(String::new(), Id::from("generated-id")));
+    drop(value.with_mounted_file(String::new(), Id::from("generated-id")));
     drop(value.with_new_directory(String::new(), Id::from("generated-id")));
     drop(value.with_new_file(String::new(), String::new()));
     let opts = WorkspaceWithNewFileOpts::default();
@@ -2132,6 +2232,10 @@ fn reach_workspacesdk(value: &WorkspaceSdk) {
 fn generated_public_reachability() {
     let _ = core::mem::size_of::<Address>();
     let _ = reach_address as fn(&Address);
+    let _ = core::mem::size_of::<Agent>();
+    let _ = reach_agent as fn(&Agent);
+    let _ = core::mem::size_of::<AgentGroup>();
+    let _ = reach_agentgroup as fn(&AgentGroup);
     let _ = core::mem::size_of::<BuildArg>();
     let _ = reach_buildarg_input as fn(&BuildArg);
     let _ = core::mem::size_of::<CacheSharingMode>();
@@ -2256,6 +2360,8 @@ fn generated_public_reachability() {
     let _ = reach_generator as fn(&Generator);
     let _ = core::mem::size_of::<GeneratorGroup>();
     let _ = reach_generatorgroup as fn(&GeneratorGroup);
+    let _ = core::mem::size_of::<GitCommit>();
+    let _ = reach_gitcommit as fn(&GitCommit);
     let _ = core::mem::size_of::<GitRef>();
     let _ = reach_gitref as fn(&GitRef);
     let _ = core::mem::size_of::<GitRepository>();
@@ -2312,6 +2418,8 @@ fn generated_public_reachability() {
     let _ = LlmMessageRole::System;
     #[allow(deprecated)]
     let _ = LlmMessageRole::User;
+    let _ = core::mem::size_of::<LlmSkill>();
+    let _ = reach_llmskill as fn(&LlmSkill);
     let _ = core::mem::size_of::<LlmTokenUsage>();
     let _ = reach_llmtokenusage as fn(&LlmTokenUsage);
     let _ = core::mem::size_of::<Label>();

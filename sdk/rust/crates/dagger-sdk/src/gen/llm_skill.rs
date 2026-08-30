@@ -1,12 +1,12 @@
-//! Generated bindings owned by the GraphQL `Engine` type.
+//! Generated bindings owned by the GraphQL `LLMSkill` type.
 // @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:ff790b6fb1eb0a72354a8c293c862f5c2018bcc7526ce048e4ad67e34abc6ffe","target_revision":"a4e1e4ff663e5e51c2b96c2c0772f3d2f00cfb94"}
-#[doc = "The Dagger engine configuration and state"]
+#[doc = "A skill available to a model: task-specific guidance discovered with ListSkills and read with ReadSkill."]
 #[derive(Clone)]
-pub struct Engine {
+pub struct LlmSkill {
     pub(crate) session: crate::lifecycle::SessionHandle,
     pub(crate) selection: crate::query::Selection,
 }
-impl crate::IntoID<crate::Id> for Engine {
+impl crate::IntoID<crate::Id> for LlmSkill {
     fn into_id(
         self,
     ) -> core::pin::Pin<
@@ -15,9 +15,9 @@ impl crate::IntoID<crate::Id> for Engine {
         Box::pin(async move { self.id().await })
     }
 }
-impl crate::loadable::private::Sealed for Engine {
+impl crate::loadable::private::Sealed for LlmSkill {
     fn graphql_type() -> &'static str {
-        "Engine"
+        "LLMSkill"
     }
     fn from_query(
         session: crate::lifecycle::SessionHandle,
@@ -26,43 +26,34 @@ impl crate::loadable::private::Sealed for Engine {
         Self { session, selection }
     }
 }
-impl From<Engine> for crate::IdInput<Engine> {
-    fn from(value: Engine) -> Self {
+impl From<LlmSkill> for crate::IdInput<LlmSkill> {
+    fn from(value: LlmSkill) -> Self {
         crate::IdInput::lazy(value)
     }
 }
-impl From<Engine> for crate::IdInput<super::NodeClient> {
-    fn from(value: Engine) -> Self {
+impl From<LlmSkill> for crate::IdInput<super::NodeClient> {
+    fn from(value: LlmSkill) -> Self {
         crate::IdInput::lazy(value)
     }
 }
-impl Engine {
-    #[doc = "The list of connected client IDs\n\nSelects GraphQL field `clients` on `Engine`."]
-    pub async fn clients(&self) -> Result<Vec<String>, crate::QueryError> {
-        let query = self.selection.select("clients");
+impl LlmSkill {
+    #[doc = "The one-line description from the SKILL.md frontmatter.\n\nSelects GraphQL field `description` on `LLMSkill`."]
+    pub async fn description(&self) -> Result<String, crate::QueryError> {
+        let query = self.selection.select("description");
         query.execute(&self.session).await
     }
-    #[doc = "A unique identifier for this Engine.\n\nSelects GraphQL field `id` on `Engine`."]
+    #[doc = "A unique identifier for this LLMSkill.\n\nSelects GraphQL field `id` on `LLMSkill`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "The local engine cache state tracked by dagql\n\nSelects GraphQL field `localCache` on `Engine`."]
-    #[must_use]
-    pub fn local_cache(&self) -> super::EngineCache {
-        let query = self.selection.select("localCache");
-        super::EngineCache {
-            session: self.session.clone(),
-            selection: query,
-        }
-    }
-    #[doc = "The name of the engine instance.\n\nSelects GraphQL field `name` on `Engine`."]
+    #[doc = "The skill name, as passed to ReadSkill.\n\nSelects GraphQL field `name` on `LLMSkill`."]
     pub async fn name(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("name");
         query.execute(&self.session).await
     }
 }
-impl super::Node for Engine {
+impl super::Node for LlmSkill {
     fn id(
         &self,
     ) -> impl core::future::Future<Output = Result<crate::Id, crate::QueryError>> + Send {
