@@ -228,44 +228,93 @@ install -d -m 700 "$RUST_SDK_OUTPUT"
 cd "$RUST_SDK_CHECKOUT"
 ```
 
-Run the ordinary `Build` with an explicit `linux/amd64` platform and invoke `Verify` on
-that result. `Verify` unpacks the two packages into an isolated external Rust consumer,
+Run the ordinary `Build` with an explicit platform and invoke `Verify` on that result.
+The two constructor flags are required for a release build: `--engine-repository`
+builds the engine from this repository at the release commit, and
+`--sdk-dependency-revision` makes the packaged SDK content select the credential-free
+Git dependency at that same pushed commit — the exact crate versions are not published
+to a registry, so packaged content built without the flag cannot resolve for any
+consumer. `Verify` unpacks the two packages into an isolated external Rust consumer,
 starts the completed engine produced by the build, performs a query, checks engine
-version and revision compatibility, and closes the client cleanly:
+version and revision compatibility, closes the client cleanly, and then initializes a
+Rust module against the same completed engine — resolving the packaged dependency for
+real and executing the runtime helper on the engine's own platform:
 
 ```console
 env PATH=/vendor/docker:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
   DAGGER_NO_NAG=1 \
   _EXPERIMENTAL_DAGGER_RUNNER_HOST="$RUST_SDK_RUNNER_HOST" \
   "$RUST_SDK_DAGGER" -m .dagger/modules/rust-client-dev api call \
+  --engine-repository="$RUST_SDK_REPOSITORY" \
+  --sdk-dependency-revision="$RUST_SDK_COMMIT" \
   build --platform=linux/amd64 verify
 ```
 
-Do not export or checksum artifacts unless this terminal verification succeeds.
-
-## 6. Export exactly three artifacts
-
-Export the package directory from the same exact Build graph. It contains exactly the
-two public crates:
+Repeat the verification for the `linux/arm64` engine. On the amd64 builder this leg
+runs emulated and slowly; prefer an arm64 builder for it when one is provisioned, and
+accept the emulation cost otherwise:
 
 ```console
 env PATH=/vendor/docker:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
   DAGGER_NO_NAG=1 \
   _EXPERIMENTAL_DAGGER_RUNNER_HOST="$RUST_SDK_RUNNER_HOST" \
   "$RUST_SDK_DAGGER" -m .dagger/modules/rust-client-dev api call \
+  --engine-repository="$RUST_SDK_REPOSITORY" \
+  --sdk-dependency-revision="$RUST_SDK_COMMIT" \
+  build --platform=linux/arm64 verify
+```
+
+Do not export or checksum artifacts unless both terminal verifications succeed.
+
+## 6. Export exactly five artifacts
+
+Export the package directory from the exact amd64 Build graph. It contains exactly the
+two public crates (crate bytes are platform-independent; one export suffices):
+
+```console
+env PATH=/vendor/docker:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
+  DAGGER_NO_NAG=1 \
+  _EXPERIMENTAL_DAGGER_RUNNER_HOST="$RUST_SDK_RUNNER_HOST" \
+  "$RUST_SDK_DAGGER" -m .dagger/modules/rust-client-dev api call \
+  --engine-repository="$RUST_SDK_REPOSITORY" \
+  --sdk-dependency-revision="$RUST_SDK_COMMIT" \
   build --platform=linux/amd64 packages export --path="$RUST_SDK_OUTPUT"
 ```
 
-Export the completed engine with OCI media types:
+Export both completed engines with OCI media types:
 
 ```console
 env PATH=/vendor/docker:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
   DAGGER_NO_NAG=1 \
   _EXPERIMENTAL_DAGGER_RUNNER_HOST="$RUST_SDK_RUNNER_HOST" \
   "$RUST_SDK_DAGGER" -m .dagger/modules/rust-client-dev api call \
+  --engine-repository="$RUST_SDK_REPOSITORY" \
+  --sdk-dependency-revision="$RUST_SDK_COMMIT" \
   build --platform=linux/amd64 complete-engine export \
   --media-types=OCI \
-  --path="$RUST_SDK_OUTPUT/dagger-engine-v1.0.0-beta.11.rust.3-linux-amd64.oci.tar"
+  --path="$RUST_SDK_OUTPUT/dagger-engine-v1.0.0-beta.11.rust.4-linux-amd64.oci.tar"
+env PATH=/vendor/docker:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
+  DAGGER_NO_NAG=1 \
+  _EXPERIMENTAL_DAGGER_RUNNER_HOST="$RUST_SDK_RUNNER_HOST" \
+  "$RUST_SDK_DAGGER" -m .dagger/modules/rust-client-dev api call \
+  --engine-repository="$RUST_SDK_REPOSITORY" \
+  --sdk-dependency-revision="$RUST_SDK_COMMIT" \
+  build --platform=linux/arm64 complete-engine export \
+  --media-types=OCI \
+  --path="$RUST_SDK_OUTPUT/dagger-engine-v1.0.0-beta.11.rust.4-linux-arm64.oci.tar"
+```
+
+Cross-compile the native Apple Silicon CLI from the same clean detached commit with
+the same flags as the builder CLI, and package it as the release's CLI artifact:
+
+```console
+cd "$RUST_SDK_CHECKOUT"
+GOOS=darwin GOARCH=arm64 CGO_ENABLED=0 go build -mod=readonly -trimpath \
+  -o "$RUST_SDK_TOOLING/dagger-darwin-arm64" ./cmd/dagger
+tar -C "$RUST_SDK_TOOLING" \
+  --transform 's/^dagger-darwin-arm64$/dagger/' \
+  -czf "$RUST_SDK_OUTPUT/dagger_v1.0.0-beta.11.rust.4_darwin_arm64.tar.gz" \
+  dagger-darwin-arm64
 ```
 
 These Build calls use the same immutable checkout, platform, module, runner setting,
@@ -273,29 +322,36 @@ and content-addressed Dagger graph as verification. They perform no publication.
 
 ## 7. Validate the artifact set and create checksums
 
-Require the expected two crate names and one engine archive:
+Require the expected two crate names, two engine archives, and the CLI archive:
 
 ```console
 cd "$RUST_SDK_OUTPUT"
-test -f dagger-sdk-macros-1.0.0-beta.11.rust.3.crate
-test -f dagger-sdk-1.0.0-beta.11.rust.3.crate
-test -f dagger-engine-v1.0.0-beta.11.rust.3-linux-amd64.oci.tar
-test "$(find . -maxdepth 1 -type f | wc -l)" -eq 3
-tar -tf dagger-engine-v1.0.0-beta.11.rust.3-linux-amd64.oci.tar | grep -Fx oci-layout
-tar -tf dagger-engine-v1.0.0-beta.11.rust.3-linux-amd64.oci.tar | grep -Fx index.json
+test -f dagger-sdk-macros-1.0.0-beta.11.rust.4.crate
+test -f dagger-sdk-1.0.0-beta.11.rust.4.crate
+test -f dagger-engine-v1.0.0-beta.11.rust.4-linux-amd64.oci.tar
+test -f dagger-engine-v1.0.0-beta.11.rust.4-linux-arm64.oci.tar
+test -f dagger_v1.0.0-beta.11.rust.4_darwin_arm64.tar.gz
+test "$(find . -maxdepth 1 -type f | wc -l)" -eq 5
+tar -tf dagger-engine-v1.0.0-beta.11.rust.4-linux-amd64.oci.tar | grep -Fx oci-layout
+tar -tf dagger-engine-v1.0.0-beta.11.rust.4-linux-amd64.oci.tar | grep -Fx index.json
+tar -tf dagger-engine-v1.0.0-beta.11.rust.4-linux-arm64.oci.tar | grep -Fx oci-layout
+tar -tf dagger-engine-v1.0.0-beta.11.rust.4-linux-arm64.oci.tar | grep -Fx index.json
+tar -tzf dagger_v1.0.0-beta.11.rust.4_darwin_arm64.tar.gz | grep -Fx dagger
 ```
 
-Create `SHA256SUMS` over only those three files, verify it on the builder, then require
-exactly four output files:
+Create `SHA256SUMS` over only those five files, verify it on the builder, then require
+exactly six output files:
 
 ```console
 sha256sum \
-  dagger-sdk-macros-1.0.0-beta.11.rust.3.crate \
-  dagger-sdk-1.0.0-beta.11.rust.3.crate \
-  dagger-engine-v1.0.0-beta.11.rust.3-linux-amd64.oci.tar \
+  dagger-sdk-macros-1.0.0-beta.11.rust.4.crate \
+  dagger-sdk-1.0.0-beta.11.rust.4.crate \
+  dagger-engine-v1.0.0-beta.11.rust.4-linux-amd64.oci.tar \
+  dagger-engine-v1.0.0-beta.11.rust.4-linux-arm64.oci.tar \
+  dagger_v1.0.0-beta.11.rust.4_darwin_arm64.tar.gz \
   > SHA256SUMS
 sha256sum --check SHA256SUMS
-test "$(find . -maxdepth 1 -type f | wc -l)" -eq 4
+test "$(find . -maxdepth 1 -type f | wc -l)" -eq 6
 find . -maxdepth 1 -type f -printf '%f\n' | sort
 ```
 
@@ -324,23 +380,31 @@ mkdir -p "$RUST_SDK_LOCAL_OUTPUT"
 chmod 700 "$RUST_SDK_LOCAL_OUTPUT"
 ```
 
-Download exactly four files from the workload container.
+Download exactly six files from the workload container.
 
 The `--container_name` option is documented in the
 [`nsc instance download` reference](https://namespace.so/docs/reference/cli/instance-download).
 
 ```console
 nsc instance download "$RUST_SDK_NS_INSTANCE" \
-  "$RUST_SDK_REMOTE_OUTPUT/dagger-sdk-macros-1.0.0-beta.11.rust.3.crate" \
-  "$RUST_SDK_LOCAL_OUTPUT/dagger-sdk-macros-1.0.0-beta.11.rust.3.crate" \
+  "$RUST_SDK_REMOTE_OUTPUT/dagger-sdk-macros-1.0.0-beta.11.rust.4.crate" \
+  "$RUST_SDK_LOCAL_OUTPUT/dagger-sdk-macros-1.0.0-beta.11.rust.4.crate" \
   --container_name "$RUST_SDK_NS_CONTAINER"
 nsc instance download "$RUST_SDK_NS_INSTANCE" \
-  "$RUST_SDK_REMOTE_OUTPUT/dagger-sdk-1.0.0-beta.11.rust.3.crate" \
-  "$RUST_SDK_LOCAL_OUTPUT/dagger-sdk-1.0.0-beta.11.rust.3.crate" \
+  "$RUST_SDK_REMOTE_OUTPUT/dagger-sdk-1.0.0-beta.11.rust.4.crate" \
+  "$RUST_SDK_LOCAL_OUTPUT/dagger-sdk-1.0.0-beta.11.rust.4.crate" \
   --container_name "$RUST_SDK_NS_CONTAINER"
 nsc instance download "$RUST_SDK_NS_INSTANCE" \
-  "$RUST_SDK_REMOTE_OUTPUT/dagger-engine-v1.0.0-beta.11.rust.3-linux-amd64.oci.tar" \
-  "$RUST_SDK_LOCAL_OUTPUT/dagger-engine-v1.0.0-beta.11.rust.3-linux-amd64.oci.tar" \
+  "$RUST_SDK_REMOTE_OUTPUT/dagger-engine-v1.0.0-beta.11.rust.4-linux-amd64.oci.tar" \
+  "$RUST_SDK_LOCAL_OUTPUT/dagger-engine-v1.0.0-beta.11.rust.4-linux-amd64.oci.tar" \
+  --container_name "$RUST_SDK_NS_CONTAINER"
+nsc instance download "$RUST_SDK_NS_INSTANCE" \
+  "$RUST_SDK_REMOTE_OUTPUT/dagger-engine-v1.0.0-beta.11.rust.4-linux-arm64.oci.tar" \
+  "$RUST_SDK_LOCAL_OUTPUT/dagger-engine-v1.0.0-beta.11.rust.4-linux-arm64.oci.tar" \
+  --container_name "$RUST_SDK_NS_CONTAINER"
+nsc instance download "$RUST_SDK_NS_INSTANCE" \
+  "$RUST_SDK_REMOTE_OUTPUT/dagger_v1.0.0-beta.11.rust.4_darwin_arm64.tar.gz" \
+  "$RUST_SDK_LOCAL_OUTPUT/dagger_v1.0.0-beta.11.rust.4_darwin_arm64.tar.gz" \
   --container_name "$RUST_SDK_NS_CONTAINER"
 nsc instance download "$RUST_SDK_NS_INSTANCE" \
   "$RUST_SDK_REMOTE_OUTPUT/SHA256SUMS" \
@@ -353,13 +417,13 @@ macOS:
 
 ```console
 cd "$RUST_SDK_LOCAL_OUTPUT"
-test "$(find . -type f | wc -l)" -eq 4
+test "$(find . -type f | wc -l)" -eq 6
 sha256sum --check SHA256SUMS
 ```
 
 ```console
 cd "$RUST_SDK_LOCAL_OUTPUT"
-test "$(find . -type f | wc -l)" -eq 4
+test "$(find . -type f | wc -l)" -eq 6
 shasum -a 256 -c SHA256SUMS
 ```
 

@@ -55,15 +55,36 @@ workspace generation.
 A target refresh changes an immutable compatibility claim and is separate from ordinary
 renderer work:
 
-1. Update `codegen/target.json` with the exact Dagger version, full revision, schema
-   digest, Rust SDK version, and Rust toolchain.
-2. Capture the exact target engine schema as `codegen/schema.json`; do not substitute a
-   nearby engine or hand-reserialize it.
-3. Run the direct update, inspect the generated source and compact ownership-manifest
+1. Capture the exact target engine schema as `codegen/schema.json` — do not substitute
+   a nearby engine or hand-reserialize it. The document is the client-view schema at
+   view `v1.0.0`, produced in-process from the exact target checkout with no engine:
+
+   ```console
+   CGO_ENABLED=0 GOOS=linux go build -o /tmp/introspect ./cmd/introspect
+   # run the binary on Linux (a scratch container is fine); from the repo root:
+   /tmp/introspect introspect --version v1.0.0 > sdk/rust/codegen/schema.json
+   ```
+
+   `__schemaVersion` inside the captured document must state the view; an empty value
+   means the capture ran without `--version` and is not the claimed artifact.
+2. Update `codegen/target.json` with the exact Dagger version, full revision, schema
+   digest (the SHA-256 of the captured bytes), Rust SDK version, and Rust toolchain —
+   and the matching `APPROVED_*` constants in `crates/dagger-codegen/src/target.rs`,
+   which are the reviewed second pin.
+3. Reset the binding manifest for the new target: artifact provenance is validated
+   against the exact target before regeneration, so a refresh replaces
+   `codegen/generated.json` with an empty manifest carrying the new
+   `target_revision` and `schema_digest`, and removes the owned generated set
+   (`crates/dagger-sdk/src/gen/`, `tests/core_projection.rs`,
+   `tests/core_reachability.rs`) so generation republishes it whole.
+4. Run the direct update, inspect the generated source and compact ownership-manifest
    diff, and repeat local acceptance.
 
 Changed or removed schema coordinates fail closed until their generated and
-compatibility policies are explicit. Never refresh a digest merely to make a check pass.
+compatibility policies are explicit — a new directive needs a
+`DirectivePolicy` registration, and inventory growth needs the reviewed
+`EXACT_INVENTORY` counts in `schema/validate.rs` updated to the captured document.
+Never refresh a digest merely to make a check pass.
 
 ## 4. Recover or roll back as one unit
 
