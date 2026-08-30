@@ -352,6 +352,7 @@ name = "dagger-sdk-engine"
 version = "1.0.0-beta.11.rust.4"
 dependencies = [
  "clap",
+ "convert_case",
  "dagger-codegen",
  "proptest",
  "semver",

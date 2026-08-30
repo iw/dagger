@@ -7,6 +7,9 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::fs;
 
+use convert_case::{Case, Casing};
+use dagger_codegen::module::WireName;
+
 use crate::PostWorkPlan;
 use crate::diagnostic::{EngineDiagnostic, EngineDiagnosticCode};
 use crate::post_work::{Cancellation, current_allowlisted_environment, execute};
@@ -87,10 +90,7 @@ pub fn plan_initialization(
     let starter_path = join(inputs.module_root, "src/lib.rs")?;
     let starter_created = inputs.starter_source.is_none();
     if starter_created {
-        files.insert(
-            starter_path,
-            b"//! Rust module entrypoint owned by the application.\n".to_vec(),
-        );
+        files.insert(starter_path, starter_source(inputs.package_name)?);
     }
 
     if matches!(inputs.toolchain, ToolchainSelection::TargetDefault { .. }) {
@@ -164,6 +164,39 @@ pub fn plan_initialization(
         starter_created,
         post_work,
     })
+}
+
+fn starter_source(package_name: &str) -> Result<Vec<u8>, EngineDiagnostic> {
+    let object_name = package_name.to_case(Case::Pascal);
+    let constructor_name = package_name.to_case(Case::Camel);
+    WireName::new(&object_name).map_err(|_| {
+        EngineDiagnostic::new(
+            EngineDiagnosticCode::OperationInputInvalid,
+            Some("initialization.package-name"),
+            "module name cannot form a Rust root object",
+        )
+    })?;
+    WireName::new(&constructor_name).map_err(|_| {
+        EngineDiagnostic::new(
+            EngineDiagnosticCode::OperationInputInvalid,
+            Some("initialization.package-name"),
+            "module name cannot form a Rust constructor",
+        )
+    })?;
+
+    Ok(format!(
+        "//! Rust module entrypoint owned by the application.\n\n\
+         #[dagger_sdk::object(root, rename = {object_name:?})]\n\
+         pub struct ModuleRoot {{}}\n\n\
+         #[dagger_sdk::methods]\n\
+         impl ModuleRoot {{\n\
+             #[dagger(constructor, rename = {constructor_name:?})]\n\
+             pub fn new() -> ModuleRoot {{\n\
+                 ModuleRoot {{}}\n\
+             }}\n\
+         }}\n"
+    )
+    .into_bytes())
 }
 
 /// Executes one SDK-owned initialization in the caller's private Dagger snapshot.

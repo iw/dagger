@@ -20,6 +20,7 @@ path = "src/main.rs"
 
 [dependencies]
 clap.workspace = true
+convert_case.workspace = true
 dagger-codegen.workspace = true
 semver.workspace = true
 serde.workspace = true
