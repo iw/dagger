@@ -208,34 +208,33 @@ async fn canned_client(payload: serde_json::Value) -> crate::Client {
         .expect("explicit connection bypasses source discovery")
 }
 
-// `Void`'s prescribed wire encoding is JSON null — the type's own
-// description and its null literal encoding agree. Exactly null decodes;
-// every other shape refuses loudly, which is what surfaces an engine that
-// deviates from the prescription (the observed `{}` deviation is an engine
-// defect, tracked separately, corrected in the composed engine).
+// `Void` carries no value: JSON null (its prescribed encoding) and `{}` (the
+// encoding upstream engines emit for a non-null `Void`) both decode, and every
+// other shape refuses loudly.
 #[cfg(feature = "gen")]
 #[test]
-fn void_results_decode_null_only_and_refuse_every_other_shape() {
+fn void_results_decode_null_or_empty_object_and_refuse_every_other_shape() {
     let runtime = tokio::runtime::Builder::new_current_thread()
         .enable_all()
         .build()
         .expect("test runtime");
     runtime.block_on(async {
-        let client = canned_client(serde_json::json!({
-            "container": {"from": {"exportImage": null}}
-        }))
-        .await;
-        client
-            .query()
-            .container()
-            .from("alpine:3.22")
-            .export_image("void-wire:probe")
-            .await
-            .expect("the prescribed null decodes");
-        client.close().await.expect("close");
+        for accepted in [serde_json::Value::Null, serde_json::json!({})] {
+            let client = canned_client(serde_json::json!({
+                "container": {"from": {"exportImage": accepted}}
+            }))
+            .await;
+            client
+                .query()
+                .container()
+                .from("alpine:3.22")
+                .export_image("void-wire:probe")
+                .await
+                .expect("a valueless void result decodes");
+            client.close().await.expect("close");
+        }
 
         for refused in [
-            serde_json::json!({}),
             serde_json::json!({"unexpected": true}),
             serde_json::json!("done"),
             serde_json::json!(0),
@@ -250,7 +249,7 @@ fn void_results_decode_null_only_and_refuse_every_other_shape() {
                 .from("alpine:3.22")
                 .export_image("void-wire:probe")
                 .await
-                .expect_err("a non-null void result refuses");
+                .expect_err("a void result carrying a value refuses");
             assert!(
                 matches!(error, crate::QueryError::Decode(_)),
                 "unexpected error class: {error:?}"

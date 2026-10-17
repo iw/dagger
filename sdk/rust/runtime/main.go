@@ -65,6 +65,10 @@ func New(
 //
 // +generate
 func (sdk *RustSDK) GenerateModules(ctx context.Context, ws *dagger.Workspace) (*dagger.Changeset, error) {
+	sdk, resolveErr := sdk.resolved(ctx)
+	if resolveErr != nil {
+		return nil, resolveErr
+	}
 	cwd, err := workspaceCwd(ctx, ws)
 	if err != nil {
 		return nil, err
@@ -104,6 +108,10 @@ func (sdk *RustSDK) GenerateModules(ctx context.Context, ws *dagger.Workspace) (
 //
 // +generate
 func (sdk *RustSDK) GenerateClients(ctx context.Context, ws *dagger.Workspace) (*dagger.Changeset, error) {
+	sdk, resolveErr := sdk.resolved(ctx)
+	if resolveErr != nil {
+		return nil, resolveErr
+	}
 	cwd, err := workspaceCwd(ctx, ws)
 	if err != nil {
 		return nil, err
@@ -315,6 +323,10 @@ func (sdk *RustSDK) InitModule(
 	name string,
 	path string,
 ) (*dagger.Changeset, error) {
+	sdk, resolveErr := sdk.resolved(ctx)
+	if resolveErr != nil {
+		return nil, resolveErr
+	}
 	if ws == nil {
 		return nil, fmt.Errorf("workspace not provided")
 	}
@@ -359,6 +371,10 @@ func (sdk *RustSDK) InitClient(
 	path string,
 	module string,
 ) (*dagger.Changeset, error) {
+	sdk, resolveErr := sdk.resolved(ctx)
+	if resolveErr != nil {
+		return nil, resolveErr
+	}
 	if ws == nil {
 		return nil, fmt.Errorf("workspace not provided")
 	}
@@ -412,6 +428,10 @@ func (sdk *RustSDK) Codegen(
 	modSource *dagger.ModuleSource,
 	introspectionJSON *dagger.File,
 ) (*dagger.GeneratedCode, error) {
+	sdk, resolveErr := sdk.resolved(ctx)
+	if resolveErr != nil {
+		return nil, resolveErr
+	}
 	if introspectionJSON == nil {
 		return nil, fmt.Errorf("introspection JSON not provided")
 	}
@@ -442,6 +462,10 @@ func (sdk *RustSDK) Codegen(
 
 // RequiredClientGenerationFiles returns the renderer-owned finite host input set.
 func (sdk *RustSDK) RequiredClientGenerationFiles(ctx context.Context) ([]string, error) {
+	sdk, resolveErr := sdk.resolved(ctx)
+	if resolveErr != nil {
+		return nil, resolveErr
+	}
 	metadata, err := sdk.clientGenerationMetadata(ctx)
 	if err != nil {
 		return nil, err
@@ -457,6 +481,10 @@ func (sdk *RustSDK) GenerateClient(
 	introspectionJSON *dagger.File,
 	outputDir string,
 ) (*dagger.Directory, error) {
+	sdk, resolveErr := sdk.resolved(ctx)
+	if resolveErr != nil {
+		return nil, resolveErr
+	}
 	if introspectionJSON == nil {
 		return nil, fmt.Errorf("introspection JSON not provided")
 	}

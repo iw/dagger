@@ -165,17 +165,20 @@ impl Selection {
     /// Executes a selection whose GraphQL type is `Void`.
     ///
     /// `Void`'s prescribed wire encoding is JSON null — the type's own
-    /// description ("A Null Void…") and its null literal encoding agree.
-    /// Any other value refuses as a decode error rather than being
-    /// silently discarded; a strict decode is what surfaces an engine
-    /// that deviates from the prescription.
+    /// description ("A Null Void…") and its null literal encoding agree — but
+    /// upstream engines encode a non-null `Void` result as Go's empty struct,
+    /// `{}`. Both carry no value and both decode to unit; any other shape
+    /// still refuses as a decode error rather than being silently discarded.
     pub(crate) async fn execute_void(&self, session: &SessionHandle) -> Result<(), QueryError> {
         let value: Value = self.execute(session).await?;
         match &value {
             Value::Null => Ok(()),
+            Value::Object(fields) if fields.is_empty() => Ok(()),
             _ => Err(QueryError::Decode(ResponseDecodingError::with_source(
                 ResponseDecodingErrorKind::InvalidShape,
-                <serde_json::Error as serde::de::Error>::custom("a Void-typed result must be null"),
+                <serde_json::Error as serde::de::Error>::custom(
+                    "a Void-typed result must be null or an empty object",
+                ),
             ))),
         }
     }
@@ -525,8 +528,8 @@ impl QueryBuilder {
 
     /// Executes a selection whose GraphQL type is `Void`.
     ///
-    /// `Void`'s prescribed wire encoding is JSON null; any other value
-    /// refuses as a decode error.
+    /// JSON null (the prescribed encoding) and `{}` (upstream engines' encoding)
+    /// both decode to unit; any other value refuses as a decode error.
     pub async fn execute_void(&self) -> Result<(), QueryError> {
         self.selection.execute_void(&self.session).await
     }

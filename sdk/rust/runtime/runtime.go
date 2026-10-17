@@ -28,6 +28,10 @@ func (sdk *RustSDK) ModuleRuntime(
 	// +optional
 	introspectionJSON *dagger.File,
 ) (*dagger.Container, error) {
+	sdk, resolveErr := sdk.resolved(ctx)
+	if resolveErr != nil {
+		return nil, resolveErr
+	}
 	mode := "checked-generated"
 	configFormat := "current"
 	if introspectionJSON != nil {
