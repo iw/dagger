@@ -133,10 +133,14 @@ func (sdk *RustSDK) ModuleRuntime(
 	// therefore promotes that exact file to the fixed path outside every mount, so
 	// finalization reads only container state and rejects every alternate binary.
 	compiledPath := path.Join(policy.CargoTargetDir, rustTarget, plan.BinaryRelativePath)
+	// Cargo's package-cache lock lives in each container's own CARGO_HOME, outside these
+	// shared volumes, so concurrent first builds of one module would unpack crates into
+	// the same registry at once; locked sharing serializes them.
+	lockedCache := dagger.ContainerWithMountedCacheOpts{Sharing: dagger.CacheSharingModeLocked}
 	builder = verified.
-		WithMountedCache("/usr/local/cargo/registry", dag.CacheVolume("rust-registry-"+cacheKey)).
-		WithMountedCache("/usr/local/cargo/git", dag.CacheVolume("rust-git-"+cacheKey)).
-		WithMountedCache(policy.CargoTargetDir, dag.CacheVolume("rust-target-"+cacheKey)).
+		WithMountedCache("/usr/local/cargo/registry", dag.CacheVolume("rust-registry-"+cacheKey), lockedCache).
+		WithMountedCache("/usr/local/cargo/git", dag.CacheVolume("rust-git-"+cacheKey), lockedCache).
+		WithMountedCache(policy.CargoTargetDir, dag.CacheVolume("rust-target-"+cacheKey), lockedCache).
 		WithWorkdir(operationProjectPath).
 		WithExec(append([]string{
 			"/bin/sh", "-c", runtimeBuildScript, "dagger-rust-runtime-build",
