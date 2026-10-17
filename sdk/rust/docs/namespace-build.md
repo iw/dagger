@@ -238,7 +238,10 @@ consumer. `Verify` unpacks the two packages into an isolated external Rust consu
 starts the completed engine produced by the build, performs a query, checks engine
 version and revision compatibility, closes the client cleanly, and then initializes a
 Rust module against the same completed engine — resolving the packaged dependency for
-real and executing the runtime helper on the engine's own platform:
+real and executing the runtime helper on the engine's own platform. It then authors
+that module with Core `Directory`, `File`, and `ModuleError` exports, requires the
+stale load to name `dagger generate`, regenerates with `dagger generate`, requires a
+second generation to change nothing, and loads and calls the module:
 
 ```console
 env PATH=/vendor/docker:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
@@ -481,27 +484,43 @@ tar -xzf dagger_v1.0.0-beta.11.rust.4_darwin_arm64.tar.gz
 ```
 
 Then verify with the release's own native CLI: the strict pair over a live session,
-and the module-initialization gate — the same semantics as section 5's in-graph gate,
-exercising the packaged arm64 runtime helper and the Git dependency resolution at the
-release commit on the engine's own architecture:
+and the module gate — the same semantics as section 5's in-graph gate, exercising the
+packaged arm64 runtime helper, the Git dependency resolution at the release commit,
+regeneration, and module calls on the engine's own architecture. The authored source
+is the file the in-graph gate embeds:
 
 ```console
 ./dagger version
 install -d arm64-gate
 cd arm64-gate
 git init -q
-git -c user.name="Rust SDK Check" -c user.email="rust-sdk-check@dagger.invalid" \
-  commit --allow-empty -q -m "initialize workspace"
+git config user.name "Rust SDK Check"
+git config user.email "rust-sdk-check@dagger.invalid"
+git commit --allow-empty -q -m "initialize workspace"
 ../dagger -y sdk install --here rust
 ../dagger -y module init rust gate
 test -f .dagger/modules/gate/dagger-module.toml
+cp ../rust4-native-verify/.dagger/modules/rust-client-dev/testdata/module-gate/lib.rs \
+  .dagger/modules/gate/src/lib.rs
+install -d gate-input
+printf 'rust module gate\n' > gate-input/note.txt
+../dagger -m .dagger/modules/gate functions 2>&1 | grep -F 'run `dagger generate`'
+../dagger generate -y
+git add -A
+git commit -q -m "regenerate gate module"
+../dagger generate -y
+test -z "$(git status --porcelain)"
+! grep -F "/.dagger/modules/gate/" .dagger/modules/gate/.gitattributes
+test "$(../dagger -m .dagger/modules/gate call note --source gate-input contents)" = "rust module gate"
+test "$(../dagger -m .dagger/modules/gate call count --source gate-input)" = "1"
 cd ..
 ```
 
-`dagger version` must report the release identity and an arm64 platform; both gate
-commands must succeed and leave the initialized module in place. Afterwards stop and
-remove the verification container (`docker rm -f dagger-engine-rust4-arm64-verify`).
-A failure here invalidates the arm64 artifact: do not publish any part of the set.
+`dagger version` must report the release identity and an arm64 platform. The stale
+load must name `dagger generate`, the second generation must leave the tree clean, and
+every other gate command must succeed. Afterwards stop and remove the verification
+container (`docker rm -f dagger-engine-rust4-arm64-verify`). A failure here invalidates
+the arm64 artifact: do not publish any part of the set.
 
 ## 10. Remove the owned marker and pause the devbox
 

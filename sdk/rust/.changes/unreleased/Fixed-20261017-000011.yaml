@@ -1,0 +1,7 @@
+kind: Fixed
+body: |
+    Release verification carries a Rust module past initialization: against the completed engine it authors Core-handle and fallible exports, requires the stale load to name `dagger generate`, regenerates, requires a second generation to change nothing, and loads and calls the module. A candidate that fails any step fails verification.
+time: 2026-10-17T00:00:11Z
+custom:
+    Author: iw
+    PR: ""

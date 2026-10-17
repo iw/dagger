@@ -87,8 +87,11 @@ checks.
 
 `Verify` unpacks those packages into an isolated Cargo project, patches the macro
 companion locally, starts this build's completed engine, executes one SDK query, and
-closes the client cleanly. Export the two packages and complete engine only after
-verification passes. Checksums cover the exported bytes.
+closes the client cleanly. Against the same engine it then initializes a Rust module,
+authors Core-handle and fallible exports, regenerates after the edit with
+`dagger generate`, requires a second generation to change nothing, and loads and calls
+the module. Export the two packages and complete engine only after verification
+passes. Checksums cover the exported bytes.
 
 The single authoritative Namespace procedure, including the fresh checkout,
 AppleDouble guard, Docker CLI `PATH`, pinned runner, exact CLI build, exports,

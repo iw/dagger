@@ -4,6 +4,7 @@ package main
 import (
 	"context"
 	"crypto/sha256"
+	_ "embed"
 	"encoding/json"
 	"fmt"
 	"strings"
@@ -1381,6 +1382,86 @@ func (build *RustSdkBuild) Verify(ctx context.Context) error {
 		WithExec([]string{"dagger", "-y", "module", "init", "rust", "gate"})
 	if _, err := gate.File("/work/module-gate/.dagger/modules/gate/dagger-module.toml").Contents(ctx); err != nil {
 		return fmt.Errorf("verify module initialization against the completed engine: %w", err)
+	}
+	return verifyModuleLifecycle(ctx, gate)
+}
+
+// rustModuleGateSource is authored over the initialized starter. Its exports take a
+// Core Directory, return a Core File, and return a direct ModuleError, so loading it
+// exercises generated dispatch for Core handles and fallible results. The native
+// arm64 gate in sdk/rust/docs/namespace-build.md copies the same file.
+//
+//go:embed testdata/module-gate/lib.rs
+var rustModuleGateSource string
+
+// verifyModuleLifecycle carries the initialized gate module through the authoring
+// loop a user follows: an authored edit leaves committed generation stale with an
+// actionable diagnostic, the documented `dagger generate` regenerates it, a second
+// generation over identical input changes nothing, and the regenerated module loads
+// and answers calls on the completed engine. Every step past initialization was
+// unverified in releases whose gate stopped at `module init`.
+func verifyModuleLifecycle(ctx context.Context, gate *dagger.Container) error {
+	const module = ".dagger/modules/gate"
+	authored := gate.
+		WithNewFile("/work/module-gate/"+module+"/src/lib.rs", rustModuleGateSource).
+		WithNewFile("/work/module-gate/gate-input/note.txt", "rust module gate\n")
+
+	stale := authored.WithExec(
+		[]string{"dagger", "-m", module, "functions"},
+		dagger.ContainerWithExecOpts{Expect: dagger.ReturnTypeAny},
+	)
+	staleExit, err := stale.ExitCode(ctx)
+	if err != nil {
+		return fmt.Errorf("load the stale gate module: %w", err)
+	}
+	staleStderr, err := stale.Stderr(ctx)
+	if err != nil {
+		return fmt.Errorf("read the stale gate module diagnostic: %w", err)
+	}
+	if staleExit == 0 || !strings.Contains(staleStderr, "GENERATED_STALE") ||
+		!strings.Contains(staleStderr, "dagger generate") {
+		return fmt.Errorf("an authored edit must fail module loading with an actionable regeneration diagnostic")
+	}
+
+	generated := authored.
+		WithExec([]string{"dagger", "generate", "-y"}).
+		WithExec([]string{"git", "add", "-A"}).
+		WithExec([]string{"git", "commit", "-q", "-m", "regenerate gate module"})
+	status, err := generated.
+		WithExec([]string{"dagger", "generate", "-y"}).
+		WithExec([]string{"git", "status", "--porcelain"}).
+		Stdout(ctx)
+	if err != nil {
+		return fmt.Errorf("regenerate the authored gate module: %w", err)
+	}
+	if strings.TrimSpace(status) != "" {
+		return fmt.Errorf("a second generation over identical input changed the module:\n%s", status)
+	}
+	attributes, err := generated.File("/work/module-gate/" + module + "/.gitattributes").Contents(ctx)
+	if err != nil {
+		return fmt.Errorf("read the gate module generated-file attributes: %w", err)
+	}
+	if strings.Contains(attributes, "/"+module+"/") {
+		return fmt.Errorf("generated-file attributes must be relative to the module")
+	}
+
+	note, err := generated.
+		WithExec([]string{"dagger", "-m", module, "call", "note", "--source", "gate-input", "contents"}).
+		Stdout(ctx)
+	if err != nil {
+		return fmt.Errorf("call the regenerated gate module: %w", err)
+	}
+	if strings.TrimSpace(note) != "rust module gate" {
+		return fmt.Errorf("the gate module returned an unexpected Core File")
+	}
+	count, err := generated.
+		WithExec([]string{"dagger", "-m", module, "call", "count", "--source", "gate-input"}).
+		Stdout(ctx)
+	if err != nil {
+		return fmt.Errorf("call the gate module's fallible function: %w", err)
+	}
+	if strings.TrimSpace(count) != "1" {
+		return fmt.Errorf("the gate module returned an unexpected entry count")
 	}
 	return nil
 }
