@@ -25,6 +25,7 @@ use super::model::{
 };
 
 const MAX_MODULE_DEPTH: usize = 64;
+const GENERATED_MODULE: &str = "dagger_generated";
 
 /// Target kind retained for a checked generated type reference.
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
@@ -411,6 +412,14 @@ fn walk_items(
         let Item::Mod(module) = item else {
             continue;
         };
+        // The crate-root `dagger_generated` module is rendered from this compilation's
+        // own descriptor and its documents never enter the authoring snapshot. Treating
+        // the declaration as generator-owned lets an authored crate declare the module
+        // its generated entrypoint requires without feeding generated output back into
+        // authoring discovery.
+        if module_path.is_empty() && module.content.is_none() && module.ident == GENERATED_MODULE {
+            continue;
+        }
         match cfg_enabled(&module.attrs, &snapshot.cfg) {
             Ok(false) => continue,
             Ok(true) => {}
@@ -1500,6 +1509,51 @@ mod tests {
             .collect::<BTreeSet<_>>();
         assert!(codes.contains(&ModuleDiagnosticCode::CfgUnresolved));
         assert!(codes.contains(&ModuleDiagnosticCode::SourceModuleInvalid));
+    }
+
+    #[test]
+    fn crate_root_generated_module_is_generator_owned() {
+        let declared = snapshot(vec![(
+            "src/lib.rs",
+            r#"
+                pub mod dagger_generated;
+                #[dagger_sdk::object(root)]
+                pub struct Root { #[dagger(field)] value: String }
+            "#
+            .to_owned(),
+        )]);
+        let discovered = SourceDiscovery::discover(
+            &declared,
+            &GeneratedTypeRegistry::empty(declared.package_digest()),
+        )
+        .unwrap();
+        assert_eq!(discovered.root.as_str(), "crate::Root");
+        assert_eq!(
+            discovered.visited_documents,
+            BTreeSet::from([ModuleSourcePath::new("src/lib.rs").unwrap()])
+        );
+
+        // A nested module of the same name is authored source and still needs a document.
+        let nested = snapshot(vec![(
+            "src/lib.rs",
+            r#"
+                mod inner { pub mod dagger_generated; }
+                #[dagger_sdk::object(root)]
+                pub struct Root { #[dagger(field)] value: String }
+            "#
+            .to_owned(),
+        )]);
+        let errors = SourceDiscovery::discover(
+            &nested,
+            &GeneratedTypeRegistry::empty(nested.package_digest()),
+        )
+        .unwrap_err();
+        assert!(
+            errors
+                .diagnostics()
+                .iter()
+                .any(|diagnostic| diagnostic.code() == ModuleDiagnosticCode::SourceModuleInvalid)
+        );
     }
 
     #[test]

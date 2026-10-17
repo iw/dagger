@@ -63,6 +63,7 @@ proptest! {
                 let constructor_marker = format!("constructor, rename = \"{}\"", constructor_name);
                 prop_assert!(source.contains(&object_marker));
                 prop_assert!(source.contains(&constructor_marker));
+                prop_assert!(source.contains("\npub mod dagger_generated;\n"));
                 prop_assert!(syn::parse_file(source).is_ok());
                 prop_assert!(starter_compiles(source, &package_name, &object_name, &constructor_name));
             }
