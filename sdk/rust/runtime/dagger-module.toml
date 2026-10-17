@@ -1,5 +1,20 @@
 name = "rust-sdk"
 engineVersion = "v1.0.0-beta.11"
+# A runtime installed from a Git ref seals its content root from the sdk/rust
+# workspace, so its module context carries the workspace files it builds from.
+include = [
+  "assets/**",
+  "../Cargo.toml",
+  "../Cargo.lock",
+  "../rust-toolchain.toml",
+  "../LICENSE",
+  "../codegen/target.json",
+  "../codegen/schema.json",
+  "../codegen/generated.json",
+  "../crates/**/Cargo.toml",
+  "../crates/**/src/**",
+  "../crates/**/assets/**",
+]
 
 [runtime]
   source = "go"
