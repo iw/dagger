@@ -219,6 +219,20 @@ func invoke(ctx context.Context, parentJSON []byte, parentName string, fnName st
 				}
 			}
 			return (*RustSDK).Codegen(&parent, ctx, modSource, introspectionJson)
+		case "FindClientRoot":
+			var parent RustSDK
+			err = json.Unmarshal(parentJSON, &parent)
+			if err != nil {
+				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
+			}
+			var ws *dagger.Workspace
+			if inputArgs["ws"] != nil {
+				err = json.Unmarshal([]byte(inputArgs["ws"]), &ws)
+				if err != nil {
+					panic(fmt.Errorf("%s: %w", "failed to unmarshal input arg ws", err))
+				}
+			}
+			return (*RustSDK).FindClientRoot(&parent, ctx, ws)
 		case "GenerateClient":
 			var parent RustSDK
 			err = json.Unmarshal(parentJSON, &parent)
@@ -247,7 +261,7 @@ func invoke(ctx context.Context, parentJSON []byte, parentName string, fnName st
 				}
 			}
 			return (*RustSDK).GenerateClient(&parent, ctx, modSource, introspectionJson, outputDir)
-		case "GenerateClients":
+		case "GenerateScope":
 			var parent RustSDK
 			err = json.Unmarshal(parentJSON, &parent)
 			if err != nil {
@@ -260,60 +274,11 @@ func invoke(ctx context.Context, parentJSON []byte, parentName string, fnName st
 					panic(fmt.Errorf("%s: %w", "failed to unmarshal input arg ws", err))
 				}
 			}
-			return (*RustSDK).GenerateClients(&parent, ctx, ws)
-		case "GenerateModules":
-			var parent RustSDK
-			err = json.Unmarshal(parentJSON, &parent)
-			if err != nil {
-				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
-			}
-			var ws *dagger.Workspace
-			if inputArgs["ws"] != nil {
-				err = json.Unmarshal([]byte(inputArgs["ws"]), &ws)
+			var isModule bool
+			if inputArgs["isModule"] != nil {
+				err = json.Unmarshal([]byte(inputArgs["isModule"]), &isModule)
 				if err != nil {
-					panic(fmt.Errorf("%s: %w", "failed to unmarshal input arg ws", err))
-				}
-			}
-			return (*RustSDK).GenerateModules(&parent, ctx, ws)
-		case "InitClient":
-			var parent RustSDK
-			err = json.Unmarshal(parentJSON, &parent)
-			if err != nil {
-				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
-			}
-			var ws *dagger.Workspace
-			if inputArgs["ws"] != nil {
-				err = json.Unmarshal([]byte(inputArgs["ws"]), &ws)
-				if err != nil {
-					panic(fmt.Errorf("%s: %w", "failed to unmarshal input arg ws", err))
-				}
-			}
-			var path string
-			if inputArgs["path"] != nil {
-				err = json.Unmarshal([]byte(inputArgs["path"]), &path)
-				if err != nil {
-					panic(fmt.Errorf("%s: %w", "failed to unmarshal input arg path", err))
-				}
-			}
-			var module string
-			if inputArgs["module"] != nil {
-				err = json.Unmarshal([]byte(inputArgs["module"]), &module)
-				if err != nil {
-					panic(fmt.Errorf("%s: %w", "failed to unmarshal input arg module", err))
-				}
-			}
-			return (*RustSDK).InitClient(&parent, ctx, ws, path, module)
-		case "InitModule":
-			var parent RustSDK
-			err = json.Unmarshal(parentJSON, &parent)
-			if err != nil {
-				panic(fmt.Errorf("%s: %w", "failed to unmarshal parent object", err))
-			}
-			var ws *dagger.Workspace
-			if inputArgs["ws"] != nil {
-				err = json.Unmarshal([]byte(inputArgs["ws"]), &ws)
-				if err != nil {
-					panic(fmt.Errorf("%s: %w", "failed to unmarshal input arg ws", err))
+					panic(fmt.Errorf("%s: %w", "failed to unmarshal input arg isModule", err))
 				}
 			}
 			var name string
@@ -323,14 +288,14 @@ func invoke(ctx context.Context, parentJSON []byte, parentName string, fnName st
 					panic(fmt.Errorf("%s: %w", "failed to unmarshal input arg name", err))
 				}
 			}
-			var path string
-			if inputArgs["path"] != nil {
-				err = json.Unmarshal([]byte(inputArgs["path"]), &path)
+			var clients []*dagger.ModuleSource
+			if inputArgs["clients"] != nil {
+				err = json.Unmarshal([]byte(inputArgs["clients"]), &clients)
 				if err != nil {
-					panic(fmt.Errorf("%s: %w", "failed to unmarshal input arg path", err))
+					panic(fmt.Errorf("%s: %w", "failed to unmarshal input arg clients", err))
 				}
 			}
-			return (*RustSDK).InitModule(&parent, ctx, ws, name, path)
+			return (*RustSDK).GenerateScope(&parent, ctx, ws, isModule, name, clients)
 		case "ModuleRuntime":
 			var parent RustSDK
 			err = json.Unmarshal(parentJSON, &parent)
@@ -384,48 +349,33 @@ func invoke(ctx context.Context, parentJSON []byte, parentName string, fnName st
 					WithFunction(
 						dag.Function("Codegen",
 							dag.TypeDef().WithObject("GeneratedCode")).
-							WithDescription("Codegen compiles the engine-visible schema into the scoped module context and\nreturns the Rust-owned VCS policy emitted by the same operation plan.").
-							WithSourceMap(dag.SourceMap("main.go", 424, 1)).
-							WithArg("modSource", dag.TypeDef().WithObject("ModuleSource"), dagger.FunctionWithArgOpts{SourceMap: dag.SourceMap("main.go", 426, 2)}).
-							WithArg("introspectionJSON", dag.TypeDef().WithObject("File"), dagger.FunctionWithArgOpts{SourceMap: dag.SourceMap("main.go", 427, 2)})).
+							WithDescription("Codegen compiles the engine-visible schema into the scoped module context and\nreturns the Rust-owned VCS policy emitted by the same operation plan. The engine\nwrites that policy into the module's own .gitattributes and .gitignore, so its\npaths are relative to the module source root rather than the context.").
+							WithSourceMap(dag.SourceMap("main.go", 370, 1)).
+							WithArg("modSource", dag.TypeDef().WithObject("ModuleSource"), dagger.FunctionWithArgOpts{SourceMap: dag.SourceMap("main.go", 372, 2)}).
+							WithArg("introspectionJSON", dag.TypeDef().WithObject("File"), dagger.FunctionWithArgOpts{SourceMap: dag.SourceMap("main.go", 373, 2)})).
+					WithFunction(
+						dag.Function("FindClientRoot",
+							dag.TypeDef().WithKind(dagger.TypeDefKindStringKind).WithOptional(true)).
+							WithDescription("FindClientRoot returns the nearest Cargo package root at or above the\nworkspace's current location, or null when no Cargo package contains it.").
+							WithSourceMap(dag.SourceMap("main.go", 54, 1)).
+							WithArg("ws", dag.TypeDef().WithObject("Workspace"), dagger.FunctionWithArgOpts{SourceMap: dag.SourceMap("main.go", 54, 57)})).
 					WithFunction(
 						dag.Function("GenerateClient",
 							dag.TypeDef().WithObject("Directory")).
 							WithDescription("GenerateClient renders the standalone client only within the requested output\nsubtree of the scoped module context.").
-							WithSourceMap(dag.SourceMap("main.go", 476, 1)).
-							WithArg("modSource", dag.TypeDef().WithObject("ModuleSource"), dagger.FunctionWithArgOpts{SourceMap: dag.SourceMap("main.go", 478, 2)}).
-							WithArg("introspectionJSON", dag.TypeDef().WithObject("File"), dagger.FunctionWithArgOpts{SourceMap: dag.SourceMap("main.go", 479, 2)}).
-							WithArg("outputDir", dag.TypeDef().WithKind(dagger.TypeDefKindStringKind), dagger.FunctionWithArgOpts{SourceMap: dag.SourceMap("main.go", 480, 2)})).
+							WithSourceMap(dag.SourceMap("main.go", 422, 1)).
+							WithArg("modSource", dag.TypeDef().WithObject("ModuleSource"), dagger.FunctionWithArgOpts{SourceMap: dag.SourceMap("main.go", 424, 2)}).
+							WithArg("introspectionJSON", dag.TypeDef().WithObject("File"), dagger.FunctionWithArgOpts{SourceMap: dag.SourceMap("main.go", 425, 2)}).
+							WithArg("outputDir", dag.TypeDef().WithKind(dagger.TypeDefKindStringKind), dagger.FunctionWithArgOpts{SourceMap: dag.SourceMap("main.go", 426, 2)})).
 					WithFunction(
-						dag.Function("GenerateClients",
-							dag.TypeDef().WithObject("Changeset")).
-							WithDescription("GenerateClients regenerates every managed Rust client at or below the\nworkspace's current location. Client schemas remain bound to their resolved\nmodule sources while output is confined to the registered workspace path.").
-							WithSourceMap(dag.SourceMap("main.go", 108, 1)).
-							WithGenerator().
-							WithArg("ws", dag.TypeDef().WithObject("Workspace"), dagger.FunctionWithArgOpts{SourceMap: dag.SourceMap("main.go", 108, 58)})).
-					WithFunction(
-						dag.Function("GenerateModules",
-							dag.TypeDef().WithObject("Changeset")).
-							WithDescription("GenerateModules regenerates every managed Rust module at or below the\nworkspace's current location. Each module sees its freshly generated local\ndependencies, but only its own changes survive in the returned changeset.").
-							WithSourceMap(dag.SourceMap("main.go", 65, 1)).
-							WithGenerator().
-							WithArg("ws", dag.TypeDef().WithObject("Workspace"), dagger.FunctionWithArgOpts{SourceMap: dag.SourceMap("main.go", 65, 58)})).
-					WithFunction(
-						dag.Function("InitClient",
-							dag.TypeDef().WithObject("Changeset")).
-							WithDescription("InitClient validates the engine-owned record inputs and returns only SDK-owned\nscaffold changes. The module reference is never forwarded into Rust or generated\ncontent; the engine remains responsible for persisting and resolving that record.").
-							WithSourceMap(dag.SourceMap("main.go", 366, 1)).
-							WithArg("ws", dag.TypeDef().WithObject("Workspace"), dagger.FunctionWithArgOpts{SourceMap: dag.SourceMap("main.go", 368, 2)}).
-							WithArg("path", dag.TypeDef().WithKind(dagger.TypeDefKindStringKind), dagger.FunctionWithArgOpts{SourceMap: dag.SourceMap("main.go", 369, 2)}).
-							WithArg("module", dag.TypeDef().WithKind(dagger.TypeDefKindStringKind), dagger.FunctionWithArgOpts{SourceMap: dag.SourceMap("main.go", 370, 2)})).
-					WithFunction(
-						dag.Function("InitModule",
-							dag.TypeDef().WithObject("Changeset")).
-							WithDescription("InitModule returns only SDK-owned project amendments. The engine independently\nauthors module configuration and decides whether scoped generation follows.").
-							WithSourceMap(dag.SourceMap("main.go", 318, 1)).
-							WithArg("ws", dag.TypeDef().WithObject("Workspace"), dagger.FunctionWithArgOpts{SourceMap: dag.SourceMap("main.go", 320, 2)}).
-							WithArg("name", dag.TypeDef().WithKind(dagger.TypeDefKindStringKind), dagger.FunctionWithArgOpts{SourceMap: dag.SourceMap("main.go", 321, 2)}).
-							WithArg("path", dag.TypeDef().WithKind(dagger.TypeDefKindStringKind), dagger.FunctionWithArgOpts{SourceMap: dag.SourceMap("main.go", 322, 2)})).
+						dag.Function("GenerateScope",
+							dag.TypeDef().WithObject("Workspace")).
+							WithDescription("GenerateScope reconciles the Rust SDK state of one workspace scope. A module\nscope is scaffolded and given its module configuration on first use, then its\ngenerated code is refreshed through the engine's module code generation, which\ncalls back into Codegen with the module's visible schema.").
+							WithSourceMap(dag.SourceMap("main.go", 83, 1)).
+							WithArg("ws", dag.TypeDef().WithObject("Workspace"), dagger.FunctionWithArgOpts{SourceMap: dag.SourceMap("main.go", 85, 2)}).
+							WithArg("isModule", dag.TypeDef().WithKind(dagger.TypeDefKindBooleanKind), dagger.FunctionWithArgOpts{SourceMap: dag.SourceMap("main.go", 86, 2)}).
+							WithArg("name", dag.TypeDef().WithKind(dagger.TypeDefKindStringKind), dagger.FunctionWithArgOpts{SourceMap: dag.SourceMap("main.go", 87, 2)}).
+							WithArg("clients", dag.TypeDef().WithListOf(dag.TypeDef().WithObject("ModuleSource")), dagger.FunctionWithArgOpts{SourceMap: dag.SourceMap("main.go", 88, 2)})).
 					WithFunction(
 						dag.Function("ModuleRuntime",
 							dag.TypeDef().WithObject("Container")).
@@ -437,13 +387,13 @@ func invoke(ctx context.Context, parentJSON []byte, parentName string, fnName st
 						dag.Function("RequiredClientGenerationFiles",
 							dag.TypeDef().WithListOf(dag.TypeDef().WithKind(dagger.TypeDefKindStringKind))).
 							WithDescription("RequiredClientGenerationFiles returns the renderer-owned finite host input set.").
-							WithSourceMap(dag.SourceMap("main.go", 462, 1))).
+							WithSourceMap(dag.SourceMap("main.go", 408, 1))).
 					WithConstructor(
 						dag.Function("New",
 							dag.TypeDef().WithObject("RustSDK")).
 							WithDescription("New constructs the built-in adapter from the complete packaged SDK content root.").
-							WithSourceMap(dag.SourceMap("main.go", 50, 1)).
-							WithArg("sdkSourceDir", dag.TypeDef().WithObject("Directory").WithOptional(true), dagger.FunctionWithArgOpts{Description: "Complete engine-packaged Rust SDK content, including runtime and dist metadata.\nAbsent when the runtime is installed as an ordinary module; operations then\nseal the content from the pinned SDK dependency.", SourceMap: dag.SourceMap("main.go", 55, 2)}))), nil
+							WithSourceMap(dag.SourceMap("main.go", 42, 1)).
+							WithArg("sdkSourceDir", dag.TypeDef().WithObject("Directory").WithOptional(true), dagger.FunctionWithArgOpts{Description: "Complete engine-packaged Rust SDK content, including runtime and dist metadata.\nAbsent when the runtime is installed as an ordinary module; operations then\nseal the content from the pinned SDK dependency.", SourceMap: dag.SourceMap("main.go", 47, 2)}))), nil
 	default:
 		return nil, fmt.Errorf("unknown object %s", parentName)
 	}

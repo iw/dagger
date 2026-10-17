@@ -112,71 +112,33 @@ func clientGenerationSemantics(document map[string]any) map[string]any {
 	return normalized
 }
 
-func TestClientPackageNameIsDeterministicAndConfined(t *testing.T) {
-	for _, test := range []struct{ path, want string }{
-		{"clients/example", "example"},
-		{"clients/my_client", "my-client"},
-		{".", "dagger-client"},
-	} {
-		got, err := clientPackageName(test.path)
-		if err != nil || got != test.want {
-			t.Fatalf("clientPackageName(%q) = %q, %v; want %q", test.path, got, err, test.want)
-		}
-	}
-	for _, invalid := range []string{"../escape", "/absolute", "bad path"} {
-		if _, err := clientPackageName(invalid); err == nil {
-			t.Fatalf("clientPackageName(%q) unexpectedly succeeded", invalid)
-		}
-	}
-}
-
-func TestInitClientRequestDoesNotForwardModuleReference(t *testing.T) {
-	descriptor := metadata.EngineSource{
-		FormatVersion: 1, Repository: "https://github.com/dagger/dagger",
-		DaggerRevision: strings.Repeat("a", 40), EngineVersion: "1.0.0-beta.11.rust.5",
-		RustSDKVersion: "1.0.0-beta.11.rust.5", RustToolchain: "1.97.1",
-		CoreSchemaDigest: "sha256:" + strings.Repeat("b", 64),
-		SDKDependency: metadata.PublishedSDKDependency{
-			Source: "registry", Registry: "crates-io", Package: "dagger-sdk", ExactVersion: "1.0.0-beta.11.rust.5",
-		},
-	}
-	request := clientInitializationRequestDocument(descriptor, "workspace/clients/example", "example")
-	encoded, err := json.Marshal(request)
-	if err != nil {
-		t.Fatalf("encode initialization request: %v", err)
-	}
-	for _, forbidden := range []string{"module_ref", "moduleRef", "github.com/private", "Authorization"} {
-		if strings.Contains(string(encoded), forbidden) {
-			t.Fatalf("initialization request forwarded forbidden input %q", forbidden)
-		}
-	}
-	body := request["request"].(map[string]any)
-	if body["client_root"] != "workspace/clients/example" || body["package_name"] != "example" {
-		t.Fatalf("initialization identity was not forwarded exactly: %#v", body)
-	}
-}
-
-func TestCheckedRuntimeAPIExposesInitClientExactlyOnce(t *testing.T) {
+func TestCheckedRuntimeAPIImplementsTheSDKModuleInterface(t *testing.T) {
 	entrypoint, err := os.ReadFile("dagger.gen.go")
 	if err != nil {
 		t.Fatalf("read checked module entrypoint: %v", err)
 	}
-	client, err := os.ReadFile("internal/dagger/rust-sdk.gen.go")
-	if err != nil {
-		t.Fatalf("read checked module API client: %v", err)
-	}
-	for token, source := range map[string][]byte{
-		`case "InitClient":`:                               entrypoint,
-		`dag.Function("InitClient",`:                       entrypoint,
-		`func (r *RustSDK) InitClient(ws *Workspace, path`: client,
+	for _, token := range []string{
+		`case "FindClientRoot":`,
+		`dag.Function("FindClientRoot",`,
+		`case "GenerateScope":`,
+		`dag.Function("GenerateScope",`,
+		`WithArg("isModule", dag.TypeDef().WithKind(dagger.TypeDefKindBooleanKind)`,
+		`WithArg("clients", dag.TypeDef().WithListOf(dag.TypeDef().WithObject("ModuleSource"))`,
 	} {
-		if count := strings.Count(string(source), token); count != 1 {
+		if count := strings.Count(string(entrypoint), token); count != 1 {
 			t.Fatalf("checked runtime API contains %q %d times; want exactly once", token, count)
+		}
+	}
+	// Engines that drive generation through generateScope never call the
+	// workspace initializers or generator functions of the earlier interface.
+	for _, retired := range []string{"InitModule", "InitClient", "GenerateModules", "GenerateClients"} {
+		if strings.Contains(string(entrypoint), `"`+retired+`"`) {
+			t.Fatalf("checked runtime API still registers %s", retired)
 		}
 	}
 }
 
-func TestPackagedRuntimeConstructorUsesCompleteContentRoot(t *testing.T) {
+func TestRuntimeConstructorTakesNoWorkspaceDefaultPath(t *testing.T) {
 	source, err := os.ReadFile("main.go")
 	if err != nil {
 		t.Fatalf("read runtime source: %v", err)
@@ -185,12 +147,45 @@ func TestPackagedRuntimeConstructorUsesCompleteContentRoot(t *testing.T) {
 	if err != nil {
 		t.Fatalf("read checked module entrypoint: %v", err)
 	}
+	// With a workspace bound into the call, engines resolve a default path against
+	// that workspace, so the content root comes from the pinned SDK dependency.
 	for token, body := range map[string][]byte{
-		`// +defaultPath=".."`: source,
-		`DefaultPath: ".."`:    entrypoint,
+		`+defaultPath`: source,
+		`DefaultPath:`: entrypoint,
 	} {
-		if count := strings.Count(string(body), token); count != 1 {
-			t.Fatalf("packaged content root marker %q occurs %d times; want exactly once", token, count)
+		if strings.Contains(string(body), token) {
+			t.Fatalf("runtime constructor declares a default path through %q", token)
+		}
+	}
+}
+
+func TestNewModuleManifestQuotesEveryValue(t *testing.T) {
+	got := moduleManifest("gate", "v1.0.0-beta.18+249edbd6", `github.com/acme/sdk/"rust"\runtime@`+strings.Repeat("a", 40)+"\x01")
+	want := "name = \"gate\"\n" +
+		"engineVersion = \"v1.0.0-beta.18\"\n\n" +
+		"[runtime]\n" +
+		"  source = \"github.com/acme/sdk/\\\"rust\\\"\\\\runtime@" + strings.Repeat("a", 40) + "\\u0001\"\n"
+	if got != want {
+		t.Fatalf("moduleManifest rendered\n%s\nwant\n%s", got, want)
+	}
+}
+
+func TestInstalledRuntimeSourceMustBeRemote(t *testing.T) {
+	for _, test := range []struct {
+		source string
+		remote bool
+	}{
+		{"github.com/iw/dagger/sdk/rust/runtime@" + strings.Repeat("a", 40), true},
+		{"https://github.com/iw/dagger/sdk/rust/runtime", true},
+		{"git@github.com:iw/dagger.git/sdk/rust/runtime", true},
+		{"sdk/rust/runtime", false},
+		{"./sdk/rust/runtime", false},
+		{"../runtime", false},
+		{"/sdk/rust/runtime", false},
+		{".dagger/modules/rust-sdk", false},
+	} {
+		if got := isRemoteModuleReference(test.source); got != test.remote {
+			t.Fatalf("isRemoteModuleReference(%q) = %t; want %t", test.source, got, test.remote)
 		}
 	}
 }

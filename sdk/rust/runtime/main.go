@@ -38,14 +38,6 @@ type RustSDK struct {
 	SDKSourceDir *dagger.Directory // +private
 }
 
-type managedClientPlan struct {
-	RecordIndex uint32
-	Path        string
-	ModuleRef   string
-	StoredPin   string
-	Source      *dagger.ModuleSource
-}
-
 // New constructs the built-in adapter from the complete packaged SDK content root.
 func New(
 	// Complete engine-packaged Rust SDK content, including runtime and dist metadata.
@@ -57,188 +49,273 @@ func New(
 	return &RustSDK{SDKSourceDir: sdkSourceDir}, nil
 }
 
-// GenerateModules regenerates every managed Rust module at or below the
-// workspace's current location. Each module sees its freshly generated local
-// dependencies, but only its own changes survive in the returned changeset.
-//
-// +generate
-func (sdk *RustSDK) GenerateModules(ctx context.Context, ws *dagger.Workspace) (*dagger.Changeset, error) {
-	sdk, resolveErr := sdk.resolved(ctx)
-	if resolveErr != nil {
-		return nil, resolveErr
-	}
+// FindClientRoot returns the nearest Cargo package root at or above the
+// workspace's current location, or null when no Cargo package contains it.
+func (sdk *RustSDK) FindClientRoot(ctx context.Context, ws *dagger.Workspace) (*string, error) {
 	cwd, err := workspaceCwd(ctx, ws)
 	if err != nil {
 		return nil, err
 	}
-	modules, err := dag.CurrentModule().AsSDK(ws).Modules(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("discover Rust modules: %w", err)
-	}
-
-	generated := make([]*dagger.Changeset, 0, len(modules))
-	for _, module := range modules {
-		modulePath, err := module.Path(ctx)
-		if err != nil {
-			return nil, fmt.Errorf("read managed Rust module path: %w", err)
-		}
-		_, visible := relativeToWorkspaceCwd(cwd, modulePath)
-		if !visible {
-			continue
-		}
-
-		absolute := "/" + normalizeWorkspacePath(modulePath)
-		unstaged := ws.ModuleSource(absolute)
-		staged := ws.WithChanges(unstaged.GenerateLocalDependencies(ws))
-		changes := staged.ModuleSource(absolute).GeneratedContextChangeset()
-		// GeneratedContextChangeset is context-rooted, while generator changes are
-		// exported from the workspace cwd. Strip that prefix before returning or a
-		// generator invoked inside a nested module duplicates the module path.
-		generated = append(generated, scopedWorkspaceChanges(cwd, changes.Before(), changes.After()))
-	}
-
-	return dag.Changeset().WithChangesets(generated), nil
-}
-
-// GenerateClients regenerates every managed Rust client at or below the
-// workspace's current location. Client schemas remain bound to their resolved
-// module sources while output is confined to the registered workspace path.
-//
-// +generate
-func (sdk *RustSDK) GenerateClients(ctx context.Context, ws *dagger.Workspace) (*dagger.Changeset, error) {
-	sdk, resolveErr := sdk.resolved(ctx)
-	if resolveErr != nil {
-		return nil, resolveErr
-	}
-	cwd, err := workspaceCwd(ctx, ws)
+	// findUp stats a host-backed workspace, so a manifest that exists only in
+	// pending workspace edits is visible solely through the current directory.
+	present, err := workspaceHasFile(ctx, ws, "Cargo.toml")
 	if err != nil {
 		return nil, err
 	}
-	clients, err := dag.CurrentModule().AsSDK(ws).Clients(ctx)
+	if present {
+		return &cwd, nil
+	}
+	found, err := ws.FindUp(ctx, "Cargo.toml")
 	if err != nil {
-		return nil, fmt.Errorf("discover Rust clients: %w", err)
+		return nil, fmt.Errorf("find enclosing Cargo package: %w", err)
 	}
-
-	workspaceBefore := ws.Directory("/")
-	records := make([]managedClientPlan, 0, len(clients))
-	for index, client := range clients {
-		clientPath, err := client.Path(ctx)
-		if err != nil {
-			return nil, fmt.Errorf("read managed Rust client path: %w", err)
-		}
-		if !isConfinedWorkspacePath(clientPath) {
-			return nil, fmt.Errorf("managed Rust client path is not confined")
-		}
-		moduleRef, err := client.Module(ctx)
-		if err != nil {
-			return nil, fmt.Errorf("read managed Rust client module reference: %w", err)
-		}
-		if err := validateModuleReference(moduleRef); err != nil {
-			return nil, err
-		}
-		storedPin, err := client.Pin(ctx)
-		if err != nil {
-			return nil, fmt.Errorf("read managed Rust client pin: %w", err)
-		}
-		if err := validateOptionalRevision(storedPin); err != nil {
-			return nil, fmt.Errorf("managed Rust client pin is invalid")
-		}
-		records = append(records, managedClientPlan{
-			RecordIndex: uint32(index),
-			Path:        normalizeWorkspacePath(clientPath),
-			ModuleRef:   moduleRef,
-			StoredPin:   storedPin,
-			Source:      client.ModuleSource(),
-		})
+	if found == "" {
+		return nil, nil
 	}
-
-	selected, err := sdk.planClientSet(ctx, cwd, records, workspaceBefore)
-	if err != nil {
-		return nil, err
-	}
-	generated := make([]*dagger.Changeset, 0, len(selected))
-	for _, selectedClient := range selected {
-		if int(selectedClient.RecordIndex) >= len(records) {
-			return nil, fmt.Errorf("Rust client preflight returned an unknown record")
-		}
-		record := records[selectedClient.RecordIndex]
-		rebasedRecordPath, err := rebasePath(record.Path)
-		if err != nil {
-			return nil, fmt.Errorf("managed Rust client path: %w", err)
-		}
-		if rebasedRecordPath != selectedClient.Path || metadata.DigestModuleReference(record.ModuleRef) != selectedClient.ModuleRefDigest || optionalString(selectedClient.StoredPin) != record.StoredPin {
-			return nil, fmt.Errorf("Rust client preflight identity differs from the workspace record")
-		}
-		identity, err := moduleIdentity(ctx, record.Source, "current")
-		if err != nil {
-			return nil, fmt.Errorf("resolve client module source: %w", err)
-		}
-		if record.StoredPin != identity.ResolvedPin {
-			return nil, fmt.Errorf("stored client pin differs from the resolved module revision")
-		}
-		schema := record.Source.ClientSchemaIntrospectionJSON()
-		outputRoot, err := rebasePath(record.Path)
-		if err != nil {
-			return nil, fmt.Errorf("client output directory: %w", err)
-		}
-		request, _, err := sdk.generationRequest(ctx, "generate-client", identity, schema, outputRoot)
-		if err != nil {
-			return nil, err
-		}
-		execution, err := sdk.executeOperation(ctx, request, schema, workspaceBefore, "generation")
-		if err != nil {
-			return nil, err
-		}
-
-		workspaceAfter := execution.project.Directory(operationWorkspaceRoot)
-		generated = append(generated, scopedWorkspaceChanges(cwd, workspaceBefore, workspaceAfter))
-	}
-
-	return dag.Changeset().WithChangesets(generated), nil
+	root := normalizeWorkspacePath(path.Dir("/" + strings.TrimPrefix(found, "/")))
+	return &root, nil
 }
 
-func (sdk *RustSDK) planClientSet(
+// GenerateScope reconciles the Rust SDK state of one workspace scope. A module
+// scope is scaffolded and given its module configuration on first use, then its
+// generated code is refreshed through the engine's module code generation, which
+// calls back into Codegen with the module's visible schema.
+func (sdk *RustSDK) GenerateScope(
 	ctx context.Context,
-	cwd string,
-	records []managedClientPlan,
-	workspaceBefore *dagger.Directory,
-) ([]metadata.PlannedClient, error) {
-	rebasedCwd, err := rebasePath(cwd)
+	ws *dagger.Workspace,
+	isModule bool,
+	name string,
+	clients []*dagger.ModuleSource,
+) (*dagger.Workspace, error) {
+	scope, err := workspaceCwd(ctx, ws)
 	if err != nil {
-		return nil, fmt.Errorf("workspace cwd: %w", err)
+		return nil, err
 	}
-	clients := make([]map[string]any, 0, len(records))
-	for _, record := range records {
-		rebasedPath, err := rebasePath(record.Path)
+	if !isConfinedWorkspacePath(scope) {
+		return nil, fmt.Errorf("SDK scope is not confined to the workspace")
+	}
+	// The engine schedules a scope without a module only to generate the clients
+	// recorded for it, and records a module scope's dependencies as its clients.
+	// Neither has a Rust generation contract under the SDK-module interface, so
+	// both are refused before any workspace edit.
+	if !isModule {
+		return nil, fmt.Errorf("the Rust SDK does not generate module clients; remove the clients recorded for scope %q", scope)
+	}
+	if len(clients) > 0 {
+		return nil, fmt.Errorf("the Rust SDK does not generate module dependencies; remove the clients recorded for module scope %q", scope)
+	}
+
+	configured := ws
+	hasManifest, err := workspaceHasAnyFile(ctx, ws, "dagger-module.toml", "dagger.json")
+	if err != nil {
+		return nil, err
+	}
+	if !hasManifest {
+		// Only scaffolding runs a Rust operation here; regeneration reaches Codegen
+		// through the engine, which resolves the content root in that call.
+		sdk, err = sdk.resolved(ctx)
 		if err != nil {
-			return nil, fmt.Errorf("managed Rust client path: %w", err)
+			return nil, err
 		}
-		client := map[string]any{
-			"record_index":      record.RecordIndex,
-			"path":              rebasedPath,
-			"module_ref_digest": metadata.DigestModuleReference(record.ModuleRef),
+		configured, err = sdk.initializedModuleScope(ctx, ws, scope, name)
+		if err != nil {
+			return nil, err
 		}
-		if record.StoredPin != "" {
-			client["stored_pin"] = record.StoredPin
-		}
-		clients = append(clients, client)
+	}
+	generated, err := generatedModuleCode(ctx, configured, scope)
+	if err != nil {
+		return nil, err
+	}
+	return configured.WithDirectory(".", generated), nil
+}
+
+// initializedModuleScope scaffolds a new Rust module in the scope and writes its
+// module configuration. The SDK-module interface leaves module configuration to
+// the SDK, and the Rust initialization plan refuses to write it, so the adapter
+// authors it.
+func (sdk *RustSDK) initializedModuleScope(
+	ctx context.Context,
+	ws *dagger.Workspace,
+	scope string,
+	name string,
+) (*dagger.Workspace, error) {
+	scaffold, err := sdk.moduleScaffold(ctx, ws, scope, name)
+	if err != nil {
+		return nil, err
+	}
+	engineVersion, err := dag.Version(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("read engine version: %w", err)
+	}
+	runtime, err := installedRuntimeSource(ctx, ws)
+	if err != nil {
+		return nil, err
+	}
+	manifest := moduleManifest(name, engineVersion, runtime)
+	return ws.WithDirectory(".", scaffold).
+		WithNewFile("dagger-module.toml", manifest, dagger.WorkspaceWithNewFileOpts{Permissions: 0o644}), nil
+}
+
+// moduleScaffold returns the scope directory after the Rust initialization plan.
+// The plan sees the whole workspace so it can adopt an existing Cargo project, but
+// it writes only beneath the module root.
+func (sdk *RustSDK) moduleScaffold(
+	ctx context.Context,
+	ws *dagger.Workspace,
+	scope string,
+	name string,
+) (*dagger.Directory, error) {
+	moduleRoot, err := rebasePath(scope)
+	if err != nil {
+		return nil, fmt.Errorf("module path: %w", err)
+	}
+	descriptor, err := sdk.descriptorMetadata(ctx)
+	if err != nil {
+		return nil, err
 	}
 	request := map[string]any{
-		"request_kind": "plan-client-set",
+		"request_kind": "initialize-module",
 		"request": map[string]any{
 			"format_version": 1,
-			"cwd":            rebasedCwd,
-			"clients":        clients,
+			"target":         targetIdentity(descriptor),
+			"module": map[string]any{
+				"name":           name,
+				"original_name":  name,
+				"source_subpath": moduleRoot,
+				"config_format":  "current",
+				"source_digest":  metadata.DigestModuleSource("initialization:" + scope),
+			},
+			"package_name":   name,
+			"sdk_dependency": descriptor.SDKDependency,
 		},
 	}
-	execution, err := sdk.executeOperation(ctx, request, nil, workspaceBefore, "client-plan")
+	execution, err := sdk.executeOperation(ctx, request, nil, ws.Directory("/"), "initialization")
 	if err != nil {
 		return nil, err
 	}
-	if execution.result.ClientPlan == nil {
-		return nil, fmt.Errorf("Rust client preflight returned no plan")
+	initialized := execution.project.Directory(operationWorkspaceRoot)
+	if scope == "." {
+		return initialized, nil
 	}
-	return execution.result.ClientPlan.Clients, nil
+	return initialized.Directory(scope), nil
+}
+
+// installedRuntimeSource names the runtime a new module loads: the reference this
+// SDK module was installed from. Modules resolve a local runtime path against
+// their own directory, so only a remote reference keeps its meaning when copied
+// into a module configuration.
+func installedRuntimeSource(ctx context.Context, ws *dagger.Workspace) (string, error) {
+	moduleName, err := dag.CurrentModule().Name(ctx)
+	if err != nil {
+		return "", fmt.Errorf("read Rust SDK module name: %w", err)
+	}
+	source, err := ws.Module(moduleName).Source(ctx)
+	if err != nil {
+		return "", fmt.Errorf("read the workspace installation of %q: %w", moduleName, err)
+	}
+	if !isRemoteModuleReference(source) {
+		return "", fmt.Errorf("Rust SDK %q is installed from a local path; install it from a Git reference to initialize modules", moduleName)
+	}
+	return source, nil
+}
+
+// isRemoteModuleReference follows the engine's classification of a module source
+// (core/gitref.FastKindCheck and core/workspace.IsLocalRef @
+// 249edbd646e63c5181053c8af72623ed9bdf030d): a leading path marker or a dot-free
+// source is a workspace path, and a Git scheme or a host ahead of the first
+// separator names a remote reference.
+func isRemoteModuleReference(source string) bool {
+	switch {
+	case strings.HasPrefix(source, "/"), strings.HasPrefix(source, "."):
+		return false
+	case strings.HasPrefix(source, "http://"), strings.HasPrefix(source, "https://"),
+		strings.HasPrefix(source, "git://"), strings.HasPrefix(source, "ssh://"):
+		return true
+	case !strings.Contains(source, "."):
+		return false
+	}
+	host, _, _ := strings.Cut(strings.ReplaceAll(source, `\`, "/"), "/")
+	if _, afterUser, scpLike := strings.Cut(host, "@"); scpLike {
+		host = afterUser
+	}
+	if strings.Contains(host, ".") || strings.Contains(host, ":") {
+		return true
+	}
+	// Azure DevOps Server references name a dot-free host with a _git segment.
+	return strings.Contains(source, "/_git/")
+}
+
+// moduleManifest renders the configuration of a new Rust module in the layout
+// the engine wrote when it authored module configuration. The engine version is
+// the running engine's release without build metadata.
+func moduleManifest(name string, engineVersion string, runtime string) string {
+	release, _, _ := strings.Cut(engineVersion, "+")
+	return "name = " + tomlString(name) + "\n" +
+		"engineVersion = " + tomlString(release) + "\n\n" +
+		"[runtime]\n" +
+		"  source = " + tomlString(runtime) + "\n"
+}
+
+// tomlString encodes a TOML basic string, escaping every character the format
+// does not admit literally.
+func tomlString(value string) string {
+	var encoded strings.Builder
+	encoded.WriteByte('"')
+	for _, character := range value {
+		switch {
+		case character == '"':
+			encoded.WriteString(`\"`)
+		case character == '\\':
+			encoded.WriteString(`\\`)
+		case character < 0x20 || character == 0x7f:
+			fmt.Fprintf(&encoded, `\u%04X`, character)
+		default:
+			encoded.WriteRune(character)
+		}
+	}
+	encoded.WriteByte('"')
+	return encoded.String()
+}
+
+// generatedModuleCode returns the scope directory after the engine's module code
+// generation, without the module configuration this SDK owns in the scope.
+func generatedModuleCode(ctx context.Context, ws *dagger.Workspace, scope string) (*dagger.Directory, error) {
+	sourcePath := "/"
+	if scope != "." {
+		sourcePath = "/" + scope
+	}
+	generated := ws.WithWorkdir(".").ModuleSource(sourcePath).GeneratedContextDirectory()
+	if scope != "." {
+		generated = generated.Directory(scope)
+	}
+	for _, manifest := range []string{"dagger-module.toml", "dagger.json"} {
+		present, err := generated.Exists(ctx, manifest)
+		if err != nil {
+			return nil, fmt.Errorf("inspect generated module scope: %w", err)
+		}
+		if present {
+			generated = generated.WithoutFile(manifest)
+		}
+	}
+	return generated, nil
+}
+
+func workspaceHasFile(ctx context.Context, ws *dagger.Workspace, name string) (bool, error) {
+	present, err := ws.Directory(".", dagger.WorkspaceDirectoryOpts{Include: []string{name}}).Exists(ctx, name)
+	if err != nil {
+		return false, fmt.Errorf("inspect workspace scope for %s: %w", name, err)
+	}
+	return present, nil
+}
+
+func workspaceHasAnyFile(ctx context.Context, ws *dagger.Workspace, names ...string) (bool, error) {
+	for _, name := range names {
+		present, err := workspaceHasFile(ctx, ws, name)
+		if err != nil || present {
+			return present, err
+		}
+	}
+	return false, nil
 }
 
 func workspaceCwd(ctx context.Context, ws *dagger.Workspace) (string, error) {
@@ -260,39 +337,12 @@ func normalizeWorkspacePath(candidate string) string {
 	return path.Clean(trimmed)
 }
 
-// relativeToWorkspaceCwd rejects siblings and ancestors because the engine
-// re-roots generator output beneath the current workspace location.
-func relativeToWorkspaceCwd(cwd string, target string) (string, bool) {
-	if !isConfinedWorkspacePath(cwd) || !isConfinedWorkspacePath(target) {
-		return "", false
-	}
-	cwd = normalizeWorkspacePath(cwd)
-	target = normalizeWorkspacePath(target)
-	if cwd == "." {
-		return target, true
-	}
-	if target == cwd {
-		return ".", true
-	}
-	if strings.HasPrefix(target, cwd+"/") {
-		return strings.TrimPrefix(target, cwd+"/"), true
-	}
-	return "", false
-}
-
 func isConfinedWorkspacePath(candidate string) bool {
 	if path.IsAbs(candidate) {
 		return false
 	}
 	normalized := normalizeWorkspacePath(candidate)
 	return normalized != ".." && !strings.HasPrefix(normalized, "../") && !strings.Contains(candidate, "\\")
-}
-
-func scopedWorkspaceChanges(cwd string, before *dagger.Directory, after *dagger.Directory) *dagger.Changeset {
-	if cwd == "." {
-		return after.Changes(before)
-	}
-	return after.Directory(cwd).Changes(before.Directory(cwd))
 }
 
 // engineDescriptor returns the opaque Rust-owned descriptor. Go forwards these bytes
@@ -311,110 +361,6 @@ func (sdk *RustSDK) clientGenerationMetadata(ctx context.Context) (metadata.Clie
 		return metadata.ClientGeneration{}, fmt.Errorf("read packaged client-generation metadata: %w", err)
 	}
 	return metadata.DecodeClientGeneration([]byte(contents))
-}
-
-// InitModule returns only SDK-owned project amendments. The engine independently
-// authors module configuration and decides whether scoped generation follows.
-func (sdk *RustSDK) InitModule(
-	ctx context.Context,
-	ws *dagger.Workspace,
-	name string,
-	path string,
-) (*dagger.Changeset, error) {
-	sdk, resolveErr := sdk.resolved(ctx)
-	if resolveErr != nil {
-		return nil, resolveErr
-	}
-	if ws == nil {
-		return nil, fmt.Errorf("workspace not provided")
-	}
-	moduleRoot, err := rebasePath(path)
-	if err != nil {
-		return nil, fmt.Errorf("module path: %w", err)
-	}
-	descriptor, err := sdk.descriptorMetadata(ctx)
-	if err != nil {
-		return nil, err
-	}
-	request := map[string]any{
-		"request_kind": "initialize-module",
-		"request": map[string]any{
-			"format_version": 1,
-			"target":         targetIdentity(descriptor),
-			"module": map[string]any{
-				"name":           name,
-				"original_name":  name,
-				"source_subpath": moduleRoot,
-				"config_format":  "current",
-				"source_digest":  metadata.DigestModuleSource("initialization:" + path),
-			},
-			"package_name":   name,
-			"sdk_dependency": descriptor.SDKDependency,
-		},
-	}
-	before := ws.Directory("/")
-	execution, err := sdk.executeOperation(ctx, request, nil, before, "initialization")
-	if err != nil {
-		return nil, err
-	}
-	return execution.project.Directory(operationWorkspaceRoot).Changes(before), nil
-}
-
-// InitClient validates the engine-owned record inputs and returns only SDK-owned
-// scaffold changes. The module reference is never forwarded into Rust or generated
-// content; the engine remains responsible for persisting and resolving that record.
-func (sdk *RustSDK) InitClient(
-	ctx context.Context,
-	ws *dagger.Workspace,
-	path string,
-	module string,
-) (*dagger.Changeset, error) {
-	sdk, resolveErr := sdk.resolved(ctx)
-	if resolveErr != nil {
-		return nil, resolveErr
-	}
-	if ws == nil {
-		return nil, fmt.Errorf("workspace not provided")
-	}
-	if err := validateModuleReference(module); err != nil {
-		return nil, err
-	}
-	clientRoot, err := rebasePath(path)
-	if err != nil {
-		return nil, fmt.Errorf("client path: %w", err)
-	}
-	packageName, err := clientPackageName(path)
-	if err != nil {
-		return nil, err
-	}
-	descriptor, err := sdk.descriptorMetadata(ctx)
-	if err != nil {
-		return nil, err
-	}
-	request := clientInitializationRequestDocument(descriptor, clientRoot, packageName)
-	before := ws.Directory("/")
-	execution, err := sdk.executeOperation(ctx, request, nil, before, "client-initialization")
-	if err != nil {
-		return nil, err
-	}
-	return execution.project.Directory(operationWorkspaceRoot).Changes(before), nil
-}
-
-func clientInitializationRequestDocument(
-	descriptor metadata.EngineSource,
-	clientRoot string,
-	packageName string,
-) map[string]any {
-	return map[string]any{
-		"request_kind": "initialize-client",
-		"request": map[string]any{
-			"format_version": 1,
-			"target":         targetIdentity(descriptor),
-			"client_root":    clientRoot,
-			"package_name":   packageName,
-			"sdk_dependency": descriptor.SDKDependency,
-		},
-	}
 }
 
 // Codegen compiles the engine-visible schema into the scoped module context and
@@ -730,13 +676,6 @@ func moduleSourceRequiresPin(kind dagger.ModuleSourceKind) (bool, error) {
 	}
 }
 
-func optionalString(value *string) string {
-	if value == nil {
-		return ""
-	}
-	return *value
-}
-
 func validateOptionalRevision(value string) error {
 	if value == "" {
 		return nil
@@ -750,39 +689,6 @@ func validateOptionalRevision(value string) error {
 		}
 	}
 	return nil
-}
-
-func validateModuleReference(value string) error {
-	if value == "" || strings.TrimSpace(value) != value {
-		return fmt.Errorf("client module reference is empty or malformed")
-	}
-	for _, character := range value {
-		if character < 0x20 || character == 0x7f {
-			return fmt.Errorf("client module reference is empty or malformed")
-		}
-	}
-	return nil
-}
-
-func clientPackageName(clientPath string) (string, error) {
-	normalized := normalizeWorkspacePath(clientPath)
-	if !isConfinedWorkspacePath(clientPath) {
-		return "", fmt.Errorf("client path is not confined")
-	}
-	name := path.Base(normalized)
-	if name == "." {
-		name = "dagger-client"
-	}
-	name = strings.ToLower(strings.ReplaceAll(name, "_", "-"))
-	if name == "" || name[0] == '-' || name[len(name)-1] == '-' {
-		return "", fmt.Errorf("client path does not yield a valid Cargo package name")
-	}
-	for _, character := range name {
-		if (character < 'a' || character > 'z') && (character < '0' || character > '9') && character != '-' {
-			return "", fmt.Errorf("client path does not yield a valid Cargo package name")
-		}
-	}
-	return name, nil
 }
 
 func semanticModuleSourceDigest(

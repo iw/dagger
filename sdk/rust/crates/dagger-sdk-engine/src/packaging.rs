@@ -24,7 +24,7 @@ pub const DESCRIPTOR_PATH: &str = "dist/engine-source.json";
 /// Canonical packaged-asset manifest path beneath Rust SDK content.
 pub const PACKAGED_ASSET_MANIFEST_PATH: &str = "dist/packaged-assets.json";
 
-const REQUIRED_PAYLOADS: [&str; 15] = [
+const REQUIRED_PAYLOADS: [&str; 17] = [
     "LICENSE",
     "dist/client-generation.json",
     "dist/dagger-rust-engine",
@@ -34,6 +34,8 @@ const REQUIRED_PAYLOADS: [&str; 15] = [
     "runtime/dagger-module.toml",
     "runtime/go.mod",
     "runtime/go.sum",
+    "runtime/internal/dagger/core/core.gen.go",
+    "runtime/internal/dagger/core/rust-sdk.gen.go",
     "runtime/internal/dagger/dagger.gen.go",
     "runtime/internal/dagger/rust-sdk.gen.go",
     "runtime/internal/metadata/client_generation.go",

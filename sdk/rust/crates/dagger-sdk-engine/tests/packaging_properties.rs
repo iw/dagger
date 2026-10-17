@@ -12,7 +12,7 @@ use serde::{Deserialize, Serialize};
 use support::fixed_model_corpus;
 
 const REPLAY: &[u8] = include_bytes!("fixtures/engine-foundation-replay.json");
-const REQUIRED_PAYLOADS: [&str; 15] = [
+const REQUIRED_PAYLOADS: [&str; 17] = [
     "LICENSE",
     "dist/client-generation.json",
     "dist/dagger-rust-engine",
@@ -22,6 +22,8 @@ const REQUIRED_PAYLOADS: [&str; 15] = [
     "runtime/dagger-module.toml",
     "runtime/go.mod",
     "runtime/go.sum",
+    "runtime/internal/dagger/core/core.gen.go",
+    "runtime/internal/dagger/core/rust-sdk.gen.go",
     "runtime/internal/dagger/dagger.gen.go",
     "runtime/internal/dagger/rust-sdk.gen.go",
     "runtime/internal/metadata/client_generation.go",
