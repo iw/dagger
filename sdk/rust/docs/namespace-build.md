@@ -158,12 +158,16 @@ df -h /workspaces
 ```
 
 If the named runner container is absent after reactivation, recreate it from the pinned
-public image:
+public image. The runner keeps its build state in a named volume at `/var/lib/dagger`,
+as Dagger's own engine driver does: inside the container's overlay root, BuildKit cannot
+use overlayfs, falls back to a snapshotter that copies every parent layer, and can
+exhaust the Docker host's disk within a single build:
 
 ```console
 /vendor/docker/docker pull "$RUST_SDK_RUNNER_IMAGE"
 /vendor/docker/docker run --detach --name "$RUST_SDK_RUNNER_NAME" \
-  --restart always --privileged "$RUST_SDK_RUNNER_IMAGE"
+  --restart always --privileged \
+  -v "$RUST_SDK_RUNNER_NAME:/var/lib/dagger" "$RUST_SDK_RUNNER_IMAGE"
 ```
 
 If the container exists but is stopped, start that exact container:
@@ -172,7 +176,9 @@ If the container exists but is stopped, start that exact container:
 /vendor/docker/docker start "$RUST_SDK_RUNNER_NAME"
 ```
 
-In all cases, require the expected image digest and a running state:
+In all cases, require the expected image digest, a running state, and the state volume.
+A runner created without the volume fails the last check; remove it with
+`/vendor/docker/docker rm -f "$RUST_SDK_RUNNER_NAME"` and recreate it as above:
 
 ```console
 /vendor/docker/docker inspect "$RUST_SDK_RUNNER_NAME" \
@@ -180,6 +186,8 @@ In all cases, require the expected image digest and a running state:
 test "$(/vendor/docker/docker inspect "$RUST_SDK_RUNNER_NAME" --format '{{.Image}}')" = \
   "$RUST_SDK_RUNNER_DIGEST"
 test "$(/vendor/docker/docker inspect "$RUST_SDK_RUNNER_NAME" --format '{{.State.Running}}')" = "true"
+test "$(/vendor/docker/docker inspect "$RUST_SDK_RUNNER_NAME" \
+  --format '{{range .Mounts}}{{if eq .Destination "/var/lib/dagger"}}{{.Type}}{{end}}{{end}}')" = "volume"
 ```
 
 Do not assume a retained Docker container is usable merely because `/workspaces`
