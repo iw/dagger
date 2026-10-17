@@ -41,6 +41,7 @@ const MODULE_HIDDEN_FIELDS: &[&str] = &[
     "Query.currentWorkspace",
     "Query.engineVolume",
     "Query.sshfsVolume",
+    "Query.setSessionTitle",
     "Address.volume",
 ];
 

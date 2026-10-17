@@ -584,6 +584,7 @@ pub(crate) fn module_visible_schema(permutation: u16) -> Vec<u8> {
         "Query.currentWorkspace",
         "Query.engineVolume",
         "Query.sshfsVolume",
+        "Query.setSessionTitle",
         "Address.volume",
     ] {
         scrub_field(&mut document, hidden);

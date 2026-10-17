@@ -97,6 +97,13 @@ renderer work:
      and application counts) and the coverage totals in `tests/render.rs` and
      `tests/render_properties.rs`. Take the actual values from the projection of the
      captured schema — never invent them — and review each movement in the diff.
+   - The module-introspection exclusions in `crates/dagger-codegen/src/engine/visible.rs`
+     and their duplicate in `module_visible_schema` of
+     `crates/dagger-codegen/tests/support/mod.rs`. They mirror
+     `TypesToIgnoreForModuleIntrospection` and `FieldsToIgnoreForModuleIntrospection`
+     in `core/moddeps.go` and `TypesHiddenFromModuleSDKs` in `core/env.go` at the target
+     revision; a coordinate the engine hides that they omit fails module generation
+     with `SCHEMA_CORE_COORDINATE_MISSING`.
    - The checked generated-client fixtures: regenerate through the sanctioned path
      (`DAGGER_UPDATE_GENERATED_CLIENT_FIXTURE=1 cargo test -p dagger-codegen
      --test client_renderer`), then run the workspace formatter.
