@@ -181,8 +181,8 @@ fn target() -> TargetIdentity {
         format_version: FormatVersion,
         repository: CanonicalRepositoryUrl::new("https://github.com/dagger/dagger").unwrap(),
         dagger_revision: FullRevision::new(REVISION).unwrap(),
-        engine_version: ExactVersion::new("1.0.0-beta.11.rust.4").unwrap(),
-        rust_sdk_version: ExactVersion::new("1.0.0-beta.11.rust.4").unwrap(),
+        engine_version: ExactVersion::new("1.0.0-beta.11.rust.5").unwrap(),
+        rust_sdk_version: ExactVersion::new("1.0.0-beta.11.rust.5").unwrap(),
         rust_toolchain: ExactRustToolchain::new("1.97.1").unwrap(),
         core_schema_digest: Sha256Digest::new(CORE_SCHEMA_DIGEST).unwrap(),
     }
@@ -192,7 +192,7 @@ fn dependency() -> PublishedSdkDependency {
     PublishedSdkDependency::Registry {
         registry: CanonicalRegistry::new("crates-io").unwrap(),
         package: SdkPackageName::new("dagger-sdk").unwrap(),
-        exact_version: ExactVersion::new("1.0.0-beta.11.rust.4").unwrap(),
+        exact_version: ExactVersion::new("1.0.0-beta.11.rust.5").unwrap(),
     }
 }
 

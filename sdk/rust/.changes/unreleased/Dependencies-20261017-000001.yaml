@@ -1,7 +1,0 @@
-kind: Dependencies
-body: |
-    The SDK requires `zip` 9.0.4, which carries the fixes for RUSTSEC-2026-0367, RUSTSEC-2026-0368, and RUSTSEC-2026-0369 that affect every 8.x release. CLI provisioning copies one regular archive member by index and never calls the extraction APIs those advisories describe.
-time: 2026-10-17T00:00:01Z
-custom:
-    Author: iw
-    PR: ""

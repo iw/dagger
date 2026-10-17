@@ -1,7 +1,0 @@
-kind: Fixed
-body: |
-    Generated module dispatch and codecs name Core handles such as `Directory`, `File`, and `Llm` through their SDK paths, so modules whose functions take or return Core types compile.
-time: 2026-10-17T00:00:04Z
-custom:
-    Author: iw
-    PR: ""

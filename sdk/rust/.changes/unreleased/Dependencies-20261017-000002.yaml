@@ -1,7 +1,0 @@
-kind: Dependencies
-body: |
-    The examples and repository builds resolve `rustls` 0.23.46, which carries the fixes for RUSTSEC-2026-0285, RUSTSEC-2026-0346, RUSTSEC-2026-0348, and RUSTSEC-2026-0349. Crates that depend on the SDK continue to resolve their own `rustls` release.
-time: 2026-10-17T00:00:02Z
-custom:
-    Author: iw
-    PR: ""

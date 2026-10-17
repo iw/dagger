@@ -1,7 +1,0 @@
-kind: Fixed
-body: |
-    Concurrent first-time loads of the same Rust module no longer fail each other's Cargo builds: the runtime mounts its Cargo registry, Git, and target caches with locked sharing, so simultaneous builds take turns instead of unpacking crates into the same registry at once.
-time: 2026-10-17T00:00:12Z
-custom:
-    Author: iw
-    PR: ""

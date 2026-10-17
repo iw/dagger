@@ -123,8 +123,8 @@ fn starter_compiles(
     let generated = GeneratedTypeRegistry::empty(visible_schema_digest.clone());
     let target = ModuleTarget {
         dagger_revision: TargetValue::new("0123456789abcdef0123456789abcdef01234567").unwrap(),
-        engine_version: TargetValue::new("1.0.0-beta.11.rust.4").unwrap(),
-        rust_sdk_version: TargetValue::new("1.0.0-beta.11.rust.4").unwrap(),
+        engine_version: TargetValue::new("1.0.0-beta.11.rust.5").unwrap(),
+        rust_sdk_version: TargetValue::new("1.0.0-beta.11.rust.5").unwrap(),
         rust_toolchain: TargetValue::new("1.97.1").unwrap(),
         rust_edition: TargetValue::new("2024").unwrap(),
         visible_schema_digest,

@@ -289,7 +289,7 @@ env PATH=/vendor/docker:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:
   --sdk-dependency-revision="$RUST_SDK_COMMIT" \
   build --platform=linux/amd64 complete-engine export \
   --media-types=OCI \
-  --path="$RUST_SDK_OUTPUT/dagger-engine-v1.0.0-beta.11.rust.4-linux-amd64.oci.tar"
+  --path="$RUST_SDK_OUTPUT/dagger-engine-v1.0.0-beta.11.rust.5-linux-amd64.oci.tar"
 env PATH=/vendor/docker:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
   DAGGER_NO_NAG=1 \
   _EXPERIMENTAL_DAGGER_RUNNER_HOST="$RUST_SDK_RUNNER_HOST" \
@@ -298,7 +298,7 @@ env PATH=/vendor/docker:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:
   --sdk-dependency-revision="$RUST_SDK_COMMIT" \
   build --platform=linux/arm64 complete-engine export \
   --media-types=OCI \
-  --path="$RUST_SDK_OUTPUT/dagger-engine-v1.0.0-beta.11.rust.4-linux-arm64.oci.tar"
+  --path="$RUST_SDK_OUTPUT/dagger-engine-v1.0.0-beta.11.rust.5-linux-arm64.oci.tar"
 ```
 
 Cross-compile the native Apple Silicon CLI from the same clean detached commit with
@@ -310,7 +310,7 @@ GOOS=darwin GOARCH=arm64 CGO_ENABLED=0 go build -mod=readonly -trimpath \
   -o "$RUST_SDK_TOOLING/dagger-darwin-arm64" ./cmd/dagger
 tar -C "$RUST_SDK_TOOLING" \
   --transform 's/^dagger-darwin-arm64$/dagger/' \
-  -czf "$RUST_SDK_OUTPUT/dagger_v1.0.0-beta.11.rust.4_darwin_arm64.tar.gz" \
+  -czf "$RUST_SDK_OUTPUT/dagger_v1.0.0-beta.11.rust.5_darwin_arm64.tar.gz" \
   dagger-darwin-arm64
 ```
 
@@ -338,17 +338,17 @@ Require the expected two crate names, two engine archives, and the CLI archive:
 
 ```console
 cd "$RUST_SDK_OUTPUT"
-test -f dagger-sdk-macros-1.0.0-beta.11.rust.4.crate
-test -f dagger-sdk-1.0.0-beta.11.rust.4.crate
-test -f dagger-engine-v1.0.0-beta.11.rust.4-linux-amd64.oci.tar
-test -f dagger-engine-v1.0.0-beta.11.rust.4-linux-arm64.oci.tar
-test -f dagger_v1.0.0-beta.11.rust.4_darwin_arm64.tar.gz
+test -f dagger-sdk-macros-1.0.0-beta.11.rust.5.crate
+test -f dagger-sdk-1.0.0-beta.11.rust.5.crate
+test -f dagger-engine-v1.0.0-beta.11.rust.5-linux-amd64.oci.tar
+test -f dagger-engine-v1.0.0-beta.11.rust.5-linux-arm64.oci.tar
+test -f dagger_v1.0.0-beta.11.rust.5_darwin_arm64.tar.gz
 test "$(find . -maxdepth 1 -type f | wc -l)" -eq 5
-tar -tf dagger-engine-v1.0.0-beta.11.rust.4-linux-amd64.oci.tar | grep -Fx oci-layout
-tar -tf dagger-engine-v1.0.0-beta.11.rust.4-linux-amd64.oci.tar | grep -Fx index.json
-tar -tf dagger-engine-v1.0.0-beta.11.rust.4-linux-arm64.oci.tar | grep -Fx oci-layout
-tar -tf dagger-engine-v1.0.0-beta.11.rust.4-linux-arm64.oci.tar | grep -Fx index.json
-tar -tzf dagger_v1.0.0-beta.11.rust.4_darwin_arm64.tar.gz | grep -Fx dagger
+tar -tf dagger-engine-v1.0.0-beta.11.rust.5-linux-amd64.oci.tar | grep -Fx oci-layout
+tar -tf dagger-engine-v1.0.0-beta.11.rust.5-linux-amd64.oci.tar | grep -Fx index.json
+tar -tf dagger-engine-v1.0.0-beta.11.rust.5-linux-arm64.oci.tar | grep -Fx oci-layout
+tar -tf dagger-engine-v1.0.0-beta.11.rust.5-linux-arm64.oci.tar | grep -Fx index.json
+tar -tzf dagger_v1.0.0-beta.11.rust.5_darwin_arm64.tar.gz | grep -Fx dagger
 ```
 
 Create `SHA256SUMS` over only those five files, verify it on the builder, then require
@@ -356,11 +356,11 @@ exactly six output files:
 
 ```console
 sha256sum \
-  dagger-sdk-macros-1.0.0-beta.11.rust.4.crate \
-  dagger-sdk-1.0.0-beta.11.rust.4.crate \
-  dagger-engine-v1.0.0-beta.11.rust.4-linux-amd64.oci.tar \
-  dagger-engine-v1.0.0-beta.11.rust.4-linux-arm64.oci.tar \
-  dagger_v1.0.0-beta.11.rust.4_darwin_arm64.tar.gz \
+  dagger-sdk-macros-1.0.0-beta.11.rust.5.crate \
+  dagger-sdk-1.0.0-beta.11.rust.5.crate \
+  dagger-engine-v1.0.0-beta.11.rust.5-linux-amd64.oci.tar \
+  dagger-engine-v1.0.0-beta.11.rust.5-linux-arm64.oci.tar \
+  dagger_v1.0.0-beta.11.rust.5_darwin_arm64.tar.gz \
   > SHA256SUMS
 sha256sum --check SHA256SUMS
 test "$(find . -maxdepth 1 -type f | wc -l)" -eq 6
@@ -399,24 +399,24 @@ The `--container_name` option is documented in the
 
 ```console
 nsc instance download "$RUST_SDK_NS_INSTANCE" \
-  "$RUST_SDK_REMOTE_OUTPUT/dagger-sdk-macros-1.0.0-beta.11.rust.4.crate" \
-  "$RUST_SDK_LOCAL_OUTPUT/dagger-sdk-macros-1.0.0-beta.11.rust.4.crate" \
+  "$RUST_SDK_REMOTE_OUTPUT/dagger-sdk-macros-1.0.0-beta.11.rust.5.crate" \
+  "$RUST_SDK_LOCAL_OUTPUT/dagger-sdk-macros-1.0.0-beta.11.rust.5.crate" \
   --container_name "$RUST_SDK_NS_CONTAINER"
 nsc instance download "$RUST_SDK_NS_INSTANCE" \
-  "$RUST_SDK_REMOTE_OUTPUT/dagger-sdk-1.0.0-beta.11.rust.4.crate" \
-  "$RUST_SDK_LOCAL_OUTPUT/dagger-sdk-1.0.0-beta.11.rust.4.crate" \
+  "$RUST_SDK_REMOTE_OUTPUT/dagger-sdk-1.0.0-beta.11.rust.5.crate" \
+  "$RUST_SDK_LOCAL_OUTPUT/dagger-sdk-1.0.0-beta.11.rust.5.crate" \
   --container_name "$RUST_SDK_NS_CONTAINER"
 nsc instance download "$RUST_SDK_NS_INSTANCE" \
-  "$RUST_SDK_REMOTE_OUTPUT/dagger-engine-v1.0.0-beta.11.rust.4-linux-amd64.oci.tar" \
-  "$RUST_SDK_LOCAL_OUTPUT/dagger-engine-v1.0.0-beta.11.rust.4-linux-amd64.oci.tar" \
+  "$RUST_SDK_REMOTE_OUTPUT/dagger-engine-v1.0.0-beta.11.rust.5-linux-amd64.oci.tar" \
+  "$RUST_SDK_LOCAL_OUTPUT/dagger-engine-v1.0.0-beta.11.rust.5-linux-amd64.oci.tar" \
   --container_name "$RUST_SDK_NS_CONTAINER"
 nsc instance download "$RUST_SDK_NS_INSTANCE" \
-  "$RUST_SDK_REMOTE_OUTPUT/dagger-engine-v1.0.0-beta.11.rust.4-linux-arm64.oci.tar" \
-  "$RUST_SDK_LOCAL_OUTPUT/dagger-engine-v1.0.0-beta.11.rust.4-linux-arm64.oci.tar" \
+  "$RUST_SDK_REMOTE_OUTPUT/dagger-engine-v1.0.0-beta.11.rust.5-linux-arm64.oci.tar" \
+  "$RUST_SDK_LOCAL_OUTPUT/dagger-engine-v1.0.0-beta.11.rust.5-linux-arm64.oci.tar" \
   --container_name "$RUST_SDK_NS_CONTAINER"
 nsc instance download "$RUST_SDK_NS_INSTANCE" \
-  "$RUST_SDK_REMOTE_OUTPUT/dagger_v1.0.0-beta.11.rust.4_darwin_arm64.tar.gz" \
-  "$RUST_SDK_LOCAL_OUTPUT/dagger_v1.0.0-beta.11.rust.4_darwin_arm64.tar.gz" \
+  "$RUST_SDK_REMOTE_OUTPUT/dagger_v1.0.0-beta.11.rust.5_darwin_arm64.tar.gz" \
+  "$RUST_SDK_LOCAL_OUTPUT/dagger_v1.0.0-beta.11.rust.5_darwin_arm64.tar.gz" \
   --container_name "$RUST_SDK_NS_CONTAINER"
 nsc instance download "$RUST_SDK_NS_INSTANCE" \
   "$RUST_SDK_REMOTE_OUTPUT/SHA256SUMS" \
@@ -452,10 +452,10 @@ ID, so tag it before running:
 
 ```console
 cd "$RUST_SDK_LOCAL_OUTPUT"
-IMAGE_ID="$(docker load -i dagger-engine-v1.0.0-beta.11.rust.4-linux-arm64.oci.tar | sed -n 's/^Loaded image ID: //p')"
-docker tag "$IMAGE_ID" dagger-engine:v1.0.0-beta.11.rust.4-linux-arm64
-docker run --detach --name dagger-engine-rust4-arm64-verify --privileged \
-  dagger-engine:v1.0.0-beta.11.rust.4-linux-arm64
+IMAGE_ID="$(docker load -i dagger-engine-v1.0.0-beta.11.rust.5-linux-arm64.oci.tar | sed -n 's/^Loaded image ID: //p')"
+docker tag "$IMAGE_ID" dagger-engine:v1.0.0-beta.11.rust.5-linux-arm64
+docker run --detach --name dagger-engine-rust5-arm64-verify --privileged \
+  dagger-engine:v1.0.0-beta.11.rust.5-linux-arm64
 ```
 
 Run the external consumer from the shipped crate bytes against the native engine —
@@ -466,20 +466,20 @@ inside a fresh clone at the release commit:
 
 ```console
 cd "$RUST_SDK_LOCAL_OUTPUT"
-git clone --quiet https://github.com/iw/dagger.git rust4-native-verify
-git -C rust4-native-verify checkout --quiet --detach "$RUST_SDK_COMMIT"
-install -d rust4-native-verify/.dagger/modules/rust-client-dev/testdata/vendor
-tar -xf dagger-sdk-1.0.0-beta.11.rust.4.crate \
-  -C rust4-native-verify/.dagger/modules/rust-client-dev/testdata/vendor
-tar -xf dagger-sdk-macros-1.0.0-beta.11.rust.4.crate \
-  -C rust4-native-verify/.dagger/modules/rust-client-dev/testdata/vendor
-mv rust4-native-verify/.dagger/modules/rust-client-dev/testdata/vendor/dagger-sdk-1.0.0-beta.11.rust.4 \
-   rust4-native-verify/.dagger/modules/rust-client-dev/testdata/vendor/dagger-sdk
-mv rust4-native-verify/.dagger/modules/rust-client-dev/testdata/vendor/dagger-sdk-macros-1.0.0-beta.11.rust.4 \
-   rust4-native-verify/.dagger/modules/rust-client-dev/testdata/vendor/dagger-sdk-macros
-export _EXPERIMENTAL_DAGGER_RUNNER_HOST=docker-container://dagger-engine-rust4-arm64-verify
-tar -xzf dagger_v1.0.0-beta.11.rust.4_darwin_arm64.tar.gz
-( cd rust4-native-verify/.dagger/modules/rust-client-dev/testdata/external-consumer && \
+git clone --quiet https://github.com/iw/dagger.git rust5-native-verify
+git -C rust5-native-verify checkout --quiet --detach "$RUST_SDK_COMMIT"
+install -d rust5-native-verify/.dagger/modules/rust-client-dev/testdata/vendor
+tar -xf dagger-sdk-1.0.0-beta.11.rust.5.crate \
+  -C rust5-native-verify/.dagger/modules/rust-client-dev/testdata/vendor
+tar -xf dagger-sdk-macros-1.0.0-beta.11.rust.5.crate \
+  -C rust5-native-verify/.dagger/modules/rust-client-dev/testdata/vendor
+mv rust5-native-verify/.dagger/modules/rust-client-dev/testdata/vendor/dagger-sdk-1.0.0-beta.11.rust.5 \
+   rust5-native-verify/.dagger/modules/rust-client-dev/testdata/vendor/dagger-sdk
+mv rust5-native-verify/.dagger/modules/rust-client-dev/testdata/vendor/dagger-sdk-macros-1.0.0-beta.11.rust.5 \
+   rust5-native-verify/.dagger/modules/rust-client-dev/testdata/vendor/dagger-sdk-macros
+export _EXPERIMENTAL_DAGGER_RUNNER_HOST=docker-container://dagger-engine-rust5-arm64-verify
+tar -xzf dagger_v1.0.0-beta.11.rust.5_darwin_arm64.tar.gz
+( cd rust5-native-verify/.dagger/modules/rust-client-dev/testdata/external-consumer && \
   PATH="$RUST_SDK_LOCAL_OUTPUT:$PATH" dagger run cargo run --locked )
 ```
 
@@ -500,7 +500,7 @@ git commit --allow-empty -q -m "initialize workspace"
 ../dagger -y sdk install --here rust
 ../dagger -y module init rust gate
 test -f .dagger/modules/gate/dagger-module.toml
-cp ../rust4-native-verify/.dagger/modules/rust-client-dev/testdata/module-gate/lib.rs \
+cp ../rust5-native-verify/.dagger/modules/rust-client-dev/testdata/module-gate/lib.rs \
   .dagger/modules/gate/src/lib.rs
 install -d gate-input
 printf 'rust module gate\n' > gate-input/note.txt
@@ -519,7 +519,7 @@ cd ..
 `dagger version` must report the release identity and an arm64 platform. The stale
 load must name `dagger generate`, the second generation must leave the tree clean, and
 every other gate command must succeed. Afterwards stop and remove the verification
-container (`docker rm -f dagger-engine-rust4-arm64-verify`). A failure here invalidates
+container (`docker rm -f dagger-engine-rust5-arm64-verify`). A failure here invalidates
 the arm64 artifact: do not publish any part of the set.
 
 ## 10. Remove the owned marker and pause the devbox

@@ -1,7 +1,0 @@
-kind: Fixed
-body: |
-    Rust module constructors run when the engine invokes them: generated dispatch selects the constructor by the empty function name the engine sends, instead of the constructor's wire name, which never reaches the call.
-time: 2026-10-17T00:00:10Z
-custom:
-    Author: iw
-    PR: ""

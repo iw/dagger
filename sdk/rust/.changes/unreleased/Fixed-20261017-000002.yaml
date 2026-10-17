@@ -1,7 +1,0 @@
-kind: Fixed
-body: |
-    Module authoring failures report the compiler's diagnostic code, explanation, remediation, and authored source location instead of a generic authoring failure.
-time: 2026-10-17T00:00:02Z
-custom:
-    Author: iw
-    PR: ""

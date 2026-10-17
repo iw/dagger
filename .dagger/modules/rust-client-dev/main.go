@@ -27,7 +27,7 @@ const (
 	// build pointed at this fork's repository at the supplied release commit.
 	forkRepository = "https://github.com/iw/dagger.git"
 	coreTargetRevision      = "a4e1e4ff663e5e51c2b96c2c0772f3d2f00cfb94"
-	coreTargetVersion       = "v1.0.0-beta.11.rust.4"
+	coreTargetVersion       = "v1.0.0-beta.11.rust.5"
 	focusedEngineBaseImage  = "registry.dagger.io/engine:v1.0.0-beta.9@sha256:de22dbf0c848d618efa9243f76fd47364110d31bb2e24cce063b702e91e1b73e"
 	focusedEngineBaseCommit = "1c6e07b197327c57e9db8584deb36e5166278677"
 	defaultEngineRepository = "https://github.com/dagger/dagger"
@@ -513,7 +513,7 @@ func (content *RustEngineContent) runResolution(
 		return "", fmt.Errorf("installed SDK listing omitted canonical Rust entry")
 	}
 	rejected := second.WithExec(
-		[]string{"dagger", "-y", "sdk", "install", "rust@v1.0.0-beta.11.rust.4"},
+		[]string{"dagger", "-y", "sdk", "install", "rust@v1.0.0-beta.11.rust.5"},
 		dagger.ContainerWithExecOpts{Expect: dagger.ReturnTypeAny},
 	)
 	exitCode, err := rejected.ExitCode(ctx)
@@ -748,7 +748,7 @@ func (content *RustEngineContent) runEngineIntegrationCase(
 				"dagger", "-y", "module", "init", "rust", "runtime-legacy", "--path", "modules/runtime-legacy", "--no-generate",
 			}).
 			WithExec([]string{"rm", "modules/runtime-legacy/dagger-module.toml"}).
-			WithNewFile("/work/modules/runtime-legacy/dagger.json", `{"name":"runtime-legacy","engineVersion":"v1.0.0-beta.11.rust.4","sdk":{"source":"rust"}}`)
+			WithNewFile("/work/modules/runtime-legacy/dagger.json", `{"name":"runtime-legacy","engineVersion":"v1.0.0-beta.11.rust.5","sdk":{"source":"rust"}}`)
 		functions, err := result.WithExec([]string{
 			"dagger", "-m", "modules/runtime-legacy", "functions",
 		}).Stdout(ctx)

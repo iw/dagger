@@ -1,7 +1,0 @@
-kind: Fixed
-body: |
-    Exported functions may return `Result<T, dagger_sdk::ModuleError>` directly, or any error type that converts into `ModuleError`; authoring discovery treats the error as the bridge's conversion rather than an exported type.
-time: 2026-10-17T00:00:03Z
-custom:
-    Author: iw
-    PR: ""

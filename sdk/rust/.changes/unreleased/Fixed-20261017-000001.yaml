@@ -1,7 +1,0 @@
-kind: Fixed
-body: |
-    New Rust modules declare `pub mod dagger_generated;`, and authoring discovery treats that crate-root module as generator-owned, so the starter crate compiles with its generated entrypoint and declaring the module no longer fails generation.
-time: 2026-10-17T00:00:01Z
-custom:
-    Author: iw
-    PR: ""
