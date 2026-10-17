@@ -1,0 +1,7 @@
+kind: Fixed
+body: |
+    Rust modules return their registered type definitions to the engine: the generated registration publishes the module's ID as the registration call's return value instead of serving the module into the calling session, so the engine can load the module's functions.
+time: 2026-10-17T00:00:09Z
+custom:
+    Author: iw
+    PR: ""

@@ -143,6 +143,13 @@ fn production_renderers_emit_bounded_operation_specific_artifacts() {
                         "registration omitted {expected}"
                     );
                 }
+                assert!(
+                    registration.contains(
+                        "query.current_function_call().return_value(dagger_sdk::Json::new(encoded))"
+                    ),
+                    "registration must return the module through the active call"
+                );
+                assert!(!registration.contains(".serve()"));
                 let dispatch = plan
                     .artifacts()
                     .get(

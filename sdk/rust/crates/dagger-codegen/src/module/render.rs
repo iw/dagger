@@ -488,9 +488,13 @@ fn render_registration(
             "            module = module.{attach}({variable});\n"
         ));
     }
-    output.push_str(
-        "            module.serve().await.map_err(super::__private::RegistrationError::with_source)\n        })\n    }\n}\n",
-    );
+    // The engine reads the registered definitions from the registration call's
+    // `Module` return value, as it does for every SDK, so the sink returns the
+    // module's ID through the active function call. `Module.serve` would instead
+    // install the module into the calling session and leave the call without a value.
+    output.push_str(&format!(
+        "            let id = module.id().await.map_err(super::__private::RegistrationError::with_source)?;\n            let encoded = super::__private::serde_json::to_string(id.as_str()).map_err(super::__private::RegistrationError::with_source)?;\n            query.current_function_call().return_value({alias}::Json::new(encoded)).await.map_err(super::__private::RegistrationError::with_source)\n        }})\n    }}\n}}\n"
+    ));
     Ok(output.into_bytes())
 }
 
