@@ -1,5 +1,5 @@
 {
   "repository": "https://github.com/iw/dagger",
-  "revision": "59d44a1d7bc5be6a87a395fc107ce9bcc6ce80a7",
+  "revision": "414941e2e74d648e664b324a2adb15bc22b96e02",
   "workspace": "sdk/rust"
 }
