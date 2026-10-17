@@ -390,7 +390,7 @@ fn render_descriptor(
             .map_or("", |ty| ty.wire_name.as_str());
         output.push_str(&format!(
             "    super::__private::FunctionView {{ parent_wire_name: {parent:?}, function_wire_name: {:?}, constructor: {}, arguments: ARGUMENTS_{index}, result_type: {:?} }},\n",
-            function.wire_name.as_str(),
+            invocation_name(function),
             function.compiled.kind == FunctionKind::Constructor,
             rust_type(function.compiled.return_type.success(), generated_type_paths)?
         ));
@@ -997,7 +997,7 @@ fn render_dispatch(
         for function in functions {
             output.push_str(&format!(
                 "                    {:?} => {{\n",
-                function.wire_name.as_str()
+                invocation_name(function)
             ));
             render_dispatch_arm(&mut output, function, generated_type_paths)?;
             output.push_str("                    }\n");
@@ -1006,6 +1006,19 @@ fn render_dispatch(
     }
     output.push_str("                _ => Err(super::__private::InvocationError::UnknownParent),\n            }\n        })\n    }\n}\n");
     Ok(output.into_bytes())
+}
+
+/// Returns the function name the engine sends when it invokes `function`.
+///
+/// Registration publishes the constructor under the empty name, and the engine
+/// invokes it with that name, so the runtime's constructor sentinel is the
+/// constructor's selector; a constructor's wire name never reaches the call.
+fn invocation_name(function: &super::model::FunctionDescriptor) -> &str {
+    if function.compiled.kind == FunctionKind::Constructor {
+        ""
+    } else {
+        function.wire_name.as_str()
+    }
 }
 
 fn render_dispatch_arm(

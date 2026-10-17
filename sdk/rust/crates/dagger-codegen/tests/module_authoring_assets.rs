@@ -6,11 +6,11 @@ use std::path::PathBuf;
 use std::process::Command;
 
 use dagger_codegen::module::{
-    CfgEnvironment, FormatVersion, GeneratedAssetPath, GeneratedTypeBinding, GeneratedTypeKind,
-    GeneratedTypeRegistry, ModuleCompilation, ModuleCompilationRequest, ModuleCompiler,
-    ModulePackage, ModuleRenderRequest, ModuleRenderer, ModuleSourcePath, ModuleSourceSnapshot,
-    ModuleTarget, PackageName, ProjectionCompiler, RegenerationPlanner, Sha256Digest,
-    SourceDocument, TargetValue, WireName, canonical_bytes, manifest_digest,
+    CfgEnvironment, FormatVersion, FunctionKind, GeneratedAssetPath, GeneratedTypeBinding,
+    GeneratedTypeKind, GeneratedTypeRegistry, ModuleCompilation, ModuleCompilationRequest,
+    ModuleCompiler, ModulePackage, ModuleRenderRequest, ModuleRenderer, ModuleSourcePath,
+    ModuleSourceSnapshot, ModuleTarget, PackageName, ProjectionCompiler, RegenerationPlanner,
+    Sha256Digest, SourceDocument, TargetValue, WireName, canonical_bytes, manifest_digest,
     source_snapshot_digest,
 };
 use proptest::prelude::*;
@@ -111,7 +111,13 @@ proptest! {
         let dispatch = String::from_utf8(compiled.assets.files[&path].clone()).unwrap();
 
         for function in &compiled.descriptor.functions {
-            let arm = format!("{:?} => {{", function.wire_name.as_str());
+            // The engine invokes the constructor with the empty function name.
+            let selector = if function.compiled.kind == FunctionKind::Constructor {
+                ""
+            } else {
+                function.wire_name.as_str()
+            };
+            let arm = format!("{selector:?} => {{");
             prop_assert_eq!(dispatch.matches(&arm).count(), 1);
             let fingerprint = function.fingerprint.as_u128().unwrap();
             let bridge = format!("__dagger_bridge_{}_{}", function.compiled.rust_name, fingerprint);
@@ -564,7 +570,7 @@ fn generated_registry_runs_through_the_production_wrapper_without_an_engine() {
 
         let constructor = envelope(
             "constructor",
-            "new",
+            "",
             None,
             &[("child", serde_json::json!({"value": "hello"}))],
         );
