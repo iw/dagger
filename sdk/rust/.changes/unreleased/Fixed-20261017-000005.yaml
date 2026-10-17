@@ -1,0 +1,7 @@
+kind: Fixed
+body: |
+    Rust modules load: the runtime build step promotes the compiled module binary out of the Cargo target cache itself, so runtime finalization no longer tries to read the binary from a cache mount.
+time: 2026-10-17T00:00:05Z
+custom:
+    Author: iw
+    PR: ""

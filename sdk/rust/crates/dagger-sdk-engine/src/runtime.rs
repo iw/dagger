@@ -25,7 +25,7 @@ use crate::{
 
 const CARGO: &str = "/usr/local/cargo/bin/cargo";
 const FIXED_CARGO_TARGET_DIR: &str = "/var/lib/dagger/rust/target";
-const FIXED_RUNTIME_BINARY_PATH: &str = "/var/lib/dagger/rust/target/release/dagger-module";
+const FIXED_RUNTIME_BINARY_PATH: &str = "/var/lib/dagger/rust/out/dagger-module";
 const FIXED_RUNTIME_INSTALL_PATH: &str = "/usr/local/bin/dagger-module";
 const FIXED_PROVENANCE_INSTALL_PATH: &str = "/usr/local/share/dagger/rust/runtime-provenance.json";
 const MAX_RUNTIME_BINARY_BYTES: u64 = 256 * 1024 * 1024;

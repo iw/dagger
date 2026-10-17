@@ -117,7 +117,7 @@ func DecodeRuntimePolicy(data []byte) (RuntimePolicy, error) {
 		!strings.Contains(value.BuildImage, "@sha256:") ||
 		!strings.Contains(value.RuntimeBaseImage, "@sha256:") ||
 		value.CargoTargetDir != "/var/lib/dagger/rust/target" ||
-		value.RuntimeBinaryPath != "/var/lib/dagger/rust/target/release/dagger-module" ||
+		value.RuntimeBinaryPath != "/var/lib/dagger/rust/out/dagger-module" ||
 		value.RuntimeInstallPath != "/usr/local/bin/dagger-module" ||
 		value.ProvenanceInstallPath != "/usr/local/share/dagger/rust/runtime-provenance.json" {
 		return RuntimePolicy{}, fmt.Errorf("runtime policy differs from the closed adapter contract")

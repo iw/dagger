@@ -2,6 +2,7 @@ package metadata
 
 import (
 	"fmt"
+	"os"
 	"strings"
 	"testing"
 
@@ -111,6 +112,18 @@ func TestRuntimePlanAllowsOnlyTheVerifierAuthoredCargoVector(t *testing.T) {
 	require.NoError(t, err)
 	_, err = DecodeRuntimeBuildPlan(encoded)
 	require.Error(t, err)
+}
+
+func TestPackagedRuntimePolicyPromotesOutsideTheTargetCache(t *testing.T) {
+	t.Parallel()
+
+	contents, err := os.ReadFile("../../assets/runtime-policy.json")
+	require.NoError(t, err)
+	policy, err := DecodeRuntimePolicy(contents)
+	require.NoError(t, err)
+	// The adapter mounts CargoTargetDir as a cache volume and Dagger cannot read files
+	// back out of a cache mount, so the promoted binary must live outside it.
+	require.False(t, strings.HasPrefix(policy.RuntimeBinaryPath, policy.CargoTargetDir+"/"))
 }
 
 func TestModuleSourceDigestIsDomainSeparated(t *testing.T) {

@@ -7,6 +7,6 @@
   "provenance_install_path": "/usr/local/share/dagger/rust/runtime-provenance.json",
   "runtime_base_digest": "sha256:fccdbb0a547c14e23fcf4ce8ad62ca5d43b4faae8d22cd292f490fef9946c96e",
   "runtime_base_image": "gcr.io/distroless/cc-debian12:nonroot@sha256:fccdbb0a547c14e23fcf4ce8ad62ca5d43b4faae8d22cd292f490fef9946c96e",
-  "runtime_binary_path": "/var/lib/dagger/rust/target/release/dagger-module",
+  "runtime_binary_path": "/var/lib/dagger/rust/out/dagger-module",
   "runtime_install_path": "/usr/local/bin/dagger-module"
 }

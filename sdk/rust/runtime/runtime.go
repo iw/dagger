@@ -10,6 +10,16 @@ import (
 	"rust-sdk/internal/metadata"
 )
 
+// runtimeBuildScript runs the verified Cargo vector and promotes its binary in the
+// same exec. Every path and Cargo argument arrives as a positional parameter, so the
+// shell never interprets caller-derived text.
+const runtimeBuildScript = `set -eu
+compiled=$1
+promoted=$2
+shift 2
+"$@"
+install -D -m 0755 "$compiled" "$promoted"`
+
 // ModuleRuntime verifies committed generation for current modules and regenerates
 // only inside a private snapshot for legacy modules before compiling the fixed target.
 func (sdk *RustSDK) ModuleRuntime(
@@ -118,22 +128,26 @@ func (sdk *RustSDK) ModuleRuntime(
 	cacheKey := strings.TrimPrefix(metadata.DigestBytes([]byte(
 		descriptor.RustToolchain+"\x00"+rustTarget+"\x00"+identity.SourceDigest,
 	)), "sha256:")
+	// Cross-target Cargo output includes the target triple, and it lands in the target
+	// cache volume, which Dagger never reads files back out of. The exec that builds
+	// therefore promotes that exact file to the fixed path outside every mount, so
+	// finalization reads only container state and rejects every alternate binary.
+	compiledPath := path.Join(policy.CargoTargetDir, rustTarget, plan.BinaryRelativePath)
 	builder = verified.
 		WithMountedCache("/usr/local/cargo/registry", dag.CacheVolume("rust-registry-"+cacheKey)).
 		WithMountedCache("/usr/local/cargo/git", dag.CacheVolume("rust-git-"+cacheKey)).
 		WithMountedCache(policy.CargoTargetDir, dag.CacheVolume("rust-target-"+cacheKey)).
 		WithWorkdir(operationProjectPath).
-		WithExec(append([]string{"/usr/local/cargo/bin/cargo"}, plan.CargoArgs...))
+		WithExec(append([]string{
+			"/bin/sh", "-c", runtimeBuildScript, "dagger-rust-runtime-build",
+			compiledPath, policy.RuntimeBinaryPath, "/usr/local/cargo/bin/cargo",
+		}, plan.CargoArgs...))
 	built, err := builder.Sync(ctx)
 	if err != nil {
 		return nil, safeRuntimeFailure("Cargo build", err)
 	}
 
-	// Cross-target Cargo output includes the target triple. Copying the verified file
-	// into the fixed promotion path lets finalization reject every alternate binary.
-	compiledPath := path.Join(policy.CargoTargetDir, rustTarget, plan.BinaryRelativePath)
 	built = built.
-		WithFile(policy.RuntimeBinaryPath, built.File(compiledPath), dagger.ContainerWithFileOpts{Permissions: 0o755}).
 		WithExec([]string{"/usr/bin/strip", "--strip-unneeded", policy.RuntimeBinaryPath}).
 		WithExec([]string{
 			operationToolPath, "finalize-runtime",

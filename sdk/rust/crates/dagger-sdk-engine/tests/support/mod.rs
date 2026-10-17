@@ -300,7 +300,7 @@ fn build_corpus(seed: u8, use_registry: bool, operation: u8, content: Vec<u8>) -
         linux_amd64_target: value("x86_64-unknown-linux-gnu"),
         linux_arm64_target: value("aarch64-unknown-linux-gnu"),
         cargo_target_dir: value("/var/lib/dagger/rust/target"),
-        runtime_binary_path: value("/var/lib/dagger/rust/target/release/dagger-module"),
+        runtime_binary_path: value("/var/lib/dagger/rust/out/dagger-module"),
         runtime_install_path: value("/usr/local/bin/dagger-module"),
         provenance_install_path: value("/usr/local/share/dagger/rust/runtime-provenance.json"),
     };
