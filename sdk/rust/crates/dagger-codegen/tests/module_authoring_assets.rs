@@ -6,11 +6,12 @@ use std::path::PathBuf;
 use std::process::Command;
 
 use dagger_codegen::module::{
-    CfgEnvironment, FormatVersion, GeneratedAssetPath, GeneratedTypeRegistry, ModuleCompilation,
-    ModuleCompilationRequest, ModuleCompiler, ModulePackage, ModuleRenderRequest, ModuleRenderer,
-    ModuleSourcePath, ModuleSourceSnapshot, ModuleTarget, PackageName, ProjectionCompiler,
-    RegenerationPlanner, Sha256Digest, SourceDocument, TargetValue, WireName, canonical_bytes,
-    manifest_digest, source_snapshot_digest,
+    CfgEnvironment, FormatVersion, GeneratedAssetPath, GeneratedTypeBinding, GeneratedTypeKind,
+    GeneratedTypeRegistry, ModuleCompilation, ModuleCompilationRequest, ModuleCompiler,
+    ModulePackage, ModuleRenderRequest, ModuleRenderer, ModuleSourcePath, ModuleSourceSnapshot,
+    ModuleTarget, PackageName, ProjectionCompiler, RegenerationPlanner, Sha256Digest,
+    SourceDocument, TargetValue, WireName, canonical_bytes, manifest_digest,
+    source_snapshot_digest,
 };
 use proptest::prelude::*;
 
@@ -326,6 +327,7 @@ proptest! {
                     introspection: &introspection,
                     sdk_dependency_alias: "renamed_sdk",
                     checked_bindings: &BTreeMap::new(),
+                    generated_type_paths: &BTreeMap::new(),
                 })
             }
         };
@@ -335,14 +337,33 @@ proptest! {
 
 #[test]
 fn representative_generated_module_executes_directly_offline() {
-    let source = source_snapshot(7, false, false);
+    let source = representative_source();
     let target = target(digest("checked-schema"));
-    let compiled = compile(
-        &source,
-        &target,
-        &digest("checked-generator"),
-        BTreeSet::new(),
+    // `LLM` is `Llm` in Rust, so the generated dispatch must name each Core handle
+    // through its binding path rather than its target name.
+    let generated = GeneratedTypeRegistry::new(
+        target.visible_schema_digest.clone(),
+        [
+            ("renamed_sdk::Directory", "Directory"),
+            ("renamed_sdk::Llm", "LLM"),
+        ]
+        .map(|(rust_path, target_name)| GeneratedTypeBinding {
+            rust_path: rust_path.to_owned(),
+            target_name: target_name.to_owned(),
+            visible_schema_digest: target.visible_schema_digest.clone(),
+            kind: GeneratedTypeKind::Object,
+        }),
     )
+    .expect("fixture Core bindings are unique");
+    let compiled = ModuleCompiler::compile(ModuleCompilationRequest {
+        target: &target,
+        source: &source,
+        generated_types: &generated,
+        visible_type_names: &BTreeSet::new(),
+        generator_digest: &digest("checked-generator"),
+        sdk_dependency_alias: "renamed_sdk",
+        checked_bindings: &BTreeMap::new(),
+    })
     .expect("representative module must compile purely");
     for (path, bytes) in &compiled.assets.files {
         if path.as_str().ends_with(".rs") {
@@ -371,12 +392,7 @@ fn representative_generated_module_executes_directly_offline() {
         let destination = root.join(document.path.as_str());
         fs::create_dir_all(destination.parent().expect("document has a parent"))
             .expect("document parent must be created");
-        let contents = if document.path.as_str() == "src/lib.rs" {
-            format!("{}\npub mod dagger_generated;\n", document.contents)
-        } else {
-            document.contents.clone()
-        };
-        fs::write(destination, contents).expect("fixture source must write");
+        fs::write(destination, &document.contents).expect("fixture source must write");
     }
     for (path, bytes) in &compiled.assets.files {
         if !path.as_str().ends_with(".rs") {
@@ -418,9 +434,9 @@ use renamed_sdk::{
     RawRequest, RawResponse, ResponseData,
 };
 use renamed_sdk::__private::{
-    CallEnvelope, CallIdentity, CallOutcome, CallSelector, ModuleBoxFuture, ModuleContextBase,
-    ModuleFunctionName, ModuleJson, ModuleWireName, NamedModuleArgument, RegistrationError,
-    RegistrationSink,
+    CallEnvelope, CallIdentity, CallOutcome, CallSelector, ErrorOutcomeKind, ModuleBoxFuture,
+    ModuleContextBase, ModuleFunctionName, ModuleJson, ModuleWireName, NamedModuleArgument,
+    RegistrationError, RegistrationSink,
     RegistrationView, ResultPublishError, ResultSink, handle_call, serde_json,
 };
 
@@ -591,6 +607,23 @@ fn generated_registry_runs_through_the_production_wrapper_without_an_engine() {
             assert_eq!(value, serde_json::json!(expected));
         }
 
+        let refusal = envelope("refusal", "refuse", Some(parent.clone()), &[]);
+        handle_call(
+            &GeneratedDispatchRegistry,
+            refusal.clone(),
+            context(&client, &refusal),
+            &registration_sink,
+            &result_sink,
+        )
+        .await
+        .expect("fallible invocation");
+        match outcomes.lock().expect("result lock").pop().expect("error") {
+            CallOutcome::Error { error, kind: ErrorOutcomeKind::Application } => {
+                assert_eq!(error.message(), "refused");
+            }
+            outcome => panic!("unexpected fallible outcome: {outcome:?}"),
+        }
+
         let unknown = envelope("unknown", "absent", Some(parent), &[]);
         assert!(
             handle_call(
@@ -676,6 +709,44 @@ pub(crate) struct Child {
         entries.reverse();
     }
     snapshot(entries)
+}
+
+// The representative crate is authored the way an initialized module is: its root
+// declares the generated module, and its exports include a direct `ModuleError`
+// result and Core handles whose Rust and target names differ.
+fn representative_source() -> ModuleSourceSnapshot {
+    let mut snapshot = source_snapshot(7, false, false);
+    let root_path = ModuleSourcePath::new("src/lib.rs").expect("fixture root path is valid");
+    let document = snapshot
+        .documents
+        .get_mut(&root_path)
+        .expect("fixture root exists");
+    document.contents = format!(
+        "pub mod dagger_generated;\n{}{}",
+        document.contents,
+        r#"
+#[renamed_sdk::methods]
+impl Root {
+    #[dagger(function)]
+    pub(crate) fn refuse(&self) -> Result<String, renamed_sdk::ModuleError> {
+        Err(renamed_sdk::ModuleError::new("refused"))
+    }
+
+    #[dagger(function)]
+    pub(crate) fn tree(&self, source: renamed_sdk::Directory) -> renamed_sdk::Directory {
+        source
+    }
+
+    #[dagger(function)]
+    pub(crate) fn model(&self, model: renamed_sdk::Llm) -> renamed_sdk::Llm {
+        model
+    }
+}
+"#
+    );
+    document.digest = Sha256Digest::hash_bytes(document.contents.as_bytes());
+    snapshot.digest = source_snapshot_digest(&snapshot).expect("fixture snapshot must hash");
+    snapshot
 }
 
 fn compile_contract_source(seed: u16, category: u8) -> ModuleSourceSnapshot {

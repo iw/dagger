@@ -45,6 +45,10 @@ pub struct ModuleRenderRequest<'a> {
     pub sdk_dependency_alias: &'a str,
     /// Checked binding assets reused without regeneration.
     pub checked_bindings: &'a BTreeMap<GeneratedAssetPath, Vec<u8>>,
+    /// Rust path of every checked generated type the descriptor references, keyed by
+    /// target type name. Target and Rust names differ for some Core types (`LLM` is
+    /// `Llm`), so generated code names each handle through the path discovery resolved.
+    pub generated_type_paths: &'a BTreeMap<String, String>,
 }
 
 /// Pure generated-module renderer.
@@ -97,7 +101,10 @@ impl ModuleRenderer {
             &mut files,
             &mut metadata,
             "src/dagger_generated/module_descriptor.rs",
-            generated_source(request.descriptor, render_descriptor(request.descriptor))?,
+            generated_source(
+                request.descriptor,
+                render_descriptor(request.descriptor, request.generated_type_paths)?,
+            )?,
             GeneratedAssetOwner::Descriptor,
             request.descriptor.digest.clone(),
             RegenerationClass::Authoring,
@@ -122,7 +129,10 @@ impl ModuleRenderer {
             &mut files,
             &mut metadata,
             "src/dagger_generated/module_codec.rs",
-            generated_source(request.descriptor, render_codecs(request.descriptor)?)?,
+            generated_source(
+                request.descriptor,
+                render_codecs(request.descriptor, request.generated_type_paths)?,
+            )?,
             GeneratedAssetOwner::Dispatch,
             request.descriptor.digest.clone(),
             RegenerationClass::Authoring,
@@ -131,7 +141,10 @@ impl ModuleRenderer {
             &mut files,
             &mut metadata,
             "src/dagger_generated/module_dispatch.rs",
-            generated_source(request.descriptor, render_dispatch(request.descriptor)?)?,
+            generated_source(
+                request.descriptor,
+                render_dispatch(request.descriptor, request.generated_type_paths)?,
+            )?,
             GeneratedAssetOwner::Dispatch,
             request.descriptor.digest.clone(),
             RegenerationClass::Authoring,
@@ -331,7 +344,10 @@ fn render_context(alias: &str) -> Vec<u8> {
     .into_bytes()
 }
 
-fn render_descriptor(descriptor: &ModuleDescriptor) -> Vec<u8> {
+fn render_descriptor(
+    descriptor: &ModuleDescriptor,
+    generated_type_paths: &BTreeMap<String, String>,
+) -> Result<Vec<u8>, ModuleDiagnosticSet> {
     let mut output = String::from("//! Generated static descriptor view.\n\n");
     for (index, function) in descriptor.functions.iter().enumerate() {
         output.push_str(&format!(
@@ -376,7 +392,7 @@ fn render_descriptor(descriptor: &ModuleDescriptor) -> Vec<u8> {
             "    super::__private::FunctionView {{ parent_wire_name: {parent:?}, function_wire_name: {:?}, constructor: {}, arguments: ARGUMENTS_{index}, result_type: {:?} }},\n",
             function.wire_name.as_str(),
             function.compiled.kind == FunctionKind::Constructor,
-            rust_type(function.compiled.return_type.success())
+            rust_type(function.compiled.return_type.success(), generated_type_paths)?
         ));
     }
     let root = descriptor
@@ -388,7 +404,7 @@ fn render_descriptor(descriptor: &ModuleDescriptor) -> Vec<u8> {
         "];\n\npub static DESCRIPTOR: super::__private::ModuleDescriptorView = super::__private::ModuleDescriptorView {{\n    digest: {:?},\n    root_wire_name: {root:?},\n    types: TYPES,\n    functions: FUNCTIONS,\n}};\n",
         descriptor.digest.as_str()
     ));
-    output.into_bytes()
+    Ok(output.into_bytes())
 }
 
 fn render_registration(
@@ -840,20 +856,31 @@ fn render_source_map(query: &str, source: &SourceCoordinate) -> String {
     )
 }
 
-fn render_codecs(descriptor: &ModuleDescriptor) -> Result<Vec<u8>, ModuleDiagnosticSet> {
+fn render_codecs(
+    descriptor: &ModuleDescriptor,
+    generated_type_paths: &BTreeMap<String, String>,
+) -> Result<Vec<u8>, ModuleDiagnosticSet> {
     let mut output = String::from("//! Generated descriptor-owned local value codecs.\n\n");
     for ty in &descriptor.types {
         match &ty.contract {
-            LocalTypeContract::Object(contract) => render_object_codec(&mut output, contract),
+            LocalTypeContract::Object(contract) => {
+                render_object_codec(&mut output, contract, generated_type_paths)?;
+            }
             LocalTypeContract::Enum(contract) => render_enum_codec(&mut output, contract)?,
-            LocalTypeContract::Scalar(contract) => render_scalar_codec(&mut output, contract),
+            LocalTypeContract::Scalar(contract) => {
+                render_scalar_codec(&mut output, contract, generated_type_paths)?;
+            }
             LocalTypeContract::Interface(_) => {}
         }
     }
     Ok(output.into_bytes())
 }
 
-fn render_object_codec(output: &mut String, contract: &super::types::ObjectContract) {
+fn render_object_codec(
+    output: &mut String,
+    contract: &super::types::ObjectContract,
+    generated_type_paths: &BTreeMap<String, String>,
+) -> Result<(), ModuleDiagnosticSet> {
     let object_type = contract.symbol.as_str();
     output.push_str(&format!(
         "impl super::__private::ModuleInputCodec for {object_type} {{\n    fn decode_input(value: &super::__private::ModuleJson, context: &super::__private::ModuleContextBase) -> Result<Self, super::__private::DecodeError> {{\n        let object = value.as_json().as_object().ok_or(super::__private::DecodeError)?;\n"
@@ -861,7 +888,7 @@ fn render_object_codec(output: &mut String, contract: &super::types::ObjectContr
     for (index, field) in contract.fields.iter().enumerate() {
         output.push_str(&format!(
             "        let value_{index} = <{} as super::__private::ModuleInputCodec>::decode_input(&super::__private::ModuleJson::new(object.get({:?}).cloned().ok_or(super::__private::DecodeError)?), context)?;\n",
-            rust_type(&field.ty),
+            rust_type(&field.ty, generated_type_paths)?,
             field.wire_name.as_str()
         ));
     }
@@ -879,10 +906,11 @@ fn render_object_codec(output: &mut String, contract: &super::types::ObjectContr
         output.push_str(&format!(
             "            object.insert({:?}.to_owned(), <{} as super::__private::ModuleOutputCodec>::encode_output(value_{index}, context).await?.into_json());\n",
             field.wire_name.as_str(),
-            rust_type(&field.ty)
+            rust_type(&field.ty, generated_type_paths)?
         ));
     }
     output.push_str("            Ok(super::__private::ModuleJson::new(super::__private::serde_json::Value::Object(object)))\n        })\n    }\n}\n\n");
+    Ok(())
 }
 
 fn render_enum_codec(
@@ -915,15 +943,20 @@ fn render_enum_codec(
     Ok(())
 }
 
-fn render_scalar_codec(output: &mut String, contract: &super::types::ScalarContract) {
+fn render_scalar_codec(
+    output: &mut String,
+    contract: &super::types::ScalarContract,
+    generated_type_paths: &BTreeMap<String, String>,
+) -> Result<(), ModuleDiagnosticSet> {
     let scalar_type = contract.symbol.as_str();
-    let representation = rust_type(&contract.representation);
+    let representation = rust_type(&contract.representation, generated_type_paths)?;
     output.push_str(&format!(
         "impl super::__private::ModuleInputCodec for {scalar_type} {{\n    fn decode_input(value: &super::__private::ModuleJson, context: &super::__private::ModuleContextBase) -> Result<Self, super::__private::DecodeError> {{\n        let value = <{representation} as super::__private::ModuleInputCodec>::decode_input(value, context)?;\n        Ok(<{scalar_type} as super::__private::ModuleScalarBridge>::from_representation(value))\n    }}\n}}\n\n"
     ));
     output.push_str(&format!(
         "impl super::__private::ModuleOutputCodec for {scalar_type} {{\n    fn encode_output<'a>(self, context: &'a super::__private::ModuleContextBase) -> super::__private::ModuleBoxFuture<'a, Result<super::__private::ModuleJson, super::__private::EncodeError>> where Self: 'a {{\n        let value = <{scalar_type} as super::__private::ModuleScalarBridge>::into_representation(self);\n        <{representation} as super::__private::ModuleOutputCodec>::encode_output(value, context)\n    }}\n}}\n\n"
     ));
+    Ok(())
 }
 
 fn tuple_expression(values: &[String]) -> String {
@@ -934,7 +967,10 @@ fn tuple_expression(values: &[String]) -> String {
     }
 }
 
-fn render_dispatch(descriptor: &ModuleDescriptor) -> Result<Vec<u8>, ModuleDiagnosticSet> {
+fn render_dispatch(
+    descriptor: &ModuleDescriptor,
+    generated_type_paths: &BTreeMap<String, String>,
+) -> Result<Vec<u8>, ModuleDiagnosticSet> {
     let mut output = String::from(
         "//! Generated closed typed dispatch registry.\n\n/// Exact descriptor-owned dispatch implementation.\npub struct GeneratedDispatchRegistry;\n\nimpl super::__private::DispatchRegistry for GeneratedDispatchRegistry {\n    fn descriptor(&self) -> &'static super::__private::ModuleDescriptorView { &super::module_descriptor::DESCRIPTOR }\n\n    fn registration(&self) -> &'static super::__private::RegistrationView { &super::module_registration::REGISTRATION }\n\n    fn invoke<'a>(&'a self, call: super::__private::PreparedCall, context: super::__private::ModuleContextBase) -> super::__private::ModuleBoxFuture<'a, Result<super::__private::ModuleJson, super::__private::InvocationError>> {\n        Box::pin(async move {\n            let super::__private::CallSelector::Invocation { parent_wire_name, function_wire_name } = call.identity.selector() else { return Err(super::__private::InvocationError::UnknownFunction); };\n            let coordinate = super::__private::CallCoordinate { parent_wire_name: parent_wire_name.as_str().to_owned(), function_wire_name: function_wire_name.as_str().to_owned() };\n            match parent_wire_name.as_str() {\n",
     );
@@ -959,7 +995,7 @@ fn render_dispatch(descriptor: &ModuleDescriptor) -> Result<Vec<u8>, ModuleDiagn
                 "                    {:?} => {{\n",
                 function.wire_name.as_str()
             ));
-            render_dispatch_arm(&mut output, function)?;
+            render_dispatch_arm(&mut output, function, generated_type_paths)?;
             output.push_str("                    }\n");
         }
         output.push_str("                    _ => Err(super::__private::InvocationError::UnknownFunction),\n                },\n");
@@ -971,6 +1007,7 @@ fn render_dispatch(descriptor: &ModuleDescriptor) -> Result<Vec<u8>, ModuleDiagn
 fn render_dispatch_arm(
     output: &mut String,
     function: &super::model::FunctionDescriptor,
+    generated_type_paths: &BTreeMap<String, String>,
 ) -> Result<(), ModuleDiagnosticSet> {
     let fingerprint = function
         .fingerprint
@@ -986,10 +1023,9 @@ fn render_dispatch_arm(
         ));
     }
     for (index, argument) in function.compiled.arguments.iter().enumerate() {
+        let argument_type = rust_type(&argument.ty, generated_type_paths)?;
         output.push_str(&format!(
-            "                        let argument_{index}: {} = <{} as super::__private::ModuleInputCodec>::decode_input(call.arguments.get({index}).ok_or_else(|| super::__private::InvocationError::ArgumentDecode {{ coordinate: coordinate.clone(), argument_wire_name: {:?}.to_owned() }})?, &context).map_err(|_| super::__private::InvocationError::ArgumentDecode {{ coordinate: coordinate.clone(), argument_wire_name: {:?}.to_owned() }})?;\n",
-            rust_type(&argument.ty),
-            rust_type(&argument.ty),
+            "                        let argument_{index}: {argument_type} = <{argument_type} as super::__private::ModuleInputCodec>::decode_input(call.arguments.get({index}).ok_or_else(|| super::__private::InvocationError::ArgumentDecode {{ coordinate: coordinate.clone(), argument_wire_name: {:?}.to_owned() }})?, &context).map_err(|_| super::__private::InvocationError::ArgumentDecode {{ coordinate: coordinate.clone(), argument_wire_name: {:?}.to_owned() }})?;\n",
             argument.wire_name.as_str(),
             argument.wire_name.as_str()
         ));
@@ -1031,11 +1067,12 @@ fn render_dispatch_arm(
         output.push_str(".map_err(super::__private::InvocationError::Application)?");
     }
     output.push_str(";\n");
-    let success = function.compiled.return_type.success();
+    let success = rust_type(
+        function.compiled.return_type.success(),
+        generated_type_paths,
+    )?;
     output.push_str(&format!(
-        "                        <{} as super::__private::ModuleOutputCodec>::encode_output(value, &context).await.map_err(|_| super::__private::InvocationError::Encode {{ coordinate, result_type: {:?}.to_owned() }})\n",
-        rust_type(success),
-        rust_type(success)
+        "                        <{success} as super::__private::ModuleOutputCodec>::encode_output(value, &context).await.map_err(|_| super::__private::InvocationError::Encode {{ coordinate, result_type: {success:?}.to_owned() }})\n"
     ));
     Ok(())
 }
@@ -1066,23 +1103,31 @@ fn render_entrypoint(descriptor: &ModuleDescriptor) -> Vec<u8> {
     .into_bytes()
 }
 
-fn rust_type(ty: &RustModuleType) -> String {
-    match ty {
+fn rust_type(
+    ty: &RustModuleType,
+    generated_type_paths: &BTreeMap<String, String>,
+) -> Result<String, ModuleDiagnosticSet> {
+    Ok(match ty {
         RustModuleType::String => "String".to_owned(),
         RustModuleType::Integer => "i64".to_owned(),
         RustModuleType::Boolean => "bool".to_owned(),
         RustModuleType::Float => "f64".to_owned(),
         RustModuleType::Void => "()".to_owned(),
-        RustModuleType::List(inner) => format!("Vec<{}>", rust_type(inner)),
-        RustModuleType::Optional(inner) => format!("Option<{}>", rust_type(inner)),
+        RustModuleType::List(inner) => format!("Vec<{}>", rust_type(inner, generated_type_paths)?),
+        RustModuleType::Optional(inner) => {
+            format!("Option<{}>", rust_type(inner, generated_type_paths)?)
+        }
         RustModuleType::LocalObject(symbol)
         | RustModuleType::LocalInterface(symbol)
         | RustModuleType::LocalEnum(symbol)
         | RustModuleType::CustomScalar(symbol) => symbol.as_str().to_owned(),
         RustModuleType::GeneratedObject(name) | RustModuleType::GeneratedInterface(name) => {
-            format!("crate::dagger_generated::{name}")
+            generated_type_paths
+                .get(name)
+                .cloned()
+                .ok_or_else(|| singleton(generation_error()))?
         }
-    }
+    })
 }
 
 fn validate_alias(alias: &str) -> Result<(), ModuleDiagnosticSet> {

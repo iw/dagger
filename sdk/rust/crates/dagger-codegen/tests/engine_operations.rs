@@ -143,6 +143,23 @@ fn production_renderers_emit_bounded_operation_specific_artifacts() {
                         "registration omitted {expected}"
                     );
                 }
+                let dispatch = plan
+                    .artifacts()
+                    .get(
+                        &RelativeOperationPath::parse(
+                            "candidate/src/dagger_generated/module_dispatch.rs",
+                        )
+                        .expect("dispatch path must parse"),
+                    )
+                    .expect("module operation must contain dispatch");
+                let dispatch =
+                    std::str::from_utf8(&dispatch.content).expect("dispatch source must be UTF-8");
+                assert!(
+                    dispatch
+                        .contains("<dagger_sdk::Directory as super::__private::ModuleInputCodec>"),
+                    "dispatch must name Core handles through their SDK path"
+                );
+                assert!(!dispatch.contains("crate::dagger_generated::Directory"));
                 let binary = plan
                     .cargo_binary()
                     .expect("module operation must declare its Cargo target");

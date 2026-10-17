@@ -15,7 +15,7 @@ use super::model::{
 };
 use super::projection::ProjectionCompiler;
 use super::render::{ModuleRenderRequest, ModuleRenderer, RenderedModuleAssets};
-use super::source::{GeneratedTypeRegistry, SourceDiscovery};
+use super::source::{GeneratedTypeRegistry, ModuleDiscovery, SourceDiscovery};
 use super::types::{TypeCatalog, TypeResolver};
 
 /// Immutable inputs to one complete engine-free compilation.
@@ -89,12 +89,14 @@ impl ModuleCompiler {
             generator_digest: request.generator_digest,
         })?;
         let projections = ProjectionCompiler::project(&descriptor, request.visible_type_names)?;
+        let generated_type_paths = generated_type_paths(&discovery)?;
         let assets = ModuleRenderer::render(ModuleRenderRequest {
             descriptor: &descriptor,
             registration: &projections.registration,
             introspection: &projections.introspection,
             sdk_dependency_alias: request.sdk_dependency_alias,
             checked_bindings: request.checked_bindings,
+            generated_type_paths: &generated_type_paths,
         })?;
         Ok(ModuleCompilation {
             descriptor,
@@ -103,6 +105,27 @@ impl ModuleCompiler {
             assets,
         })
     }
+}
+
+// Every generated type in the descriptor was resolved from one checked binding in
+// the discovery closure, so its binding path is the spelling generated code must use.
+fn generated_type_paths(
+    discovery: &ModuleDiscovery,
+) -> Result<BTreeMap<String, String>, ModuleDiagnosticSet> {
+    let mut paths = BTreeMap::new();
+    for binding in discovery.generated_types.values() {
+        if paths
+            .insert(binding.target_name.clone(), binding.rust_path.clone())
+            .is_some_and(|previous| previous != binding.rust_path)
+        {
+            return Err(singleton(diag(
+                ModuleDiagnosticCode::RustPathInvalid,
+                "one target type resolved through more than one generated Rust path",
+                "name each checked generated type through one Rust path",
+            )));
+        }
+    }
+    Ok(paths)
 }
 
 fn diag(
