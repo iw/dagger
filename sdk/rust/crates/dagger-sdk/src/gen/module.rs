@@ -1,48 +1,10 @@
 //! Generated bindings owned by the GraphQL `Module` type.
-// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:ff790b6fb1eb0a72354a8c293c862f5c2018bcc7526ce048e4ad67e34abc6ffe","target_revision":"a4e1e4ff663e5e51c2b96c2c0772f3d2f00cfb94"}
+// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:8cbd134fc17405aa0ae54b45640f4bd6b93a022bd4a2c4594375f3658962bf7f","target_revision":"249edbd646e63c5181053c8af72623ed9bdf030d"}
 #[doc = "A Dagger module."]
 #[derive(Clone)]
 pub struct Module {
     pub(crate) session: crate::lifecycle::SessionHandle,
     pub(crate) selection: crate::query::Selection,
-}
-#[doc = "Owned optional arguments for GraphQL operation `Module.checks`; reuse does not mutate caller state."]
-#[derive(Clone, Debug, Default)]
-#[non_exhaustive]
-pub struct ModuleChecksOpts {
-    #[doc = "Only include checks matching the specified patterns\n\n`None` omits GraphQL field `include`."]
-    pub include: Option<Vec<String>>,
-    #[doc = "When true, only return annotated check functions; exclude generate-as-checks\n\n`None` omits GraphQL field `noGenerate`."]
-    pub no_generate: Option<bool>,
-}
-impl ModuleChecksOpts {
-    #[doc = "Sets GraphQL argument `include` to a concrete value instead of omitting it."]
-    #[must_use]
-    pub fn with_include(mut self, value: Vec<impl Into<String>>) -> Self {
-        self.include = Some(value.into_iter().map(Into::into).collect());
-        self
-    }
-    #[doc = "Sets GraphQL argument `noGenerate` to a concrete value instead of omitting it."]
-    #[must_use]
-    pub fn with_no_generate(mut self, value: bool) -> Self {
-        self.no_generate = Some(value);
-        self
-    }
-}
-#[doc = "Owned optional arguments for GraphQL operation `Module.generators`; reuse does not mutate caller state."]
-#[derive(Clone, Debug, Default)]
-#[non_exhaustive]
-pub struct ModuleGeneratorsOpts {
-    #[doc = "Only include generators matching the specified patterns\n\n`None` omits GraphQL field `include`."]
-    pub include: Option<Vec<String>>,
-}
-impl ModuleGeneratorsOpts {
-    #[doc = "Sets GraphQL argument `include` to a concrete value instead of omitting it."]
-    #[must_use]
-    pub fn with_include(mut self, value: Vec<impl Into<String>>) -> Self {
-        self.include = Some(value.into_iter().map(Into::into).collect());
-        self
-    }
 }
 #[doc = "Owned optional arguments for GraphQL operation `Module.serve`; reuse does not mutate caller state."]
 #[derive(Clone, Debug, Default)]
@@ -64,21 +26,6 @@ impl ModuleServeOpts {
     #[must_use]
     pub fn with_include_dependencies(mut self, value: bool) -> Self {
         self.include_dependencies = Some(value);
-        self
-    }
-}
-#[doc = "Owned optional arguments for GraphQL operation `Module.services`; reuse does not mutate caller state."]
-#[derive(Clone, Debug, Default)]
-#[non_exhaustive]
-pub struct ModuleServicesOpts {
-    #[doc = "Only include services matching the specified patterns\n\n`None` omits GraphQL field `include`."]
-    pub include: Option<Vec<String>>,
-}
-impl ModuleServicesOpts {
-    #[doc = "Sets GraphQL argument `include` to a concrete value instead of omitting it."]
-    #[must_use]
-    pub fn with_include(mut self, value: Vec<impl Into<String>>) -> Self {
-        self.include = Some(value.into_iter().map(Into::into).collect());
         self
     }
 }
@@ -118,43 +65,16 @@ impl From<Module> for crate::IdInput<super::SyncerClient> {
     }
 }
 impl Module {
-    #[doc = "Return the check defined by the module with the given name. Must match to exactly one check.\n\nSelects GraphQL field `check` on `Module`.\n\n**Experimental:** This API is highly experimental and may be removed or replaced entirely."]
-    #[must_use]
-    pub fn check(&self, name: impl Into<String>) -> super::Check {
-        let query = self.selection.select("check");
-        let query = query.arg("name", name.into());
-        super::Check {
-            session: self.session.clone(),
-            selection: query,
-        }
-    }
-    #[doc = "Return all checks defined by the module\n\nSelects GraphQL field `checks` on `Module`.\n\n**Experimental:** This API is highly experimental and may be removed or replaced entirely."]
-    #[must_use]
-    pub fn checks(&self) -> super::CheckGroup {
-        let query = self.selection.select("checks");
-        super::CheckGroup {
-            session: self.session.clone(),
-            selection: query,
-        }
-    }
-    #[doc = "Executes GraphQL operation `checks` with a borrowed, reusable `ModuleChecksOpts` value.\n\n**Experimental:** This API is highly experimental and may be removed or replaced entirely."]
-    #[must_use]
-    pub fn checks_opts(&self, opts: &ModuleChecksOpts) -> super::CheckGroup {
-        let query = self.selection.select("checks");
-        let query = if let Some(value) = &opts.include {
-            query.arg("include", value)
-        } else {
-            query
-        };
-        let query = if let Some(value) = &opts.no_generate {
-            query.arg("noGenerate", value)
-        } else {
-            query
-        };
-        super::CheckGroup {
-            session: self.session.clone(),
-            selection: query,
-        }
+    #[doc = "The source used to resolve contextual files and directories, when different from source.\n\nSelects GraphQL field `contextSource` on `Module`."]
+    pub async fn context_source(&self) -> Result<Option<super::ModuleSource>, crate::QueryError> {
+        let query = self.selection.select("contextSource");
+        let query = query.select("id");
+        query
+            .execute_reentry::<super::ModuleSource, Option<crate::Id>>(
+                &self.session,
+                "ModuleSource",
+            )
+            .await
     }
     #[doc = "The dependencies of the module.\n\nSelects GraphQL field `dependencies` on `Module`."]
     pub async fn dependencies(&self) -> Result<Vec<super::Module>, crate::QueryError> {
@@ -182,39 +102,6 @@ impl Module {
     pub fn generated_context_directory(&self) -> super::Directory {
         let query = self.selection.select("generatedContextDirectory");
         super::Directory {
-            session: self.session.clone(),
-            selection: query,
-        }
-    }
-    #[doc = "Return the generator defined by the module with the given name. Must match to exactly one generator.\n\nSelects GraphQL field `generator` on `Module`.\n\n**Experimental:** This API is highly experimental and may be removed or replaced entirely."]
-    #[must_use]
-    pub fn generator(&self, name: impl Into<String>) -> super::Generator {
-        let query = self.selection.select("generator");
-        let query = query.arg("name", name.into());
-        super::Generator {
-            session: self.session.clone(),
-            selection: query,
-        }
-    }
-    #[doc = "Return all generators defined by the module\n\nSelects GraphQL field `generators` on `Module`.\n\n**Experimental:** This API is highly experimental and may be removed or replaced entirely."]
-    #[must_use]
-    pub fn generators(&self) -> super::GeneratorGroup {
-        let query = self.selection.select("generators");
-        super::GeneratorGroup {
-            session: self.session.clone(),
-            selection: query,
-        }
-    }
-    #[doc = "Executes GraphQL operation `generators` with a borrowed, reusable `ModuleGeneratorsOpts` value.\n\n**Experimental:** This API is highly experimental and may be removed or replaced entirely."]
-    #[must_use]
-    pub fn generators_opts(&self, opts: &ModuleGeneratorsOpts) -> super::GeneratorGroup {
-        let query = self.selection.select("generators");
-        let query = if let Some(value) = &opts.include {
-            query.arg("include", value)
-        } else {
-            query
-        };
-        super::GeneratorGroup {
             session: self.session.clone(),
             selection: query,
         }
@@ -289,29 +176,6 @@ impl Module {
             query
         };
         query.execute_void(&self.session).await
-    }
-    #[doc = "Return all services defined by the module\n\nSelects GraphQL field `services` on `Module`.\n\n**Experimental:** This API is highly experimental and may be removed or replaced entirely."]
-    #[must_use]
-    pub fn services(&self) -> super::UpGroup {
-        let query = self.selection.select("services");
-        super::UpGroup {
-            session: self.session.clone(),
-            selection: query,
-        }
-    }
-    #[doc = "Executes GraphQL operation `services` with a borrowed, reusable `ModuleServicesOpts` value.\n\n**Experimental:** This API is highly experimental and may be removed or replaced entirely."]
-    #[must_use]
-    pub fn services_opts(&self, opts: &ModuleServicesOpts) -> super::UpGroup {
-        let query = self.selection.select("services");
-        let query = if let Some(value) = &opts.include {
-            query.arg("include", value)
-        } else {
-            query
-        };
-        super::UpGroup {
-            session: self.session.clone(),
-            selection: query,
-        }
     }
     #[doc = "The source for the module.\n\nSelects GraphQL field `source` on `Module`."]
     pub async fn source(&self) -> Result<Option<super::ModuleSource>, crate::QueryError> {

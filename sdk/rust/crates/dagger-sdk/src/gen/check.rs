@@ -1,6 +1,6 @@
 //! Generated bindings owned by the GraphQL `Check` type.
-// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:ff790b6fb1eb0a72354a8c293c862f5c2018bcc7526ce048e4ad67e34abc6ffe","target_revision":"a4e1e4ff663e5e51c2b96c2c0772f3d2f00cfb94"}
-#[doc = "Lazy handle for GraphQL object `Check`."]
+// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:8cbd134fc17405aa0ae54b45640f4bd6b93a022bd4a2c4594375f3658962bf7f","target_revision":"249edbd646e63c5181053c8af72623ed9bdf030d"}
+#[doc = "One deferred check. Reading pass, error, or sync runs it."]
 #[derive(Clone)]
 pub struct Check {
     pub(crate) session: crate::lifecycle::SessionHandle,
@@ -37,22 +37,12 @@ impl From<Check> for crate::IdInput<super::NodeClient> {
     }
 }
 impl Check {
-    #[doc = "The type of check: 'check' for annotated checks, 'generate' for generate-as-checks\n\nSelects GraphQL field `checkType` on `Check`."]
-    pub async fn check_type(&self) -> Result<String, crate::QueryError> {
-        let query = self.selection.select("checkType");
+    #[doc = "The assertion that is false when this check fails.\n\nSelects GraphQL field `assertion` on `Check`."]
+    pub async fn assertion(&self) -> Result<Option<String>, crate::QueryError> {
+        let query = self.selection.select("assertion");
         query.execute(&self.session).await
     }
-    #[doc = "Whether the check completed\n\nSelects GraphQL field `completed` on `Check`."]
-    pub async fn completed(&self) -> Result<bool, crate::QueryError> {
-        let query = self.selection.select("completed");
-        query.execute(&self.session).await
-    }
-    #[doc = "The description of the check\n\nSelects GraphQL field `description` on `Check`."]
-    pub async fn description(&self) -> Result<String, crate::QueryError> {
-        let query = self.selection.select("description");
-        query.execute(&self.session).await
-    }
-    #[doc = "If the check failed, this is the error\n\nSelects GraphQL field `error` on `Check`."]
+    #[doc = "Run the check and return its failure, if any.\n\nSelects GraphQL field `error` on `Check`."]
     pub async fn error(&self) -> Result<Option<super::Error>, crate::QueryError> {
         let query = self.selection.select("error");
         let query = query.select("id");
@@ -65,39 +55,23 @@ impl Check {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "Return the fully qualified name of the check\n\nSelects GraphQL field `name` on `Check`."]
-    pub async fn name(&self) -> Result<String, crate::QueryError> {
-        let query = self.selection.select("name");
+    #[doc = "Run the check and return whether it passes.\n\nSelects GraphQL field `pass` on `Check`."]
+    pub async fn pass(&self) -> Result<bool, crate::QueryError> {
+        let query = self.selection.select("pass");
         query.execute(&self.session).await
     }
-    #[doc = "The original module in which the check has been defined\n\nSelects GraphQL field `originalModule` on `Check`."]
+    #[doc = "An optional report produced by the check.\n\nSelects GraphQL field `report` on `Check`."]
+    pub async fn report(&self) -> Result<Option<super::Directory>, crate::QueryError> {
+        let query = self.selection.select("report");
+        let query = query.select("id");
+        query
+            .execute_reentry::<super::Directory, Option<crate::Id>>(&self.session, "Directory")
+            .await
+    }
+    #[doc = "Run the check and retain its result.\n\nSelects GraphQL field `sync` on `Check`."]
     #[must_use]
-    pub fn original_module(&self) -> super::Module {
-        let query = self.selection.select("originalModule");
-        super::Module {
-            session: self.session.clone(),
-            selection: query,
-        }
-    }
-    #[doc = "Whether the check passed\n\nSelects GraphQL field `passed` on `Check`."]
-    pub async fn passed(&self) -> Result<bool, crate::QueryError> {
-        let query = self.selection.select("passed");
-        query.execute(&self.session).await
-    }
-    #[doc = "The path of the check within its module\n\nSelects GraphQL field `path` on `Check`."]
-    pub async fn path(&self) -> Result<Vec<String>, crate::QueryError> {
-        let query = self.selection.select("path");
-        query.execute(&self.session).await
-    }
-    #[doc = "An emoji representing the result of the check\n\nSelects GraphQL field `resultEmoji` on `Check`."]
-    pub async fn result_emoji(&self) -> Result<String, crate::QueryError> {
-        let query = self.selection.select("resultEmoji");
-        query.execute(&self.session).await
-    }
-    #[doc = "Execute the check\n\nSelects GraphQL field `run` on `Check`."]
-    #[must_use]
-    pub fn run(&self) -> super::Check {
-        let query = self.selection.select("run");
+    pub fn sync(&self) -> super::Check {
+        let query = self.selection.select("sync");
         super::Check {
             session: self.session.clone(),
             selection: query,

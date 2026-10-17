@@ -1,5 +1,5 @@
 //! Generated bindings owned by the GraphQL `Container` type.
-// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:ff790b6fb1eb0a72354a8c293c862f5c2018bcc7526ce048e4ad67e34abc6ffe","target_revision":"a4e1e4ff663e5e51c2b96c2c0772f3d2f00cfb94"}
+// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:8cbd134fc17405aa0ae54b45640f4bd6b93a022bd4a2c4594375f3658962bf7f","target_revision":"249edbd646e63c5181053c8af72623ed9bdf030d"}
 #[doc = "An OCI-compatible container, also known as a Docker container."]
 #[derive(Clone)]
 pub struct Container {
@@ -12,9 +12,13 @@ pub struct Container {
 pub struct ContainerAsServiceOpts {
     #[doc = "Command to run instead of the container's default command (e.g., \\[\"go\", \"run\", \"main.go\"\\]).\n\nIf empty, the container's default command is used.\n\n`None` omits GraphQL field `args` and preserves engine default `List(\\[\\])`."]
     pub args: Option<Vec<String>>,
+    #[doc = "Connect Dagger clients started by the command to the current engine as new sessions, instead of as clients of the current session. Each connection gets its own session, released when that client closes.\n\nThe command reaches the engine through DAGGER_ENGINE, so SDKs run a Dagger CLI: set _EXPERIMENTAL_DAGGER_CLI_BIN to one in the container, or let the SDK download one.\n\nCannot be combined with \"disableDaggerInDagger\".\n\n`None` omits GraphQL field `daggerInDaggerNewSession` and preserves engine default `Boolean(false)`."]
+    pub dagger_in_dagger_new_session: Option<bool>,
+    #[doc = "Disable Dagger API access for the executed command. By default, commands can connect to the current Dagger engine.\n\n`None` omits GraphQL field `disableDaggerInDagger` and preserves engine default `Boolean(false)`."]
+    pub disable_dagger_in_dagger: Option<bool>,
     #[doc = "Replace \"${VAR}\" or \"$VAR\" in the args according to the current environment variables defined in the container (e.g. \"/$VAR/foo\").\n\n`None` omits GraphQL field `expand` and preserves engine default `Boolean(false)`."]
     pub expand: Option<bool>,
-    #[doc = "Provides Dagger access to the executed command.\n\n`None` omits GraphQL field `experimentalPrivilegedNesting` and preserves engine default `Boolean(false)`."]
+    #[doc = "`None` omits GraphQL field `experimentalPrivilegedNesting` and preserves engine default `Boolean(false)`.\n\n**Deprecated:** Commands can access Dagger by default. Use \"disableDaggerInDagger\" to opt out."]
     pub experimental_privileged_nesting: Option<bool>,
     #[doc = "Execute the command with all root capabilities. This is similar to running a command with \"sudo\" or executing \"docker run\" with the \"--privileged\" flag. Containerization does not provide any security guarantees when using this option. It should only be used when absolutely necessary and only with trusted commands.\n\n`None` omits GraphQL field `insecureRootCapabilities` and preserves engine default `Boolean(false)`."]
     pub insecure_root_capabilities: Option<bool>,
@@ -28,6 +32,18 @@ impl ContainerAsServiceOpts {
     #[must_use]
     pub fn with_args(mut self, value: Vec<impl Into<String>>) -> Self {
         self.args = Some(value.into_iter().map(Into::into).collect());
+        self
+    }
+    #[doc = "Sets GraphQL argument `daggerInDaggerNewSession` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_dagger_in_dagger_new_session(mut self, value: bool) -> Self {
+        self.dagger_in_dagger_new_session = Some(value);
+        self
+    }
+    #[doc = "Sets GraphQL argument `disableDaggerInDagger` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_disable_dagger_in_dagger(mut self, value: bool) -> Self {
+        self.disable_dagger_in_dagger = Some(value);
         self
     }
     #[doc = "Sets GraphQL argument `expand` to a concrete value instead of omitting it."]
@@ -229,16 +245,26 @@ impl ContainerFileOpts {
 pub struct ContainerFromOpts {
     #[doc = "Allow HTTPS registry communication without verifying the server certificate.\n\n`None` omits GraphQL field `insecureSkipTLSVerify` and preserves engine default `Boolean(false)`."]
     pub insecure_skip_tls_verify: Option<bool>,
+    #[doc = "Ignore the workspace lockfile for this lookup.\n\n`None` omits GraphQL field `noLock` and preserves engine default `Boolean(false)`."]
+    pub no_lock: Option<bool>,
     #[doc = "Protocol to use for registry communication.\n\nDefaults to \"HTTPS\". Use \"HTTP\" only for plain HTTP registries.\n\n`None` omits GraphQL field `protocol`."]
     pub protocol: Option<super::RegistryProtocol>,
     #[doc = "Service to use as the registry endpoint for the image address.\n\nThe service will be started only for this pull.\n\n`None` omits GraphQL field `registryService`."]
     pub registry_service: Option<crate::IdInput<super::Service>>,
+    #[doc = "Version query used to select an image tag. The address must not contain a tag or digest.\n\n`None` omits GraphQL field `version` and preserves engine default `String(\"\")`."]
+    pub version: Option<String>,
 }
 impl ContainerFromOpts {
     #[doc = "Sets GraphQL argument `insecureSkipTLSVerify` to a concrete value instead of omitting it."]
     #[must_use]
     pub fn with_insecure_skip_tls_verify(mut self, value: bool) -> Self {
         self.insecure_skip_tls_verify = Some(value);
+        self
+    }
+    #[doc = "Sets GraphQL argument `noLock` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_no_lock(mut self, value: bool) -> Self {
+        self.no_lock = Some(value);
         self
     }
     #[doc = "Sets GraphQL argument `protocol` to a concrete value instead of omitting it."]
@@ -251,6 +277,12 @@ impl ContainerFromOpts {
     #[must_use]
     pub fn with_registry_service(mut self, value: crate::IdInput<super::Service>) -> Self {
         self.registry_service = Some(value);
+        self
+    }
+    #[doc = "Sets GraphQL argument `version` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_version(mut self, value: impl Into<String>) -> Self {
+        self.version = Some(value.into());
         self
     }
 }
@@ -370,6 +402,21 @@ impl ContainerPublishOpts {
         self
     }
 }
+#[doc = "Owned optional arguments for GraphQL operation `Container.shell`; reuse does not mutate caller state."]
+#[derive(Clone, Debug, Default)]
+#[non_exhaustive]
+pub struct ContainerShellOpts {
+    #[doc = "Return the batch command instead of the interactive command.\n\n`None` omits GraphQL field `batch` and preserves engine default `Boolean(false)`."]
+    pub batch: Option<bool>,
+}
+impl ContainerShellOpts {
+    #[doc = "Sets GraphQL argument `batch` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_batch(mut self, value: bool) -> Self {
+        self.batch = Some(value);
+        self
+    }
+}
 #[doc = "Owned optional arguments for GraphQL operation `Container.stat`; reuse does not mutate caller state."]
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
@@ -391,9 +438,11 @@ impl ContainerStatOpts {
 pub struct ContainerTerminalOpts {
     #[doc = "If set, override the container's default terminal command and invoke these command arguments instead.\n\n`None` omits GraphQL field `cmd` and preserves engine default `List(\\[\\])`."]
     pub cmd: Option<Vec<String>>,
-    #[doc = "Provides Dagger access to the executed command.\n\n`None` omits GraphQL field `experimentalPrivilegedNesting` and preserves engine default `Boolean(false)`."]
+    #[doc = "Disable Dagger API access for the executed command. By default, commands can connect to the current Dagger engine.\n\n`None` omits GraphQL field `disableDaggerInDagger` and preserves engine default `Boolean(false)`."]
+    pub disable_dagger_in_dagger: Option<bool>,
+    #[doc = "`None` omits GraphQL field `experimentalPrivilegedNesting`.\n\n**Deprecated:** Commands can access Dagger by default. Use \"disableDaggerInDagger\" to opt out."]
     pub experimental_privileged_nesting: Option<bool>,
-    #[doc = "Execute the command with all root capabilities. This is similar to running a command with \"sudo\" or executing \"docker run\" with the \"--privileged\" flag. Containerization does not provide any security guarantees when using this option. It should only be used when absolutely necessary and only with trusted commands.\n\n`None` omits GraphQL field `insecureRootCapabilities` and preserves engine default `Boolean(false)`."]
+    #[doc = "Execute the command with all root capabilities. This is similar to running a command with \"sudo\" or executing \"docker run\" with the \"--privileged\" flag. Containerization does not provide any security guarantees when using this option. It should only be used when absolutely necessary and only with trusted commands.\n\n`None` omits GraphQL field `insecureRootCapabilities`."]
     pub insecure_root_capabilities: Option<bool>,
 }
 impl ContainerTerminalOpts {
@@ -401,6 +450,12 @@ impl ContainerTerminalOpts {
     #[must_use]
     pub fn with_cmd(mut self, value: Vec<impl Into<String>>) -> Self {
         self.cmd = Some(value.into_iter().map(Into::into).collect());
+        self
+    }
+    #[doc = "Sets GraphQL argument `disableDaggerInDagger` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_disable_dagger_in_dagger(mut self, value: bool) -> Self {
+        self.disable_dagger_in_dagger = Some(value);
         self
     }
     #[doc = "Sets GraphQL argument `experimentalPrivilegedNesting` to a concrete value instead of omitting it."]
@@ -422,9 +477,13 @@ impl ContainerTerminalOpts {
 pub struct ContainerUpOpts {
     #[doc = "Command to run instead of the container's default command (e.g., \\[\"go\", \"run\", \"main.go\"\\]).\n\nIf empty, the container's default command is used.\n\n`None` omits GraphQL field `args` and preserves engine default `List(\\[\\])`."]
     pub args: Option<Vec<String>>,
+    #[doc = "Connect Dagger clients started by the command to the current engine as new sessions, instead of as clients of the current session. Each connection gets its own session, released when that client closes.\n\nThe command reaches the engine through DAGGER_ENGINE, so SDKs run a Dagger CLI: set _EXPERIMENTAL_DAGGER_CLI_BIN to one in the container, or let the SDK download one.\n\nCannot be combined with \"disableDaggerInDagger\".\n\n`None` omits GraphQL field `daggerInDaggerNewSession` and preserves engine default `Boolean(false)`."]
+    pub dagger_in_dagger_new_session: Option<bool>,
+    #[doc = "Disable Dagger API access for the executed command. By default, commands can connect to the current Dagger engine.\n\n`None` omits GraphQL field `disableDaggerInDagger` and preserves engine default `Boolean(false)`."]
+    pub disable_dagger_in_dagger: Option<bool>,
     #[doc = "Replace \"${VAR}\" or \"$VAR\" in the args according to the current environment variables defined in the container (e.g. \"/$VAR/foo\").\n\n`None` omits GraphQL field `expand` and preserves engine default `Boolean(false)`."]
     pub expand: Option<bool>,
-    #[doc = "Provides Dagger access to the executed command.\n\n`None` omits GraphQL field `experimentalPrivilegedNesting` and preserves engine default `Boolean(false)`."]
+    #[doc = "`None` omits GraphQL field `experimentalPrivilegedNesting` and preserves engine default `Boolean(false)`.\n\n**Deprecated:** Commands can access Dagger by default. Use \"disableDaggerInDagger\" to opt out."]
     pub experimental_privileged_nesting: Option<bool>,
     #[doc = "Execute the command with all root capabilities. This is similar to running a command with \"sudo\" or executing \"docker run\" with the \"--privileged\" flag. Containerization does not provide any security guarantees when using this option. It should only be used when absolutely necessary and only with trusted commands.\n\n`None` omits GraphQL field `insecureRootCapabilities` and preserves engine default `Boolean(false)`."]
     pub insecure_root_capabilities: Option<bool>,
@@ -442,6 +501,18 @@ impl ContainerUpOpts {
     #[must_use]
     pub fn with_args(mut self, value: Vec<impl Into<String>>) -> Self {
         self.args = Some(value.into_iter().map(Into::into).collect());
+        self
+    }
+    #[doc = "Sets GraphQL argument `daggerInDaggerNewSession` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_dagger_in_dagger_new_session(mut self, value: bool) -> Self {
+        self.dagger_in_dagger_new_session = Some(value);
+        self
+    }
+    #[doc = "Sets GraphQL argument `disableDaggerInDagger` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_disable_dagger_in_dagger(mut self, value: bool) -> Self {
+        self.disable_dagger_in_dagger = Some(value);
         self
     }
     #[doc = "Sets GraphQL argument `expand` to a concrete value instead of omitting it."]
@@ -491,12 +562,20 @@ impl ContainerUpOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ContainerWithDefaultTerminalCmdOpts {
-    #[doc = "Provides Dagger access to the executed command.\n\n`None` omits GraphQL field `experimentalPrivilegedNesting` and preserves engine default `Boolean(false)`."]
+    #[doc = "Disable Dagger API access for the executed command. By default, commands can connect to the current Dagger engine.\n\n`None` omits GraphQL field `disableDaggerInDagger` and preserves engine default `Boolean(false)`."]
+    pub disable_dagger_in_dagger: Option<bool>,
+    #[doc = "`None` omits GraphQL field `experimentalPrivilegedNesting` and preserves engine default `Boolean(false)`.\n\n**Deprecated:** Commands can access Dagger by default. Use \"disableDaggerInDagger\" to opt out."]
     pub experimental_privileged_nesting: Option<bool>,
     #[doc = "Execute the command with all root capabilities. This is similar to running a command with \"sudo\" or executing \"docker run\" with the \"--privileged\" flag. Containerization does not provide any security guarantees when using this option. It should only be used when absolutely necessary and only with trusted commands.\n\n`None` omits GraphQL field `insecureRootCapabilities` and preserves engine default `Boolean(false)`."]
     pub insecure_root_capabilities: Option<bool>,
 }
 impl ContainerWithDefaultTerminalCmdOpts {
+    #[doc = "Sets GraphQL argument `disableDaggerInDagger` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_disable_dagger_in_dagger(mut self, value: bool) -> Self {
+        self.disable_dagger_in_dagger = Some(value);
+        self
+    }
     #[doc = "Sets GraphQL argument `experimentalPrivilegedNesting` to a concrete value instead of omitting it."]
     #[must_use]
     pub fn with_experimental_privileged_nesting(mut self, value: bool) -> Self {
@@ -662,21 +741,25 @@ impl ContainerWithEnvVariableOpts {
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct ContainerWithExecOpts {
+    #[doc = "Connect Dagger clients started by the command to the current engine as new sessions, instead of as clients of the current session. Each connection gets its own session, released when that client closes.\n\nThe command reaches the engine through DAGGER_ENGINE, so SDKs run a Dagger CLI: set _EXPERIMENTAL_DAGGER_CLI_BIN to one in the container, or let the SDK download one.\n\nCannot be combined with \"disableDaggerInDagger\".\n\n`None` omits GraphQL field `daggerInDaggerNewSession` and preserves engine default `Boolean(false)`."]
+    pub dagger_in_dagger_new_session: Option<bool>,
+    #[doc = "Disable Dagger API access for the executed command. By default, commands can connect to the current Dagger engine.\n\n`None` omits GraphQL field `disableDaggerInDagger` and preserves engine default `Boolean(false)`."]
+    pub disable_dagger_in_dagger: Option<bool>,
     #[doc = "Replace \"${VAR}\" or \"$VAR\" in the args according to the current environment variables defined in the container (e.g. \"/$VAR/foo\").\n\n`None` omits GraphQL field `expand` and preserves engine default `Boolean(false)`."]
     pub expand: Option<bool>,
     #[doc = "Exit codes this command is allowed to exit with without error\n\n`None` omits GraphQL field `expect` and preserves engine default `Enum(SchemaName(\"SUCCESS\"))`."]
     pub expect: Option<super::ReturnType>,
-    #[doc = "Provides Dagger access to the executed command.\n\n`None` omits GraphQL field `experimentalPrivilegedNesting` and preserves engine default `Boolean(false)`."]
+    #[doc = "`None` omits GraphQL field `experimentalPrivilegedNesting` and preserves engine default `Boolean(false)`.\n\n**Deprecated:** Commands can access Dagger by default. Use \"disableDaggerInDagger\" to opt out."]
     pub experimental_privileged_nesting: Option<bool>,
     #[doc = "Execute the command with all root capabilities. Like --privileged in Docker\n\nDANGER: this grants the command full access to the host system. Only use when 1) you trust the command being executed and 2) you specifically need this level of access.\n\n`None` omits GraphQL field `insecureRootCapabilities` and preserves engine default `Boolean(false)`."]
     pub insecure_root_capabilities: Option<bool>,
     #[doc = "Skip the automatic init process injected into containers by default.\n\nOnly use this if you specifically need the command to be pid 1 in the container. Otherwise it may result in unexpected behavior. If you're not sure, you don't need this.\n\n`None` omits GraphQL field `noInit` and preserves engine default `Boolean(false)`."]
     pub no_init: Option<bool>,
-    #[doc = "Redirect the command's standard error to a file in the container. Example: \"./stderr.txt\"\n\n`None` omits GraphQL field `redirectStderr` and preserves engine default `String(\"\")`."]
+    #[doc = "Redirect the command's standard error to a file in the container. The redirected output is not logged. Example: \"./stderr.txt\"\n\n`None` omits GraphQL field `redirectStderr` and preserves engine default `String(\"\")`."]
     pub redirect_stderr: Option<String>,
     #[doc = "Redirect the command's standard input from a file in the container. Example: \"./stdin.txt\"\n\n`None` omits GraphQL field `redirectStdin` and preserves engine default `String(\"\")`."]
     pub redirect_stdin: Option<String>,
-    #[doc = "Redirect the command's standard output to a file in the container. Example: \"./stdout.txt\"\n\n`None` omits GraphQL field `redirectStdout` and preserves engine default `String(\"\")`."]
+    #[doc = "Redirect the command's standard output to a file in the container. The redirected output is not logged. Example: \"./stdout.txt\"\n\n`None` omits GraphQL field `redirectStdout` and preserves engine default `String(\"\")`."]
     pub redirect_stdout: Option<String>,
     #[doc = "Content to write to the command's standard input. Example: \"Hello world\")\n\n`None` omits GraphQL field `stdin` and preserves engine default `String(\"\")`."]
     pub stdin: Option<String>,
@@ -684,6 +767,18 @@ pub struct ContainerWithExecOpts {
     pub use_entrypoint: Option<bool>,
 }
 impl ContainerWithExecOpts {
+    #[doc = "Sets GraphQL argument `daggerInDaggerNewSession` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_dagger_in_dagger_new_session(mut self, value: bool) -> Self {
+        self.dagger_in_dagger_new_session = Some(value);
+        self
+    }
+    #[doc = "Sets GraphQL argument `disableDaggerInDagger` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_disable_dagger_in_dagger(mut self, value: bool) -> Self {
+        self.disable_dagger_in_dagger = Some(value);
+        self
+    }
     #[doc = "Sets GraphQL argument `expand` to a concrete value instead of omitting it."]
     #[must_use]
     pub fn with_expand(mut self, value: bool) -> Self {
@@ -950,6 +1045,8 @@ pub struct ContainerWithMountedFileOpts {
     pub inherit_owner: Option<bool>,
     #[doc = "A user or user:group to set for the mounted file.\n\nThe user and group can either be an ID (1000:1000) or a name (foo:bar).\n\nIf the group is omitted, it defaults to the same as the user.\n\n`None` omits GraphQL field `owner` and preserves engine default `String(\"\")`."]
     pub owner: Option<String>,
+    #[doc = "Mount the file read-only.\n\n`None` omits GraphQL field `readOnly` and preserves engine default `Boolean(false)`."]
+    pub read_only: Option<bool>,
 }
 impl ContainerWithMountedFileOpts {
     #[doc = "Sets GraphQL argument `expand` to a concrete value instead of omitting it."]
@@ -968,6 +1065,12 @@ impl ContainerWithMountedFileOpts {
     #[must_use]
     pub fn with_owner(mut self, value: impl Into<String>) -> Self {
         self.owner = Some(value.into());
+        self
+    }
+    #[doc = "Sets GraphQL argument `readOnly` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_read_only(mut self, value: bool) -> Self {
+        self.read_only = Some(value);
         self
     }
 }
@@ -1092,6 +1195,84 @@ impl ContainerWithNewFileOpts {
     #[must_use]
     pub fn with_permissions(mut self, value: i64) -> Self {
         self.permissions = Some(value);
+        self
+    }
+}
+#[doc = "Owned optional arguments for GraphQL operation `Container.withRun`; reuse does not mutate caller state."]
+#[derive(Clone, Debug, Default)]
+#[non_exhaustive]
+pub struct ContainerWithRunOpts {
+    #[doc = "Override whether the shell is denied Dagger API access. Omit to use the configured shell setting.\n\n`None` omits GraphQL field `disableDaggerInDagger`."]
+    pub disable_dagger_in_dagger: Option<bool>,
+    #[doc = "`None` omits GraphQL field `experimentalPrivilegedNesting`.\n\n**Deprecated:** Commands can access Dagger by default. Use \"disableDaggerInDagger\" to opt out."]
+    pub experimental_privileged_nesting: Option<bool>,
+    #[doc = "Override whether the shell has all root capabilities.\n\n`None` omits GraphQL field `insecureRootCapabilities`."]
+    pub insecure_root_capabilities: Option<bool>,
+    #[doc = "Override the batch shell arguments. Example: \\[\"bash\", \"-c\"\\].\n\n`None` omits GraphQL field `shell`."]
+    pub shell: Option<Vec<String>>,
+}
+impl ContainerWithRunOpts {
+    #[doc = "Sets GraphQL argument `disableDaggerInDagger` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_disable_dagger_in_dagger(mut self, value: bool) -> Self {
+        self.disable_dagger_in_dagger = Some(value);
+        self
+    }
+    #[doc = "Sets GraphQL argument `experimentalPrivilegedNesting` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_experimental_privileged_nesting(mut self, value: bool) -> Self {
+        self.experimental_privileged_nesting = Some(value);
+        self
+    }
+    #[doc = "Sets GraphQL argument `insecureRootCapabilities` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_insecure_root_capabilities(mut self, value: bool) -> Self {
+        self.insecure_root_capabilities = Some(value);
+        self
+    }
+    #[doc = "Sets GraphQL argument `shell` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_shell(mut self, value: Vec<impl Into<String>>) -> Self {
+        self.shell = Some(value.into_iter().map(Into::into).collect());
+        self
+    }
+}
+#[doc = "Owned optional arguments for GraphQL operation `Container.withShell`; reuse does not mutate caller state."]
+#[derive(Clone, Debug, Default)]
+#[non_exhaustive]
+pub struct ContainerWithShellOpts {
+    #[doc = "Command arguments for batch use. The script is appended as one argument. Defaults to interactive followed by \"-c\".\n\n`None` omits GraphQL field `batch`."]
+    pub batch: Option<Vec<String>>,
+    #[doc = "Disable Dagger API access for the executed command. By default, commands can connect to the current Dagger engine.\n\n`None` omits GraphQL field `disableDaggerInDagger` and preserves engine default `Boolean(false)`."]
+    pub disable_dagger_in_dagger: Option<bool>,
+    #[doc = "`None` omits GraphQL field `experimentalPrivilegedNesting` and preserves engine default `Boolean(false)`.\n\n**Deprecated:** Commands can access Dagger by default. Use \"disableDaggerInDagger\" to opt out."]
+    pub experimental_privileged_nesting: Option<bool>,
+    #[doc = "Give the shell all root capabilities. Use only with trusted commands.\n\n`None` omits GraphQL field `insecureRootCapabilities` and preserves engine default `Boolean(false)`."]
+    pub insecure_root_capabilities: Option<bool>,
+}
+impl ContainerWithShellOpts {
+    #[doc = "Sets GraphQL argument `batch` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_batch(mut self, value: Vec<impl Into<String>>) -> Self {
+        self.batch = Some(value.into_iter().map(Into::into).collect());
+        self
+    }
+    #[doc = "Sets GraphQL argument `disableDaggerInDagger` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_disable_dagger_in_dagger(mut self, value: bool) -> Self {
+        self.disable_dagger_in_dagger = Some(value);
+        self
+    }
+    #[doc = "Sets GraphQL argument `experimentalPrivilegedNesting` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_experimental_privileged_nesting(mut self, value: bool) -> Self {
+        self.experimental_privileged_nesting = Some(value);
+        self
+    }
+    #[doc = "Sets GraphQL argument `insecureRootCapabilities` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_insecure_root_capabilities(mut self, value: bool) -> Self {
+        self.insecure_root_capabilities = Some(value);
         self
     }
 }
@@ -1320,6 +1501,16 @@ impl Container {
         } else {
             query
         };
+        let query = if let Some(value) = &opts.dagger_in_dagger_new_session {
+            query.arg("daggerInDaggerNewSession", value)
+        } else {
+            query
+        };
+        let query = if let Some(value) = &opts.disable_dagger_in_dagger {
+            query.arg("disableDaggerInDagger", value)
+        } else {
+            query
+        };
         let query = if let Some(value) = &opts.expand {
             query.arg("expand", value)
         } else {
@@ -1493,7 +1684,8 @@ impl Container {
         let query = self.selection.select("exitCode");
         query.execute(&self.session).await
     }
-    #[doc = "EXPERIMENTAL API! Subject to change/removal at any time.\n\nConfigures all available GPUs on the host to be accessible to this container.\n\nThis currently works for Nvidia devices only.\n\nSelects GraphQL field `experimentalWithAllGPUs` on `Container`."]
+    #[doc = "Configures all available GPUs on the host to be accessible to this container.\n\nThis currently works for Nvidia devices only.\n\nSelects GraphQL field `experimentalWithAllGPUs` on `Container`.\n\n**Deprecated:** Use \"withGPU\" instead."]
+    #[deprecated(note = "Use \"withGPU\" instead.")]
     #[must_use]
     pub fn experimental_with_all_gp_us(&self) -> super::Container {
         let query = self.selection.select("experimentalWithAllGPUs");
@@ -1502,7 +1694,8 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "EXPERIMENTAL API! Subject to change/removal at any time.\n\nConfigures the provided list of devices to be accessible to this container.\n\nThis currently works for Nvidia devices only.\n\nSelects GraphQL field `experimentalWithGPU` on `Container`."]
+    #[doc = "Configures the provided list of devices to be accessible to this container.\n\nThis currently works for Nvidia devices only.\n\nSelects GraphQL field `experimentalWithGPU` on `Container`.\n\n**Deprecated:** Use \"withGPU\" instead, which exposes all GPUs available on the host."]
+    #[deprecated(note = "Use \"withGPU\" instead, which exposes all GPUs available on the host.")]
     #[must_use]
     pub fn experimental_with_gpu(&self, devices: Vec<impl Into<String>>) -> super::Container {
         let query = self.selection.select("experimentalWithGPU");
@@ -1637,6 +1830,11 @@ impl Container {
         } else {
             query
         };
+        let query = if let Some(value) = &opts.no_lock {
+            query.arg("noLock", value)
+        } else {
+            query
+        };
         let query = if let Some(value) = &opts.protocol {
             query.arg("protocol", value)
         } else {
@@ -1644,6 +1842,11 @@ impl Container {
         };
         let query = if let Some(value) = &opts.registry_service {
             query.arg_id_input("registryService", value.clone())
+        } else {
+            query
+        };
+        let query = if let Some(value) = &opts.version {
+            query.arg("version", value)
         } else {
             query
         };
@@ -1831,6 +2034,29 @@ impl Container {
             selection: query,
         }
     }
+    #[doc = "Return the configured shell command. Defaults to \\[\"sh\"\\].\n\nSelects GraphQL field `shell` on `Container`."]
+    #[must_use]
+    pub fn shell(&self) -> super::Command {
+        let query = self.selection.select("shell");
+        super::Command {
+            session: self.session.clone(),
+            selection: query,
+        }
+    }
+    #[doc = "Executes GraphQL operation `shell` with a borrowed, reusable `ContainerShellOpts` value."]
+    #[must_use]
+    pub fn shell_opts(&self, opts: &ContainerShellOpts) -> super::Command {
+        let query = self.selection.select("shell");
+        let query = if let Some(value) = &opts.batch {
+            query.arg("batch", value)
+        } else {
+            query
+        };
+        super::Command {
+            session: self.session.clone(),
+            selection: query,
+        }
+    }
     #[doc = "Return file status\n\nSelects GraphQL field `stat` on `Container`."]
     pub async fn stat(
         &self,
@@ -1899,6 +2125,11 @@ impl Container {
         } else {
             query
         };
+        let query = if let Some(value) = &opts.disable_dagger_in_dagger {
+            query.arg("disableDaggerInDagger", value)
+        } else {
+            query
+        };
         let query = if let Some(value) = &opts.experimental_privileged_nesting {
             query.arg("experimentalPrivilegedNesting", value)
         } else {
@@ -1924,6 +2155,16 @@ impl Container {
         let query = self.selection.select("up");
         let query = if let Some(value) = &opts.args {
             query.arg("args", value)
+        } else {
+            query
+        };
+        let query = if let Some(value) = &opts.dagger_in_dagger_new_session {
+            query.arg("daggerInDaggerNewSession", value)
+        } else {
+            query
+        };
+        let query = if let Some(value) = &opts.disable_dagger_in_dagger {
+            query.arg("disableDaggerInDagger", value)
         } else {
             query
         };
@@ -1995,7 +2236,8 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Set the default command to invoke for the container's terminal API.\n\nSelects GraphQL field `withDefaultTerminalCmd` on `Container`."]
+    #[doc = "Set the default command to invoke for the container's terminal API.\n\nSelects GraphQL field `withDefaultTerminalCmd` on `Container`.\n\n**Deprecated:** Use withShell."]
+    #[deprecated(note = "Use withShell.")]
     #[must_use]
     pub fn with_default_terminal_cmd(&self, args: Vec<impl Into<String>>) -> super::Container {
         let query = self.selection.select("withDefaultTerminalCmd");
@@ -2006,7 +2248,8 @@ impl Container {
             selection: query,
         }
     }
-    #[doc = "Executes GraphQL operation `withDefaultTerminalCmd` with a borrowed, reusable `ContainerWithDefaultTerminalCmdOpts` value."]
+    #[doc = "Executes GraphQL operation `withDefaultTerminalCmd` with a borrowed, reusable `ContainerWithDefaultTerminalCmdOpts` value.\n\n**Deprecated:** Use withShell."]
+    #[deprecated(note = "Use withShell.")]
     #[must_use]
     pub fn with_default_terminal_cmd_opts(
         &self,
@@ -2016,6 +2259,11 @@ impl Container {
         let query = self.selection.select("withDefaultTerminalCmd");
         let args = args.into_iter().map(Into::into).collect::<Vec<String>>();
         let query = query.arg("args", args);
+        let query = if let Some(value) = &opts.disable_dagger_in_dagger {
+            query.arg("disableDaggerInDagger", value)
+        } else {
+            query
+        };
         let query = if let Some(value) = &opts.experimental_privileged_nesting {
             query.arg("experimentalPrivilegedNesting", value)
         } else {
@@ -2264,6 +2512,16 @@ impl Container {
         let query = self.selection.select("withExec");
         let args = args.into_iter().map(Into::into).collect::<Vec<String>>();
         let query = query.arg("args", args);
+        let query = if let Some(value) = &opts.dagger_in_dagger_new_session {
+            query.arg("daggerInDaggerNewSession", value)
+        } else {
+            query
+        };
+        let query = if let Some(value) = &opts.disable_dagger_in_dagger {
+            query.arg("disableDaggerInDagger", value)
+        } else {
+            query
+        };
         let query = if let Some(value) = &opts.expand {
             query.arg("expand", value)
         } else {
@@ -2460,6 +2718,15 @@ impl Container {
             selection: query,
         }
     }
+    #[doc = "Configures all GPUs available on the host to be accessible to this container.\n\nThis currently works with NVIDIA devices only, and requires the engine to run with GPU support enabled.\n\nSelects GraphQL field `withGPU` on `Container`."]
+    #[must_use]
+    pub fn with_gpu(&self) -> super::Container {
+        let query = self.selection.select("withGPU");
+        super::Container {
+            session: self.session.clone(),
+            selection: query,
+        }
+    }
     #[doc = "Retrieves this container plus the given label.\n\nSelects GraphQL field `withLabel` on `Container`."]
     #[must_use]
     pub fn with_label(
@@ -2622,6 +2889,11 @@ impl Container {
             query
         };
         let query = query.arg("path", path.into());
+        let query = if let Some(value) = &opts.read_only {
+            query.arg("readOnly", value)
+        } else {
+            query
+        };
         let query = query.arg_id_input("source", source.into());
         super::Container {
             session: self.session.clone(),
@@ -2835,6 +3107,50 @@ impl Container {
             selection: query,
         }
     }
+    #[doc = "Execute a script with the configured batch shell and return the modified container.\n\nSelects GraphQL field `withRun` on `Container`."]
+    #[must_use]
+    pub fn with_run(&self, command: impl Into<String>) -> super::Container {
+        let query = self.selection.select("withRun");
+        let query = query.arg("command", command.into());
+        super::Container {
+            session: self.session.clone(),
+            selection: query,
+        }
+    }
+    #[doc = "Executes GraphQL operation `withRun` with a borrowed, reusable `ContainerWithRunOpts` value."]
+    #[must_use]
+    pub fn with_run_opts(
+        &self,
+        command: impl Into<String>,
+        opts: &ContainerWithRunOpts,
+    ) -> super::Container {
+        let query = self.selection.select("withRun");
+        let query = query.arg("command", command.into());
+        let query = if let Some(value) = &opts.disable_dagger_in_dagger {
+            query.arg("disableDaggerInDagger", value)
+        } else {
+            query
+        };
+        let query = if let Some(value) = &opts.experimental_privileged_nesting {
+            query.arg("experimentalPrivilegedNesting", value)
+        } else {
+            query
+        };
+        let query = if let Some(value) = &opts.insecure_root_capabilities {
+            query.arg("insecureRootCapabilities", value)
+        } else {
+            query
+        };
+        let query = if let Some(value) = &opts.shell {
+            query.arg("shell", value)
+        } else {
+            query
+        };
+        super::Container {
+            session: self.session.clone(),
+            selection: query,
+        }
+    }
     #[doc = "Set a new environment variable, using a secret value\n\nSelects GraphQL field `withSecretVariable` on `Container`."]
     #[must_use]
     pub fn with_secret_variable(
@@ -2860,6 +3176,58 @@ impl Container {
         let query = self.selection.select("withServiceBinding");
         let query = query.arg("alias", alias.into());
         let query = query.arg_id_input("service", service.into());
+        super::Container {
+            session: self.session.clone(),
+            selection: query,
+        }
+    }
+    #[doc = "Set the shell used by terminal() and withRun().\n\nSelects GraphQL field `withShell` on `Container`."]
+    #[must_use]
+    pub fn with_shell(&self, interactive: Vec<impl Into<String>>) -> super::Container {
+        let query = self.selection.select("withShell");
+        let interactive = interactive
+            .into_iter()
+            .map(Into::into)
+            .collect::<Vec<String>>();
+        let query = query.arg("interactive", interactive);
+        super::Container {
+            session: self.session.clone(),
+            selection: query,
+        }
+    }
+    #[doc = "Executes GraphQL operation `withShell` with a borrowed, reusable `ContainerWithShellOpts` value."]
+    #[must_use]
+    pub fn with_shell_opts(
+        &self,
+        interactive: Vec<impl Into<String>>,
+        opts: &ContainerWithShellOpts,
+    ) -> super::Container {
+        let query = self.selection.select("withShell");
+        let query = if let Some(value) = &opts.batch {
+            query.arg("batch", value)
+        } else {
+            query
+        };
+        let query = if let Some(value) = &opts.disable_dagger_in_dagger {
+            query.arg("disableDaggerInDagger", value)
+        } else {
+            query
+        };
+        let query = if let Some(value) = &opts.experimental_privileged_nesting {
+            query.arg("experimentalPrivilegedNesting", value)
+        } else {
+            query
+        };
+        let query = if let Some(value) = &opts.insecure_root_capabilities {
+            query.arg("insecureRootCapabilities", value)
+        } else {
+            query
+        };
+        let interactive = interactive
+            .into_iter()
+            .map(Into::into)
+            .collect::<Vec<String>>();
+        let query = query.arg("interactive", interactive);
         super::Container {
             session: self.session.clone(),
             selection: query,

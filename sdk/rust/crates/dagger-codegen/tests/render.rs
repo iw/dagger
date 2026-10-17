@@ -3,7 +3,7 @@
 use std::collections::BTreeSet;
 
 use dagger_codegen::projection::fields::{ArgumentPresence, FieldStrategy};
-use dagger_codegen::projection::types::TypeProjection;
+use dagger_codegen::projection::types::{ScalarKind, TypeProjection};
 use dagger_codegen::render::verification::{RequiredOmissionCase, RequiredOmissionKind};
 use dagger_codegen::target::CodegenTarget;
 use dagger_codegen::{CoreProjectionRequest, project_core, render_core};
@@ -34,14 +34,15 @@ fn exact_target_renders_one_parsed_module_per_emitted_named_type() {
     let emitted_types = plan
         .named_types()
         .values()
-        .filter(|projection| {
-            matches!(
-                projection,
-                TypeProjection::Object(_)
-                    | TypeProjection::Interface(_)
-                    | TypeProjection::Enum(_)
-                    | TypeProjection::InputObject(_)
-            )
+        .filter(|projection| match projection {
+            TypeProjection::Object(_)
+            | TypeProjection::Interface(_)
+            | TypeProjection::Enum(_)
+            | TypeProjection::InputObject(_) => true,
+            // Built-in scalars map onto handwritten contracts; a custom core scalar
+            // such as `Bytes` owns a generated newtype module like any other type.
+            TypeProjection::Scalar(scalar) => scalar.scalar == ScalarKind::Custom,
+            TypeProjection::TargetPrivate(_) => false,
         })
         .count();
 
@@ -106,14 +107,14 @@ fn parsed_public_surface_equals_generated_reachability_and_catalog_coverage() {
         verification.binding_tests().keys().collect::<BTreeSet<_>>(),
         plan.catalog().bindings().keys().collect::<BTreeSet<_>>()
     );
-    assert_eq!(verification.query_cases().len(), 759);
+    assert_eq!(verification.query_cases().len(), 901);
     assert_eq!(
         verification
             .query_cases()
             .values()
             .map(|field| field.arguments.len())
             .sum::<usize>(),
-        636
+        784
     );
     let mut expected_omissions = BTreeSet::new();
     for field in plan.fields().values() {

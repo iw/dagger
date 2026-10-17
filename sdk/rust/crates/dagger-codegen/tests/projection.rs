@@ -37,12 +37,12 @@ fn exact_target_has_one_total_field_strategy() {
         *strategies.entry(name).or_default() += 1;
     }
 
-    assert_eq!(plan.fields().len(), 759);
-    assert_eq!(strategies["lazy"], 320);
-    assert_eq!(strategies["nullable"], 26);
-    assert_eq!(strategies["reenter"], 46);
-    assert_eq!(strategies["execute"], 354);
-    assert_eq!(strategies["self"], 13);
+    assert_eq!(plan.fields().len(), 901);
+    assert_eq!(strategies["lazy"], 375);
+    assert_eq!(strategies["nullable"], 34);
+    assert_eq!(strategies["reenter"], 60);
+    assert_eq!(strategies["execute"], 412);
+    assert_eq!(strategies["self"], 20);
     // The claimed surface no longer holds excluded-type references, so the
     // target-private strategy class is empty (schema refresh at v1.0.0-beta.11).
     assert!(!strategies.contains_key("private"));
@@ -64,15 +64,15 @@ fn exact_target_named_types_and_edges_are_exhaustive() {
         *kinds.entry(kind).or_default() += 1;
     }
 
-    assert_eq!(plan.named_types().len(), 113);
-    assert_eq!(kinds["scalar"], 8);
-    assert_eq!(kinds["object"], 80);
+    assert_eq!(plan.named_types().len(), 132);
+    assert_eq!(kinds["scalar"], 9);
+    assert_eq!(kinds["object"], 90);
     assert_eq!(kinds["interface"], 3);
-    assert_eq!(kinds["enum"], 18);
-    assert_eq!(kinds["input"], 4);
+    assert_eq!(kinds["enum"], 25);
+    assert_eq!(kinds["input"], 5);
     // Same refresh: no named type projects as target-private any more.
     assert!(!kinds.contains_key("private"));
-    assert_eq!(plan.implementations().len(), 95);
+    assert_eq!(plan.implementations().len(), 105);
 }
 
 #[test]
@@ -83,6 +83,8 @@ fn directive_projection_accounts_for_active_aliases_and_inactive_definitions() {
     let mut experimental = 0;
     let mut aliases = 0;
     let mut source_maps = 0;
+    let mut reevaluations = 0;
+    let mut workflow_roles = 0;
     let mut inactive = 0;
     for record in plan.directives().records().values() {
         if record.policy == DirectivePolicy::TargetInactive {
@@ -102,17 +104,21 @@ fn directive_projection_accounts_for_active_aliases_and_inactive_definitions() {
                 DirectiveApplicationPolicy::Experimental { .. } => experimental += 1,
                 DirectiveApplicationPolicy::EnumValueAlias { .. } => aliases += 1,
                 DirectiveApplicationPolicy::SourceMap { .. } => source_maps += 1,
+                DirectiveApplicationPolicy::Reevaluate => reevaluations += 1,
+                DirectiveApplicationPolicy::WorkflowRole { .. } => workflow_roles += 1,
             }
         }
     }
 
-    assert_eq!(plan.directives().records().len(), 13);
-    assert_eq!(expected_types, 98);
-    assert_eq!(deprecations, 15);
-    assert_eq!(experimental, 10);
+    assert_eq!(plan.directives().records().len(), 18);
+    assert_eq!(expected_types, 123);
+    assert_eq!(deprecations, 26);
+    assert_eq!(experimental, 38);
     assert_eq!(aliases, 23);
     assert_eq!(source_maps, 0);
-    assert_eq!(inactive, 8);
+    assert_eq!(reevaluations, 40);
+    assert_eq!(workflow_roles, 2);
+    assert_eq!(inactive, 10);
 }
 
 #[test]
@@ -132,9 +138,9 @@ fn enums_account_for_every_coordinate_without_duplicate_alias_variants() {
             (variants + next.0, aliases + next.1)
         });
 
-    assert_eq!(variants, 61);
+    assert_eq!(variants, 90);
     assert_eq!(aliases, 23);
-    assert_eq!(variants + aliases, 84);
+    assert_eq!(variants + aliases, 113);
 }
 
 #[test]
@@ -152,24 +158,24 @@ fn catalog_has_only_exact_semantic_keys() {
         *kinds.entry(key.binding_kind).or_default() += 1;
     }
 
-    assert_eq!(plan.catalog().bindings().len(), 1_732);
+    assert_eq!(plan.catalog().bindings().len(), 2_094);
     assert_eq!(kinds[&BindingKind::QueryRoot], 1);
-    assert_eq!(kinds[&BindingKind::Scalar], 8);
-    assert_eq!(kinds[&BindingKind::ObjectHandle], 80);
+    assert_eq!(kinds[&BindingKind::Scalar], 9);
+    assert_eq!(kinds[&BindingKind::ObjectHandle], 90);
     assert_eq!(kinds[&BindingKind::InterfaceTrait], 3);
     assert_eq!(kinds[&BindingKind::InterfaceClient], 3);
-    assert_eq!(kinds[&BindingKind::InterfaceImplementation], 95);
-    assert_eq!(kinds[&BindingKind::Enum], 18);
-    assert_eq!(kinds[&BindingKind::EnumVariant], 61);
+    assert_eq!(kinds[&BindingKind::InterfaceImplementation], 105);
+    assert_eq!(kinds[&BindingKind::Enum], 25);
+    assert_eq!(kinds[&BindingKind::EnumVariant], 90);
     assert_eq!(kinds[&BindingKind::EnumAlias], 23);
-    assert_eq!(kinds[&BindingKind::InputObject], 4);
-    assert_eq!(kinds[&BindingKind::InputField], 14);
-    assert_eq!(kinds[&BindingKind::FieldOperation], 759);
+    assert_eq!(kinds[&BindingKind::InputObject], 5);
+    assert_eq!(kinds[&BindingKind::InputField], 22);
+    assert_eq!(kinds[&BindingKind::FieldOperation], 901);
     assert!(!kinds.contains_key(&BindingKind::TargetPrivateType));
     assert!(!kinds.contains_key(&BindingKind::TargetPrivateField));
-    assert_eq!(kinds[&BindingKind::Argument], 636);
-    assert_eq!(kinds[&BindingKind::DirectivePolicy], 13);
-    assert_eq!(kinds[&BindingKind::DirectiveArgument], 14);
+    assert_eq!(kinds[&BindingKind::Argument], 784);
+    assert_eq!(kinds[&BindingKind::DirectivePolicy], 18);
+    assert_eq!(kinds[&BindingKind::DirectiveArgument], 15);
 }
 
 #[test]

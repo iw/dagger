@@ -1,5 +1,5 @@
 //! Generated bindings owned by the GraphQL `WorkspaceMigration` type.
-// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:ff790b6fb1eb0a72354a8c293c862f5c2018bcc7526ce048e4ad67e34abc6ffe","target_revision":"a4e1e4ff663e5e51c2b96c2c0772f3d2f00cfb94"}
+// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:8cbd134fc17405aa0ae54b45640f4bd6b93a022bd4a2c4594375f3658962bf7f","target_revision":"249edbd646e63c5181053c8af72623ed9bdf030d"}
 #[doc = "A planned workspace migration."]
 #[derive(Clone)]
 pub struct WorkspaceMigration {
@@ -46,9 +46,19 @@ impl WorkspaceMigration {
             selection: query,
         }
     }
+    #[doc = "Native workspace config path after migration, relative to the workspace root. Empty if no workspace config exists.\n\nSelects GraphQL field `configFile` on `WorkspaceMigration`."]
+    pub async fn config_file(&self) -> Result<String, crate::QueryError> {
+        let query = self.selection.select("configFile");
+        query.execute(&self.session).await
+    }
     #[doc = "A unique identifier for this WorkspaceMigration.\n\nSelects GraphQL field `id` on `WorkspaceMigration`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
+        query.execute(&self.session).await
+    }
+    #[doc = "Unselected legacy module directories relative to the workspace root. Candidates can include fixtures.\n\nSelects GraphQL field `moduleCandidates` on `WorkspaceMigration`."]
+    pub async fn module_candidates(&self) -> Result<Vec<String>, crate::QueryError> {
+        let query = self.selection.select("moduleCandidates");
         query.execute(&self.session).await
     }
     #[doc = "Logical migration steps, each identified by a stable code.\n\nSelects GraphQL field `steps` on `WorkspaceMigration`."]

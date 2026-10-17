@@ -1,5 +1,5 @@
 //! Generated bindings owned by the GraphQL `File` type.
-// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:ff790b6fb1eb0a72354a8c293c862f5c2018bcc7526ce048e4ad67e34abc6ffe","target_revision":"a4e1e4ff663e5e51c2b96c2c0772f3d2f00cfb94"}
+// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:8cbd134fc17405aa0ae54b45640f4bd6b93a022bd4a2c4594375f3658962bf7f","target_revision":"249edbd646e63c5181053c8af72623ed9bdf030d"}
 #[doc = "A file."]
 #[derive(Clone)]
 pub struct File {
@@ -244,6 +244,15 @@ impl File {
             query
         };
         super::EnvFile {
+            session: self.session.clone(),
+            selection: query,
+        }
+    }
+    #[doc = "Interpret this file as a Git bundle by lazily parsing its header.\n\nSelects GraphQL field `asGitBundle` on `File`."]
+    #[must_use]
+    pub fn as_git_bundle(&self) -> super::GitBundle {
+        let query = self.selection.select("asGitBundle");
+        super::GitBundle {
             session: self.session.clone(),
             selection: query,
         }

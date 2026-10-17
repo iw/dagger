@@ -1940,7 +1940,10 @@ fn render_projection_inventory(plan: &ProjectionPlan) -> TokenStream {
             FieldStrategy::NullableHandle { target, .. } => ("probe", target.as_str()),
             FieldStrategy::ReenterList { target, .. } => ("reenter", target.as_str()),
             FieldStrategy::ExecuteValue { .. } => ("execute", ""),
-            FieldStrategy::ExpectedTypeSelf { parent, .. } => ("self-return", parent.as_str()),
+            FieldStrategy::ExpectedTypeSelf { parent, .. } if parent == &field.owner => {
+                ("self-return", parent.as_str())
+            }
+            FieldStrategy::ExpectedTypeSelf { parent, .. } => ("id-return", parent.as_str()),
             FieldStrategy::TargetPrivate => ("private", ""),
         };
         quote! { (#coordinate, #owner, #wire_name, #boundary, #concrete_type) }

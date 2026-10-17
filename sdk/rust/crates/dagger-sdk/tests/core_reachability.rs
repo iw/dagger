@@ -1,5 +1,5 @@
 //! Compile-only reachability proof for every generated public Rust symbol.
-// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:ff790b6fb1eb0a72354a8c293c862f5c2018bcc7526ce048e4ad67e34abc6ffe","target_revision":"a4e1e4ff663e5e51c2b96c2c0772f3d2f00cfb94"}
+// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:8cbd134fc17405aa0ae54b45640f4bd6b93a022bd4a2c4594375f3658962bf7f","target_revision":"249edbd646e63c5181053c8af72623ed9bdf030d"}
 #![cfg(feature = "gen")]
 use dagger_sdk::*;
 fn generated_value<T>() -> T {
@@ -8,6 +8,10 @@ fn generated_value<T>() -> T {
 #[allow(deprecated)]
 fn reach_address(value: &Address) {
     drop(value.container());
+    let opts = AddressContainerOpts::default();
+    drop(value.container_opts(&opts));
+    let _ = &opts.no_lock;
+    drop(AddressContainerOpts::default().with_no_lock(generated_value::<bool>()));
     drop(value.directory());
     let opts = AddressDirectoryOpts::default();
     drop(value.directory_opts(&opts));
@@ -19,6 +23,8 @@ fn reach_address(value: &Address) {
     drop(AddressDirectoryOpts::default().with_include(generated_value::<Vec<String>>()));
     let _ = &opts.no_cache;
     drop(AddressDirectoryOpts::default().with_no_cache(generated_value::<bool>()));
+    let _ = &opts.no_lock;
+    drop(AddressDirectoryOpts::default().with_no_lock(generated_value::<bool>()));
     drop(value.file());
     let opts = AddressFileOpts::default();
     drop(value.file_opts(&opts));
@@ -30,7 +36,13 @@ fn reach_address(value: &Address) {
     drop(AddressFileOpts::default().with_include(generated_value::<Vec<String>>()));
     let _ = &opts.no_cache;
     drop(AddressFileOpts::default().with_no_cache(generated_value::<bool>()));
+    let _ = &opts.no_lock;
+    drop(AddressFileOpts::default().with_no_lock(generated_value::<bool>()));
     drop(value.git_ref());
+    let opts = AddressGitRefOpts::default();
+    drop(value.git_ref_opts(&opts));
+    let _ = &opts.no_lock;
+    drop(AddressGitRefOpts::default().with_no_lock(generated_value::<bool>()));
     drop(value.git_repository());
     drop(value.id());
     drop(value.secret());
@@ -38,24 +50,172 @@ fn reach_address(value: &Address) {
     drop(value.socket());
     drop(value.value());
     drop(value.volume());
+    drop(value.workspace());
 }
 #[allow(deprecated)]
 fn reach_agent(value: &Agent) {
-    drop(value.description());
+    drop(value.error());
+    drop(value.handle());
     drop(value.id());
+    drop(value.message(String::new()));
     drop(value.name());
-    drop(value.original_module());
-    drop(value.path());
+    drop(value.notify(Id::from("generated-id")));
+    let opts = AgentNotifyOpts::default();
+    drop(value.notify_opts(Id::from("generated-id"), &opts));
+    let _ = &opts.on;
+    drop(AgentNotifyOpts::default().with_on(generated_value::<Vec<AgentState>>()));
+    drop(value.pause());
+    let opts = AgentPauseOpts::default();
+    drop(value.pause_opts(&opts));
+    let _ = &opts.interrupt;
+    drop(AgentPauseOpts::default().with_interrupt(generated_value::<bool>()));
+    drop(value.reseed(Id::from("generated-id")));
+    drop(value.resume());
+    drop(value.seed());
+    drop(value.send(String::new()));
+    let opts = AgentSendOpts::default();
+    drop(value.send_opts(String::new(), &opts));
+    let _ = &opts.content;
+    drop(AgentSendOpts::default().with_content(generated_value::<Vec<LlmContentBlockInput>>()));
+    let _ = &opts.reply_to;
+    drop(AgentSendOpts::default().with_reply_to(String::new()));
+    drop(value.snapshot());
+    drop(value.state());
+    drop(value.stop());
+    let opts = AgentStopOpts::default();
+    drop(value.stop_opts(&opts));
+    let _ = &opts.kill;
+    drop(AgentStopOpts::default().with_kill(generated_value::<bool>()));
+    drop(value.wait());
 }
 #[allow(deprecated)]
-fn reach_agentgroup(value: &AgentGroup) {
-    drop(value.compose());
-    let opts = AgentGroupComposeOpts::default();
-    drop(value.compose_opts(&opts));
-    let _ = &opts.base;
-    drop(AgentGroupComposeOpts::default().with_base(Id::from("generated-id").into()));
+fn reach_agentmessage(value: &AgentMessage) {
+    drop(value.delivery());
     drop(value.id());
-    drop(value.list());
+    drop(value.r#ref());
+    drop(value.response());
+}
+#[allow(deprecated)]
+fn reach_artifact(value: &Artifact) {
+    drop(value.arguments());
+    drop(value.description());
+    drop(value.dimension_keys());
+    drop(value.directives());
+    drop(value.id());
+    drop(value.load_error());
+    drop(value.module_name());
+    drop(value.path());
+    drop(value.uri());
+    let opts = ArtifactUriOpts::default();
+    drop(value.uri_opts(&opts));
+    let _ = &opts.absolute;
+    drop(ArtifactUriOpts::default().with_absolute(generated_value::<bool>()));
+    let _ = &opts.dimension_keys;
+    drop(ArtifactUriOpts::default().with_dimension_keys(generated_value::<bool>()));
+    let _ = &opts.type_assertion;
+    drop(ArtifactUriOpts::default().with_type_assertion(generated_value::<bool>()));
+    drop(value.value());
+    let opts = ArtifactValueOpts::default();
+    drop(value.value_opts(&opts));
+    let _ = &opts.arguments;
+    drop(ArtifactValueOpts::default().with_arguments(generated_value::<dagger_sdk::Json>()));
+}
+#[allow(deprecated)]
+fn reach_artifactdimension(value: &ArtifactDimension) {
+    drop(value.collection_type());
+    drop(value.id());
+    drop(value.identifier());
+    drop(value.item_type());
+    drop(value.key_description());
+    drop(value.key_name());
+    drop(value.kind());
+    drop(value.name());
+    drop(value.qualified_name());
+}
+#[allow(deprecated)]
+fn reach_artifactdimensionkey(value: &ArtifactDimensionKey) {
+    drop(value.dimension());
+    drop(value.id());
+    drop(value.key());
+}
+#[allow(deprecated)]
+fn reach_artifactpath(value: &ArtifactPath) {
+    drop(value.description());
+    drop(value.dimensions());
+    drop(value.id());
+    drop(value.load_error());
+    drop(value.module_name());
+    drop(value.uri());
+}
+#[allow(deprecated)]
+fn reach_artifactresult(value: &ArtifactResult) {
+    drop(value.artifact());
+    drop(value.error());
+    drop(value.id());
+    drop(value.value());
+}
+#[allow(deprecated)]
+fn reach_artifacts(value: &Artifacts) {
+    drop(value.as_changesets());
+    drop(value.as_checks());
+    drop(value.as_expertise());
+    drop(value.as_generators());
+    drop(value.as_services());
+    drop(value.dimension_definitions());
+    drop(value.dimension_items(String::new()));
+    drop(value.dimension_keys(String::new()));
+    drop(value.dimensions());
+    drop(value.filter_dimension_keys(String::new(), generated_value::<Vec<String>>()));
+    drop(value.filter_dimensions(generated_value::<Vec<String>>()));
+    drop(value.filter_directives(generated_value::<Vec<String>>()));
+    let opts = ArtifactsFilterDirectivesOpts::default();
+    drop(value.filter_directives_opts(generated_value::<Vec<String>>(), &opts));
+    let _ = &opts.exclude;
+    drop(ArtifactsFilterDirectivesOpts::default().with_exclude(generated_value::<bool>()));
+    drop(value.filter_parent_directives(generated_value::<Vec<String>>()));
+    let opts = ArtifactsFilterParentDirectivesOpts::default();
+    drop(value.filter_parent_directives_opts(generated_value::<Vec<String>>(), &opts));
+    let _ = &opts.exclude;
+    drop(ArtifactsFilterParentDirectivesOpts::default().with_exclude(generated_value::<bool>()));
+    drop(value.filter_parent_types(generated_value::<Vec<String>>()));
+    let opts = ArtifactsFilterParentTypesOpts::default();
+    drop(value.filter_parent_types_opts(generated_value::<Vec<String>>(), &opts));
+    let _ = &opts.exclude;
+    drop(ArtifactsFilterParentTypesOpts::default().with_exclude(generated_value::<bool>()));
+    drop(value.filter_path(generated_value::<Vec<String>>()));
+    drop(value.filter_path_pattern(String::new()));
+    drop(value.filter_types(generated_value::<Vec<String>>()));
+    let opts = ArtifactsFilterTypesOpts::default();
+    drop(value.filter_types_opts(generated_value::<Vec<String>>(), &opts));
+    let _ = &opts.exclude;
+    drop(ArtifactsFilterTypesOpts::default().with_exclude(generated_value::<bool>()));
+    drop(value.filter_uri(String::new()));
+    drop(value.id());
+    drop(value.items());
+    drop(value.modules());
+    drop(value.one());
+    drop(value.path_definitions());
+    let opts = ArtifactsPathDefinitionsOpts::default();
+    drop(value.path_definitions_opts(&opts));
+    let _ = &opts.absolute;
+    drop(ArtifactsPathDefinitionsOpts::default().with_absolute(generated_value::<bool>()));
+    let _ = &opts.dimension;
+    drop(ArtifactsPathDefinitionsOpts::default().with_dimension(String::new()));
+    let _ = &opts.type_assertion;
+    drop(ArtifactsPathDefinitionsOpts::default().with_type_assertion(generated_value::<bool>()));
+    drop(value.types());
+    drop(value.uri());
+    drop(value.values());
+    let opts = ArtifactsValuesOpts::default();
+    drop(value.values_opts(&opts));
+    let _ = &opts.arguments;
+    drop(ArtifactsValuesOpts::default().with_arguments(generated_value::<dagger_sdk::Json>()));
+    let _ = &opts.fail_fast;
+    drop(ArtifactsValuesOpts::default().with_fail_fast(generated_value::<bool>()));
+    let _ = &opts.max_concurrency;
+    drop(ArtifactsValuesOpts::default().with_max_concurrency(generated_value::<i64>()));
+    drop(value.with_artifacts(Id::from("generated-id")));
+    drop(value.without_uri(String::new()));
 }
 #[allow(deprecated)]
 fn reach_buildarg_input(value: &BuildArg) {
@@ -75,6 +235,13 @@ fn reach_changeset(value: &Changeset) {
     drop(value.before());
     drop(value.diff_stats());
     drop(value.export(String::new()));
+    drop(value.filter());
+    let opts = ChangesetFilterOpts::default();
+    drop(value.filter_opts(&opts));
+    let _ = &opts.exclude;
+    drop(ChangesetFilterOpts::default().with_exclude(generated_value::<Vec<String>>()));
+    let _ = &opts.include;
+    drop(ChangesetFilterOpts::default().with_include(generated_value::<Vec<String>>()));
     drop(value.id());
     drop(value.is_empty());
     drop(value.layer());
@@ -103,28 +270,12 @@ fn reach_changeset(value: &Changeset) {
 }
 #[allow(deprecated)]
 fn reach_check(value: &Check) {
-    drop(value.check_type());
-    drop(value.completed());
-    drop(value.description());
+    drop(value.assertion());
     drop(value.error());
     drop(value.id());
-    drop(value.name());
-    drop(value.original_module());
-    drop(value.passed());
-    drop(value.path());
-    drop(value.result_emoji());
-    drop(value.run());
-}
-#[allow(deprecated)]
-fn reach_checkgroup(value: &CheckGroup) {
-    drop(value.id());
-    drop(value.list());
+    drop(value.pass());
     drop(value.report());
-    drop(value.run());
-    let opts = CheckGroupRunOpts::default();
-    drop(value.run_opts(&opts));
-    let _ = &opts.fail_fast;
-    drop(CheckGroupRunOpts::default().with_fail_fast(generated_value::<bool>()));
+    drop(value.sync());
 }
 #[allow(deprecated)]
 fn reach_clientfilesyncmirror(value: &ClientFilesyncMirror) {
@@ -136,12 +287,43 @@ fn reach_cloud(value: &Cloud) {
     drop(value.trace_url());
 }
 #[allow(deprecated)]
+fn reach_collectiondelta(value: &CollectionDelta) {
+    drop(value.added_keys());
+    drop(value.id());
+    drop(value.removed_keys());
+}
+#[allow(deprecated)]
+fn reach_collectiontypedef(value: &CollectionTypeDef) {
+    drop(value.batch_type());
+    drop(value.id());
+    drop(value.key_type());
+    drop(value.value_type());
+}
+#[allow(deprecated)]
+fn reach_command(value: &Command) {
+    drop(value.args());
+    drop(value.env());
+    drop(value.id());
+    drop(value.insecure_root_capabilities());
+    drop(value.privileged_nesting());
+    drop(value.workdir());
+}
+#[allow(deprecated)]
 fn reach_container(value: &Container) {
     drop(value.as_service());
     let opts = ContainerAsServiceOpts::default();
     drop(value.as_service_opts(&opts));
     let _ = &opts.args;
     drop(ContainerAsServiceOpts::default().with_args(generated_value::<Vec<String>>()));
+    let _ = &opts.dagger_in_dagger_new_session;
+    drop(
+        ContainerAsServiceOpts::default()
+            .with_dagger_in_dagger_new_session(generated_value::<bool>()),
+    );
+    let _ = &opts.disable_dagger_in_dagger;
+    drop(
+        ContainerAsServiceOpts::default().with_disable_dagger_in_dagger(generated_value::<bool>()),
+    );
     let _ = &opts.expand;
     drop(ContainerAsServiceOpts::default().with_expand(generated_value::<bool>()));
     let _ = &opts.experimental_privileged_nesting;
@@ -241,10 +423,14 @@ fn reach_container(value: &Container) {
     drop(value.from_opts(String::new(), &opts));
     let _ = &opts.insecure_skip_tls_verify;
     drop(ContainerFromOpts::default().with_insecure_skip_tls_verify(generated_value::<bool>()));
+    let _ = &opts.no_lock;
+    drop(ContainerFromOpts::default().with_no_lock(generated_value::<bool>()));
     let _ = &opts.protocol;
     drop(ContainerFromOpts::default().with_protocol(generated_value::<RegistryProtocol>()));
     let _ = &opts.registry_service;
     drop(ContainerFromOpts::default().with_registry_service(Id::from("generated-id").into()));
+    let _ = &opts.version;
+    drop(ContainerFromOpts::default().with_version(String::new()));
     drop(value.id());
     drop(value.image_ref());
     drop(value.import(Id::from("generated-id")));
@@ -298,6 +484,11 @@ fn reach_container(value: &Container) {
     let _ = &opts.registry_service;
     drop(ContainerPublishOpts::default().with_registry_service(Id::from("generated-id").into()));
     drop(value.rootfs());
+    drop(value.shell());
+    let opts = ContainerShellOpts::default();
+    drop(value.shell_opts(&opts));
+    let _ = &opts.batch;
+    drop(ContainerShellOpts::default().with_batch(generated_value::<bool>()));
     drop(value.stat(String::new()));
     let opts = ContainerStatOpts::default();
     drop(value.stat_opts(String::new(), &opts));
@@ -311,6 +502,8 @@ fn reach_container(value: &Container) {
     drop(value.terminal_opts(&opts));
     let _ = &opts.cmd;
     drop(ContainerTerminalOpts::default().with_cmd(generated_value::<Vec<String>>()));
+    let _ = &opts.disable_dagger_in_dagger;
+    drop(ContainerTerminalOpts::default().with_disable_dagger_in_dagger(generated_value::<bool>()));
     let _ = &opts.experimental_privileged_nesting;
     drop(
         ContainerTerminalOpts::default()
@@ -325,6 +518,10 @@ fn reach_container(value: &Container) {
     drop(value.up_opts(&opts));
     let _ = &opts.args;
     drop(ContainerUpOpts::default().with_args(generated_value::<Vec<String>>()));
+    let _ = &opts.dagger_in_dagger_new_session;
+    drop(ContainerUpOpts::default().with_dagger_in_dagger_new_session(generated_value::<bool>()));
+    let _ = &opts.disable_dagger_in_dagger;
+    drop(ContainerUpOpts::default().with_disable_dagger_in_dagger(generated_value::<bool>()));
     let _ = &opts.expand;
     drop(ContainerUpOpts::default().with_expand(generated_value::<bool>()));
     let _ = &opts.experimental_privileged_nesting;
@@ -347,6 +544,11 @@ fn reach_container(value: &Container) {
     drop(value.with_default_terminal_cmd(generated_value::<Vec<String>>()));
     let opts = ContainerWithDefaultTerminalCmdOpts::default();
     drop(value.with_default_terminal_cmd_opts(generated_value::<Vec<String>>(), &opts));
+    let _ = &opts.disable_dagger_in_dagger;
+    drop(
+        ContainerWithDefaultTerminalCmdOpts::default()
+            .with_disable_dagger_in_dagger(generated_value::<bool>()),
+    );
     let _ = &opts.experimental_privileged_nesting;
     drop(
         ContainerWithDefaultTerminalCmdOpts::default()
@@ -404,6 +606,13 @@ fn reach_container(value: &Container) {
     drop(value.with_exec(generated_value::<Vec<String>>()));
     let opts = ContainerWithExecOpts::default();
     drop(value.with_exec_opts(generated_value::<Vec<String>>(), &opts));
+    let _ = &opts.dagger_in_dagger_new_session;
+    drop(
+        ContainerWithExecOpts::default()
+            .with_dagger_in_dagger_new_session(generated_value::<bool>()),
+    );
+    let _ = &opts.disable_dagger_in_dagger;
+    drop(ContainerWithExecOpts::default().with_disable_dagger_in_dagger(generated_value::<bool>()));
     let _ = &opts.expand;
     drop(ContainerWithExecOpts::default().with_expand(generated_value::<bool>()));
     let _ = &opts.expect;
@@ -472,6 +681,7 @@ fn reach_container(value: &Container) {
     drop(ContainerWithFilesOpts::default().with_owner(String::new()));
     let _ = &opts.permissions;
     drop(ContainerWithFilesOpts::default().with_permissions(generated_value::<i64>()));
+    drop(value.with_gpu());
     drop(value.with_label(String::new(), String::new()));
     drop(value.with_mounted_cache(Id::from("generated-id"), String::new()));
     let opts = ContainerWithMountedCacheOpts::default();
@@ -511,6 +721,8 @@ fn reach_container(value: &Container) {
     drop(ContainerWithMountedFileOpts::default().with_inherit_owner(generated_value::<bool>()));
     let _ = &opts.owner;
     drop(ContainerWithMountedFileOpts::default().with_owner(String::new()));
+    let _ = &opts.read_only;
+    drop(ContainerWithMountedFileOpts::default().with_read_only(generated_value::<bool>()));
     drop(value.with_mounted_secret(String::new(), Id::from("generated-id")));
     let opts = ContainerWithMountedSecretOpts::default();
     drop(value.with_mounted_secret_opts(String::new(), Id::from("generated-id"), &opts));
@@ -549,8 +761,43 @@ fn reach_container(value: &Container) {
     drop(ContainerWithNewFileOpts::default().with_permissions(generated_value::<i64>()));
     drop(value.with_registry_auth(String::new(), Id::from("generated-id"), String::new()));
     drop(value.with_rootfs(Id::from("generated-id")));
+    drop(value.with_run(String::new()));
+    let opts = ContainerWithRunOpts::default();
+    drop(value.with_run_opts(String::new(), &opts));
+    let _ = &opts.disable_dagger_in_dagger;
+    drop(ContainerWithRunOpts::default().with_disable_dagger_in_dagger(generated_value::<bool>()));
+    let _ = &opts.experimental_privileged_nesting;
+    drop(
+        ContainerWithRunOpts::default()
+            .with_experimental_privileged_nesting(generated_value::<bool>()),
+    );
+    let _ = &opts.insecure_root_capabilities;
+    drop(
+        ContainerWithRunOpts::default().with_insecure_root_capabilities(generated_value::<bool>()),
+    );
+    let _ = &opts.shell;
+    drop(ContainerWithRunOpts::default().with_shell(generated_value::<Vec<String>>()));
     drop(value.with_secret_variable(String::new(), Id::from("generated-id")));
     drop(value.with_service_binding(String::new(), Id::from("generated-id")));
+    drop(value.with_shell(generated_value::<Vec<String>>()));
+    let opts = ContainerWithShellOpts::default();
+    drop(value.with_shell_opts(generated_value::<Vec<String>>(), &opts));
+    let _ = &opts.batch;
+    drop(ContainerWithShellOpts::default().with_batch(generated_value::<Vec<String>>()));
+    let _ = &opts.disable_dagger_in_dagger;
+    drop(
+        ContainerWithShellOpts::default().with_disable_dagger_in_dagger(generated_value::<bool>()),
+    );
+    let _ = &opts.experimental_privileged_nesting;
+    drop(
+        ContainerWithShellOpts::default()
+            .with_experimental_privileged_nesting(generated_value::<bool>()),
+    );
+    let _ = &opts.insecure_root_capabilities;
+    drop(
+        ContainerWithShellOpts::default()
+            .with_insecure_root_capabilities(generated_value::<bool>()),
+    );
     drop(value.with_symlink(String::new(), String::new()));
     let opts = ContainerWithSymlinkOpts::default();
     drop(value.with_symlink_opts(String::new(), String::new(), &opts));
@@ -626,17 +873,13 @@ fn reach_container(value: &Container) {
 }
 #[allow(deprecated)]
 fn reach_currentmodule(value: &CurrentModule) {
-    drop(value.as_sdk(Id::from("generated-id")));
+    drop(value.context_directory());
     drop(value.dependencies());
     drop(value.generated_context_directory());
-    drop(value.generators());
-    let opts = CurrentModuleGeneratorsOpts::default();
-    drop(value.generators_opts(&opts));
-    let _ = &opts.include;
-    drop(CurrentModuleGeneratorsOpts::default().with_include(generated_value::<Vec<String>>()));
     drop(value.id());
     drop(value.name());
     drop(value.source());
+    drop(value.source_subpath());
     drop(value.workdir(String::new()));
     let opts = CurrentModuleWorkdirOpts::default();
     drop(value.workdir_opts(String::new(), &opts));
@@ -647,26 +890,6 @@ fn reach_currentmodule(value: &CurrentModule) {
     let _ = &opts.include;
     drop(CurrentModuleWorkdirOpts::default().with_include(generated_value::<Vec<String>>()));
     drop(value.workdir_file(String::new()));
-}
-#[allow(deprecated)]
-fn reach_currentmoduleassdk(value: &CurrentModuleAsSdk) {
-    drop(value.clients());
-    drop(value.id());
-    drop(value.modules());
-    drop(value.name());
-}
-#[allow(deprecated)]
-fn reach_currentmoduleassdkclient(value: &CurrentModuleAsSdkClient) {
-    drop(value.id());
-    drop(value.module());
-    drop(value.module_source());
-    drop(value.path());
-    drop(value.pin());
-}
-#[allow(deprecated)]
-fn reach_currentmoduleassdkmodule(value: &CurrentModuleAsSdkModule) {
-    drop(value.id());
-    drop(value.path());
 }
 #[allow(deprecated)]
 fn reach_diffstat(value: &DiffStat) {
@@ -790,6 +1013,8 @@ fn reach_directory(value: &Directory) {
     drop(DirectoryTerminalOpts::default().with_cmd(generated_value::<Vec<String>>()));
     let _ = &opts.container;
     drop(DirectoryTerminalOpts::default().with_container(Id::from("generated-id").into()));
+    let _ = &opts.disable_dagger_in_dagger;
+    drop(DirectoryTerminalOpts::default().with_disable_dagger_in_dagger(generated_value::<bool>()));
     let _ = &opts.experimental_privileged_nesting;
     drop(
         DirectoryTerminalOpts::default()
@@ -975,6 +1200,14 @@ fn reach_errorvalue(value: &ErrorValue) {
     drop(value.value());
 }
 #[allow(deprecated)]
+fn reach_expertise(value: &Expertise) {
+    drop(value.description());
+    drop(value.id());
+    drop(value.name());
+    drop(value.original_module());
+    drop(value.path());
+}
+#[allow(deprecated)]
 fn reach_exportableclient(value: &ExportableClient) {
     drop(value.export(String::new()));
     drop(value.id());
@@ -1000,6 +1233,7 @@ fn reach_file(value: &File) {
     drop(value.as_env_file_opts(&opts));
     let _ = &opts.expand;
     drop(FileAsEnvFileOpts::default().with_expand(generated_value::<bool>()));
+    drop(value.as_git_bundle());
     drop(value.as_json());
     drop(value.chown(String::new()));
     drop(value.contents());
@@ -1141,31 +1375,26 @@ fn reach_generatedcode(value: &GeneratedCode) {
 }
 #[allow(deprecated)]
 fn reach_generator(value: &Generator) {
-    drop(value.changes());
-    drop(value.completed());
-    drop(value.description());
+    drop(value.changeset());
     drop(value.id());
-    drop(value.is_empty());
-    drop(value.name());
-    drop(value.original_module());
-    drop(value.path());
-    drop(value.run());
+    drop(value.stale());
+    drop(value.sync());
 }
 #[allow(deprecated)]
-fn reach_generatorgroup(value: &GeneratorGroup) {
-    drop(value.changes());
-    let opts = GeneratorGroupChangesOpts::default();
-    drop(value.changes_opts(&opts));
-    let _ = &opts.on_conflict;
-    drop(
-        GeneratorGroupChangesOpts::default()
-            .with_on_conflict(generated_value::<ChangesetsMergeConflict>()),
-    );
+fn reach_gitbundle(value: &GitBundle) {
+    drop(value.as_file());
     drop(value.id());
-    drop(value.is_empty());
-    drop(value.list());
-    drop(value.load_failures());
-    drop(value.run());
+    drop(value.object_format());
+    drop(value.prerequisite_sh_as());
+    drop(value.refs());
+    drop(value.validate());
+    drop(value.version());
+}
+#[allow(deprecated)]
+fn reach_gitbundleref(value: &GitBundleRef) {
+    drop(value.id());
+    drop(value.name());
+    drop(value.sha());
 }
 #[allow(deprecated)]
 fn reach_gitcommit(value: &GitCommit) {
@@ -1180,6 +1409,11 @@ fn reach_gitcommit(value: &GitCommit) {
     drop(value.author_email());
     drop(value.author_name());
     drop(value.authored_date());
+    drop(value.changes());
+    let opts = GitCommitChangesOpts::default();
+    drop(value.changes_opts(&opts));
+    let _ = &opts.against;
+    drop(GitCommitChangesOpts::default().with_against(Id::from("generated-id").into()));
     drop(value.committed_date());
     drop(value.committer_email());
     drop(value.committer_name());
@@ -1206,7 +1440,16 @@ fn reach_gitcommit(value: &GitCommit) {
     drop(GitCommitTreeOpts::default().with_include_tags(generated_value::<bool>()));
 }
 #[allow(deprecated)]
+fn reach_gitpushresult(value: &GitPushResult) {
+    drop(value.disposition());
+    drop(value.id());
+    drop(value.previous_sha());
+    drop(value.r#ref());
+    drop(value.sha());
+}
+#[allow(deprecated)]
 fn reach_gitref(value: &GitRef) {
+    drop(value.as_repository());
     drop(value.as_workspace());
     let opts = GitRefAsWorkspaceOpts::default();
     drop(value.as_workspace_opts(&opts));
@@ -1215,6 +1458,7 @@ fn reach_gitref(value: &GitRef) {
     drop(value.commit());
     drop(value.commit_sha());
     drop(value.common_ancestor(Id::from("generated-id")));
+    drop(value.contains(Id::from("generated-id")));
     drop(value.id());
     drop(value.log());
     let opts = GitRefLogOpts::default();
@@ -1226,6 +1470,17 @@ fn reach_gitref(value: &GitRef) {
     let _ = &opts.paths;
     drop(GitRefLogOpts::default().with_paths(generated_value::<Vec<String>>()));
     drop(value.name());
+    drop(value.push());
+    let opts = GitRefPushOpts::default();
+    drop(value.push_opts(&opts));
+    let _ = &opts.branch;
+    drop(GitRefPushOpts::default().with_branch(String::new()));
+    let _ = &opts.expected_remote_sha;
+    drop(GitRefPushOpts::default().with_expected_remote_sha(String::new()));
+    let _ = &opts.remote;
+    drop(GitRefPushOpts::default().with_remote(String::new()));
+    let _ = &opts.to;
+    drop(GitRefPushOpts::default().with_to(Id::from("generated-id").into()));
     drop(value.r#ref());
     drop(value.target_commit());
     drop(value.tree());
@@ -1237,6 +1492,38 @@ fn reach_gitref(value: &GitRef) {
     drop(GitRefTreeOpts::default().with_discard_git_dir(generated_value::<bool>()));
     let _ = &opts.include_tags;
     drop(GitRefTreeOpts::default().with_include_tags(generated_value::<bool>()));
+    drop(value.with_commit(
+        String::new(),
+        String::new(),
+        Id::from("generated-id"),
+        String::new(),
+        String::new(),
+    ));
+    let opts = GitRefWithCommitOpts::default();
+    drop(value.with_commit_opts(
+        String::new(),
+        String::new(),
+        Id::from("generated-id"),
+        String::new(),
+        String::new(),
+        &opts,
+    ));
+    let _ = &opts.allow_empty;
+    drop(GitRefWithCommitOpts::default().with_allow_empty(generated_value::<bool>()));
+    let _ = &opts.committer_date;
+    drop(GitRefWithCommitOpts::default().with_committer_date(String::new()));
+    let _ = &opts.committer_email;
+    drop(GitRefWithCommitOpts::default().with_committer_email(String::new()));
+    let _ = &opts.committer_name;
+    drop(GitRefWithCommitOpts::default().with_committer_name(String::new()));
+    let _ = &opts.signoff;
+    drop(GitRefWithCommitOpts::default().with_signoff(generated_value::<bool>()));
+}
+#[allow(deprecated)]
+fn reach_gitremote(value: &GitRemote) {
+    drop(value.id());
+    drop(value.name());
+    drop(value.repository());
 }
 #[allow(deprecated)]
 fn reach_gitrepository(value: &GitRepository) {
@@ -1246,17 +1533,47 @@ fn reach_gitrepository(value: &GitRepository) {
     let _ = &opts.cwd;
     drop(GitRepositoryAsWorkspaceOpts::default().with_cwd(String::new()));
     drop(value.branch(String::new()));
+    let opts = GitRepositoryBranchOpts::default();
+    drop(value.branch_opts(String::new(), &opts));
+    let _ = &opts.no_lock;
+    drop(GitRepositoryBranchOpts::default().with_no_lock(generated_value::<bool>()));
     drop(value.branches());
     let opts = GitRepositoryBranchesOpts::default();
     drop(value.branches_opts(&opts));
     let _ = &opts.patterns;
     drop(GitRepositoryBranchesOpts::default().with_patterns(generated_value::<Vec<String>>()));
+    drop(value.bundle(generated_value::<Vec<String>>()));
+    let opts = GitRepositoryBundleOpts::default();
+    drop(value.bundle_opts(generated_value::<Vec<String>>(), &opts));
+    let _ = &opts.base;
+    drop(GitRepositoryBundleOpts::default().with_base(Id::from("generated-id").into()));
     drop(value.commit(String::new()));
+    drop(value.default_remote());
     drop(value.head());
+    let opts = GitRepositoryHeadOpts::default();
+    drop(value.head_opts(&opts));
+    let _ = &opts.no_lock;
+    drop(GitRepositoryHeadOpts::default().with_no_lock(generated_value::<bool>()));
     drop(value.id());
     drop(value.latest());
+    let opts = GitRepositoryLatestOpts::default();
+    drop(value.latest_opts(&opts));
+    let _ = &opts.no_lock;
+    drop(GitRepositoryLatestOpts::default().with_no_lock(generated_value::<bool>()));
+    let _ = &opts.version;
+    drop(GitRepositoryLatestOpts::default().with_version(String::new()));
     drop(value.r#ref(String::new()));
+    let opts = GitRepositoryRefOpts::default();
+    drop(value.ref_opts(String::new(), &opts));
+    let _ = &opts.no_lock;
+    drop(GitRepositoryRefOpts::default().with_no_lock(generated_value::<bool>()));
+    drop(value.remote(String::new()));
+    drop(value.remotes());
     drop(value.tag(String::new()));
+    let opts = GitRepositoryTagOpts::default();
+    drop(value.tag_opts(String::new(), &opts));
+    let _ = &opts.no_lock;
+    drop(GitRepositoryTagOpts::default().with_no_lock(generated_value::<bool>()));
     drop(value.tags());
     let opts = GitRepositoryTagsOpts::default();
     drop(value.tags_opts(&opts));
@@ -1264,6 +1581,17 @@ fn reach_gitrepository(value: &GitRepository) {
     drop(GitRepositoryTagsOpts::default().with_patterns(generated_value::<Vec<String>>()));
     drop(value.uncommitted());
     drop(value.url());
+    drop(value.with_bundle(Id::from("generated-id")));
+    let opts = GitRepositoryWithBundleOpts::default();
+    drop(value.with_bundle_opts(Id::from("generated-id"), &opts));
+    let _ = &opts.prerequisite_ref;
+    drop(GitRepositoryWithBundleOpts::default().with_prerequisite_ref(String::new()));
+    drop(value.with_contents(Id::from("generated-id")));
+    drop(value.with_remote(String::new(), String::new()));
+    let opts = GitRepositoryWithRemoteOpts::default();
+    drop(value.with_remote_opts(String::new(), String::new(), &opts));
+    let _ = &opts.push_url;
+    drop(GitRepositoryWithRemoteOpts::default().with_push_url(String::new()));
 }
 #[allow(deprecated)]
 fn reach_httpstate(value: &HttpState) {
@@ -1358,6 +1686,13 @@ fn reach_jsonvalue(value: &JsonValue) {
 }
 #[allow(deprecated)]
 fn reach_llm(value: &Llm) {
+    drop(value.agent(String::new(), String::new()));
+    drop(value.artifacts());
+    let opts = LlmArtifactsOpts::default();
+    drop(value.artifacts_opts(&opts));
+    let _ = &opts.include;
+    drop(LlmArtifactsOpts::default().with_include(generated_value::<Vec<String>>()));
+    drop(value.compose(generated_value::<Vec<dagger_sdk::IdInput<Expertise>>>()));
     drop(value.context_tokens());
     drop(value.context_window());
     drop(value.fork(String::new()));
@@ -1373,11 +1708,23 @@ fn reach_llm(value: &Llm) {
     drop(LlmLoopOpts::default().with_max_tokens(generated_value::<i64>()));
     drop(value.messages());
     drop(value.model());
-    drop(value.portable_id());
     drop(value.provider());
     drop(value.reasoning_effort());
-    drop(value.replay());
+    drop(value.recompose(generated_value::<Vec<dagger_sdk::IdInput<Expertise>>>()));
     drop(value.skills());
+    drop(value.spawn());
+    let opts = LlmSpawnOpts::default();
+    drop(value.spawn_opts(&opts));
+    let _ = &opts.error;
+    drop(LlmSpawnOpts::default().with_error(String::new()));
+    let _ = &opts.handle;
+    drop(LlmSpawnOpts::default().with_handle(String::new()));
+    let _ = &opts.name;
+    drop(LlmSpawnOpts::default().with_name(String::new()));
+    let _ = &opts.parent_handle;
+    drop(LlmSpawnOpts::default().with_parent_handle(String::new()));
+    let _ = &opts.state;
+    drop(LlmSpawnOpts::default().with_state(generated_value::<AgentState>()));
     drop(value.step());
     let opts = LlmStepOpts::default();
     drop(value.step_opts(&opts));
@@ -1387,6 +1734,16 @@ fn reach_llm(value: &Llm) {
     drop(value.token_usage());
     drop(value.tools());
     drop(value.transcript());
+    drop(value.with_content(generated_value::<Vec<LlmContentBlockInput>>()));
+    let opts = LlmWithContentOpts::default();
+    drop(value.with_content_opts(generated_value::<Vec<LlmContentBlockInput>>(), &opts));
+    let _ = &opts.origin;
+    drop(LlmWithContentOpts::default().with_origin(generated_value::<LlmMessageOriginInput>()));
+    drop(value.with_content_file(Id::from("generated-id")));
+    let opts = LlmWithContentFileOpts::default();
+    drop(value.with_content_file_opts(Id::from("generated-id"), &opts));
+    let _ = &opts.mime_type;
+    drop(LlmWithContentFileOpts::default().with_mime_type(String::new()));
     drop(value.with_mcp_server(String::new(), Id::from("generated-id")));
     drop(value.with_model(String::new()));
     let opts = LlmWithModelOpts::default();
@@ -1394,6 +1751,10 @@ fn reach_llm(value: &Llm) {
     let _ = &opts.provider;
     drop(LlmWithModelOpts::default().with_provider(String::new()));
     drop(value.with_prompt(String::new()));
+    let opts = LlmWithPromptOpts::default();
+    drop(value.with_prompt_opts(String::new(), &opts));
+    let _ = &opts.origin;
+    drop(LlmWithPromptOpts::default().with_origin(generated_value::<LlmMessageOriginInput>()));
     drop(value.with_prompt_file(Id::from("generated-id")));
     drop(value.with_reasoning_effort(String::new()));
     drop(value.with_response(generated_value::<Vec<LlmContentBlockInput>>()));
@@ -1410,13 +1771,28 @@ fn reach_llm(value: &Llm) {
     let _ = &opts.total_tokens;
     drop(LlmWithResponseOpts::default().with_total_tokens(generated_value::<i64>()));
     drop(value.with_skills(Id::from("generated-id")));
+    drop(value.with_small_model());
     drop(value.with_system_prompt(String::new()));
     drop(value.with_tool_result(String::new(), String::new(), generated_value::<bool>()));
+    let opts = LlmWithToolResultOpts::default();
+    drop(value.with_tool_result_opts(
+        String::new(),
+        String::new(),
+        generated_value::<bool>(),
+        &opts,
+    ));
+    let _ = &opts.blocks;
+    drop(
+        LlmWithToolResultOpts::default()
+            .with_blocks(generated_value::<Vec<LlmContentBlockInput>>()),
+    );
     drop(value.with_tools(Id::from("generated-id")));
     let opts = LlmWithToolsOpts::default();
     drop(value.with_tools_opts(Id::from("generated-id"), &opts));
     let _ = &opts.except;
     drop(LlmWithToolsOpts::default().with_except(generated_value::<Vec<String>>()));
+    let _ = &opts.version;
+    drop(LlmWithToolsOpts::default().with_version(generated_value::<i64>()));
     drop(value.with_workspace(Id::from("generated-id")));
     drop(value.without_default_system_prompt());
     drop(value.without_message_history());
@@ -1424,12 +1800,27 @@ fn reach_llm(value: &Llm) {
     drop(value.workspace());
 }
 #[allow(deprecated)]
+fn reach_llmcontent(value: &LlmContent) {
+    drop(value.blocks());
+    drop(value.id());
+    drop(value.with_data(generated_value::<Bytes>(), String::new()));
+    drop(value.with_file(Id::from("generated-id")));
+    let opts = LlmContentWithFileOpts::default();
+    drop(value.with_file_opts(Id::from("generated-id"), &opts));
+    let _ = &opts.mime_type;
+    drop(LlmContentWithFileOpts::default().with_mime_type(String::new()));
+    drop(value.with_text(String::new()));
+}
+#[allow(deprecated)]
 fn reach_llmcontentblock(value: &LlmContentBlock) {
     drop(value.arguments());
     drop(value.call_id());
+    drop(value.content());
+    drop(value.data());
     drop(value.errored());
     drop(value.id());
     drop(value.kind());
+    drop(value.mime_type());
     drop(value.signature());
     drop(value.text());
     drop(value.tool_name());
@@ -1447,9 +1838,21 @@ fn reach_llmcontentblockinput_input(value: &LlmContentBlockInput) {
     );
     let _ = &value.call_id;
     drop(value.clone().with_call_id(String::new()));
+    let _ = &value.content;
+    drop(
+        value
+            .clone()
+            .with_content(generated_value::<Vec<LlmContentBlockInput>>()),
+    );
+    let _ = &value.data;
+    drop(value.clone().with_data(generated_value::<Bytes>()));
     let _ = &value.errored;
     drop(value.clone().with_errored(generated_value::<bool>()));
+    let _ = &value.file;
+    drop(value.clone().with_file(generated_value::<dagger_sdk::Id>()));
     let _ = &value.kind;
+    let _ = &value.mime_type;
+    drop(value.clone().with_mime_type(String::new()));
     let _ = &value.signature;
     drop(value.clone().with_signature(String::new()));
     let _ = &value.text;
@@ -1461,8 +1864,30 @@ fn reach_llmcontentblockinput_input(value: &LlmContentBlockInput) {
 fn reach_llmmessage(value: &LlmMessage) {
     drop(value.content());
     drop(value.id());
+    drop(value.origin());
     drop(value.role());
     drop(value.token_usage());
+}
+#[allow(deprecated)]
+fn reach_llmmessageorigin(value: &LlmMessageOrigin) {
+    drop(value.agent_name());
+    drop(value.id());
+    drop(value.kind());
+    drop(value.r#ref());
+    drop(value.reply_to());
+}
+#[allow(deprecated)]
+fn reach_llmmessageorigininput_input(value: &LlmMessageOriginInput) {
+    drop(LlmMessageOriginInput::new(generated_value::<
+        LlmMessageOriginKind,
+    >()));
+    let _ = &value.agent_name;
+    drop(value.clone().with_agent_name(String::new()));
+    let _ = &value.kind;
+    let _ = &value.r#ref;
+    drop(value.clone().with_ref(String::new()));
+    let _ = &value.reply_to;
+    drop(value.clone().with_reply_to(String::new()));
 }
 #[allow(deprecated)]
 fn reach_llmskill(value: &LlmSkill) {
@@ -1492,24 +1917,11 @@ fn reach_listtypedef(value: &ListTypeDef) {
 }
 #[allow(deprecated)]
 fn reach_module(value: &Module) {
-    drop(value.check(String::new()));
-    drop(value.checks());
-    let opts = ModuleChecksOpts::default();
-    drop(value.checks_opts(&opts));
-    let _ = &opts.include;
-    drop(ModuleChecksOpts::default().with_include(generated_value::<Vec<String>>()));
-    let _ = &opts.no_generate;
-    drop(ModuleChecksOpts::default().with_no_generate(generated_value::<bool>()));
+    drop(value.context_source());
     drop(value.dependencies());
     drop(value.description());
     drop(value.enums());
     drop(value.generated_context_directory());
-    drop(value.generator(String::new()));
-    drop(value.generators());
-    let opts = ModuleGeneratorsOpts::default();
-    drop(value.generators_opts(&opts));
-    let _ = &opts.include;
-    drop(ModuleGeneratorsOpts::default().with_include(generated_value::<Vec<String>>()));
     drop(value.id());
     drop(value.interfaces());
     drop(value.introspection_schema_json());
@@ -1524,11 +1936,6 @@ fn reach_module(value: &Module) {
     drop(ModuleServeOpts::default().with_entrypoint(generated_value::<bool>()));
     let _ = &opts.include_dependencies;
     drop(ModuleServeOpts::default().with_include_dependencies(generated_value::<bool>()));
-    drop(value.services());
-    let opts = ModuleServicesOpts::default();
-    drop(value.services_opts(&opts));
-    let _ = &opts.include;
-    drop(ModuleServicesOpts::default().with_include(generated_value::<Vec<String>>()));
     drop(value.source());
     drop(value.sync());
     drop(value.user_defaults());
@@ -1559,7 +1966,6 @@ fn reach_modulesource(value: &ModuleSource) {
     drop(value.directory(String::new()));
     drop(value.engine_version());
     drop(value.generate(Id::from("generated-id")));
-    drop(value.generate_local_dependencies(Id::from("generated-id")));
     drop(value.generated_context_changeset());
     drop(value.generated_context_directory());
     drop(value.html_repo_url());
@@ -1657,6 +2063,11 @@ fn reach_portforward_input(value: &PortForward) {
 #[allow(deprecated)]
 fn reach_query(value: &Query) {
     drop(value.address(String::new()));
+    drop(value.blob(generated_value::<Bytes>(), String::new()));
+    let opts = QueryBlobOpts::default();
+    drop(value.blob_opts(generated_value::<Bytes>(), String::new(), &opts));
+    let _ = &opts.permissions;
+    drop(QueryBlobOpts::default().with_permissions(generated_value::<i64>()));
     drop(value.cache_volume(String::new()));
     let opts = QueryCacheVolumeOpts::default();
     drop(value.cache_volume_opts(String::new(), &opts));
@@ -1676,6 +2087,7 @@ fn reach_query(value: &Query) {
     drop(value.current_function_call());
     drop(value.current_module());
     drop(value.current_node());
+    drop(value.current_timestamp());
     drop(value.current_type_defs());
     let opts = QueryCurrentTypeDefsOpts::default();
     drop(value.current_type_defs_opts(&opts));
@@ -1745,6 +2157,7 @@ fn reach_query(value: &Query) {
     drop(QueryLlmOpts::default().with_model(String::new()));
     let _ = &opts.provider;
     drop(QueryLlmOpts::default().with_provider(String::new()));
+    drop(value.llm_content());
     drop(value.module());
     drop(value.module_source(String::new()));
     let opts = QueryModuleSourceOpts::default();
@@ -1757,6 +2170,8 @@ fn reach_query(value: &Query) {
     drop(QueryModuleSourceOpts::default().with_ref_pin(String::new()));
     let _ = &opts.require_kind;
     drop(QueryModuleSourceOpts::default().with_require_kind(generated_value::<ModuleSourceKind>()));
+    let _ = &opts.version;
+    drop(QueryModuleSourceOpts::default().with_version(String::new()));
     drop(value.node(generated_value::<dagger_sdk::Id>()));
     drop(value.schema(generated_value::<dagger_sdk::Json>()));
     drop(value.secret(String::new()));
@@ -1764,7 +2179,13 @@ fn reach_query(value: &Query) {
     drop(value.secret_opts(String::new(), &opts));
     let _ = &opts.cache_key;
     drop(QuerySecretOpts::default().with_cache_key(String::new()));
+    drop(value.serve_module(String::new()));
+    let opts = QueryServeModuleOpts::default();
+    drop(value.serve_module_opts(String::new(), &opts));
+    let _ = &opts.ref_pin;
+    drop(QueryServeModuleOpts::default().with_ref_pin(String::new()));
     drop(value.set_secret(String::new(), String::new()));
+    drop(value.set_session_title(String::new()));
     drop(value.source_map(
         generated_value::<i64>(),
         String::new(),
@@ -1848,6 +2269,10 @@ fn reach_service(value: &Service) {
     drop(value.hostname());
     drop(value.id());
     drop(value.ports());
+    let opts = ServicePortsOpts::default();
+    drop(value.ports_opts(&opts));
+    let _ = &opts.declared;
+    drop(ServicePortsOpts::default().with_declared(generated_value::<bool>()));
     drop(value.start());
     drop(value.stop());
     let opts = ServiceStopOpts::default();
@@ -1907,6 +2332,7 @@ fn reach_terminal(value: &Terminal) {
 }
 #[allow(deprecated)]
 fn reach_typedef(value: &TypeDef) {
+    drop(value.as_collection());
     drop(value.as_enum());
     drop(value.as_input());
     drop(value.as_interface());
@@ -1917,6 +2343,10 @@ fn reach_typedef(value: &TypeDef) {
     drop(value.kind());
     drop(value.name());
     drop(value.optional());
+    drop(value.with_collection());
+    drop(value.with_collection_delta(String::new()));
+    drop(value.with_collection_get(String::new()));
+    drop(value.with_collection_keys(String::new()));
     drop(value.with_constructor(Id::from("generated-id")));
     drop(value.with_enum(String::new()));
     let opts = TypeDefWithEnumOpts::default();
@@ -1981,55 +2411,39 @@ fn reach_typedef(value: &TypeDef) {
     drop(TypeDefWithScalarOpts::default().with_description(String::new()));
 }
 #[allow(deprecated)]
-fn reach_up(value: &Up) {
-    drop(value.description());
-    drop(value.id());
-    drop(value.name());
-    drop(value.original_module());
-    drop(value.path());
-    drop(value.run());
-}
-#[allow(deprecated)]
-fn reach_upgroup(value: &UpGroup) {
-    drop(value.id());
-    drop(value.list());
-    drop(value.run());
-}
-#[allow(deprecated)]
 fn reach_volume(value: &Volume) {
     drop(value.id());
 }
 #[allow(deprecated)]
 fn reach_workspace(value: &Workspace) {
     drop(value.address());
-    drop(value.agents());
-    let opts = WorkspaceAgentsOpts::default();
-    drop(value.agents_opts(&opts));
+    drop(value.artifacts());
+    let opts = WorkspaceArtifactsOpts::default();
+    drop(value.artifacts_opts(&opts));
     let _ = &opts.include;
-    drop(WorkspaceAgentsOpts::default().with_include(generated_value::<Vec<String>>()));
+    drop(WorkspaceArtifactsOpts::default().with_include(generated_value::<Vec<String>>()));
     drop(value.changes());
     let opts = WorkspaceChangesOpts::default();
     drop(value.changes_opts(&opts));
     let _ = &opts.from;
     drop(WorkspaceChangesOpts::default().with_from(Id::from("generated-id").into()));
-    drop(value.checks());
-    let opts = WorkspaceChecksOpts::default();
-    drop(value.checks_opts(&opts));
-    let _ = &opts.include;
-    drop(WorkspaceChecksOpts::default().with_include(generated_value::<Vec<String>>()));
-    let _ = &opts.no_generate;
-    drop(WorkspaceChecksOpts::default().with_no_generate(generated_value::<bool>()));
-    let _ = &opts.only_generate;
-    drop(WorkspaceChecksOpts::default().with_only_generate(generated_value::<bool>()));
-    let _ = &opts.skip;
-    drop(WorkspaceChecksOpts::default().with_skip(generated_value::<Vec<String>>()));
+    drop(value.compare_commits_from(Id::from("generated-id")));
+    let opts = WorkspaceCompareCommitsFromOpts::default();
+    drop(value.compare_commits_from_opts(Id::from("generated-id"), &opts));
+    let _ = &opts.commits;
+    drop(WorkspaceCompareCommitsFromOpts::default().with_commits(generated_value::<Vec<String>>()));
+    let _ = &opts.max_commits;
+    drop(WorkspaceCompareCommitsFromOpts::default().with_max_commits(generated_value::<i64>()));
     drop(value.config_file());
     drop(value.config_read());
     let opts = WorkspaceConfigReadOpts::default();
     drop(value.config_read_opts(&opts));
+    let _ = &opts.effective;
+    drop(WorkspaceConfigReadOpts::default().with_effective(generated_value::<bool>()));
     let _ = &opts.key;
     drop(WorkspaceConfigReadOpts::default().with_key(String::new()));
     drop(value.cwd());
+    drop(value.detect_scope(String::new()));
     drop(value.directory(String::new()));
     let opts = WorkspaceDirectoryOpts::default();
     drop(value.directory_opts(String::new(), &opts));
@@ -2039,8 +2453,15 @@ fn reach_workspace(value: &Workspace) {
     drop(WorkspaceDirectoryOpts::default().with_gitignore(generated_value::<bool>()));
     let _ = &opts.include;
     drop(WorkspaceDirectoryOpts::default().with_include(generated_value::<Vec<String>>()));
+    drop(value.entrypoint());
     drop(value.env_list());
     drop(value.export());
+    let opts = WorkspaceExportOpts::default();
+    drop(value.export_opts(&opts));
+    let _ = &opts.from;
+    drop(WorkspaceExportOpts::default().with_from(Id::from("generated-id").into()));
+    let _ = &opts.path;
+    drop(WorkspaceExportOpts::default().with_path(String::new()));
     drop(value.file(String::new()));
     drop(value.find_roots(generated_value::<Vec<String>>()));
     let opts = WorkspaceFindRootsOpts::default();
@@ -2054,19 +2475,23 @@ fn reach_workspace(value: &Workspace) {
     drop(value.find_up_opts(String::new(), &opts));
     let _ = &opts.from;
     drop(WorkspaceFindUpOpts::default().with_from(String::new()));
-    drop(value.generators());
-    let opts = WorkspaceGeneratorsOpts::default();
-    drop(value.generators_opts(&opts));
-    let _ = &opts.include;
-    drop(WorkspaceGeneratorsOpts::default().with_include(generated_value::<Vec<String>>()));
     drop(value.git());
     drop(value.glob(String::new()));
     drop(value.id());
     drop(value.migrate());
+    let opts = WorkspaceMigrateOpts::default();
+    drop(value.migrate_opts(&opts));
+    let _ = &opts.modules;
+    drop(WorkspaceMigrateOpts::default().with_modules(generated_value::<Vec<String>>()));
+    drop(value.migrate_module());
+    let opts = WorkspaceMigrateModuleOpts::default();
+    drop(value.migrate_module_opts(&opts));
+    let _ = &opts.path;
+    drop(WorkspaceMigrateModuleOpts::default().with_path(String::new()));
     drop(value.module(String::new()));
     drop(value.module_source(String::new()));
     drop(value.modules());
-    drop(value.reloaded());
+    drop(value.resolve(String::new()));
     drop(value.sdk(String::new()));
     drop(value.sdks());
     drop(value.search(String::new()));
@@ -2092,17 +2517,43 @@ fn reach_workspace(value: &Workspace) {
     drop(WorkspaceSearchOpts::default().with_skip_hidden(generated_value::<bool>()));
     let _ = &opts.skip_ignored;
     drop(WorkspaceSearchOpts::default().with_skip_ignored(generated_value::<bool>()));
-    drop(value.services());
-    let opts = WorkspaceServicesOpts::default();
-    drop(value.services_opts(&opts));
-    let _ = &opts.include;
-    drop(WorkspaceServicesOpts::default().with_include(generated_value::<Vec<String>>()));
+    drop(value.snapshot());
     drop(value.with_changes(Id::from("generated-id")));
+    drop(value.with_client(String::new()));
+    let opts = WorkspaceWithClientOpts::default();
+    drop(value.with_client_opts(String::new(), &opts));
+    let _ = &opts.sdk;
+    drop(WorkspaceWithClientOpts::default().with_sdk(String::new()));
+    let _ = &opts.settings;
+    drop(WorkspaceWithClientOpts::default().with_settings(generated_value::<dagger_sdk::Json>()));
+    drop(value.with_commit(Id::from("generated-id"), String::new(), String::new()));
+    let opts = WorkspaceWithCommitOpts::default();
+    drop(value.with_commit_opts(
+        Id::from("generated-id"),
+        String::new(),
+        String::new(),
+        &opts,
+    ));
+    let _ = &opts.author_email;
+    drop(WorkspaceWithCommitOpts::default().with_author_email(String::new()));
+    let _ = &opts.author_name;
+    drop(WorkspaceWithCommitOpts::default().with_author_name(String::new()));
+    let _ = &opts.signoff;
+    drop(WorkspaceWithCommitOpts::default().with_signoff(generated_value::<bool>()));
+    drop(value.with_commits_from(Id::from("generated-id")));
+    let opts = WorkspaceWithCommitsFromOpts::default();
+    drop(value.with_commits_from_opts(Id::from("generated-id"), &opts));
+    let _ = &opts.commits;
+    drop(WorkspaceWithCommitsFromOpts::default().with_commits(generated_value::<Vec<String>>()));
+    let _ = &opts.max_commits;
+    drop(WorkspaceWithCommitsFromOpts::default().with_max_commits(generated_value::<i64>()));
     drop(value.with_config_env(String::new()));
     let opts = WorkspaceWithConfigEnvOpts::default();
     drop(value.with_config_env_opts(String::new(), &opts));
     let _ = &opts.here;
     drop(WorkspaceWithConfigEnvOpts::default().with_here(generated_value::<bool>()));
+    drop(value.with_config_environment(String::new()));
+    drop(value.with_config_paths(String::new(), String::new()));
     drop(value.with_config_value(String::new(), String::new()));
     let opts = WorkspaceWithConfigValueOpts::default();
     drop(value.with_config_value_opts(String::new(), String::new(), &opts));
@@ -2111,30 +2562,28 @@ fn reach_workspace(value: &Workspace) {
     let _ = &opts.values;
     drop(WorkspaceWithConfigValueOpts::default().with_values(generated_value::<Vec<String>>()));
     drop(value.with_directory(String::new(), Id::from("generated-id")));
-    drop(value.with_init_client(String::new(), String::new(), String::new()));
-    let opts = WorkspaceWithInitClientOpts::default();
-    drop(value.with_init_client_opts(String::new(), String::new(), String::new(), &opts));
-    let _ = &opts.args;
-    drop(WorkspaceWithInitClientOpts::default().with_args(generated_value::<dagger_sdk::Json>()));
-    let _ = &opts.here;
-    drop(WorkspaceWithInitClientOpts::default().with_here(generated_value::<bool>()));
-    let _ = &opts.no_generate;
-    drop(WorkspaceWithInitClientOpts::default().with_no_generate(generated_value::<bool>()));
-    drop(value.with_init_module(String::new(), String::new()));
+    drop(value.with_entrypoint(String::new()));
+    drop(value.with_file(String::new(), Id::from("generated-id")));
+    let opts = WorkspaceWithFileOpts::default();
+    drop(value.with_file_opts(String::new(), Id::from("generated-id"), &opts));
+    let _ = &opts.permissions;
+    drop(WorkspaceWithFileOpts::default().with_permissions(generated_value::<i64>()));
+    drop(value.with_init_module(String::new()));
     let opts = WorkspaceWithInitModuleOpts::default();
-    drop(value.with_init_module_opts(String::new(), String::new(), &opts));
-    let _ = &opts.args;
-    drop(WorkspaceWithInitModuleOpts::default().with_args(generated_value::<dagger_sdk::Json>()));
-    let _ = &opts.here;
-    drop(WorkspaceWithInitModuleOpts::default().with_here(generated_value::<bool>()));
-    let _ = &opts.include;
-    drop(WorkspaceWithInitModuleOpts::default().with_include(generated_value::<Vec<String>>()));
-    let _ = &opts.no_generate;
-    drop(WorkspaceWithInitModuleOpts::default().with_no_generate(generated_value::<bool>()));
+    drop(value.with_init_module_opts(String::new(), &opts));
+    let _ = &opts.entrypoint;
+    drop(WorkspaceWithInitModuleOpts::default().with_entrypoint(generated_value::<bool>()));
+    let _ = &opts.install;
+    drop(WorkspaceWithInitModuleOpts::default().with_install(generated_value::<bool>()));
+    let _ = &opts.name;
+    drop(WorkspaceWithInitModuleOpts::default().with_name(String::new()));
     let _ = &opts.path;
     drop(WorkspaceWithInitModuleOpts::default().with_path(String::new()));
-    let _ = &opts.source;
-    drop(WorkspaceWithInitModuleOpts::default().with_source(String::new()));
+    let _ = &opts.settings;
+    drop(
+        WorkspaceWithInitModuleOpts::default().with_settings(generated_value::<dagger_sdk::Json>()),
+    );
+    drop(value.with_initialized());
     drop(value.with_module(String::new()));
     let opts = WorkspaceWithModuleOpts::default();
     drop(value.with_module_opts(String::new(), &opts));
@@ -2150,6 +2599,18 @@ fn reach_workspace(value: &Workspace) {
     drop(value.with_new_file_opts(String::new(), String::new(), &opts));
     let _ = &opts.permissions;
     drop(WorkspaceWithNewFileOpts::default().with_permissions(generated_value::<i64>()));
+    drop(value.with_patch_file(Id::from("generated-id")));
+    let opts = WorkspaceWithPatchFileOpts::default();
+    drop(value.with_patch_file_opts(Id::from("generated-id"), &opts));
+    let _ = &opts.on_conflict;
+    drop(
+        WorkspaceWithPatchFileOpts::default().with_on_conflict(generated_value::<PatchConflict>()),
+    );
+    drop(value.with_reset(String::new()));
+    let opts = WorkspaceWithResetOpts::default();
+    drop(value.with_reset_opts(String::new(), &opts));
+    let _ = &opts.hard;
+    drop(WorkspaceWithResetOpts::default().with_hard(generated_value::<bool>()));
     drop(value.with_sdk(String::new()));
     let opts = WorkspaceWithSdkOpts::default();
     drop(value.with_sdk_opts(String::new(), &opts));
@@ -2159,8 +2620,36 @@ fn reach_workspace(value: &Workspace) {
     drop(WorkspaceWithSdkOpts::default().with_here(generated_value::<bool>()));
     let _ = &opts.name;
     drop(WorkspaceWithSdkOpts::default().with_name(String::new()));
+    drop(value.with_updated_clients());
+    let opts = WorkspaceWithUpdatedClientsOpts::default();
+    drop(value.with_updated_clients_opts(&opts));
+    let _ = &opts.all;
+    drop(WorkspaceWithUpdatedClientsOpts::default().with_all(generated_value::<bool>()));
+    let _ = &opts.modules;
+    drop(WorkspaceWithUpdatedClientsOpts::default().with_modules(generated_value::<Vec<String>>()));
+    let _ = &opts.sdk;
+    drop(WorkspaceWithUpdatedClientsOpts::default().with_sdk(String::new()));
     drop(value.with_updated_lock());
+    let opts = WorkspaceWithUpdatedLockOpts::default();
+    drop(value.with_updated_lock_opts(&opts));
+    let _ = &opts.no_generate;
+    drop(WorkspaceWithUpdatedLockOpts::default().with_no_generate(generated_value::<bool>()));
+    drop(value.with_updated_modules());
+    let opts = WorkspaceWithUpdatedModulesOpts::default();
+    drop(value.with_updated_modules_opts(&opts));
+    let _ = &opts.names;
+    drop(WorkspaceWithUpdatedModulesOpts::default().with_names(generated_value::<Vec<String>>()));
+    let _ = &opts.source;
+    drop(WorkspaceWithUpdatedModulesOpts::default().with_source(String::new()));
+    let _ = &opts.version;
+    drop(WorkspaceWithUpdatedModulesOpts::default().with_version(String::new()));
+    drop(value.with_user_config());
     drop(value.with_workdir(String::new()));
+    drop(value.without_client(String::new()));
+    let opts = WorkspaceWithoutClientOpts::default();
+    drop(value.without_client_opts(String::new(), &opts));
+    let _ = &opts.sdk;
+    drop(WorkspaceWithoutClientOpts::default().with_sdk(String::new()));
     drop(value.without_config_env(String::new()));
     let opts = WorkspaceWithoutConfigEnvOpts::default();
     drop(value.without_config_env_opts(String::new(), &opts));
@@ -2172,12 +2661,15 @@ fn reach_workspace(value: &Workspace) {
     let _ = &opts.here;
     drop(WorkspaceWithoutConfigValueOpts::default().with_here(generated_value::<bool>()));
     drop(value.without_directory(String::new()));
+    drop(value.without_entrypoint());
     drop(value.without_file(String::new()));
+    drop(value.without_files(generated_value::<Vec<String>>()));
     drop(value.without_module(String::new()));
     let opts = WorkspaceWithoutModuleOpts::default();
     drop(value.without_module_opts(String::new(), &opts));
     let _ = &opts.here;
     drop(WorkspaceWithoutModuleOpts::default().with_here(generated_value::<bool>()));
+    drop(value.without_mount(String::new()));
     drop(value.without_sdk(String::new()));
     let opts = WorkspaceWithoutSdkOpts::default();
     drop(value.without_sdk_opts(String::new(), &opts));
@@ -2185,7 +2677,16 @@ fn reach_workspace(value: &Workspace) {
     drop(WorkspaceWithoutSdkOpts::default().with_here(generated_value::<bool>()));
 }
 #[allow(deprecated)]
+fn reach_workspacecommitpick(value: &WorkspaceCommitPick) {
+    drop(value.commit());
+    drop(value.conflict_paths());
+    drop(value.id());
+    drop(value.reason());
+    drop(value.status());
+}
+#[allow(deprecated)]
 fn reach_workspacegit(value: &WorkspaceGit) {
+    drop(value.directory());
     drop(value.head());
     drop(value.id());
     drop(value.uncommitted());
@@ -2193,7 +2694,9 @@ fn reach_workspacegit(value: &WorkspaceGit) {
 #[allow(deprecated)]
 fn reach_workspacemigration(value: &WorkspaceMigration) {
     drop(value.changes());
+    drop(value.config_file());
     drop(value.id());
+    drop(value.module_candidates());
     drop(value.steps());
 }
 #[allow(deprecated)]
@@ -2207,6 +2710,7 @@ fn reach_workspacemigrationstep(value: &WorkspaceMigrationStep) {
 #[allow(deprecated)]
 fn reach_workspacemodule(value: &WorkspaceModule) {
     drop(value.entrypoint());
+    drop(value.functions());
     drop(value.id());
     drop(value.name());
     drop(value.settings());
@@ -2214,15 +2718,19 @@ fn reach_workspacemodule(value: &WorkspaceModule) {
 }
 #[allow(deprecated)]
 fn reach_workspacemodulesetting(value: &WorkspaceModuleSetting) {
+    drop(value.default_value());
     drop(value.description());
     drop(value.id());
     drop(value.is_list());
+    drop(value.is_object());
+    drop(value.is_string());
     drop(value.key());
     drop(value.value());
 }
 #[allow(deprecated)]
 fn reach_workspacesdk(value: &WorkspaceSdk) {
     drop(value.clients());
+    drop(value.generate());
     drop(value.id());
     drop(value.modules());
     drop(value.name());
@@ -2234,10 +2742,50 @@ fn generated_public_reachability() {
     let _ = reach_address as fn(&Address);
     let _ = core::mem::size_of::<Agent>();
     let _ = reach_agent as fn(&Agent);
-    let _ = core::mem::size_of::<AgentGroup>();
-    let _ = reach_agentgroup as fn(&AgentGroup);
+    let _ = core::mem::size_of::<AgentMessage>();
+    let _ = reach_agentmessage as fn(&AgentMessage);
+    let _ = core::mem::size_of::<AgentMessageDelivery>();
+    #[allow(deprecated)]
+    let _ = AgentMessageDelivery::Queued;
+    #[allow(deprecated)]
+    let _ = AgentMessageDelivery::Started;
+    #[allow(deprecated)]
+    let _ = AgentMessageDelivery::Steered;
+    let _ = core::mem::size_of::<AgentState>();
+    #[allow(deprecated)]
+    let _ = AgentState::Failed;
+    #[allow(deprecated)]
+    let _ = AgentState::Idle;
+    #[allow(deprecated)]
+    let _ = AgentState::Paused;
+    #[allow(deprecated)]
+    let _ = AgentState::Running;
+    #[allow(deprecated)]
+    let _ = AgentState::Stopped;
+    #[allow(deprecated)]
+    let _ = AgentState::WaitingInput;
+    let _ = core::mem::size_of::<Artifact>();
+    let _ = reach_artifact as fn(&Artifact);
+    let _ = core::mem::size_of::<ArtifactDimension>();
+    let _ = reach_artifactdimension as fn(&ArtifactDimension);
+    let _ = core::mem::size_of::<ArtifactDimensionKey>();
+    let _ = reach_artifactdimensionkey as fn(&ArtifactDimensionKey);
+    let _ = core::mem::size_of::<ArtifactDimensionKind>();
+    #[allow(deprecated)]
+    let _ = ArtifactDimensionKind::Collection;
+    #[allow(deprecated)]
+    let _ = ArtifactDimensionKind::Module;
+    #[allow(deprecated)]
+    let _ = ArtifactDimensionKind::Type;
+    let _ = core::mem::size_of::<ArtifactPath>();
+    let _ = reach_artifactpath as fn(&ArtifactPath);
+    let _ = core::mem::size_of::<ArtifactResult>();
+    let _ = reach_artifactresult as fn(&ArtifactResult);
+    let _ = core::mem::size_of::<Artifacts>();
+    let _ = reach_artifacts as fn(&Artifacts);
     let _ = core::mem::size_of::<BuildArg>();
     let _ = reach_buildarg_input as fn(&BuildArg);
+    let _ = core::mem::size_of::<Bytes>();
     let _ = core::mem::size_of::<CacheSharingMode>();
     #[allow(deprecated)]
     let _ = CacheSharingMode::Locked;
@@ -2267,22 +2815,20 @@ fn generated_public_reachability() {
     let _ = ChangesetsMergeConflict::FailEarly;
     let _ = core::mem::size_of::<Check>();
     let _ = reach_check as fn(&Check);
-    let _ = core::mem::size_of::<CheckGroup>();
-    let _ = reach_checkgroup as fn(&CheckGroup);
     let _ = core::mem::size_of::<ClientFilesyncMirror>();
     let _ = reach_clientfilesyncmirror as fn(&ClientFilesyncMirror);
     let _ = core::mem::size_of::<Cloud>();
     let _ = reach_cloud as fn(&Cloud);
+    let _ = core::mem::size_of::<CollectionDelta>();
+    let _ = reach_collectiondelta as fn(&CollectionDelta);
+    let _ = core::mem::size_of::<CollectionTypeDef>();
+    let _ = reach_collectiontypedef as fn(&CollectionTypeDef);
+    let _ = core::mem::size_of::<Command>();
+    let _ = reach_command as fn(&Command);
     let _ = core::mem::size_of::<Container>();
     let _ = reach_container as fn(&Container);
     let _ = core::mem::size_of::<CurrentModule>();
     let _ = reach_currentmodule as fn(&CurrentModule);
-    let _ = core::mem::size_of::<CurrentModuleAsSdk>();
-    let _ = reach_currentmoduleassdk as fn(&CurrentModuleAsSdk);
-    let _ = core::mem::size_of::<CurrentModuleAsSdkClient>();
-    let _ = reach_currentmoduleassdkclient as fn(&CurrentModuleAsSdkClient);
-    let _ = core::mem::size_of::<CurrentModuleAsSdkModule>();
-    let _ = reach_currentmoduleassdkmodule as fn(&CurrentModuleAsSdkModule);
     let _ = core::mem::size_of::<DiffStat>();
     let _ = reach_diffstat as fn(&DiffStat);
     let _ = core::mem::size_of::<DiffStatKind>();
@@ -2323,6 +2869,8 @@ fn generated_public_reachability() {
     let _ = ExistsType::RegularType;
     #[allow(deprecated)]
     let _ = ExistsType::SymlinkType;
+    let _ = core::mem::size_of::<Expertise>();
+    let _ = reach_expertise as fn(&Expertise);
     let _ = core::mem::size_of::<ExportableClient>();
     let _ = reach_exportableclient as fn(&ExportableClient);
     let _ = reach_exportable_trait::<ExportableClient> as fn(&ExportableClient);
@@ -2358,12 +2906,27 @@ fn generated_public_reachability() {
     let _ = reach_generatedcode as fn(&GeneratedCode);
     let _ = core::mem::size_of::<Generator>();
     let _ = reach_generator as fn(&Generator);
-    let _ = core::mem::size_of::<GeneratorGroup>();
-    let _ = reach_generatorgroup as fn(&GeneratorGroup);
+    let _ = core::mem::size_of::<GitBundle>();
+    let _ = reach_gitbundle as fn(&GitBundle);
+    let _ = core::mem::size_of::<GitBundleRef>();
+    let _ = reach_gitbundleref as fn(&GitBundleRef);
     let _ = core::mem::size_of::<GitCommit>();
     let _ = reach_gitcommit as fn(&GitCommit);
+    let _ = core::mem::size_of::<GitPushDisposition>();
+    #[allow(deprecated)]
+    let _ = GitPushDisposition::Created;
+    #[allow(deprecated)]
+    let _ = GitPushDisposition::FastForward;
+    #[allow(deprecated)]
+    let _ = GitPushDisposition::Forced;
+    #[allow(deprecated)]
+    let _ = GitPushDisposition::UpToDate;
+    let _ = core::mem::size_of::<GitPushResult>();
+    let _ = reach_gitpushresult as fn(&GitPushResult);
     let _ = core::mem::size_of::<GitRef>();
     let _ = reach_gitref as fn(&GitRef);
+    let _ = core::mem::size_of::<GitRemote>();
+    let _ = reach_gitremote as fn(&GitRemote);
     let _ = core::mem::size_of::<GitRepository>();
     let _ = reach_gitrepository as fn(&GitRepository);
     let _ = core::mem::size_of::<HttpState>();
@@ -2396,11 +2959,19 @@ fn generated_public_reachability() {
     let _ = reach_jsonvalue as fn(&JsonValue);
     let _ = core::mem::size_of::<Llm>();
     let _ = reach_llm as fn(&Llm);
+    let _ = core::mem::size_of::<LlmContent>();
+    let _ = reach_llmcontent as fn(&LlmContent);
     let _ = core::mem::size_of::<LlmContentBlock>();
     let _ = reach_llmcontentblock as fn(&LlmContentBlock);
     let _ = core::mem::size_of::<LlmContentBlockInput>();
     let _ = reach_llmcontentblockinput_input as fn(&LlmContentBlockInput);
     let _ = core::mem::size_of::<LlmContentBlockKind>();
+    #[allow(deprecated)]
+    let _ = LlmContentBlockKind::Audio;
+    #[allow(deprecated)]
+    let _ = LlmContentBlockKind::Document;
+    #[allow(deprecated)]
+    let _ = LlmContentBlockKind::Image;
     #[allow(deprecated)]
     let _ = LlmContentBlockKind::Text;
     #[allow(deprecated)]
@@ -2411,6 +2982,17 @@ fn generated_public_reachability() {
     let _ = LlmContentBlockKind::ToolResult;
     let _ = core::mem::size_of::<LlmMessage>();
     let _ = reach_llmmessage as fn(&LlmMessage);
+    let _ = core::mem::size_of::<LlmMessageOrigin>();
+    let _ = reach_llmmessageorigin as fn(&LlmMessageOrigin);
+    let _ = core::mem::size_of::<LlmMessageOriginInput>();
+    let _ = reach_llmmessageorigininput_input as fn(&LlmMessageOriginInput);
+    let _ = core::mem::size_of::<LlmMessageOriginKind>();
+    #[allow(deprecated)]
+    let _ = LlmMessageOriginKind::Agent;
+    #[allow(deprecated)]
+    let _ = LlmMessageOriginKind::Event;
+    #[allow(deprecated)]
+    let _ = LlmMessageOriginKind::User;
     let _ = core::mem::size_of::<LlmMessageRole>();
     #[allow(deprecated)]
     let _ = LlmMessageRole::Assistant;
@@ -2530,14 +3112,28 @@ fn generated_public_reachability() {
     let _ = TypeDefKind::StringKind;
     #[allow(deprecated)]
     let _ = TypeDefKind::VoidKind;
-    let _ = core::mem::size_of::<Up>();
-    let _ = reach_up as fn(&Up);
-    let _ = core::mem::size_of::<UpGroup>();
-    let _ = reach_upgroup as fn(&UpGroup);
     let _ = core::mem::size_of::<Volume>();
     let _ = reach_volume as fn(&Volume);
     let _ = core::mem::size_of::<Workspace>();
     let _ = reach_workspace as fn(&Workspace);
+    let _ = core::mem::size_of::<WorkspaceCommitPick>();
+    let _ = reach_workspacecommitpick as fn(&WorkspaceCommitPick);
+    let _ = core::mem::size_of::<WorkspaceCommitPickReason>();
+    #[allow(deprecated)]
+    let _ = WorkspaceCommitPickReason::Content;
+    #[allow(deprecated)]
+    let _ = WorkspaceCommitPickReason::Dirty;
+    #[allow(deprecated)]
+    let _ = WorkspaceCommitPickReason::None;
+    let _ = core::mem::size_of::<WorkspaceCommitPickStatus>();
+    #[allow(deprecated)]
+    let _ = WorkspaceCommitPickStatus::Conflict;
+    #[allow(deprecated)]
+    let _ = WorkspaceCommitPickStatus::Pickable;
+    #[allow(deprecated)]
+    let _ = WorkspaceCommitPickStatus::Picked;
+    #[allow(deprecated)]
+    let _ = WorkspaceCommitPickStatus::Redundant;
     let _ = core::mem::size_of::<WorkspaceGit>();
     let _ = reach_workspacegit as fn(&WorkspaceGit);
     let _ = core::mem::size_of::<WorkspaceMigration>();

@@ -1,5 +1,5 @@
 //! Generated bindings owned by the GraphQL `Directory` type.
-// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:ff790b6fb1eb0a72354a8c293c862f5c2018bcc7526ce048e4ad67e34abc6ffe","target_revision":"a4e1e4ff663e5e51c2b96c2c0772f3d2f00cfb94"}
+// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:8cbd134fc17405aa0ae54b45640f4bd6b93a022bd4a2c4594375f3658962bf7f","target_revision":"249edbd646e63c5181053c8af72623ed9bdf030d"}
 #[doc = "A directory."]
 #[derive(Clone)]
 pub struct Directory {
@@ -308,9 +308,11 @@ pub struct DirectoryTerminalOpts {
     pub cmd: Option<Vec<String>>,
     #[doc = "If set, override the default container used for the terminal.\n\n`None` omits GraphQL field `container`."]
     pub container: Option<crate::IdInput<super::Container>>,
-    #[doc = "Provides Dagger access to the executed command.\n\n`None` omits GraphQL field `experimentalPrivilegedNesting` and preserves engine default `Boolean(false)`."]
+    #[doc = "Disable Dagger API access for the executed command. By default, commands can connect to the current Dagger engine.\n\n`None` omits GraphQL field `disableDaggerInDagger` and preserves engine default `Boolean(false)`."]
+    pub disable_dagger_in_dagger: Option<bool>,
+    #[doc = "`None` omits GraphQL field `experimentalPrivilegedNesting`.\n\n**Deprecated:** Commands can access Dagger by default. Use \"disableDaggerInDagger\" to opt out."]
     pub experimental_privileged_nesting: Option<bool>,
-    #[doc = "Execute the command with all root capabilities. This is similar to running a command with \"sudo\" or executing \"docker run\" with the \"--privileged\" flag. Containerization does not provide any security guarantees when using this option. It should only be used when absolutely necessary and only with trusted commands.\n\n`None` omits GraphQL field `insecureRootCapabilities` and preserves engine default `Boolean(false)`."]
+    #[doc = "Execute the command with all root capabilities. This is similar to running a command with \"sudo\" or executing \"docker run\" with the \"--privileged\" flag. Containerization does not provide any security guarantees when using this option. It should only be used when absolutely necessary and only with trusted commands.\n\n`None` omits GraphQL field `insecureRootCapabilities`."]
     pub insecure_root_capabilities: Option<bool>,
 }
 impl DirectoryTerminalOpts {
@@ -324,6 +326,12 @@ impl DirectoryTerminalOpts {
     #[must_use]
     pub fn with_container(mut self, value: crate::IdInput<super::Container>) -> Self {
         self.container = Some(value);
+        self
+    }
+    #[doc = "Sets GraphQL argument `disableDaggerInDagger` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_disable_dagger_in_dagger(mut self, value: bool) -> Self {
+        self.disable_dagger_in_dagger = Some(value);
         self
     }
     #[doc = "Sets GraphQL argument `experimentalPrivilegedNesting` to a concrete value instead of omitting it."]
@@ -972,6 +980,11 @@ impl Directory {
         };
         let query = if let Some(value) = &opts.container {
             query.arg_id_input("container", value.clone())
+        } else {
+            query
+        };
+        let query = if let Some(value) = &opts.disable_dagger_in_dagger {
+            query.arg("disableDaggerInDagger", value)
         } else {
             query
         };

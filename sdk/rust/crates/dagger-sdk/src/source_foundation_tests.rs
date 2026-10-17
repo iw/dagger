@@ -350,14 +350,14 @@ proptest! {
                     Architecture::Arm64 => "arm64",
                 };
                 let extension = if os == OperatingSystem::Windows { "zip" } else { "tar.gz" };
-                let expected_name = format!("dagger_v1.0.0-beta.11.rust.5_{os_name}_{arch_name}.{extension}");
+                let expected_name = format!("dagger_v1.0.0-beta.18_{os_name}_{arch_name}.{extension}");
                 prop_assert_eq!(descriptor.archive_name(), expected_name.as_str());
                 prop_assert_eq!(
                     descriptor.member_name(),
                     if os == OperatingSystem::Windows { "dagger.exe" } else { "dagger" }
                 );
-                prop_assert_eq!(descriptor.manifest_url().as_str(), "https://dl.dagger.io/dagger/releases/1.0.0-beta.11.rust.5/checksums.txt");
-                prop_assert_eq!(descriptor.archive_url().as_str(), format!("https://dl.dagger.io/dagger/releases/1.0.0-beta.11.rust.5/{expected_name}"));
+                prop_assert_eq!(descriptor.manifest_url().as_str(), "https://dl.dagger.io/dagger/releases/1.0.0-beta.18/checksums.txt");
+                prop_assert_eq!(descriptor.archive_url().as_str(), format!("https://dl.dagger.io/dagger/releases/1.0.0-beta.18/{expected_name}"));
             }
             (Err(error), _) => prop_assert_eq!(error.kind(), PlatformErrorKind::UnsupportedOperatingSystem),
             (_, Err(error)) => prop_assert_eq!(error.kind(), PlatformErrorKind::UnsupportedArchitecture),
@@ -372,7 +372,8 @@ fn generated_target_matches_checked_repository_metadata() {
         serde_json::from_str(include_str!("../../../codegen/target.json"))
             .expect("the checked target metadata is valid JSON");
     assert_eq!(target["engine_version"], TARGET_ENGINE_VERSION);
-    assert_eq!(target["rust_sdk_version"], TARGET_CLI_VERSION);
+    // The SDK versions independently of the stock engine and CLI it targets.
+    assert_eq!(target["rust_sdk_version"], env!("CARGO_PKG_VERSION"));
     assert_eq!(target["dagger_revision"], TARGET_REVISION);
 
     let parsed = exact_target().expect("the generated target parses once");
@@ -477,13 +478,13 @@ fn six_release_descriptors_match_the_published_naming_policy() {
         } else {
             "tar.gz"
         };
-        let archive = format!("dagger_v1.0.0-beta.11.rust.5_{os_name}_{arch_name}.{extension}");
+        let archive = format!("dagger_v1.0.0-beta.18_{os_name}_{arch_name}.{extension}");
         assert_eq!(descriptor.archive_name(), archive);
         assert_eq!(descriptor.member_name(), member);
         assert_eq!(descriptor.format(), format);
         assert_eq!(
             descriptor.archive_url().as_str(),
-            format!("https://dl.dagger.io/dagger/releases/1.0.0-beta.11.rust.5/{archive}")
+            format!("https://dl.dagger.io/dagger/releases/1.0.0-beta.18/{archive}")
         );
     }
 }

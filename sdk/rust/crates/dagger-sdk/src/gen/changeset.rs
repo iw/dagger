@@ -1,10 +1,33 @@
 //! Generated bindings owned by the GraphQL `Changeset` type.
-// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:ff790b6fb1eb0a72354a8c293c862f5c2018bcc7526ce048e4ad67e34abc6ffe","target_revision":"a4e1e4ff663e5e51c2b96c2c0772f3d2f00cfb94"}
+// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:8cbd134fc17405aa0ae54b45640f4bd6b93a022bd4a2c4594375f3658962bf7f","target_revision":"249edbd646e63c5181053c8af72623ed9bdf030d"}
 #[doc = "A comparison between two directories representing changes that can be applied."]
 #[derive(Clone)]
 pub struct Changeset {
     pub(crate) session: crate::lifecycle::SessionHandle,
     pub(crate) selection: crate::query::Selection,
+}
+#[doc = "Owned optional arguments for GraphQL operation `Changeset.filter`; reuse does not mutate caller state."]
+#[derive(Clone, Debug, Default)]
+#[non_exhaustive]
+pub struct ChangesetFilterOpts {
+    #[doc = "Exclude changes at paths matching these patterns.\n\n`None` omits GraphQL field `exclude` and preserves engine default `List(\\[\\])`."]
+    pub exclude: Option<Vec<String>>,
+    #[doc = "Only include changes at paths matching these patterns. Empty includes all paths.\n\n`None` omits GraphQL field `include` and preserves engine default `List(\\[\\])`."]
+    pub include: Option<Vec<String>>,
+}
+impl ChangesetFilterOpts {
+    #[doc = "Sets GraphQL argument `exclude` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_exclude(mut self, value: Vec<impl Into<String>>) -> Self {
+        self.exclude = Some(value.into_iter().map(Into::into).collect());
+        self
+    }
+    #[doc = "Sets GraphQL argument `include` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_include(mut self, value: Vec<impl Into<String>>) -> Self {
+        self.include = Some(value.into_iter().map(Into::into).collect());
+        self
+    }
 }
 #[doc = "Owned optional arguments for GraphQL operation `Changeset.withChangeset`; reuse does not mutate caller state."]
 #[derive(Clone, Debug, Default)]
@@ -122,6 +145,34 @@ impl Changeset {
         let query = self.selection.select("export");
         let query = query.arg("path", path.into());
         query.execute(&self.session).await
+    }
+    #[doc = "Select changes matching the supplied glob patterns, preserving their original baseline.\n\nIncludes additions, modifications, and deletions. Selecting only one side of a rename yields an addition or deletion.\n\nSelects GraphQL field `filter` on `Changeset`."]
+    #[must_use]
+    pub fn filter(&self) -> super::Changeset {
+        let query = self.selection.select("filter");
+        super::Changeset {
+            session: self.session.clone(),
+            selection: query,
+        }
+    }
+    #[doc = "Executes GraphQL operation `filter` with a borrowed, reusable `ChangesetFilterOpts` value."]
+    #[must_use]
+    pub fn filter_opts(&self, opts: &ChangesetFilterOpts) -> super::Changeset {
+        let query = self.selection.select("filter");
+        let query = if let Some(value) = &opts.exclude {
+            query.arg("exclude", value)
+        } else {
+            query
+        };
+        let query = if let Some(value) = &opts.include {
+            query.arg("include", value)
+        } else {
+            query
+        };
+        super::Changeset {
+            session: self.session.clone(),
+            selection: query,
+        }
     }
     #[doc = "A unique identifier for this Changeset.\n\nSelects GraphQL field `id` on `Changeset`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {

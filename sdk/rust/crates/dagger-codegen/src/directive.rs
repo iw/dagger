@@ -28,6 +28,15 @@ pub enum DirectivePolicy {
     EnumValueAlias,
     /// Engine-authored module ownership metadata with no public client behaviour.
     SourceMap,
+    /// Fields whose every evaluation may give a new result or repeat a side effect.
+    /// The target's contract forbids reusing an ID fetched for an object built through
+    /// such a field; generated handles fetch their ID on every use and never memoize
+    /// one, so every application is satisfied by construction.
+    Reevaluate,
+    /// Engine workflow classification of core functions (`@check`, `@generate`): it
+    /// tells the engine's artifact discovery which fields `dagger check` and
+    /// `dagger generate` run, and gives a client call no different semantics.
+    WorkflowRole,
     /// Definition-only metadata contained by the exact target.
     TargetInactive,
 }
@@ -53,6 +62,11 @@ pub enum DirectiveApplicationPolicy {
     EnumValueAlias { canonical: SchemaName },
     /// Module identity attached by the engine's dynamic schema merger.
     SourceMap { module: String },
+    /// Fresh evaluation per use, independent of the `when` argument because generated
+    /// handles never memoize IDs.
+    Reevaluate,
+    /// The workflow role (`check` or `generate`) the engine assigns the field.
+    WorkflowRole { role: SchemaName },
 }
 
 /// One definition and all of its validated target applications.
@@ -157,12 +171,18 @@ pub(crate) fn project_directives(
             "experimental" => DirectivePolicy::Experimental,
             "enumValue" => DirectivePolicy::EnumValueAlias,
             "sourceMap" => DirectivePolicy::SourceMap,
+            "reevaluate" => DirectivePolicy::Reevaluate,
+            // v1.0.0-beta.18 applies these to core fields (`Generator.stale`,
+            // `WorkspaceSDK.generate`) for the engine's artifact discovery.
+            "check" | "generate" => DirectivePolicy::WorkflowRole,
             // "agent" (v1.0.0-beta.11): marks module functions as agent middleware.
-            // Definition-only at the exact target — no core-schema coordinate applies
-            // it — so an application appearing in a future target fails closed via
-            // TargetInactiveDirectiveChanged until its client semantics are decided.
-            "agent" | "cache" | "check" | "defaultAddress" | "defaultPath" | "generate"
-            | "ignorePatterns" | "up" => DirectivePolicy::TargetInactive,
+            // "collection", "delta", "get", "keys" (v1.0.0-beta.18): module collection
+            // authoring markers. All are definition-only at the exact target — no
+            // core-schema coordinate applies them — so an application appearing in a
+            // future target fails closed via TargetInactiveDirectiveChanged until its
+            // client semantics are decided.
+            "agent" | "cache" | "collection" | "defaultAddress" | "defaultPath" | "delta"
+            | "get" | "ignorePatterns" | "keys" | "up" => DirectivePolicy::TargetInactive,
             _ => {
                 diagnostics.push(diagnostic(
                     DiagnosticCode::SchemaDirectiveUnmapped,
@@ -396,6 +416,10 @@ fn project_application(
                 None,
                 DiagnosticCode::SchemaDirectiveArgumentInvalid,
             )?,
+        }),
+        DirectivePolicy::Reevaluate => Ok(DirectiveApplicationPolicy::Reevaluate),
+        DirectivePolicy::WorkflowRole => Ok(DirectiveApplicationPolicy::WorkflowRole {
+            role: site.application.name.clone(),
         }),
         DirectivePolicy::TargetInactive => Err(diagnostic(
             DiagnosticCode::TargetInactiveDirectiveChanged,

@@ -1,5 +1,5 @@
 //! Generated bindings owned by the GraphQL `LLMMessage` type.
-// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:ff790b6fb1eb0a72354a8c293c862f5c2018bcc7526ce048e4ad67e34abc6ffe","target_revision":"a4e1e4ff663e5e51c2b96c2c0772f3d2f00cfb94"}
+// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:8cbd134fc17405aa0ae54b45640f4bd6b93a022bd4a2c4594375f3658962bf7f","target_revision":"249edbd646e63c5181053c8af72623ed9bdf030d"}
 #[doc = "A single message in an LLM conversation."]
 #[derive(Clone)]
 pub struct LlmMessage {
@@ -52,6 +52,17 @@ impl LlmMessage {
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
+    }
+    #[doc = "Who put this message on the record, when it arrived through an agent mailbox.\n\nNull for the user's own prompts and for everything the model or tools produced.\n\nSelects GraphQL field `origin` on `LLMMessage`.\n\n**Experimental:** Agent APIs are likely to change."]
+    pub async fn origin(&self) -> Result<Option<super::LlmMessageOrigin>, crate::QueryError> {
+        let query = self.selection.select("origin");
+        let query = query.select("id");
+        query
+            .execute_reentry::<super::LlmMessageOrigin, Option<crate::Id>>(
+                &self.session,
+                "LLMMessageOrigin",
+            )
+            .await
     }
     #[doc = "The role that produced this message.\n\nSelects GraphQL field `role` on `LLMMessage`."]
     pub async fn role(&self) -> Result<super::LlmMessageRole, crate::QueryError> {

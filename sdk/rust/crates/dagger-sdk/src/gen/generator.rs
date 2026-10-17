@@ -1,6 +1,6 @@
 //! Generated bindings owned by the GraphQL `Generator` type.
-// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:ff790b6fb1eb0a72354a8c293c862f5c2018bcc7526ce048e4ad67e34abc6ffe","target_revision":"a4e1e4ff663e5e51c2b96c2c0772f3d2f00cfb94"}
-#[doc = "Lazy handle for GraphQL object `Generator`."]
+// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:8cbd134fc17405aa0ae54b45640f4bd6b93a022bd4a2c4594375f3658962bf7f","target_revision":"249edbd646e63c5181053c8af72623ed9bdf030d"}
+#[doc = "A generation function and its staleness check. Reading changeset runs the function."]
 #[derive(Clone)]
 pub struct Generator {
     pub(crate) session: crate::lifecycle::SessionHandle,
@@ -37,58 +37,33 @@ impl From<Generator> for crate::IdInput<super::NodeClient> {
     }
 }
 impl Generator {
-    #[doc = "The generated changeset from the last run\n\nSelects GraphQL field `changes` on `Generator`."]
+    #[doc = "Run the generator and return its changes.\n\nSelects GraphQL field `changeset` on `Generator`."]
     #[must_use]
-    pub fn changes(&self) -> super::Changeset {
-        let query = self.selection.select("changes");
+    pub fn changeset(&self) -> super::Changeset {
+        let query = self.selection.select("changeset");
         super::Changeset {
             session: self.session.clone(),
             selection: query,
         }
-    }
-    #[doc = "Whether the generator complete\n\nSelects GraphQL field `completed` on `Generator`."]
-    pub async fn completed(&self) -> Result<bool, crate::QueryError> {
-        let query = self.selection.select("completed");
-        query.execute(&self.session).await
-    }
-    #[doc = "Return the description of the generator\n\nSelects GraphQL field `description` on `Generator`."]
-    pub async fn description(&self) -> Result<String, crate::QueryError> {
-        let query = self.selection.select("description");
-        query.execute(&self.session).await
     }
     #[doc = "A unique identifier for this Generator.\n\nSelects GraphQL field `id` on `Generator`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "Whether changeset from the last generator run is empty or not\n\nSelects GraphQL field `isEmpty` on `Generator`."]
-    pub async fn is_empty(&self) -> Result<bool, crate::QueryError> {
-        let query = self.selection.select("isEmpty");
-        query.execute(&self.session).await
-    }
-    #[doc = "Return the fully qualified name of the generator\n\nSelects GraphQL field `name` on `Generator`."]
-    pub async fn name(&self) -> Result<String, crate::QueryError> {
-        let query = self.selection.select("name");
-        query.execute(&self.session).await
-    }
-    #[doc = "The original module in which the generator has been defined\n\nSelects GraphQL field `originalModule` on `Generator`."]
+    #[doc = "A check that passes when this generator would produce no changes.\n\nSelects GraphQL field `stale` on `Generator`."]
     #[must_use]
-    pub fn original_module(&self) -> super::Module {
-        let query = self.selection.select("originalModule");
-        super::Module {
+    pub fn stale(&self) -> super::Check {
+        let query = self.selection.select("stale");
+        super::Check {
             session: self.session.clone(),
             selection: query,
         }
     }
-    #[doc = "The path of the generator within its module\n\nSelects GraphQL field `path` on `Generator`."]
-    pub async fn path(&self) -> Result<Vec<String>, crate::QueryError> {
-        let query = self.selection.select("path");
-        query.execute(&self.session).await
-    }
-    #[doc = "Execute the generator\n\nSelects GraphQL field `run` on `Generator`."]
+    #[doc = "Run the generator and retain its result.\n\nSelects GraphQL field `sync` on `Generator`."]
     #[must_use]
-    pub fn run(&self) -> super::Generator {
-        let query = self.selection.select("run");
+    pub fn sync(&self) -> super::Generator {
+        let query = self.selection.select("sync");
         super::Generator {
             session: self.session.clone(),
             selection: query,

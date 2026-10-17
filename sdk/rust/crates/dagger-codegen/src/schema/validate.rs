@@ -28,19 +28,19 @@ const MAX_DEFAULT_DEPTH: usize = 64;
 // prevents an otherwise valid omission and addition from quietly redefining the target.
 const EXACT_INVENTORY: CoordinateInventory = CoordinateInventory {
     query_roots: 1,
-    named_types: 113,
-    scalars: 8,
-    objects: 80,
+    named_types: 132,
+    scalars: 9,
+    objects: 90,
     interfaces: 3,
-    enums: 18,
-    input_objects: 4,
-    fields: 759,
-    arguments: 636,
-    input_fields: 14,
-    enum_values: 84,
-    interface_edges: 95,
-    directives: 13,
-    directive_arguments: 14,
+    enums: 25,
+    input_objects: 5,
+    fields: 901,
+    arguments: 784,
+    input_fields: 22,
+    enum_values: 113,
+    interface_edges: 105,
+    directives: 18,
+    directive_arguments: 15,
 };
 
 type TypeIndex<'a> = BTreeMap<SchemaName, &'a FullType>;
@@ -1244,6 +1244,13 @@ fn canonicalize_applications(
             .iter()
             .flatten()
             .any(|candidate| directive_location(candidate) == location);
+        // Upstream v1.0.0-beta.18 applies @expectedType to the typed ID input field
+        // LLMContentBlockInput.file while declaring the directive only on arguments and
+        // fields. That application carries exactly the typed-ID-input meaning the
+        // ExpectedType policy already projects for arguments, so it is admitted at input
+        // fields; every other undeclared location still fails.
+        let allowed =
+            allowed || (name.as_str() == "expectedType" && location == "INPUT_FIELD_DEFINITION");
         if !allowed {
             diagnostics.push(schema_error(
                 DiagnosticCode::SchemaDirectiveArgumentInvalid,
@@ -1364,7 +1371,7 @@ fn allows_engine_source_map_omission(
 
     // The target declares every sourceMap input non-null, but its dynamic schema
     // merger stamps module-owned types with only this discriminator
-    // (core/schematool.go @ a4e1e4ff663e5e51c2b96c2c0772f3d2f00cfb94). Keeping the
+    // (core/schematool.go @ 249edbd646e63c5181053c8af72623ed9bdf030d). Keeping the
     // exception conditional on a valued module argument prevents it from weakening
     // ordinary GraphQL required-argument validation.
     supplied.get(&module).is_some_and(Option::is_some)

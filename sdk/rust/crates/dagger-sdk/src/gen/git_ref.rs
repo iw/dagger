@@ -1,5 +1,5 @@
 //! Generated bindings owned by the GraphQL `GitRef` type.
-// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:ff790b6fb1eb0a72354a8c293c862f5c2018bcc7526ce048e4ad67e34abc6ffe","target_revision":"a4e1e4ff663e5e51c2b96c2c0772f3d2f00cfb94"}
+// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:8cbd134fc17405aa0ae54b45640f4bd6b93a022bd4a2c4594375f3658962bf7f","target_revision":"249edbd646e63c5181053c8af72623ed9bdf030d"}
 #[doc = "A git ref (tag, branch, or commit)."]
 #[derive(Clone)]
 pub struct GitRef {
@@ -52,6 +52,45 @@ impl GitRefLogOpts {
         self
     }
 }
+#[doc = "Owned optional arguments for GraphQL operation `GitRef.push`; reuse does not mutate caller state."]
+#[derive(Clone, Debug, Default)]
+#[non_exhaustive]
+pub struct GitRefPushOpts {
+    #[doc = "Destination branch; a refs/ prefix is used verbatim. Defaults to this ref's branch name. Required for detached and non-branch refs.\n\n`None` omits GraphQL field `branch` and preserves engine default `String(\"\")`."]
+    pub branch: Option<String>,
+    #[doc = "Optional lease: a full lowercase object ID allows replacement only if the remote ref still has that value. Checked even for up-to-date pushes. Empty or omitted uses normal non-force rules, creating the ref if it does not exist.\n\n`None` omits GraphQL field `expectedRemoteSHA` and preserves engine default `String(\"\")`."]
+    pub expected_remote_sha: Option<String>,
+    #[doc = "Name of a registered remote to push to (see GitRepository.withRemote). Defaults to origin. The remote's push URLs, or its URL, become the destination; more than one push URL requires an explicit to instead.\n\n`None` omits GraphQL field `remote` and preserves engine default `String(\"\")`."]
+    pub remote: Option<String>,
+    #[doc = "Destination remote repository. Defaults to the origin remote's push routing, or the source's repository URL when none is registered. Required when the source has no remote URL.\n\n`None` omits GraphQL field `to`."]
+    pub to: Option<crate::IdInput<super::GitRepository>>,
+}
+impl GitRefPushOpts {
+    #[doc = "Sets GraphQL argument `branch` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_branch(mut self, value: impl Into<String>) -> Self {
+        self.branch = Some(value.into());
+        self
+    }
+    #[doc = "Sets GraphQL argument `expectedRemoteSHA` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_expected_remote_sha(mut self, value: impl Into<String>) -> Self {
+        self.expected_remote_sha = Some(value.into());
+        self
+    }
+    #[doc = "Sets GraphQL argument `remote` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_remote(mut self, value: impl Into<String>) -> Self {
+        self.remote = Some(value.into());
+        self
+    }
+    #[doc = "Sets GraphQL argument `to` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_to(mut self, value: crate::IdInput<super::GitRepository>) -> Self {
+        self.to = Some(value);
+        self
+    }
+}
 #[doc = "Owned optional arguments for GraphQL operation `GitRef.tree`; reuse does not mutate caller state."]
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
@@ -80,6 +119,53 @@ impl GitRefTreeOpts {
     #[must_use]
     pub fn with_include_tags(mut self, value: bool) -> Self {
         self.include_tags = Some(value);
+        self
+    }
+}
+#[doc = "Owned optional arguments for GraphQL operation `GitRef.withCommit`; reuse does not mutate caller state."]
+#[derive(Clone, Debug, Default)]
+#[non_exhaustive]
+pub struct GitRefWithCommitOpts {
+    #[doc = "Allow a commit whose tree matches its parent, including when the supplied edits are already present. Defaults to false.\n\n`None` omits GraphQL field `allowEmpty` and preserves engine default `Boolean(false)`."]
+    pub allow_empty: Option<bool>,
+    #[doc = "RFC3339 committer date. Defaults to date.\n\n`None` omits GraphQL field `committerDate`."]
+    pub committer_date: Option<String>,
+    #[doc = "Committer email. Defaults to authorEmail.\n\n`None` omits GraphQL field `committerEmail`."]
+    pub committer_email: Option<String>,
+    #[doc = "Committer name. Defaults to authorName.\n\n`None` omits GraphQL field `committerName`."]
+    pub committer_name: Option<String>,
+    #[doc = "Add a Signed-off-by trailer using the commit author's name and email.\n\n`None` omits GraphQL field `signoff` and preserves engine default `Boolean(false)`."]
+    pub signoff: Option<bool>,
+}
+impl GitRefWithCommitOpts {
+    #[doc = "Sets GraphQL argument `allowEmpty` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_allow_empty(mut self, value: bool) -> Self {
+        self.allow_empty = Some(value);
+        self
+    }
+    #[doc = "Sets GraphQL argument `committerDate` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_committer_date(mut self, value: impl Into<String>) -> Self {
+        self.committer_date = Some(value.into());
+        self
+    }
+    #[doc = "Sets GraphQL argument `committerEmail` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_committer_email(mut self, value: impl Into<String>) -> Self {
+        self.committer_email = Some(value.into());
+        self
+    }
+    #[doc = "Sets GraphQL argument `committerName` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_committer_name(mut self, value: impl Into<String>) -> Self {
+        self.committer_name = Some(value.into());
+        self
+    }
+    #[doc = "Sets GraphQL argument `signoff` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_signoff(mut self, value: bool) -> Self {
+        self.signoff = Some(value);
         self
     }
 }
@@ -114,6 +200,15 @@ impl From<GitRef> for crate::IdInput<super::NodeClient> {
     }
 }
 impl GitRef {
+    #[doc = "Return this ref's repository with HEAD pinned to the selected commit.\n\nPreserves the original repository backend, connection information, and other refs. Does not modify a branch or checkout, or prune history.\n\nSelects GraphQL field `asRepository` on `GitRef`."]
+    #[must_use]
+    pub fn as_repository(&self) -> super::GitRepository {
+        let query = self.selection.select("asRepository");
+        super::GitRepository {
+            session: self.session.clone(),
+            selection: query,
+        }
+    }
     #[doc = "Creates a synthetic workspace from this git ref.\n\nSelects GraphQL field `asWorkspace` on `GitRef`."]
     #[must_use]
     pub fn as_workspace(&self) -> super::Workspace {
@@ -161,6 +256,15 @@ impl GitRef {
             selection: query,
         }
     }
+    #[doc = "Return true when the other ref's commit equals this commit or is an ancestor of it.\n\nCompares commit history across branches, tags and detached refs. Incomplete or unavailable history is an error.\n\nSelects GraphQL field `contains` on `GitRef`."]
+    pub async fn contains(
+        &self,
+        other: impl Into<crate::IdInput<super::GitRef>>,
+    ) -> Result<bool, crate::QueryError> {
+        let query = self.selection.select("contains");
+        let query = query.arg_id_input("other", other.into());
+        query.execute(&self.session).await
+    }
     #[doc = "A unique identifier for this GitRef.\n\nSelects GraphQL field `id` on `GitRef`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
@@ -204,6 +308,44 @@ impl GitRef {
     pub async fn name(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("name");
         query.execute(&self.session).await
+    }
+    #[doc = "Push this ref's commit and history to a remote repository using the destination's credentials.\n\nThe source can come from a remote repository or an engine-side Git repository. To publish a workspace's commits, use Workspace.git.head.push. Pushing does not modify the calling client's checkout, and checkout hooks do not run.\n\nA missing remote ref is created. Without a lease, Git's normal non-force rules apply. Each invocation performs a push; loading the returned receipt does not push again.\n\nSelects GraphQL field `push` on `GitRef`."]
+    #[must_use]
+    pub fn push(&self) -> super::GitPushResult {
+        let query = self.selection.select("push");
+        super::GitPushResult {
+            session: self.session.clone(),
+            selection: query,
+        }
+    }
+    #[doc = "Executes GraphQL operation `push` with a borrowed, reusable `GitRefPushOpts` value."]
+    #[must_use]
+    pub fn push_opts(&self, opts: &GitRefPushOpts) -> super::GitPushResult {
+        let query = self.selection.select("push");
+        let query = if let Some(value) = &opts.branch {
+            query.arg("branch", value)
+        } else {
+            query
+        };
+        let query = if let Some(value) = &opts.expected_remote_sha {
+            query.arg("expectedRemoteSHA", value)
+        } else {
+            query
+        };
+        let query = if let Some(value) = &opts.remote {
+            query.arg("remote", value)
+        } else {
+            query
+        };
+        let query = if let Some(value) = &opts.to {
+            query.arg_id_input("to", value.clone())
+        } else {
+            query
+        };
+        super::GitPushResult {
+            session: self.session.clone(),
+            selection: query,
+        }
     }
     #[doc = "The resolved ref name at this ref.\n\nSelects GraphQL field `ref` on `GitRef`.\n\n**Deprecated:** Use \"name\" instead."]
     #[deprecated(note = "Use \"name\" instead.")]
@@ -249,6 +391,74 @@ impl GitRef {
             query
         };
         super::Directory {
+            session: self.session.clone(),
+            selection: query,
+        }
+    }
+    #[doc = "Create a single-parent commit on this ref by applying a changeset's edits.\n\nThree-way merges the changeset against this ref's tree, using its before snapshot as the base. Preserves compatible parent edits and fails on conflicts. Does not modify the input repository or host checkout.\n\nIdentity and dates are explicit; neither client Git configuration nor the current clock is consulted.\n\nSelects GraphQL field `withCommit` on `GitRef`."]
+    #[must_use]
+    pub fn with_commit(
+        &self,
+        author_email: impl Into<String>,
+        author_name: impl Into<String>,
+        changes: impl Into<crate::IdInput<super::Changeset>>,
+        date: impl Into<String>,
+        message: impl Into<String>,
+    ) -> super::GitRef {
+        let query = self.selection.select("withCommit");
+        let query = query.arg("authorEmail", author_email.into());
+        let query = query.arg("authorName", author_name.into());
+        let query = query.arg_id_input("changes", changes.into());
+        let query = query.arg("date", date.into());
+        let query = query.arg("message", message.into());
+        super::GitRef {
+            session: self.session.clone(),
+            selection: query,
+        }
+    }
+    #[doc = "Executes GraphQL operation `withCommit` with a borrowed, reusable `GitRefWithCommitOpts` value."]
+    #[must_use]
+    pub fn with_commit_opts(
+        &self,
+        author_email: impl Into<String>,
+        author_name: impl Into<String>,
+        changes: impl Into<crate::IdInput<super::Changeset>>,
+        date: impl Into<String>,
+        message: impl Into<String>,
+        opts: &GitRefWithCommitOpts,
+    ) -> super::GitRef {
+        let query = self.selection.select("withCommit");
+        let query = if let Some(value) = &opts.allow_empty {
+            query.arg("allowEmpty", value)
+        } else {
+            query
+        };
+        let query = query.arg("authorEmail", author_email.into());
+        let query = query.arg("authorName", author_name.into());
+        let query = query.arg_id_input("changes", changes.into());
+        let query = if let Some(value) = &opts.committer_date {
+            query.arg("committerDate", value)
+        } else {
+            query
+        };
+        let query = if let Some(value) = &opts.committer_email {
+            query.arg("committerEmail", value)
+        } else {
+            query
+        };
+        let query = if let Some(value) = &opts.committer_name {
+            query.arg("committerName", value)
+        } else {
+            query
+        };
+        let query = query.arg("date", date.into());
+        let query = query.arg("message", message.into());
+        let query = if let Some(value) = &opts.signoff {
+            query.arg("signoff", value)
+        } else {
+            query
+        };
+        super::GitRef {
             session: self.session.clone(),
             selection: query,
         }

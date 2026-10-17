@@ -1,25 +1,10 @@
 //! Generated bindings owned by the GraphQL `CurrentModule` type.
-// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:ff790b6fb1eb0a72354a8c293c862f5c2018bcc7526ce048e4ad67e34abc6ffe","target_revision":"a4e1e4ff663e5e51c2b96c2c0772f3d2f00cfb94"}
+// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:8cbd134fc17405aa0ae54b45640f4bd6b93a022bd4a2c4594375f3658962bf7f","target_revision":"249edbd646e63c5181053c8af72623ed9bdf030d"}
 #[doc = "Reflective module API provided to functions at runtime."]
 #[derive(Clone)]
 pub struct CurrentModule {
     pub(crate) session: crate::lifecycle::SessionHandle,
     pub(crate) selection: crate::query::Selection,
-}
-#[doc = "Owned optional arguments for GraphQL operation `CurrentModule.generators`; reuse does not mutate caller state."]
-#[derive(Clone, Debug, Default)]
-#[non_exhaustive]
-pub struct CurrentModuleGeneratorsOpts {
-    #[doc = "Only include generators matching the specified patterns\n\n`None` omits GraphQL field `include`."]
-    pub include: Option<Vec<String>>,
-}
-impl CurrentModuleGeneratorsOpts {
-    #[doc = "Sets GraphQL argument `include` to a concrete value instead of omitting it."]
-    #[must_use]
-    pub fn with_include(mut self, value: Vec<impl Into<String>>) -> Self {
-        self.include = Some(value.into_iter().map(Into::into).collect());
-        self
-    }
 }
 #[doc = "Owned optional arguments for GraphQL operation `CurrentModule.workdir`; reuse does not mutate caller state."]
 #[derive(Clone, Debug, Default)]
@@ -83,15 +68,11 @@ impl From<CurrentModule> for crate::IdInput<super::NodeClient> {
     }
 }
 impl CurrentModule {
-    #[doc = "Treat the currently executing module as an SDK installed in the given workspace, exposing the modules and clients it manages.\n\nErrors if the current module is not installed as an SDK in this workspace.\n\nSelects GraphQL field `asSDK` on `CurrentModule`."]
+    #[doc = "The module's context directory loaded into the engine (plus any generated code that may have been created).\n\nIt holds the module's source code and every other file the engine loaded for the module, at their paths relative to the context root. Use sourceSubpath to locate the source code in it.\n\nSelects GraphQL field `contextDirectory` on `CurrentModule`."]
     #[must_use]
-    pub fn as_sdk(
-        &self,
-        workspace: impl Into<crate::IdInput<super::Workspace>>,
-    ) -> super::CurrentModuleAsSdk {
-        let query = self.selection.select("asSDK");
-        let query = query.arg_id_input("workspace", workspace.into());
-        super::CurrentModuleAsSdk {
+    pub fn context_directory(&self) -> super::Directory {
+        let query = self.selection.select("contextDirectory");
+        super::Directory {
             session: self.session.clone(),
             selection: query,
         }
@@ -109,29 +90,6 @@ impl CurrentModule {
     pub fn generated_context_directory(&self) -> super::Directory {
         let query = self.selection.select("generatedContextDirectory");
         super::Directory {
-            session: self.session.clone(),
-            selection: query,
-        }
-    }
-    #[doc = "Return all generators defined by the module\n\nSelects GraphQL field `generators` on `CurrentModule`.\n\n**Experimental:** This API is highly experimental and may be removed or replaced entirely."]
-    #[must_use]
-    pub fn generators(&self) -> super::GeneratorGroup {
-        let query = self.selection.select("generators");
-        super::GeneratorGroup {
-            session: self.session.clone(),
-            selection: query,
-        }
-    }
-    #[doc = "Executes GraphQL operation `generators` with a borrowed, reusable `CurrentModuleGeneratorsOpts` value.\n\n**Experimental:** This API is highly experimental and may be removed or replaced entirely."]
-    #[must_use]
-    pub fn generators_opts(&self, opts: &CurrentModuleGeneratorsOpts) -> super::GeneratorGroup {
-        let query = self.selection.select("generators");
-        let query = if let Some(value) = &opts.include {
-            query.arg("include", value)
-        } else {
-            query
-        };
-        super::GeneratorGroup {
             session: self.session.clone(),
             selection: query,
         }
@@ -154,6 +112,11 @@ impl CurrentModule {
             session: self.session.clone(),
             selection: query,
         }
+    }
+    #[doc = "The path to the directory containing the module's source code, relative to the context directory.\n\nSelects GraphQL field `sourceSubpath` on `CurrentModule`."]
+    pub async fn source_subpath(&self) -> Result<String, crate::QueryError> {
+        let query = self.selection.select("sourceSubpath");
+        query.execute(&self.session).await
     }
     #[doc = "Load a directory from the module's scratch working directory, including any changes that may have been made to it during module function execution.\n\nSelects GraphQL field `workdir` on `CurrentModule`."]
     #[must_use]

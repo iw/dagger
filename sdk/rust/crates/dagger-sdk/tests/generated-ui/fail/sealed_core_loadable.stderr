@@ -11,13 +11,13 @@ help: the trait `dagger_sdk::loadable::private::Sealed` is not implemented for `
   | ^^^^^^^^^^^^^^^^^^^^
   = help: the following other types implement trait `dagger_sdk::loadable::private::Sealed`:
             Address
-            Agent
-            AgentGroup
-            CacheVolume
-            Changeset
-            Check
-            CheckGroup
-            ClientFilesyncMirror
+            AgentMessage
+            Artifact
+            ArtifactDimension
+            ArtifactDimensionKey
+            ArtifactPath
+            ArtifactResult
+            Artifacts
           and $N others
 note: required by a bound in `Loadable`
  --> src/lib.rs
@@ -28,10 +28,10 @@ note: required by a bound in `Loadable`
   = help: the following types implement the trait:
             dagger_sdk::Address
             dagger_sdk::Agent
-            dagger_sdk::AgentGroup
-            dagger_sdk::CacheVolume
-            dagger_sdk::Changeset
-            dagger_sdk::Check
-            dagger_sdk::CheckGroup
-            dagger_sdk::ClientFilesyncMirror
+            dagger_sdk::AgentMessage
+            dagger_sdk::Artifact
+            dagger_sdk::ArtifactDimension
+            dagger_sdk::ArtifactDimensionKey
+            dagger_sdk::ArtifactPath
+            dagger_sdk::ArtifactResult
           and $N others

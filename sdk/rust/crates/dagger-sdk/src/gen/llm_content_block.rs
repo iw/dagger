@@ -1,5 +1,5 @@
 //! Generated bindings owned by the GraphQL `LLMContentBlock` type.
-// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:ff790b6fb1eb0a72354a8c293c862f5c2018bcc7526ce048e4ad67e34abc6ffe","target_revision":"a4e1e4ff663e5e51c2b96c2c0772f3d2f00cfb94"}
+// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:8cbd134fc17405aa0ae54b45640f4bd6b93a022bd4a2c4594375f3658962bf7f","target_revision":"249edbd646e63c5181053c8af72623ed9bdf030d"}
 #[doc = "A single piece of content within an LLM message."]
 #[derive(Clone)]
 pub struct LlmContentBlock {
@@ -47,6 +47,22 @@ impl LlmContentBlock {
         let query = self.selection.select("callId");
         query.execute(&self.session).await
     }
+    #[doc = "Ordered content returned by a tool, following any text (for TOOL_RESULT kind).\n\nSelects GraphQL field `content` on `LLMContentBlock`."]
+    pub async fn content(&self) -> Result<Vec<super::LlmContentBlock>, crate::QueryError> {
+        let query = self.selection.select("content");
+        let query = query.select("id");
+        query
+            .execute_reentry::<super::LlmContentBlock, Vec<crate::Id>>(
+                &self.session,
+                "LLMContentBlock",
+            )
+            .await
+    }
+    #[doc = "The media bytes (for IMAGE, AUDIO, or DOCUMENT kinds).\n\nSelects GraphQL field `data` on `LLMContentBlock`."]
+    pub async fn data(&self) -> Result<super::Bytes, crate::QueryError> {
+        let query = self.selection.select("data");
+        query.execute(&self.session).await
+    }
     #[doc = "Whether the tool call resulted in an error (for TOOL_RESULT kind).\n\nSelects GraphQL field `errored` on `LLMContentBlock`."]
     pub async fn errored(&self) -> Result<bool, crate::QueryError> {
         let query = self.selection.select("errored");
@@ -60,6 +76,11 @@ impl LlmContentBlock {
     #[doc = "The kind of content block, which determines the other populated fields.\n\nSelects GraphQL field `kind` on `LLMContentBlock`."]
     pub async fn kind(&self) -> Result<super::LlmContentBlockKind, crate::QueryError> {
         let query = self.selection.select("kind");
+        query.execute(&self.session).await
+    }
+    #[doc = "The media MIME type (for IMAGE, AUDIO, or DOCUMENT kinds).\n\nSelects GraphQL field `mimeType` on `LLMContentBlock`."]
+    pub async fn mime_type(&self) -> Result<String, crate::QueryError> {
+        let query = self.selection.select("mimeType");
         query.execute(&self.session).await
     }
     #[doc = "Provider-specific opaque data (e.g. Anthropic thinking signature). Preserve it when reconstructing a conversation.\n\nSelects GraphQL field `signature` on `LLMContentBlock`."]

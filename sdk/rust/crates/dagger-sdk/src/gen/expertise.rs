@@ -1,12 +1,12 @@
-//! Generated bindings owned by the GraphQL `Up` type.
-// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:ff790b6fb1eb0a72354a8c293c862f5c2018bcc7526ce048e4ad67e34abc6ffe","target_revision":"a4e1e4ff663e5e51c2b96c2c0772f3d2f00cfb94"}
-#[doc = "Lazy handle for GraphQL object `Up`."]
+//! Generated bindings owned by the GraphQL `Expertise` type.
+// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:8cbd134fc17405aa0ae54b45640f4bd6b93a022bd4a2c4594375f3658962bf7f","target_revision":"249edbd646e63c5181053c8af72623ed9bdf030d"}
+#[doc = "An agent function that can modify a conversation."]
 #[derive(Clone)]
-pub struct Up {
+pub struct Expertise {
     pub(crate) session: crate::lifecycle::SessionHandle,
     pub(crate) selection: crate::query::Selection,
 }
-impl crate::IntoID<crate::Id> for Up {
+impl crate::IntoID<crate::Id> for Expertise {
     fn into_id(
         self,
     ) -> core::pin::Pin<
@@ -15,9 +15,9 @@ impl crate::IntoID<crate::Id> for Up {
         Box::pin(async move { self.id().await })
     }
 }
-impl crate::loadable::private::Sealed for Up {
+impl crate::loadable::private::Sealed for Expertise {
     fn graphql_type() -> &'static str {
-        "Up"
+        "Expertise"
     }
     fn from_query(
         session: crate::lifecycle::SessionHandle,
@@ -26,33 +26,33 @@ impl crate::loadable::private::Sealed for Up {
         Self { session, selection }
     }
 }
-impl From<Up> for crate::IdInput<Up> {
-    fn from(value: Up) -> Self {
+impl From<Expertise> for crate::IdInput<Expertise> {
+    fn from(value: Expertise) -> Self {
         crate::IdInput::lazy(value)
     }
 }
-impl From<Up> for crate::IdInput<super::NodeClient> {
-    fn from(value: Up) -> Self {
+impl From<Expertise> for crate::IdInput<super::NodeClient> {
+    fn from(value: Expertise) -> Self {
         crate::IdInput::lazy(value)
     }
 }
-impl Up {
-    #[doc = "The description of the service\n\nSelects GraphQL field `description` on `Up`."]
+impl Expertise {
+    #[doc = "The agent function's description.\n\nSelects GraphQL field `description` on `Expertise`."]
     pub async fn description(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("description");
         query.execute(&self.session).await
     }
-    #[doc = "A unique identifier for this Up.\n\nSelects GraphQL field `id` on `Up`."]
+    #[doc = "A unique identifier for this Expertise.\n\nSelects GraphQL field `id` on `Expertise`."]
     pub async fn id(&self) -> Result<crate::Id, crate::QueryError> {
         let query = self.selection.select("id");
         query.execute(&self.session).await
     }
-    #[doc = "Return the fully qualified name of the service\n\nSelects GraphQL field `name` on `Up`."]
+    #[doc = "The agent function's name.\n\nSelects GraphQL field `name` on `Expertise`."]
     pub async fn name(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("name");
         query.execute(&self.session).await
     }
-    #[doc = "The original module in which the service has been defined\n\nSelects GraphQL field `originalModule` on `Up`."]
+    #[doc = "The module that defines the agent function.\n\nSelects GraphQL field `originalModule` on `Expertise`."]
     #[must_use]
     pub fn original_module(&self) -> super::Module {
         let query = self.selection.select("originalModule");
@@ -61,22 +61,13 @@ impl Up {
             selection: query,
         }
     }
-    #[doc = "The path of the service within its module\n\nSelects GraphQL field `path` on `Up`."]
+    #[doc = "The agent function's path within its module.\n\nSelects GraphQL field `path` on `Expertise`."]
     pub async fn path(&self) -> Result<Vec<String>, crate::QueryError> {
         let query = self.selection.select("path");
         query.execute(&self.session).await
     }
-    #[doc = "Execute the service function\n\nSelects GraphQL field `run` on `Up`."]
-    #[must_use]
-    pub fn run(&self) -> super::Up {
-        let query = self.selection.select("run");
-        super::Up {
-            session: self.session.clone(),
-            selection: query,
-        }
-    }
 }
-impl super::Node for Up {
+impl super::Node for Expertise {
     fn id(
         &self,
     ) -> impl core::future::Future<Output = Result<crate::Id, crate::QueryError>> + Send {

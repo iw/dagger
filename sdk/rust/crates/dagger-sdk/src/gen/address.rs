@@ -1,10 +1,25 @@
 //! Generated bindings owned by the GraphQL `Address` type.
-// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:ff790b6fb1eb0a72354a8c293c862f5c2018bcc7526ce048e4ad67e34abc6ffe","target_revision":"a4e1e4ff663e5e51c2b96c2c0772f3d2f00cfb94"}
+// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:8cbd134fc17405aa0ae54b45640f4bd6b93a022bd4a2c4594375f3658962bf7f","target_revision":"249edbd646e63c5181053c8af72623ed9bdf030d"}
 #[doc = "A standardized address to load containers, directories, secrets, and other object types. Address format depends on the type, and is validated at type selection."]
 #[derive(Clone)]
 pub struct Address {
     pub(crate) session: crate::lifecycle::SessionHandle,
     pub(crate) selection: crate::query::Selection,
+}
+#[doc = "Owned optional arguments for GraphQL operation `Address.container`; reuse does not mutate caller state."]
+#[derive(Clone, Debug, Default)]
+#[non_exhaustive]
+pub struct AddressContainerOpts {
+    #[doc = "Resolve the address's image tag live, ignoring the workspace lockfile: neither read a pinned value nor record one.\n\nA DAG address is unaffected: its module evaluates as usual.\n\n`None` omits GraphQL field `noLock` and preserves engine default `Boolean(false)`."]
+    pub no_lock: Option<bool>,
+}
+impl AddressContainerOpts {
+    #[doc = "Sets GraphQL argument `noLock` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_no_lock(mut self, value: bool) -> Self {
+        self.no_lock = Some(value);
+        self
+    }
 }
 #[doc = "Owned optional arguments for GraphQL operation `Address.directory`; reuse does not mutate caller state."]
 #[derive(Clone, Debug, Default)]
@@ -18,6 +33,8 @@ pub struct AddressDirectoryOpts {
     pub include: Option<Vec<String>>,
     #[doc = "`None` omits GraphQL field `noCache` and preserves engine default `Boolean(false)`."]
     pub no_cache: Option<bool>,
+    #[doc = "Resolve the address's git ref live, ignoring the workspace lockfile: neither read a pinned value nor record one.\n\nA DAG address is unaffected: its module evaluates as usual.\n\n`None` omits GraphQL field `noLock` and preserves engine default `Boolean(false)`."]
+    pub no_lock: Option<bool>,
 }
 impl AddressDirectoryOpts {
     #[doc = "Sets GraphQL argument `exclude` to a concrete value instead of omitting it."]
@@ -44,6 +61,12 @@ impl AddressDirectoryOpts {
         self.no_cache = Some(value);
         self
     }
+    #[doc = "Sets GraphQL argument `noLock` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_no_lock(mut self, value: bool) -> Self {
+        self.no_lock = Some(value);
+        self
+    }
 }
 #[doc = "Owned optional arguments for GraphQL operation `Address.file`; reuse does not mutate caller state."]
 #[derive(Clone, Debug, Default)]
@@ -57,6 +80,8 @@ pub struct AddressFileOpts {
     pub include: Option<Vec<String>>,
     #[doc = "`None` omits GraphQL field `noCache` and preserves engine default `Boolean(false)`."]
     pub no_cache: Option<bool>,
+    #[doc = "Resolve the address's git ref live, ignoring the workspace lockfile: neither read a pinned value nor record one.\n\nA DAG address is unaffected: its module evaluates as usual.\n\n`None` omits GraphQL field `noLock` and preserves engine default `Boolean(false)`."]
+    pub no_lock: Option<bool>,
 }
 impl AddressFileOpts {
     #[doc = "Sets GraphQL argument `exclude` to a concrete value instead of omitting it."]
@@ -81,6 +106,27 @@ impl AddressFileOpts {
     #[must_use]
     pub fn with_no_cache(mut self, value: bool) -> Self {
         self.no_cache = Some(value);
+        self
+    }
+    #[doc = "Sets GraphQL argument `noLock` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_no_lock(mut self, value: bool) -> Self {
+        self.no_lock = Some(value);
+        self
+    }
+}
+#[doc = "Owned optional arguments for GraphQL operation `Address.gitRef`; reuse does not mutate caller state."]
+#[derive(Clone, Debug, Default)]
+#[non_exhaustive]
+pub struct AddressGitRefOpts {
+    #[doc = "Resolve the address's git ref live, ignoring the workspace lockfile: neither read a pinned value nor record one.\n\nA DAG address is unaffected: its module evaluates as usual.\n\n`None` omits GraphQL field `noLock` and preserves engine default `Boolean(false)`."]
+    pub no_lock: Option<bool>,
+}
+impl AddressGitRefOpts {
+    #[doc = "Sets GraphQL argument `noLock` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_no_lock(mut self, value: bool) -> Self {
+        self.no_lock = Some(value);
         self
     }
 }
@@ -124,6 +170,20 @@ impl Address {
             selection: query,
         }
     }
+    #[doc = "Executes GraphQL operation `container` with a borrowed, reusable `AddressContainerOpts` value."]
+    #[must_use]
+    pub fn container_opts(&self, opts: &AddressContainerOpts) -> super::Container {
+        let query = self.selection.select("container");
+        let query = if let Some(value) = &opts.no_lock {
+            query.arg("noLock", value)
+        } else {
+            query
+        };
+        super::Container {
+            session: self.session.clone(),
+            selection: query,
+        }
+    }
     #[doc = "Load a directory from the address.\n\nSelects GraphQL field `directory` on `Address`."]
     #[must_use]
     pub fn directory(&self) -> super::Directory {
@@ -154,6 +214,11 @@ impl Address {
         };
         let query = if let Some(value) = &opts.no_cache {
             query.arg("noCache", value)
+        } else {
+            query
+        };
+        let query = if let Some(value) = &opts.no_lock {
+            query.arg("noLock", value)
         } else {
             query
         };
@@ -195,6 +260,11 @@ impl Address {
         } else {
             query
         };
+        let query = if let Some(value) = &opts.no_lock {
+            query.arg("noLock", value)
+        } else {
+            query
+        };
         super::File {
             session: self.session.clone(),
             selection: query,
@@ -204,6 +274,20 @@ impl Address {
     #[must_use]
     pub fn git_ref(&self) -> super::GitRef {
         let query = self.selection.select("gitRef");
+        super::GitRef {
+            session: self.session.clone(),
+            selection: query,
+        }
+    }
+    #[doc = "Executes GraphQL operation `gitRef` with a borrowed, reusable `AddressGitRefOpts` value."]
+    #[must_use]
+    pub fn git_ref_opts(&self, opts: &AddressGitRefOpts) -> super::GitRef {
+        let query = self.selection.select("gitRef");
+        let query = if let Some(value) = &opts.no_lock {
+            query.arg("noLock", value)
+        } else {
+            query
+        };
         super::GitRef {
             session: self.session.clone(),
             selection: query,
@@ -260,6 +344,15 @@ impl Address {
     pub fn volume(&self) -> super::Volume {
         let query = self.selection.select("volume");
         super::Volume {
+            session: self.session.clone(),
+            selection: query,
+        }
+    }
+    #[doc = "Load a workspace from a module reference.\n\nSelects GraphQL field `workspace` on `Address`."]
+    #[must_use]
+    pub fn workspace(&self) -> super::Workspace {
+        let query = self.selection.select("workspace");
+        super::Workspace {
             session: self.session.clone(),
             selection: query,
         }

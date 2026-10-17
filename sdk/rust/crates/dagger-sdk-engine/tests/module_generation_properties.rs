@@ -24,9 +24,9 @@ use dagger_sdk_engine::{
 };
 use sha2::{Digest as _, Sha256};
 
-const REVISION: &str = "a4e1e4ff663e5e51c2b96c2c0772f3d2f00cfb94";
+const REVISION: &str = "249edbd646e63c5181053c8af72623ed9bdf030d";
 const CORE_SCHEMA_DIGEST: &str =
-    "sha256:ff790b6fb1eb0a72354a8c293c862f5c2018bcc7526ce048e4ad67e34abc6ffe";
+    "sha256:8cbd134fc17405aa0ae54b45640f4bd6b93a022bd4a2c4594375f3658962bf7f";
 const MODULE_ROOT: &str = "workspace/greeter";
 
 #[derive(Clone, Copy, Debug)]
@@ -181,7 +181,7 @@ fn target() -> TargetIdentity {
         format_version: FormatVersion,
         repository: CanonicalRepositoryUrl::new("https://github.com/dagger/dagger").unwrap(),
         dagger_revision: FullRevision::new(REVISION).unwrap(),
-        engine_version: ExactVersion::new("1.0.0-beta.11.rust.5").unwrap(),
+        engine_version: ExactVersion::new("1.0.0-beta.18").unwrap(),
         rust_sdk_version: ExactVersion::new("1.0.0-beta.11.rust.5").unwrap(),
         rust_toolchain: ExactRustToolchain::new("1.97.1").unwrap(),
         core_schema_digest: Sha256Digest::new(CORE_SCHEMA_DIGEST).unwrap(),

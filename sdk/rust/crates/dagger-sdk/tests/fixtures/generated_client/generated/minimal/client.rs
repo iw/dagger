@@ -1,5 +1,5 @@
 //! Generated bindings owned by GraphQL coordinate `Minimal`.
-// @generated {"format":"dagger-rust-standalone-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:73ae0bb7d0ed95cb3e1b80aff4c2afad04fc7460fdae86c63d2ac8c7315b33b4","target_revision":"a4e1e4ff663e5e51c2b96c2c0772f3d2f00cfb94"}
+// @generated {"format":"dagger-rust-standalone-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:2313896b06186ada0116cc4af16aa742e847b856ead2a66135e65754a9af334c","target_revision":"249edbd646e63c5181053c8af72623ed9bdf030d"}
 #[doc = "Client fixture object Minimal."]
 #[derive(Clone)]
 pub struct Client {

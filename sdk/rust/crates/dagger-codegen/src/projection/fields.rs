@@ -199,9 +199,10 @@ pub enum FieldStrategy {
     },
     /// Execute and decode a scalar, enum, input value, or Void.
     ExecuteValue { output: RustType },
-    /// Execute an ID and reconstruct the declared parent handle.
+    /// Execute an ID and reconstruct the handle its `@expectedType` names: the owner
+    /// for self-returns such as `sync`, or another ID-bearing object.
     ExpectedTypeSelf {
-        /// Expected parent object or interface.
+        /// Expected object or interface.
         parent: SchemaName,
         /// Exact ID-returning field coordinate.
         id_path: SchemaCoordinate,
@@ -480,11 +481,14 @@ fn project_field(
     let leaf = named_leaf(&field.type_use);
     let expected_parent = directives.expected_type(&field.coordinate);
     if let Some(parent) = expected_parent {
-        if leaf.as_str() != "ID" || parent != owner || !has_id_field(schema, parent) {
+        // The returned ID re-enters as the named handle whether it names the owner
+        // (`Container.sync`) or another ID-bearing object (`Agent.send` returns an
+        // `AgentMessage`); reconstruction never depends on the owner.
+        if leaf.as_str() != "ID" || !has_id_field(schema, parent) {
             return Err(projection_error(
                 DiagnosticCode::ExpectedTypeInvalid,
                 &field.coordinate,
-                "self-return expectedType must name its ID-bearing owner",
+                "expectedType return must name an ID-bearing object or interface",
             ));
         }
         return_type = match schema.types().get(parent) {

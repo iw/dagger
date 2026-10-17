@@ -1,10 +1,25 @@
 //! Generated bindings owned by the GraphQL `LLM` type.
-// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:ff790b6fb1eb0a72354a8c293c862f5c2018bcc7526ce048e4ad67e34abc6ffe","target_revision":"a4e1e4ff663e5e51c2b96c2c0772f3d2f00cfb94"}
+// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:8cbd134fc17405aa0ae54b45640f4bd6b93a022bd4a2c4594375f3658962bf7f","target_revision":"249edbd646e63c5181053c8af72623ed9bdf030d"}
 #[doc = "A conversation with a large language model (LLM): queue prompts, expose tools, and step the model until it completes its turn."]
 #[derive(Clone)]
 pub struct Llm {
     pub(crate) session: crate::lifecycle::SessionHandle,
     pub(crate) selection: crate::query::Selection,
+}
+#[doc = "Owned optional arguments for GraphQL operation `LLM.artifacts`; reuse does not mutate caller state."]
+#[derive(Clone, Debug, Default)]
+#[non_exhaustive]
+pub struct LlmArtifactsOpts {
+    #[doc = "Only include artifacts matching these path patterns, as with Workspace.artifacts. A path selects that path and its children.\n\n`None` omits GraphQL field `include`."]
+    pub include: Option<Vec<String>>,
+}
+impl LlmArtifactsOpts {
+    #[doc = "Sets GraphQL argument `include` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_include(mut self, value: Vec<impl Into<String>>) -> Self {
+        self.include = Some(value.into_iter().map(Into::into).collect());
+        self
+    }
 }
 #[doc = "Owned optional arguments for GraphQL operation `LLM.loop`; reuse does not mutate caller state."]
 #[derive(Clone, Debug, Default)]
@@ -29,6 +44,53 @@ impl LlmLoopOpts {
         self
     }
 }
+#[doc = "Owned optional arguments for GraphQL operation `LLM.spawn`; reuse does not mutate caller state."]
+#[derive(Clone, Debug, Default)]
+#[non_exhaustive]
+pub struct LlmSpawnOpts {
+    #[doc = "The loop error to create the agent with, for state FAILED. Refused with any other state.\n\n`None` omits GraphQL field `error` and preserves engine default `String(\"\")`."]
+    pub error: Option<String>,
+    #[doc = "The runtime handle to restore the instance under, as published on its loop span as dagger.io/agent.id. Omit to mint a fresh instance.\n\n`None` omits GraphQL field `handle`."]
+    pub handle: Option<String>,
+    #[doc = "Display label for the agent — telemetry and error messages; carries no identity. Defaults to a short name derived from the conversation.\n\n`None` omits GraphQL field `name`."]
+    pub name: Option<String>,
+    #[doc = "Recorded parent handle when restoring an agent. Lineage does not install a notification subscription. Requires a supplied handle. The parent must already be restored in this session and cannot be the agent itself or its descendant.\n\n`None` omits GraphQL field `parentHandle`."]
+    pub parent_handle: Option<String>,
+    #[doc = "The lifecycle state to create the agent in, as facts on the entry: IDLE is ready to be prompted, PAUSED parks it, FAILED holds an error a resume retries past, STOPPED preserves a dormant snapshot that send or resume can relaunch.\n\nRUNNING and WAITING_INPUT are refused: they describe a loop, and a restored loop died with the session that published it — restore such an agent as IDLE, its interrupted turn's input still pending on the conversation.\n\n`None` omits GraphQL field `state` and preserves engine default `Enum(SchemaName(\"IDLE\"))`."]
+    pub state: Option<super::AgentState>,
+}
+impl LlmSpawnOpts {
+    #[doc = "Sets GraphQL argument `error` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_error(mut self, value: impl Into<String>) -> Self {
+        self.error = Some(value.into());
+        self
+    }
+    #[doc = "Sets GraphQL argument `handle` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_handle(mut self, value: impl Into<String>) -> Self {
+        self.handle = Some(value.into());
+        self
+    }
+    #[doc = "Sets GraphQL argument `name` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_name(mut self, value: impl Into<String>) -> Self {
+        self.name = Some(value.into());
+        self
+    }
+    #[doc = "Sets GraphQL argument `parentHandle` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_parent_handle(mut self, value: impl Into<String>) -> Self {
+        self.parent_handle = Some(value.into());
+        self
+    }
+    #[doc = "Sets GraphQL argument `state` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_state(mut self, value: super::AgentState) -> Self {
+        self.state = Some(value);
+        self
+    }
+}
 #[doc = "Owned optional arguments for GraphQL operation `LLM.step`; reuse does not mutate caller state."]
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
@@ -44,6 +106,36 @@ impl LlmStepOpts {
         self
     }
 }
+#[doc = "Owned optional arguments for GraphQL operation `LLM.withContent`; reuse does not mutate caller state."]
+#[derive(Clone, Debug, Default)]
+#[non_exhaustive]
+pub struct LlmWithContentOpts {
+    #[doc = "The message's recorded provenance.\n\n`None` omits GraphQL field `origin`."]
+    pub origin: Option<super::LlmMessageOriginInput>,
+}
+impl LlmWithContentOpts {
+    #[doc = "Sets GraphQL argument `origin` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_origin(mut self, value: super::LlmMessageOriginInput) -> Self {
+        self.origin = Some(value);
+        self
+    }
+}
+#[doc = "Owned optional arguments for GraphQL operation `LLM.withContentFile`; reuse does not mutate caller state."]
+#[derive(Clone, Debug, Default)]
+#[non_exhaustive]
+pub struct LlmWithContentFileOpts {
+    #[doc = "The media MIME type; inferred from the file's contents when omitted.\n\n`None` omits GraphQL field `mimeType` and preserves engine default `String(\"\")`."]
+    pub mime_type: Option<String>,
+}
+impl LlmWithContentFileOpts {
+    #[doc = "Sets GraphQL argument `mimeType` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_mime_type(mut self, value: impl Into<String>) -> Self {
+        self.mime_type = Some(value.into());
+        self
+    }
+}
 #[doc = "Owned optional arguments for GraphQL operation `LLM.withModel`; reuse does not mutate caller state."]
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
@@ -56,6 +148,21 @@ impl LlmWithModelOpts {
     #[must_use]
     pub fn with_provider(mut self, value: impl Into<String>) -> Self {
         self.provider = Some(value.into());
+        self
+    }
+}
+#[doc = "Owned optional arguments for GraphQL operation `LLM.withPrompt`; reuse does not mutate caller state."]
+#[derive(Clone, Debug, Default)]
+#[non_exhaustive]
+pub struct LlmWithPromptOpts {
+    #[doc = "The message's recorded provenance, when it arrived through an agent mailbox rather than from the user. Rendered to the model as an attribution header at request-build time.\n\n`None` omits GraphQL field `origin`."]
+    pub origin: Option<super::LlmMessageOriginInput>,
+}
+impl LlmWithPromptOpts {
+    #[doc = "Sets GraphQL argument `origin` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_origin(mut self, value: super::LlmMessageOriginInput) -> Self {
+        self.origin = Some(value);
         self
     }
 }
@@ -106,18 +213,41 @@ impl LlmWithResponseOpts {
         self
     }
 }
+#[doc = "Owned optional arguments for GraphQL operation `LLM.withToolResult`; reuse does not mutate caller state."]
+#[derive(Clone, Debug, Default)]
+#[non_exhaustive]
+pub struct LlmWithToolResultOpts {
+    #[doc = "Ordered text and media returned by the tool\n\n`None` omits GraphQL field `blocks` and preserves engine default `List(\\[\\])`."]
+    pub blocks: Option<Vec<super::LlmContentBlockInput>>,
+}
+impl LlmWithToolResultOpts {
+    #[doc = "Sets GraphQL argument `blocks` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_blocks(mut self, value: Vec<super::LlmContentBlockInput>) -> Self {
+        self.blocks = Some(value);
+        self
+    }
+}
 #[doc = "Owned optional arguments for GraphQL operation `LLM.withTools`; reuse does not mutate caller state."]
 #[derive(Clone, Debug, Default)]
 #[non_exhaustive]
 pub struct LlmWithToolsOpts {
     #[doc = "Method names to exclude from the toolset (e.g. constructors, entrypoints).\n\n`None` omits GraphQL field `except` and preserves engine default `List(\\[\\])`."]
     pub except: Option<Vec<String>>,
+    #[doc = "Version of this binding's state contract. Recomposition preserves compatible state when the version is unchanged and resets to the newly bound object's defaults when it differs. Change this when the state layout changes incompatibly. Same-type tool returns retain the version. Module identity and ownership checks still apply.\n\n`None` omits GraphQL field `version` and preserves engine default `Int(0)`."]
+    pub version: Option<i64>,
 }
 impl LlmWithToolsOpts {
     #[doc = "Sets GraphQL argument `except` to a concrete value instead of omitting it."]
     #[must_use]
     pub fn with_except(mut self, value: Vec<impl Into<String>>) -> Self {
         self.except = Some(value.into_iter().map(Into::into).collect());
+        self
+    }
+    #[doc = "Sets GraphQL argument `version` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_version(mut self, value: i64) -> Self {
+        self.version = Some(value);
         self
     }
 }
@@ -157,6 +287,50 @@ impl From<Llm> for crate::IdInput<super::SyncerClient> {
     }
 }
 impl Llm {
+    #[doc = "Reconstruct a spawned agent from its runtime handle.\n\nThis is the lookup spawn pins its result's identity through: the returned handle's ID is an honest, replayable chain denoting the one instance the spawn minted. It never creates an instance itself.\n\nSelects GraphQL field `agent` on `LLM`.\n\n**Experimental:** Agent APIs are likely to change."]
+    #[must_use]
+    pub fn agent(&self, handle: impl Into<String>, name: impl Into<String>) -> super::Agent {
+        let query = self.selection.select("agent");
+        let query = query.arg("handle", handle.into());
+        let query = query.arg("name", name.into());
+        super::Agent {
+            session: self.session.clone(),
+            selection: query,
+        }
+    }
+    #[doc = "Discover every artifact this conversation can address, as one selection, without evaluating their values.\n\nTool objects bound with withTools contribute their modules' artifacts, rooted at their current values: evaluating one reads the live state of the bound tools, not a fresh construction. If a module's main object is bound, only its tree is included; otherwise each bound object of that module contributes its own tree. Addresses start with the module name. These artifacts have no workspace of their own: they evaluate in the LLM's bound workspace, if any, whoever evaluates them.\n\nThe workspace part is the artifacts of the workspace bound with withWorkspace, as returned by Workspace.artifacts; an LLM with no bound workspace has none. A workspace module with the same name as a module with bound tool objects is omitted: the bound tools shadow it. Unless they are only a plain construction of the module, which has no state of its own: then the workspace module's artifacts are kept instead.\n\nTool arguments that take an address resolve it here: a DAG address to one object, or, for Artifacts and Artifact arguments, a selection filtered like filterUri.\n\nSelects GraphQL field `artifacts` on `LLM`.\n\n**Experimental:** Agent APIs are likely to change."]
+    #[must_use]
+    pub fn artifacts(&self) -> super::Artifacts {
+        let query = self.selection.select("artifacts");
+        super::Artifacts {
+            session: self.session.clone(),
+            selection: query,
+        }
+    }
+    #[doc = "Executes GraphQL operation `artifacts` with a borrowed, reusable `LlmArtifactsOpts` value.\n\n**Experimental:** Agent APIs are likely to change."]
+    #[must_use]
+    pub fn artifacts_opts(&self, opts: &LlmArtifactsOpts) -> super::Artifacts {
+        let query = self.selection.select("artifacts");
+        let query = if let Some(value) = &opts.include {
+            query.arg("include", value)
+        } else {
+            query
+        };
+        super::Artifacts {
+            session: self.session.clone(),
+            selection: query,
+        }
+    }
+    #[doc = "Run expertise in list order, passing this conversation through each function. Retain existing contributions.\n\nSelects GraphQL field `compose` on `LLM`."]
+    #[must_use]
+    pub fn compose(&self, expertise: Vec<crate::IdInput<super::Expertise>>) -> super::Llm {
+        let query = self.selection.select("compose");
+        let query = query.arg_id_input("expertise", expertise);
+        super::Llm {
+            session: self.session.clone(),
+            selection: query,
+        }
+    }
     #[doc = "estimated number of tokens currently occupying the context window; unlike tokenUsage this is not cumulative over the session\n\nSelects GraphQL field `contextTokens` on `LLM`."]
     pub async fn context_tokens(&self) -> Result<i64, crate::QueryError> {
         let query = self.selection.select("contextTokens");
@@ -233,11 +407,6 @@ impl Llm {
         let query = self.selection.select("model");
         query.execute(&self.session).await
     }
-    #[doc = "A portable, self-contained ID for the conversation that node() can resolve in any session. Unlike id, which may return an engine-local runtime handle valid only within the current session, this returns the recipe form suitable for persisting and later restoring the conversation. The recipe is flattened: bindings superseded during the session (workspace overlays recorded by each mutating tool call, and re-bound toolsets) are dropped, while the current workspace binding — including any pending, un-exported edits — is preserved.\n\nSelects GraphQL field `portableID` on `LLM`."]
-    pub async fn portable_id(&self) -> Result<crate::Id, crate::QueryError> {
-        let query = self.selection.select("portableID");
-        query.execute(&self.session).await
-    }
     #[doc = "The provider serving the model, e.g. \"anthropic\", \"openai\", \"google\", or \"local\".\n\nSelects GraphQL field `provider` on `LLM`."]
     pub async fn provider(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("provider");
@@ -248,15 +417,15 @@ impl Llm {
         let query = self.selection.select("reasoningEffort");
         query.execute(&self.session).await
     }
-    #[doc = "Re-emit telemetry spans for the full message history, so a loaded conversation displays in the TUI.\n\nSelects GraphQL field `replay` on `LLM`."]
-    pub async fn replay(&self) -> Result<super::Llm, crate::QueryError> {
-        let query = self.selection.select("replay");
-        let id: crate::Id = query.execute(&self.session).await?;
-        Ok(crate::query::reenter::<super::Llm>(
-            &self.session,
-            id,
-            "LLM",
-        ))
+    #[doc = "Run expertise in list order, replacing their modules' contributions and preserving compatible tool state.\n\nClear each selected module's contributions once before execution. Retain unowned contributions and contributions from other modules. Keep this LLM's workspace.\n\nA change to a tool binding's version resets its state. Removed bindings, changed identities, and incompatible state are errors.\n\nSelects GraphQL field `recompose` on `LLM`."]
+    #[must_use]
+    pub fn recompose(&self, expertise: Vec<crate::IdInput<super::Expertise>>) -> super::Llm {
+        let query = self.selection.select("recompose");
+        let query = query.arg_id_input("expertise", expertise);
+        super::Llm {
+            session: self.session.clone(),
+            selection: query,
+        }
     }
     #[doc = "The skills visible to the model, exactly as the ListSkills tool serves them: engine-embedded skills, skills installed with withSkills, and skills discovered in the workspace.\n\nSelects GraphQL field `skills` on `LLM`."]
     pub async fn skills(&self) -> Result<Vec<super::LlmSkill>, crate::QueryError> {
@@ -265,6 +434,51 @@ impl Llm {
         query
             .execute_reentry::<super::LlmSkill, Vec<crate::Id>>(&self.session, "LLMSkill")
             .await
+    }
+    #[doc = "Spawn the conversation as an agent: a startable, addressable evaluation loop seeded with this conversation's state, tools, and workspace.\n\nEvery spawn mints a unique agent instance — two spawns of an identical conversation are two distinct agents, like two calls to a process spawn. The result is pinned to the instance (via the agent lookup field), so re-loading its ID re-addresses the same agent from any request in the session.\n\nThe loop is not started: the agent spends nothing until it is prompted or resumed, and any input pending on the conversation is stepped then.\n\nWith a handle, spawn restores an instance instead of minting one: this conversation becomes the committed history of the agent that handle names, so prompting it continues where it left off — rebuild a conversation's ID from a trace, load it, and spawn it under the handle it belonged to. Fails if that instance already has a runtime entry in this session: a restore must happen before anything else addresses the instance, since by then it may have stepped.\n\nSelects GraphQL field `spawn` on `LLM`.\n\n**Experimental:** Agent APIs are likely to change."]
+    pub async fn spawn(&self) -> Result<super::Agent, crate::QueryError> {
+        let query = self.selection.select("spawn");
+        let id: crate::Id = query.execute(&self.session).await?;
+        Ok(crate::query::reenter::<super::Agent>(
+            &self.session,
+            id,
+            "Agent",
+        ))
+    }
+    #[doc = "Executes GraphQL operation `spawn` with a borrowed, reusable `LlmSpawnOpts` value.\n\n**Experimental:** Agent APIs are likely to change."]
+    pub async fn spawn_opts(&self, opts: &LlmSpawnOpts) -> Result<super::Agent, crate::QueryError> {
+        let query = self.selection.select("spawn");
+        let query = if let Some(value) = &opts.error {
+            query.arg("error", value)
+        } else {
+            query
+        };
+        let query = if let Some(value) = &opts.handle {
+            query.arg("handle", value)
+        } else {
+            query
+        };
+        let query = if let Some(value) = &opts.name {
+            query.arg("name", value)
+        } else {
+            query
+        };
+        let query = if let Some(value) = &opts.parent_handle {
+            query.arg("parentHandle", value)
+        } else {
+            query
+        };
+        let query = if let Some(value) = &opts.state {
+            query.arg("state", value)
+        } else {
+            query
+        };
+        let id: crate::Id = query.execute(&self.session).await?;
+        Ok(crate::query::reenter::<super::Agent>(
+            &self.session,
+            id,
+            "Agent",
+        ))
     }
     #[doc = "Advance the conversation by a single step: send the queued prompt or tool results to the model, evaluate any tool calls it makes, and queue their results. Use loop to step until the model ends its turn.\n\nSelects GraphQL field `step` on `LLM`."]
     #[must_use]
@@ -318,6 +532,64 @@ impl Llm {
         let query = self.selection.select("transcript");
         query.execute(&self.session).await
     }
+    #[doc = "Queue one user message containing ordered text and media blocks.\n\nSelects GraphQL field `withContent` on `LLM`."]
+    #[must_use]
+    pub fn with_content(&self, content: Vec<super::LlmContentBlockInput>) -> super::Llm {
+        let query = self.selection.select("withContent");
+        let query = query.arg("content", content);
+        super::Llm {
+            session: self.session.clone(),
+            selection: query,
+        }
+    }
+    #[doc = "Executes GraphQL operation `withContent` with a borrowed, reusable `LlmWithContentOpts` value."]
+    #[must_use]
+    pub fn with_content_opts(
+        &self,
+        content: Vec<super::LlmContentBlockInput>,
+        opts: &LlmWithContentOpts,
+    ) -> super::Llm {
+        let query = self.selection.select("withContent");
+        let query = query.arg("content", content);
+        let query = if let Some(value) = &opts.origin {
+            query.arg("origin", value)
+        } else {
+            query
+        };
+        super::Llm {
+            session: self.session.clone(),
+            selection: query,
+        }
+    }
+    #[doc = "Queue an image, audio, or PDF file as one user message. Media bytes are stored in the conversation.\n\nSelects GraphQL field `withContentFile` on `LLM`."]
+    #[must_use]
+    pub fn with_content_file(&self, file: impl Into<crate::IdInput<super::File>>) -> super::Llm {
+        let query = self.selection.select("withContentFile");
+        let query = query.arg_id_input("file", file.into());
+        super::Llm {
+            session: self.session.clone(),
+            selection: query,
+        }
+    }
+    #[doc = "Executes GraphQL operation `withContentFile` with a borrowed, reusable `LlmWithContentFileOpts` value."]
+    #[must_use]
+    pub fn with_content_file_opts(
+        &self,
+        file: impl Into<crate::IdInput<super::File>>,
+        opts: &LlmWithContentFileOpts,
+    ) -> super::Llm {
+        let query = self.selection.select("withContentFile");
+        let query = query.arg_id_input("file", file.into());
+        let query = if let Some(value) = &opts.mime_type {
+            query.arg("mimeType", value)
+        } else {
+            query
+        };
+        super::Llm {
+            session: self.session.clone(),
+            selection: query,
+        }
+    }
     #[doc = "Add an external MCP server to the LLM\n\nSelects GraphQL field `withMCPServer` on `LLM`."]
     #[must_use]
     pub fn with_mcp_server(
@@ -362,6 +634,25 @@ impl Llm {
     #[must_use]
     pub fn with_prompt(&self, prompt: impl Into<String>) -> super::Llm {
         let query = self.selection.select("withPrompt");
+        let query = query.arg("prompt", prompt.into());
+        super::Llm {
+            session: self.session.clone(),
+            selection: query,
+        }
+    }
+    #[doc = "Executes GraphQL operation `withPrompt` with a borrowed, reusable `LlmWithPromptOpts` value."]
+    #[must_use]
+    pub fn with_prompt_opts(
+        &self,
+        prompt: impl Into<String>,
+        opts: &LlmWithPromptOpts,
+    ) -> super::Llm {
+        let query = self.selection.select("withPrompt");
+        let query = if let Some(value) = &opts.origin {
+            query.arg("origin", value)
+        } else {
+            query
+        };
         let query = query.arg("prompt", prompt.into());
         super::Llm {
             session: self.session.clone(),
@@ -450,6 +741,15 @@ impl Llm {
             selection: query,
         }
     }
+    #[doc = "Switch to the configured small model for the current provider, or that provider's recommended default. The message history is preserved; unknown providers without a small-model configuration keep their current model.\n\nSelects GraphQL field `withSmallModel` on `LLM`."]
+    #[must_use]
+    pub fn with_small_model(&self) -> super::Llm {
+        let query = self.selection.select("withSmallModel");
+        super::Llm {
+            session: self.session.clone(),
+            selection: query,
+        }
+    }
     #[doc = "Add a system prompt, instructing the model across the whole conversation.\n\nSelects GraphQL field `withSystemPrompt` on `LLM`."]
     #[must_use]
     pub fn with_system_prompt(&self, prompt: impl Into<String>) -> super::Llm {
@@ -469,6 +769,29 @@ impl Llm {
         errored: bool,
     ) -> super::Llm {
         let query = self.selection.select("withToolResult");
+        let query = query.arg("callId", call_id.into());
+        let query = query.arg("content", content.into());
+        let query = query.arg("errored", errored);
+        super::Llm {
+            session: self.session.clone(),
+            selection: query,
+        }
+    }
+    #[doc = "Executes GraphQL operation `withToolResult` with a borrowed, reusable `LlmWithToolResultOpts` value."]
+    #[must_use]
+    pub fn with_tool_result_opts(
+        &self,
+        call_id: impl Into<String>,
+        content: impl Into<String>,
+        errored: bool,
+        opts: &LlmWithToolResultOpts,
+    ) -> super::Llm {
+        let query = self.selection.select("withToolResult");
+        let query = if let Some(value) = &opts.blocks {
+            query.arg("blocks", value)
+        } else {
+            query
+        };
         let query = query.arg("callId", call_id.into());
         let query = query.arg("content", content.into());
         let query = query.arg("errored", errored);
@@ -501,6 +824,11 @@ impl Llm {
             query
         };
         let query = query.arg_id_input("object", object.into());
+        let query = if let Some(value) = &opts.version {
+            query.arg("version", value)
+        } else {
+            query
+        };
         super::Llm {
             session: self.session.clone(),
             selection: query,

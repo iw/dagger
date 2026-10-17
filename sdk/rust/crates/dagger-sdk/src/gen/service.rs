@@ -1,5 +1,5 @@
 //! Generated bindings owned by the GraphQL `Service` type.
-// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:ff790b6fb1eb0a72354a8c293c862f5c2018bcc7526ce048e4ad67e34abc6ffe","target_revision":"a4e1e4ff663e5e51c2b96c2c0772f3d2f00cfb94"}
+// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:8cbd134fc17405aa0ae54b45640f4bd6b93a022bd4a2c4594375f3658962bf7f","target_revision":"249edbd646e63c5181053c8af72623ed9bdf030d"}
 #[doc = "A content-addressed service providing TCP connectivity."]
 #[derive(Clone)]
 pub struct Service {
@@ -26,6 +26,21 @@ impl ServiceEndpointOpts {
     #[must_use]
     pub fn with_scheme(mut self, value: impl Into<String>) -> Self {
         self.scheme = Some(value.into());
+        self
+    }
+}
+#[doc = "Owned optional arguments for GraphQL operation `Service.ports`; reuse does not mutate caller state."]
+#[derive(Clone, Debug, Default)]
+#[non_exhaustive]
+pub struct ServicePortsOpts {
+    #[doc = "Return only container ports declared before startup. Other service types return an empty list.\n\n`None` omits GraphQL field `declared` and preserves engine default `Boolean(false)`."]
+    pub declared: Option<bool>,
+}
+impl ServicePortsOpts {
+    #[doc = "Sets GraphQL argument `declared` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_declared(mut self, value: bool) -> Self {
+        self.declared = Some(value);
         self
     }
 }
@@ -154,6 +169,22 @@ impl Service {
     #[doc = "Retrieves the list of ports provided by the service.\n\nSelects GraphQL field `ports` on `Service`."]
     pub async fn ports(&self) -> Result<Vec<super::Port>, crate::QueryError> {
         let query = self.selection.select("ports");
+        let query = query.select("id");
+        query
+            .execute_reentry::<super::Port, Vec<crate::Id>>(&self.session, "Port")
+            .await
+    }
+    #[doc = "Executes GraphQL operation `ports` with a borrowed, reusable `ServicePortsOpts` value."]
+    pub async fn ports_opts(
+        &self,
+        opts: &ServicePortsOpts,
+    ) -> Result<Vec<super::Port>, crate::QueryError> {
+        let query = self.selection.select("ports");
+        let query = if let Some(value) = &opts.declared {
+            query.arg("declared", value)
+        } else {
+            query
+        };
         let query = query.select("id");
         query
             .execute_reentry::<super::Port, Vec<crate::Id>>(&self.session, "Port")

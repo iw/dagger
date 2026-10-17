@@ -1,13 +1,33 @@
 //! Generated Dagger core-schema bindings and stable public re-exports.
-// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:ff790b6fb1eb0a72354a8c293c862f5c2018bcc7526ce048e4ad67e34abc6ffe","target_revision":"a4e1e4ff663e5e51c2b96c2c0772f3d2f00cfb94"}
+// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:8cbd134fc17405aa0ae54b45640f4bd6b93a022bd4a2c4594375f3658962bf7f","target_revision":"249edbd646e63c5181053c8af72623ed9bdf030d"}
 #[path = "address.rs"]
 mod address;
 #[path = "agent.rs"]
 mod agent;
-#[path = "agent_group.rs"]
-mod agent_group;
+#[path = "agent_message.rs"]
+mod agent_message;
+#[path = "agent_message_delivery.rs"]
+mod agent_message_delivery;
+#[path = "agent_state.rs"]
+mod agent_state;
+#[path = "artifact.rs"]
+mod artifact;
+#[path = "artifact_dimension.rs"]
+mod artifact_dimension;
+#[path = "artifact_dimension_key.rs"]
+mod artifact_dimension_key;
+#[path = "artifact_dimension_kind.rs"]
+mod artifact_dimension_kind;
+#[path = "artifact_path.rs"]
+mod artifact_path;
+#[path = "artifact_result.rs"]
+mod artifact_result;
+#[path = "artifacts.rs"]
+mod artifacts;
 #[path = "build_arg.rs"]
 mod build_arg;
+#[path = "bytes.rs"]
+mod bytes;
 #[path = "cache_sharing_mode.rs"]
 mod cache_sharing_mode;
 #[path = "cache_volume.rs"]
@@ -20,22 +40,20 @@ mod changeset_merge_conflict;
 mod changesets_merge_conflict;
 #[path = "check.rs"]
 mod check;
-#[path = "check_group.rs"]
-mod check_group;
 #[path = "client_filesync_mirror.rs"]
 mod client_filesync_mirror;
 #[path = "cloud.rs"]
 mod cloud;
+#[path = "collection_delta.rs"]
+mod collection_delta;
+#[path = "collection_type_def.rs"]
+mod collection_type_def;
+#[path = "command.rs"]
+mod command;
 #[path = "container.rs"]
 mod container;
 #[path = "current_module.rs"]
 mod current_module;
-#[path = "current_module_as_sdk.rs"]
-mod current_module_as_sdk;
-#[path = "current_module_as_sdk_client.rs"]
-mod current_module_as_sdk_client;
-#[path = "current_module_as_sdk_module.rs"]
-mod current_module_as_sdk_module;
 #[path = "diff_stat.rs"]
 mod diff_stat;
 #[path = "diff_stat_kind.rs"]
@@ -64,6 +82,8 @@ mod error;
 mod error_value;
 #[path = "exists_type.rs"]
 mod exists_type;
+#[path = "expertise.rs"]
+mod expertise;
 #[path = "exportable.rs"]
 mod exportable;
 #[path = "field_type_def.rs"]
@@ -86,12 +106,20 @@ mod function_call_arg_value;
 mod generated_code;
 #[path = "generator.rs"]
 mod generator;
-#[path = "generator_group.rs"]
-mod generator_group;
+#[path = "git_bundle.rs"]
+mod git_bundle;
+#[path = "git_bundle_ref.rs"]
+mod git_bundle_ref;
 #[path = "git_commit.rs"]
 mod git_commit;
+#[path = "git_push_disposition.rs"]
+mod git_push_disposition;
+#[path = "git_push_result.rs"]
+mod git_push_result;
 #[path = "git_ref.rs"]
 mod git_ref;
+#[path = "git_remote.rs"]
+mod git_remote;
 #[path = "git_repository.rs"]
 mod git_repository;
 #[path = "healthcheck_config.rs"]
@@ -116,6 +144,8 @@ mod label;
 mod list_type_def;
 #[path = "llm.rs"]
 mod llm;
+#[path = "llm_content.rs"]
+mod llm_content;
 #[path = "llm_content_block.rs"]
 mod llm_content_block;
 #[path = "llm_content_block_input.rs"]
@@ -124,6 +154,12 @@ mod llm_content_block_input;
 mod llm_content_block_kind;
 #[path = "llm_message.rs"]
 mod llm_message;
+#[path = "llm_message_origin.rs"]
+mod llm_message_origin;
+#[path = "llm_message_origin_input.rs"]
+mod llm_message_origin_input;
+#[path = "llm_message_origin_kind.rs"]
+mod llm_message_origin_kind;
 #[path = "llm_message_role.rs"]
 mod llm_message_role;
 #[path = "llm_skill.rs"]
@@ -190,14 +226,16 @@ mod terminal;
 mod type_def;
 #[path = "type_def_kind.rs"]
 mod type_def_kind;
-#[path = "up.rs"]
-mod up;
-#[path = "up_group.rs"]
-mod up_group;
 #[path = "volume.rs"]
 mod volume;
 #[path = "workspace.rs"]
 mod workspace;
+#[path = "workspace_commit_pick.rs"]
+mod workspace_commit_pick;
+#[path = "workspace_commit_pick_reason.rs"]
+mod workspace_commit_pick_reason;
+#[path = "workspace_commit_pick_status.rs"]
+mod workspace_commit_pick_status;
 #[path = "workspace_git.rs"]
 mod workspace_git;
 #[path = "workspace_migration.rs"]
@@ -212,22 +250,31 @@ mod workspace_module_setting;
 mod workspace_sdk;
 pub use address::*;
 pub use agent::*;
-pub use agent_group::*;
+pub use agent_message::*;
+pub use agent_message_delivery::*;
+pub use agent_state::*;
+pub use artifact::*;
+pub use artifact_dimension::*;
+pub use artifact_dimension_key::*;
+pub use artifact_dimension_kind::*;
+pub use artifact_path::*;
+pub use artifact_result::*;
+pub use artifacts::*;
 pub use build_arg::*;
+pub use bytes::*;
 pub use cache_sharing_mode::*;
 pub use cache_volume::*;
 pub use changeset::*;
 pub use changeset_merge_conflict::*;
 pub use changesets_merge_conflict::*;
 pub use check::*;
-pub use check_group::*;
 pub use client_filesync_mirror::*;
 pub use cloud::*;
+pub use collection_delta::*;
+pub use collection_type_def::*;
+pub use command::*;
 pub use container::*;
 pub use current_module::*;
-pub use current_module_as_sdk::*;
-pub use current_module_as_sdk_client::*;
-pub use current_module_as_sdk_module::*;
 pub use diff_stat::*;
 pub use diff_stat_kind::*;
 pub use directory::*;
@@ -242,6 +289,7 @@ pub use env_variable::*;
 pub use error::*;
 pub use error_value::*;
 pub use exists_type::*;
+pub use expertise::*;
 pub use exportable::*;
 pub use field_type_def::*;
 pub use file::*;
@@ -253,9 +301,13 @@ pub use function_call::*;
 pub use function_call_arg_value::*;
 pub use generated_code::*;
 pub use generator::*;
-pub use generator_group::*;
+pub use git_bundle::*;
+pub use git_bundle_ref::*;
 pub use git_commit::*;
+pub use git_push_disposition::*;
+pub use git_push_result::*;
 pub use git_ref::*;
+pub use git_remote::*;
 pub use git_repository::*;
 pub use healthcheck_config::*;
 pub use host::*;
@@ -268,10 +320,14 @@ pub use json_value::*;
 pub use label::*;
 pub use list_type_def::*;
 pub use llm::*;
+pub use llm_content::*;
 pub use llm_content_block::*;
 pub use llm_content_block_input::*;
 pub use llm_content_block_kind::*;
 pub use llm_message::*;
+pub use llm_message_origin::*;
+pub use llm_message_origin_input::*;
+pub use llm_message_origin_kind::*;
 pub use llm_message_role::*;
 pub use llm_skill::*;
 pub use llm_token_usage::*;
@@ -305,10 +361,11 @@ pub use syncer::*;
 pub use terminal::*;
 pub use type_def::*;
 pub use type_def_kind::*;
-pub use up::*;
-pub use up_group::*;
 pub use volume::*;
 pub use workspace::*;
+pub use workspace_commit_pick::*;
+pub use workspace_commit_pick_reason::*;
+pub use workspace_commit_pick_status::*;
 pub use workspace_git::*;
 pub use workspace_migration::*;
 pub use workspace_migration_step::*;

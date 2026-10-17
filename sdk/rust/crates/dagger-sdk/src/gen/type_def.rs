@@ -1,5 +1,5 @@
 //! Generated bindings owned by the GraphQL `TypeDef` type.
-// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:ff790b6fb1eb0a72354a8c293c862f5c2018bcc7526ce048e4ad67e34abc6ffe","target_revision":"a4e1e4ff663e5e51c2b96c2c0772f3d2f00cfb94"}
+// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:8cbd134fc17405aa0ae54b45640f4bd6b93a022bd4a2c4594375f3658962bf7f","target_revision":"249edbd646e63c5181053c8af72623ed9bdf030d"}
 #[doc = "A definition of a parameter or return type in a Module."]
 #[derive(Clone)]
 pub struct TypeDef {
@@ -230,6 +230,19 @@ impl From<TypeDef> for crate::IdInput<super::NodeClient> {
     }
 }
 impl TypeDef {
+    #[doc = "Collection metadata, or null if this object is not a collection.\n\nSelects GraphQL field `asCollection` on `TypeDef`."]
+    pub async fn as_collection(
+        &self,
+    ) -> Result<Option<super::CollectionTypeDef>, crate::QueryError> {
+        let query = self.selection.select("asCollection");
+        let query = query.select("id");
+        query
+            .execute_reentry::<super::CollectionTypeDef, Option<crate::Id>>(
+                &self.session,
+                "CollectionTypeDef",
+            )
+            .await
+    }
     #[doc = "If kind is ENUM, the enum-specific type definition. If kind is not ENUM, this will be null.\n\nSelects GraphQL field `asEnum` on `TypeDef`."]
     pub async fn as_enum(&self) -> Result<Option<super::EnumTypeDef>, crate::QueryError> {
         let query = self.selection.select("asEnum");
@@ -309,6 +322,45 @@ impl TypeDef {
     pub async fn optional(&self) -> Result<bool, crate::QueryError> {
         let query = self.selection.select("optional");
         query.execute(&self.session).await
+    }
+    #[doc = "Mark this object as a collection.\n\nSelects GraphQL field `withCollection` on `TypeDef`."]
+    #[must_use]
+    pub fn with_collection(&self) -> super::TypeDef {
+        let query = self.selection.select("withCollection");
+        super::TypeDef {
+            session: self.session.clone(),
+            selection: query,
+        }
+    }
+    #[doc = "Select the field that receives changes from the original collection.\n\nSelects GraphQL field `withCollectionDelta` on `TypeDef`."]
+    #[must_use]
+    pub fn with_collection_delta(&self, name: impl Into<String>) -> super::TypeDef {
+        let query = self.selection.select("withCollectionDelta");
+        let query = query.arg("name", name.into());
+        super::TypeDef {
+            session: self.session.clone(),
+            selection: query,
+        }
+    }
+    #[doc = "Select the item lookup function for this collection.\n\nSelects GraphQL field `withCollectionGet` on `TypeDef`."]
+    #[must_use]
+    pub fn with_collection_get(&self, name: impl Into<String>) -> super::TypeDef {
+        let query = self.selection.select("withCollectionGet");
+        let query = query.arg("name", name.into());
+        super::TypeDef {
+            session: self.session.clone(),
+            selection: query,
+        }
+    }
+    #[doc = "Select the stored keys field for this collection.\n\nSelects GraphQL field `withCollectionKeys` on `TypeDef`."]
+    #[must_use]
+    pub fn with_collection_keys(&self, name: impl Into<String>) -> super::TypeDef {
+        let query = self.selection.select("withCollectionKeys");
+        let query = query.arg("name", name.into());
+        super::TypeDef {
+            session: self.session.clone(),
+            selection: query,
+        }
     }
     #[doc = "Adds a function for constructing a new instance of an Object TypeDef, failing if the type is not an object.\n\nSelects GraphQL field `withConstructor` on `TypeDef`."]
     #[must_use]

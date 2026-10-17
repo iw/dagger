@@ -1,5 +1,5 @@
 //! Generated bindings owned by the GraphQL `GitCommit` type.
-// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:ff790b6fb1eb0a72354a8c293c862f5c2018bcc7526ce048e4ad67e34abc6ffe","target_revision":"a4e1e4ff663e5e51c2b96c2c0772f3d2f00cfb94"}
+// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:8cbd134fc17405aa0ae54b45640f4bd6b93a022bd4a2c4594375f3658962bf7f","target_revision":"249edbd646e63c5181053c8af72623ed9bdf030d"}
 #[doc = "An immutable git commit."]
 #[derive(Clone)]
 pub struct GitCommit {
@@ -18,6 +18,21 @@ impl GitCommitAncestorReleaseTagOpts {
     #[must_use]
     pub fn with_include_pre_release(mut self, value: bool) -> Self {
         self.include_pre_release = Some(value);
+        self
+    }
+}
+#[doc = "Owned optional arguments for GraphQL operation `GitCommit.changes`; reuse does not mutate caller state."]
+#[derive(Clone, Debug, Default)]
+#[non_exhaustive]
+pub struct GitCommitChangesOpts {
+    #[doc = "Use this commit as the comparison base instead of the first parent. The comparison commit may belong to an unrelated history or repository.\n\n`None` omits GraphQL field `against`."]
+    pub against: Option<crate::IdInput<super::GitCommit>>,
+}
+impl GitCommitChangesOpts {
+    #[doc = "Sets GraphQL argument `against` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_against(mut self, value: crate::IdInput<super::GitCommit>) -> Self {
+        self.against = Some(value);
         self
     }
 }
@@ -136,6 +151,29 @@ impl GitCommit {
     pub async fn authored_date(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("authoredDate");
         query.execute(&self.session).await
+    }
+    #[doc = "Returns the changes from the first parent to this commit, excluding Git metadata.\n\nRoot commits are compared with an empty tree. Merge commits are compared with their first parent, not a merge base.\n\nSelects GraphQL field `changes` on `GitCommit`."]
+    #[must_use]
+    pub fn changes(&self) -> super::Changeset {
+        let query = self.selection.select("changes");
+        super::Changeset {
+            session: self.session.clone(),
+            selection: query,
+        }
+    }
+    #[doc = "Executes GraphQL operation `changes` with a borrowed, reusable `GitCommitChangesOpts` value."]
+    #[must_use]
+    pub fn changes_opts(&self, opts: &GitCommitChangesOpts) -> super::Changeset {
+        let query = self.selection.select("changes");
+        let query = if let Some(value) = &opts.against {
+            query.arg_id_input("against", value.clone())
+        } else {
+            query
+        };
+        super::Changeset {
+            session: self.session.clone(),
+            selection: query,
+        }
     }
     #[doc = "Git committer date, in RFC3339 format.\n\nSelects GraphQL field `committedDate` on `GitCommit`."]
     pub async fn committed_date(&self) -> Result<String, crate::QueryError> {

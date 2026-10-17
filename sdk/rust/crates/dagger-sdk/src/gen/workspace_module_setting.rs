@@ -1,5 +1,5 @@
 //! Generated bindings owned by the GraphQL `WorkspaceModuleSetting` type.
-// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:ff790b6fb1eb0a72354a8c293c862f5c2018bcc7526ce048e4ad67e34abc6ffe","target_revision":"a4e1e4ff663e5e51c2b96c2c0772f3d2f00cfb94"}
+// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:8cbd134fc17405aa0ae54b45640f4bd6b93a022bd4a2c4594375f3658962bf7f","target_revision":"249edbd646e63c5181053c8af72623ed9bdf030d"}
 #[doc = "A constructor-backed module setting."]
 #[derive(Clone)]
 pub struct WorkspaceModuleSetting {
@@ -37,6 +37,11 @@ impl From<WorkspaceModuleSetting> for crate::IdInput<super::NodeClient> {
     }
 }
 impl WorkspaceModuleSetting {
+    #[doc = "The constructor argument's declared default, formatted like value, or empty when the argument has no default.\n\nSelects GraphQL field `defaultValue` on `WorkspaceModuleSetting`."]
+    pub async fn default_value(&self) -> Result<String, crate::QueryError> {
+        let query = self.selection.select("defaultValue");
+        query.execute(&self.session).await
+    }
     #[doc = "The constructor argument description.\n\nSelects GraphQL field `description` on `WorkspaceModuleSetting`."]
     pub async fn description(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("description");
@@ -52,12 +57,22 @@ impl WorkspaceModuleSetting {
         let query = self.selection.select("isList");
         query.execute(&self.session).await
     }
+    #[doc = "Whether the setting is an object type resolved from an address string (Container, Directory, File, Secret, Service, ...), which may be a module reference.\n\nSelects GraphQL field `isObject` on `WorkspaceModuleSetting`."]
+    pub async fn is_object(&self) -> Result<bool, crate::QueryError> {
+        let query = self.selection.select("isObject");
+        query.execute(&self.session).await
+    }
+    #[doc = "Whether the setting is a string argument, stored as a TOML string even when the value reads as a number or boolean.\n\nSelects GraphQL field `isString` on `WorkspaceModuleSetting`."]
+    pub async fn is_string(&self) -> Result<bool, crate::QueryError> {
+        let query = self.selection.select("isString");
+        query.execute(&self.session).await
+    }
     #[doc = "The setting key.\n\nSelects GraphQL field `key` on `WorkspaceModuleSetting`."]
     pub async fn key(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("key");
         query.execute(&self.session).await
     }
-    #[doc = "The configured value after applying the selected workspace environment, or empty when unset.\n\nSelects GraphQL field `value` on `WorkspaceModuleSetting`."]
+    #[doc = "The value stored in workspace config after applying the selected workspace environment, or empty when unset.\n\nSelects GraphQL field `value` on `WorkspaceModuleSetting`."]
     pub async fn value(&self) -> Result<String, crate::QueryError> {
         let query = self.selection.select("value");
         query.execute(&self.session).await

@@ -1,10 +1,25 @@
 //! Generated bindings owned by the GraphQL `Query` type.
-// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:ff790b6fb1eb0a72354a8c293c862f5c2018bcc7526ce048e4ad67e34abc6ffe","target_revision":"a4e1e4ff663e5e51c2b96c2c0772f3d2f00cfb94"}
+// @generated {"format":"dagger-rust-client-v1","ownership":"dagger-codegen","schema_digest":"sha256:8cbd134fc17405aa0ae54b45640f4bd6b93a022bd4a2c4594375f3658962bf7f","target_revision":"249edbd646e63c5181053c8af72623ed9bdf030d"}
 #[doc = "The root of the DAG."]
 #[derive(Clone)]
 pub struct Query {
     pub(crate) session: crate::lifecycle::SessionHandle,
     pub(crate) selection: crate::query::Selection,
+}
+#[doc = "Owned optional arguments for GraphQL operation `Query.blob`; reuse does not mutate caller state."]
+#[derive(Clone, Debug, Default)]
+#[non_exhaustive]
+pub struct QueryBlobOpts {
+    #[doc = "Permissions of the new file. Example: 0600\n\n`None` omits GraphQL field `permissions` and preserves engine default `Int(420)`."]
+    pub permissions: Option<i64>,
+}
+impl QueryBlobOpts {
+    #[doc = "Sets GraphQL argument `permissions` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_permissions(mut self, value: i64) -> Self {
+        self.permissions = Some(value);
+        self
+    }
 }
 #[doc = "Owned optional arguments for GraphQL operation `Query.cacheVolume`; reuse does not mutate caller state."]
 #[derive(Clone, Debug, Default)]
@@ -265,6 +280,8 @@ pub struct QueryModuleSourceOpts {
     pub ref_pin: Option<String>,
     #[doc = "If set, error out if the ref string is not of the provided requireKind.\n\n`None` omits GraphQL field `requireKind`."]
     pub require_kind: Option<super::ModuleSourceKind>,
+    #[doc = "Version query for a Git module source.\n\n`None` omits GraphQL field `version` and preserves engine default `String(\"\")`."]
+    pub version: Option<String>,
 }
 impl QueryModuleSourceOpts {
     #[doc = "Sets GraphQL argument `allowNotExists` to a concrete value instead of omitting it."]
@@ -291,6 +308,12 @@ impl QueryModuleSourceOpts {
         self.require_kind = Some(value);
         self
     }
+    #[doc = "Sets GraphQL argument `version` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_version(mut self, value: impl Into<String>) -> Self {
+        self.version = Some(value.into());
+        self
+    }
 }
 #[doc = "Owned optional arguments for GraphQL operation `Query.secret`; reuse does not mutate caller state."]
 #[derive(Clone, Debug, Default)]
@@ -304,6 +327,21 @@ impl QuerySecretOpts {
     #[must_use]
     pub fn with_cache_key(mut self, value: impl Into<String>) -> Self {
         self.cache_key = Some(value.into());
+        self
+    }
+}
+#[doc = "Owned optional arguments for GraphQL operation `Query.serveModule`; reuse does not mutate caller state."]
+#[derive(Clone, Debug, Default)]
+#[non_exhaustive]
+pub struct QueryServeModuleOpts {
+    #[doc = "The pinned version of a remote module address.\n\n`None` omits GraphQL field `refPin` and preserves engine default `String(\"\")`."]
+    pub ref_pin: Option<String>,
+}
+impl QueryServeModuleOpts {
+    #[doc = "Sets GraphQL argument `refPin` to a concrete value instead of omitting it."]
+    #[must_use]
+    pub fn with_ref_pin(mut self, value: impl Into<String>) -> Self {
+        self.ref_pin = Some(value.into());
         self
     }
 }
@@ -377,12 +415,44 @@ impl From<Query> for crate::IdInput<super::NodeClient> {
     }
 }
 impl Query {
-    #[doc = "initialize an address to load directories, containers, secrets or other object types.\n\nSelects GraphQL field `address` on `Query`."]
+    #[doc = "Resolve external references only.\n\nSelects GraphQL field `address` on `Query`."]
     #[must_use]
     pub fn address(&self, value: impl Into<String>) -> super::Address {
         let query = self.selection.select("address");
         let query = query.arg("value", value.into());
         super::Address {
+            session: self.session.clone(),
+            selection: query,
+        }
+    }
+    #[doc = "Creates a file from arbitrary binary contents.\n\nSelects GraphQL field `blob` on `Query`."]
+    #[must_use]
+    pub fn blob(&self, contents: super::Bytes, name: impl Into<String>) -> super::File {
+        let query = self.selection.select("blob");
+        let query = query.arg("contents", contents);
+        let query = query.arg("name", name.into());
+        super::File {
+            session: self.session.clone(),
+            selection: query,
+        }
+    }
+    #[doc = "Executes GraphQL operation `blob` with a borrowed, reusable `QueryBlobOpts` value."]
+    #[must_use]
+    pub fn blob_opts(
+        &self,
+        contents: super::Bytes,
+        name: impl Into<String>,
+        opts: &QueryBlobOpts,
+    ) -> super::File {
+        let query = self.selection.select("blob");
+        let query = query.arg("contents", contents);
+        let query = query.arg("name", name.into());
+        let query = if let Some(value) = &opts.permissions {
+            query.arg("permissions", value)
+        } else {
+            query
+        };
+        super::File {
             session: self.session.clone(),
             selection: query,
         }
@@ -493,6 +563,11 @@ impl Query {
             session: self.session.clone(),
             selection: query,
         }
+    }
+    #[doc = "The current UTC time in RFC3339 format. Never cached.\n\nSelects GraphQL field `currentTimestamp` on `Query`."]
+    pub async fn current_timestamp(&self) -> Result<String, crate::QueryError> {
+        let query = self.selection.select("currentTimestamp");
+        query.execute(&self.session).await
     }
     #[doc = "The TypeDef representations of the objects currently being served in the session.\n\nSelects GraphQL field `currentTypeDefs` on `Query`."]
     pub async fn current_type_defs(&self) -> Result<Vec<super::TypeDef>, crate::QueryError> {
@@ -828,6 +903,15 @@ impl Query {
             selection: query,
         }
     }
+    #[doc = "Start an empty run of text and media content, independent of any conversation.\n\nAdd blocks with withText, withFile, and withData. A function exposed as an LLM tool can return the content to give the model text and media as the tool's result, e.g. a caption and a screenshot for the model to look at.\n\nSelects GraphQL field `llmContent` on `Query`.\n\n**Experimental:** LLM support is not yet stabilized"]
+    #[must_use]
+    pub fn llm_content(&self) -> super::LlmContent {
+        let query = self.selection.select("llmContent");
+        super::LlmContent {
+            session: self.session.clone(),
+            selection: query,
+        }
+    }
     #[doc = "Create a new module.\n\nSelects GraphQL field `module` on `Query`."]
     #[must_use]
     pub fn module(&self) -> super::Module {
@@ -873,6 +957,11 @@ impl Query {
         let query = query.arg("refString", ref_string.into());
         let query = if let Some(value) = &opts.require_kind {
             query.arg("requireKind", value)
+        } else {
+            query
+        };
+        let query = if let Some(value) = &opts.version {
+            query.arg("version", value)
         } else {
             query
         };
@@ -928,6 +1017,27 @@ impl Query {
             selection: query,
         }
     }
+    #[doc = "Load the module at the given address and serve its API in the current session.\n\nA local address resolves against the caller's workspace, so a generated client can serve the module it is bound to without reaching for the workspace itself.\n\nSelects GraphQL field `serveModule` on `Query`."]
+    pub async fn serve_module(&self, address: impl Into<String>) -> Result<(), crate::QueryError> {
+        let query = self.selection.select("serveModule");
+        let query = query.arg("address", address.into());
+        query.execute_void(&self.session).await
+    }
+    #[doc = "Executes GraphQL operation `serveModule` with a borrowed, reusable `QueryServeModuleOpts` value."]
+    pub async fn serve_module_opts(
+        &self,
+        address: impl Into<String>,
+        opts: &QueryServeModuleOpts,
+    ) -> Result<(), crate::QueryError> {
+        let query = self.selection.select("serveModule");
+        let query = query.arg("address", address.into());
+        let query = if let Some(value) = &opts.ref_pin {
+            query.arg("refPin", value)
+        } else {
+            query
+        };
+        query.execute_void(&self.session).await
+    }
     #[doc = "Sets a secret given a user defined name to its plaintext and returns the secret.\n\nThe plaintext value is limited to a size of 128000 bytes.\n\nSelects GraphQL field `setSecret` on `Query`."]
     #[must_use]
     pub fn set_secret(
@@ -942,6 +1052,15 @@ impl Query {
             session: self.session.clone(),
             selection: query,
         }
+    }
+    #[doc = "Name the current session.\n\nThe title renames the session wherever its telemetry is shown (the calling client's primary span, e.g. the CLI's command span) and labels its engine archive, as listed by dagger agent --resume. The latest title wins. Only the session's main client may set it.\n\nSelects GraphQL field `setSessionTitle` on `Query`.\n\n**Experimental:** Session APIs are likely to change."]
+    pub async fn set_session_title(
+        &self,
+        title: impl Into<String>,
+    ) -> Result<(), crate::QueryError> {
+        let query = self.selection.select("setSessionTitle");
+        let query = query.arg("title", title.into());
+        query.execute_void(&self.session).await
     }
     #[doc = "Creates source map metadata.\n\nSelects GraphQL field `sourceMap` on `Query`."]
     #[must_use]
