@@ -1,0 +1,7 @@
+kind: Fixed
+body: |
+    Module generation is idempotent: identical authored source regenerates identical bytes, because the generated `src/bin/dagger-module.rs` entrypoint no longer enters the authoring snapshot whose descriptor it embeds.
+time: 2026-10-17T00:00:06Z
+custom:
+    Author: iw
+    PR: ""

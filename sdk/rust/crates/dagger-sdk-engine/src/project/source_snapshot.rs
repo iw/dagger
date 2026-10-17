@@ -26,6 +26,12 @@ pub const MAX_SOURCE_FILE_BYTES: u64 = 2 * 1024 * 1024;
 pub const MAX_SOURCE_TOTAL_BYTES: u64 = 32 * 1024 * 1024;
 
 const EXCLUDED_DIRECTORIES: &[&str] = &[".git", ".hg", ".svn", "target", "dagger_generated"];
+// `dagger_generated/` and the generated entrypoint are rendered from the descriptor
+// this snapshot feeds, and both embed that descriptor's digest. Admitting either would
+// make each generation's output an input to the next descriptor, so identical authored
+// source could never regenerate identical bytes. The runtime's semantic source digest
+// excludes the same paths.
+const GENERATED_ENTRYPOINT: &str = "src/bin/dagger-module.rs";
 
 /// Explicit resource limits for confined source capture.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -293,7 +299,9 @@ fn collect_source_files(
                 continue;
             }
             collect_source_files(package_root, &path, paths)?;
-        } else if metadata.is_file() && path.extension().is_some_and(|extension| extension == "rs")
+        } else if metadata.is_file()
+            && path.extension().is_some_and(|extension| extension == "rs")
+            && path.strip_prefix(package_root).ok() != Some(Path::new(GENERATED_ENTRYPOINT))
         {
             paths.push(path);
         }
@@ -355,6 +363,46 @@ mod tests {
             prop_assert!(first.documents.keys().all(|path| !path.as_str().starts_with("target/")));
             prop_assert_eq!(first.documents.len(), extra_files + 2);
         }
+    }
+
+    #[test]
+    fn generated_outputs_never_enter_the_snapshot() {
+        let fixture = Fixture::new(1, false);
+        let authored = fixture.build().unwrap();
+        for (path, contents) in [
+            (
+                "src/bin/dagger-module.rs",
+                "// descriptor: sha256:first\nfn main() {}\n",
+            ),
+            (
+                "src/dagger_generated/mod.rs",
+                "// descriptor: sha256:first\n",
+            ),
+        ] {
+            let destination = fixture.package.join(path);
+            fs::create_dir_all(destination.parent().expect("generated path has a parent"))
+                .expect("generated fixture directory");
+            fs::write(destination, contents).expect("generated fixture");
+        }
+        assert_eq!(fixture.build().unwrap(), authored);
+
+        fs::write(
+            fixture.package.join("src/bin/dagger-module.rs"),
+            "// descriptor: sha256:second\nfn main() {}\n",
+        )
+        .expect("regenerated fixture");
+        assert_eq!(fixture.build().unwrap().digest, authored.digest);
+
+        fs::write(fixture.package.join("src/bin/tool.rs"), "fn main() {}\n")
+            .expect("authored binary fixture");
+        assert!(
+            fixture
+                .build()
+                .unwrap()
+                .documents
+                .keys()
+                .any(|path| path.as_str() == "src/bin/tool.rs")
+        );
     }
 
     #[cfg(unix)]
