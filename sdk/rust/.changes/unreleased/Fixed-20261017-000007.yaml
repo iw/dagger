@@ -1,0 +1,7 @@
+kind: Fixed
+body: |
+    Module generation records its generated paths in the module's own `.gitattributes` relative to the module, so the entries match the generated files instead of repository-root spellings that match nothing.
+time: 2026-10-17T00:00:07Z
+custom:
+    Author: iw
+    PR: ""

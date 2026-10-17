@@ -307,16 +307,17 @@ func RebaseOperationPath(candidate string) (string, error) {
 	return path.Join("workspace", candidate), nil
 }
 
-// StripOperationRoot converts private operation paths back into caller-context paths.
-func StripOperationRoot(paths []string) ([]string, error) {
+// StripOperationRoot converts private operation paths into paths relative to root,
+// itself an operation path such as the workspace root or a module source root.
+func StripOperationRoot(paths []string, root string) ([]string, error) {
 	stripped := make([]string, 0, len(paths))
 	for _, candidate := range paths {
-		if candidate == "workspace" {
-			return nil, fmt.Errorf("operation returned the workspace root as a VCS path")
+		if candidate == root {
+			return nil, fmt.Errorf("operation returned its root as a VCS path")
 		}
-		value, ok := strings.CutPrefix(candidate, "workspace/")
+		value, ok := strings.CutPrefix(candidate, root+"/")
 		if !ok || value == "" {
-			return nil, fmt.Errorf("operation returned an unscoped VCS path")
+			return nil, fmt.Errorf("operation returned a VCS path outside its root")
 		}
 		stripped = append(stripped, value)
 	}

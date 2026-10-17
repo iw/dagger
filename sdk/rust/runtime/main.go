@@ -404,7 +404,9 @@ func clientInitializationRequestDocument(
 }
 
 // Codegen compiles the engine-visible schema into the scoped module context and
-// returns the Rust-owned VCS policy emitted by the same operation plan.
+// returns the Rust-owned VCS policy emitted by the same operation plan. The engine
+// writes that policy into the module's own .gitattributes and .gitignore, so its
+// paths are relative to the module source root rather than the context.
 func (sdk *RustSDK) Codegen(
 	ctx context.Context,
 	modSource *dagger.ModuleSource,
@@ -425,11 +427,11 @@ func (sdk *RustSDK) Codegen(
 	if err != nil {
 		return nil, err
 	}
-	generated, err := stripWorkspacePaths(execution.result.VCSGenerated)
+	generated, err := metadata.StripOperationRoot(execution.result.VCSGenerated, identity.SourceSubpath)
 	if err != nil {
 		return nil, err
 	}
-	ignored, err := stripWorkspacePaths(execution.result.VCSIgnored)
+	ignored, err := metadata.StripOperationRoot(execution.result.VCSIgnored, identity.SourceSubpath)
 	if err != nil {
 		return nil, err
 	}
@@ -797,8 +799,4 @@ func semanticModuleSourceDigest(
 // an empty capability path. Rebasing does not change caller-visible result paths.
 func rebasePath(candidate string) (string, error) {
 	return metadata.RebaseOperationPath(candidate)
-}
-
-func stripWorkspacePaths(paths []string) ([]string, error) {
-	return metadata.StripOperationRoot(paths)
 }

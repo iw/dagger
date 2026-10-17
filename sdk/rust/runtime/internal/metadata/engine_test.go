@@ -46,21 +46,37 @@ func TestProperty06InitializationWorkingDirectoryRebasesToOneModuleIdentity(t *t
 	}
 }
 
-func TestOperationVCSPathsRemainRelativeToCallerContext(t *testing.T) {
+func TestOperationVCSPathsRemainRelativeToTheirRoot(t *testing.T) {
 	t.Parallel()
 
-	paths, err := StripOperationRoot([]string{
+	operationPaths := []string{
 		"workspace/module/.dagger/rust/operation-manifest.json",
 		"workspace/module/src/dagger_generated/client.rs",
-	})
+	}
+	paths, err := StripOperationRoot(operationPaths, "workspace")
 	require.NoError(t, err)
 	require.Equal(t, []string{
 		"module/.dagger/rust/operation-manifest.json",
 		"module/src/dagger_generated/client.rs",
 	}, paths)
 
-	_, err = StripOperationRoot([]string{"foreign/source.rs"})
-	require.Error(t, err)
+	// The engine anchors module VCS policy at the module's own .gitattributes and
+	// .gitignore, so module paths are relative to the module source root.
+	paths, err = StripOperationRoot(operationPaths, "workspace/module")
+	require.NoError(t, err)
+	require.Equal(t, []string{
+		".dagger/rust/operation-manifest.json",
+		"src/dagger_generated/client.rs",
+	}, paths)
+
+	for _, invalid := range [][]string{
+		{"foreign/source.rs"},
+		{"workspace/module"},
+		{"workspace/module-sibling/src/lib.rs"},
+	} {
+		_, err = StripOperationRoot(invalid, "workspace/module")
+		require.Error(t, err, invalid)
+	}
 }
 
 func TestEngineDiagnosticDecoderAcceptsOnlyBoundedCanonicalSafeContent(t *testing.T) {
