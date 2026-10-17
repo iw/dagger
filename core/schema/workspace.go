@@ -13,6 +13,7 @@ import (
 	"strings"
 
 	"github.com/dagger/dagger/core"
+	"github.com/dagger/dagger/core/sdk/sdkmeta"
 	"github.com/dagger/dagger/core/workspace"
 	"github.com/dagger/dagger/dagql"
 	"github.com/dagger/dagger/dagql/call"
@@ -3267,6 +3268,63 @@ func selectVisibleGeneratorModules(entries []workspaceGeneratorModule) []workspa
 	return visible
 }
 
+// packagedWorkspaceSDKModules loads the installed SDKs whose module ships inside the
+// engine. Their workspace entries carry a bare built-in name, which workspace module
+// loading skips, yet their generators are the ones `dagger generate` runs to refresh
+// the modules and clients they manage. Each loads the way scoped init generation
+// loads it, under its workspace entry name, unless a served module already carries
+// that name. Unlike a workspace module, an SDK that fails to load is an error:
+// regeneration cannot repair the SDK that performs it, and skipping it would report
+// that nothing needs regenerating.
+func (s *workspaceSchema) packagedWorkspaceSDKModules(
+	ctx context.Context,
+	ws *core.Workspace,
+	served []dagql.ObjectResult[*core.Module],
+) ([]dagql.ObjectResult[*core.Module], error) {
+	if ws.ConfigFile == "" {
+		return nil, nil
+	}
+	cfg, err := readWorkspaceConfig(ctx, ws)
+	if err != nil {
+		return nil, err
+	}
+	configDir, err := workspaceConfigDirectory(ws)
+	if err != nil {
+		return nil, err
+	}
+	servedNames := make(map[string]struct{}, len(served))
+	for _, mod := range served {
+		servedNames[mod.Self().Name()] = struct{}{}
+	}
+	names := make([]string, 0, len(cfg.Modules))
+	for name := range cfg.Modules {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+
+	var mods []dagql.ObjectResult[*core.Module]
+	for _, name := range names {
+		entry := cfg.Modules[name]
+		// Rust is the only built-in SDK packaged as a module (see
+		// LoadBuiltinSDKModuleSource); every other built-in name is a binary SDK
+		// with no generators.
+		if entry.AsSDK == nil || entry.Source != sdkmeta.Rust {
+			continue
+		}
+		if _, ok := servedNames[name]; ok {
+			continue
+		}
+		mod, ok, err := s.workspaceSDKModule(ctx, ws, configDir, name, moduleEntrySourceWithPin(entry))
+		if err != nil {
+			return nil, err
+		}
+		if ok {
+			mods = append(mods, mod)
+		}
+	}
+	return mods, nil
+}
+
 func (s *workspaceSchema) generators(
 	ctx context.Context,
 	parentResult dagql.ObjectResult[*core.Workspace],
@@ -3300,6 +3358,11 @@ func (s *workspaceSchema) generators(
 	if err != nil {
 		return nil, err
 	}
+	sdkMods, err := s.packagedWorkspaceSDKModules(ctx, parent, mods)
+	if err != nil {
+		return nil, err
+	}
+	mods = append(mods, sdkMods...)
 
 	ignoreGenerators, err := workspaceConfigSkipPatterns(ctx, parent, func(e workspace.ModuleEntry) []string {
 		return e.Generate.Skip

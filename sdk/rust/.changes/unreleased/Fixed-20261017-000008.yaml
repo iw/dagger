@@ -1,0 +1,7 @@
+kind: Fixed
+body: |
+    `dagger generate` runs the installed Rust SDK's generators, so it regenerates Rust modules and clients after authored edits, including a module whose stale generated code keeps it from loading.
+time: 2026-10-17T00:00:08Z
+custom:
+    Author: iw
+    PR: ""

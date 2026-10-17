@@ -546,19 +546,14 @@ func (s *workspaceSchema) sdkGenerators(
 	if err != nil {
 		return nil, err
 	}
-	loaded, err := s.loadWorkspaceSDK(ctx, parent, staged.ConfigDir, sdkRef)
+	mod, ok, err := s.workspaceSDKModule(ctx, parent, staged.ConfigDir, sdkName, sdkRef)
 	if err != nil {
-		return nil, fmt.Errorf("load SDK %q: %w", sdkName, err)
+		return nil, err
 	}
-	mod, ok := loaded.AsModule()
 	if !ok {
 		// A builtin SDK is a packaged binary, not a module, so it has no
 		// generator functions to expose.
 		return &core.GeneratorGroup{}, nil
-	}
-	mod, err = moduleUnderWorkspaceName(ctx, mod, sdkName)
-	if err != nil {
-		return nil, fmt.Errorf("load SDK %q as %q: %w", sdkRef, sdkName, err)
 	}
 
 	gg, err := core.NewGeneratorGroup(ctx, mod, nil)
@@ -573,6 +568,31 @@ func (s *workspaceSchema) sdkGenerators(
 	// files.
 	gg.BoundWorkspace = parentResult
 	return gg, nil
+}
+
+// workspaceSDKModule loads the installed SDK sdkRef as the module its workspace
+// entry sdkName names. ok is false for an SDK that is a packaged binary rather than
+// a module.
+func (s *workspaceSchema) workspaceSDKModule(
+	ctx context.Context,
+	ws *core.Workspace,
+	configDir string,
+	sdkName string,
+	sdkRef string,
+) (_ dagql.ObjectResult[*core.Module], ok bool, _ error) {
+	loaded, err := s.loadWorkspaceSDK(ctx, ws, configDir, sdkRef)
+	if err != nil {
+		return dagql.ObjectResult[*core.Module]{}, false, fmt.Errorf("load SDK %q: %w", sdkName, err)
+	}
+	mod, ok := loaded.AsModule()
+	if !ok {
+		return dagql.ObjectResult[*core.Module]{}, false, nil
+	}
+	mod, err = moduleUnderWorkspaceName(ctx, mod, sdkName)
+	if err != nil {
+		return dagql.ObjectResult[*core.Module]{}, false, fmt.Errorf("load SDK %q as %q: %w", sdkRef, sdkName, err)
+	}
+	return mod, true, nil
 }
 
 // moduleUnderWorkspaceName reloads mod under the name its workspace entry gives
