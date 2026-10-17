@@ -14,10 +14,10 @@ const (
 	// rustSDKBuildImage matches the digest-pinned builder the engine-packaged content
 	// uses, so a self-built content root compiles the same helper from the same inputs.
 	rustSDKBuildImage = "rust:1.97.1-bookworm@sha256:705e294093973d7c10e83400393dce7b3611f8e03e55a80af7fff6d02ae1affb"
-	// sdkDependencyPath names the commit whose byte-identical SDK crates generated
-	// projects depend on. A commit cannot state its own hash, so the release that
-	// installs this runtime records the content commit in a later commit.
-	sdkDependencyPath = "runtime/assets/sdk-dependency.json"
+	// sdkDependencyPath, inside this runtime's own source, names the repository,
+	// commit, and workspace path of the SDK crates generated projects depend on. A
+	// commit cannot state its own hash, so a later commit records it.
+	sdkDependencyPath = "assets/sdk-dependency.json"
 )
 
 var fullRevision = regexp.MustCompile(`^[0-9a-f]{40}$`)
@@ -34,28 +34,46 @@ type checkedTarget struct {
 type sdkDependency struct {
 	Repository string `json:"repository"`
 	Revision   string `json:"revision"`
+	Workspace  string `json:"workspace"`
 }
 
 // resolved returns this SDK with a complete content root. An engine that packages
-// the Rust SDK supplies one with dist/ already sealed; a runtime installed from a
-// Git ref instead receives the sdk/rust workspace through its default path, and
-// seals the same layout from that workspace.
+// the Rust SDK passes one with dist/ already sealed. Installed as an ordinary
+// module, the runtime cannot take its workspace from a default path: with a
+// workspace bound into the call, engines resolve default paths against that
+// workspace rather than this module's source. It instead reads its pinned SDK
+// dependency from its own source and seals the content from that exact commit, so
+// the helper is built from the crates generated projects depend on.
 func (sdk *RustSDK) resolved(ctx context.Context) (*RustSDK, error) {
-	packaged, err := sdk.SDKSourceDir.Exists(ctx, engineDescriptorPath)
-	if err != nil {
-		return nil, fmt.Errorf("inspect Rust SDK content root: %w", err)
+	if sdk.SDKSourceDir != nil {
+		packaged, err := sdk.SDKSourceDir.Exists(ctx, engineDescriptorPath)
+		if err != nil {
+			return nil, fmt.Errorf("inspect Rust SDK content root: %w", err)
+		}
+		if packaged {
+			return sdk, nil
+		}
 	}
-	if packaged {
-		return sdk, nil
+	var dependency sdkDependency
+	if err := readJSON(ctx, dag.CurrentModule().Source().File(sdkDependencyPath), &dependency); err != nil {
+		return nil, fmt.Errorf("read Rust SDK dependency coordinates: %w", err)
 	}
-	content, err := sealWorkspaceContent(ctx, sdk.SDKSourceDir)
+	if !strings.HasPrefix(dependency.Repository, "https://") || strings.Contains(dependency.Repository, "@") ||
+		!fullRevision.MatchString(dependency.Revision) || dependency.Workspace == "" {
+		return nil, fmt.Errorf("Rust SDK dependency must name a credential-free HTTPS repository, one full commit, and a workspace path")
+	}
+	workspace := dag.Git(dependency.Repository).
+		Commit(dependency.Revision).
+		Tree(dagger.GitCommitTreeOpts{DiscardGitDir: true}).
+		Directory(dependency.Workspace)
+	content, err := sealWorkspaceContent(ctx, workspace, dependency)
 	if err != nil {
 		return nil, err
 	}
 	return &RustSDK{SDKSourceDir: content}, nil
 }
 
-func sealWorkspaceContent(ctx context.Context, workspace *dagger.Directory) (*dagger.Directory, error) {
+func sealWorkspaceContent(ctx context.Context, workspace *dagger.Directory, dependency sdkDependency) (*dagger.Directory, error) {
 	var target checkedTarget
 	if err := readJSON(ctx, workspace.File("codegen/target.json"), &target); err != nil {
 		return nil, fmt.Errorf("read Rust SDK checked target: %w", err)
@@ -63,14 +81,6 @@ func sealWorkspaceContent(ctx context.Context, workspace *dagger.Directory) (*da
 	if target.DaggerRepository == "" || !fullRevision.MatchString(target.DaggerRevision) ||
 		target.RustVersion == "" || target.RustSDKVersion == "" || target.SchemaDigest == "" {
 		return nil, fmt.Errorf("Rust SDK checked target is incomplete")
-	}
-	var dependency sdkDependency
-	if err := readJSON(ctx, workspace.File(sdkDependencyPath), &dependency); err != nil {
-		return nil, fmt.Errorf("read Rust SDK dependency coordinates: %w", err)
-	}
-	if !strings.HasPrefix(dependency.Repository, "https://") || strings.Contains(dependency.Repository, "@") ||
-		!fullRevision.MatchString(dependency.Revision) {
-		return nil, fmt.Errorf("Rust SDK dependency must be a credential-free HTTPS repository and one full commit")
 	}
 	platform, err := dag.DefaultPlatform(ctx)
 	if err != nil {

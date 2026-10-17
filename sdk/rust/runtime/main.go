@@ -49,13 +49,11 @@ type managedClientPlan struct {
 // New constructs the built-in adapter from the complete packaged SDK content root.
 func New(
 	// Complete engine-packaged Rust SDK content, including runtime and dist metadata.
+	// Absent when the runtime is installed as an ordinary module; operations then
+	// seal the content from the pinned SDK dependency.
 	// +optional
-	// +defaultPath=".."
 	sdkSourceDir *dagger.Directory,
 ) (*RustSDK, error) {
-	if sdkSourceDir == nil {
-		return nil, fmt.Errorf("sdk source directory not provided")
-	}
 	return &RustSDK{SDKSourceDir: sdkSourceDir}, nil
 }
 
