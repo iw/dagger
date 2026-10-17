@@ -897,17 +897,33 @@ fn declaration_references(declaration: &AuthoringDeclaration) -> Vec<String> {
                 references.extend(type_paths(&parameter.rust_type));
             }
         }
-        references.extend(type_paths(function.output.trim_start_matches("->").trim()));
+        references.extend(output_type_paths(&function.output));
     }
     for method in &declaration.interface_methods {
         for parameter in &method.parameters {
             references.extend(type_paths(&parameter.rust_type));
         }
-        references.extend(type_paths(method.output.trim_start_matches("->").trim()));
+        references.extend(output_type_paths(&method.output));
     }
     references.sort();
     references.dedup();
     references
+}
+
+// A fallible export's error reaches the engine through the declaring bridge's
+// `Into<ModuleError>` conversion and is never a target value, so only the success
+// type of a `Result` belongs to the exported type closure. This is the same split
+// the function and interface compilers apply to the return type.
+fn output_type_paths(output: &str) -> Vec<String> {
+    let Ok(parsed) = syn::parse_str::<Type>(output.trim().trim_start_matches("->").trim()) else {
+        return Vec::new();
+    };
+    let mut paths = Vec::new();
+    collect_type_paths(
+        super::types::result_success_type(&parsed).unwrap_or(&parsed),
+        &mut paths,
+    );
+    paths
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -1554,6 +1570,47 @@ mod tests {
                 .iter()
                 .any(|diagnostic| diagnostic.code() == ModuleDiagnosticCode::SourceModuleInvalid)
         );
+    }
+
+    #[test]
+    fn fallible_export_errors_stay_outside_the_type_closure() {
+        let snapshot = snapshot(vec![(
+            "src/lib.rs",
+            r#"
+                #[dagger_sdk::object(root)]
+                pub struct Root {}
+
+                pub struct Error;
+
+                #[dagger_sdk::methods]
+                impl Root {
+                    #[dagger(function)]
+                    pub fn direct(&self) -> Result<String, dagger_sdk::ModuleError> {
+                        Ok(String::new())
+                    }
+
+                    #[dagger(function)]
+                    pub fn local(&self) -> Result<String, Error> { Ok(String::new()) }
+                }
+            "#
+            .to_owned(),
+        )]);
+        let digest = snapshot.package_digest();
+        // A Core `Error` handle shares its final segment with the local error type; the
+        // closure must not resolve the error position against it.
+        let registry = GeneratedTypeRegistry::new(
+            digest.clone(),
+            [GeneratedTypeBinding {
+                rust_path: "dagger_sdk::Error".to_owned(),
+                target_name: "Error".to_owned(),
+                visible_schema_digest: digest,
+                kind: GeneratedTypeKind::Object,
+            }],
+        )
+        .unwrap();
+        let discovered = SourceDiscovery::discover(&snapshot, &registry).unwrap();
+        assert_eq!(discovered.root.as_str(), "crate::Root");
+        assert!(discovered.generated_types.is_empty());
     }
 
     #[test]

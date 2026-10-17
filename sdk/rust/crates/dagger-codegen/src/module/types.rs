@@ -958,7 +958,7 @@ fn compile_interface(
     Ok(contract)
 }
 
-fn result_success_type(ty: &Type) -> Option<&Type> {
+pub(super) fn result_success_type(ty: &Type) -> Option<&Type> {
     let Type::Path(path) = ty else {
         return None;
     };
