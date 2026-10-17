@@ -13,7 +13,7 @@ use dagger_codegen::target::CodegenTarget;
 
 use support::{
     CORE_SCHEMA_BYTES, ClientSchemaCase, TARGET_BYTES, VisibleSchemaCase, client_visible_schema,
-    module_authoring_input, module_visible_schema, visible_schema,
+    module_authoring_input, module_authoring_input_from, module_visible_schema, visible_schema,
 };
 
 fn target() -> CodegenTarget {
@@ -396,6 +396,52 @@ fn operation_matrix_rejects_missing_and_forbidden_inputs_before_rendering() {
         .expect_err("invalid operation matrix entry must fail");
         assert!(diagnostics.contains(expected));
     }
+}
+
+#[test]
+fn module_authoring_failure_reports_the_authored_diagnostic() {
+    let target = target();
+    let module = module();
+    let dependency = dependency();
+    let output = RelativeOperationPath::parse("candidate").expect("fixture path must parse");
+    let schema = visible_schema(VisibleSchemaCase::EngineModuleExtension, 0);
+    let authoring = module_authoring_input_from(
+        r#"
+#[dagger_sdk::object(root)]
+pub struct FixtureRoot {}
+
+#[dagger_sdk::methods]
+impl FixtureRoot {
+    #[dagger(constructor)]
+    pub fn new() -> FixtureRoot { FixtureRoot {} }
+
+    #[dagger(function)]
+    pub fn address(&self) -> std::net::Ipv4Addr { std::net::Ipv4Addr::LOCALHOST }
+}
+"#,
+    );
+    let diagnostics = project_operation(OperationProjectionRequest {
+        target: &target,
+        operation: OperationKind::GenerateModule,
+        visible_schema_json: &schema,
+        module: Some(&module),
+        output: &output,
+        sdk_dependency: &dependency,
+        authoring: Some(&authoring),
+    })
+    .expect_err("an unsupported exported type must fail authoring");
+    let primary = &diagnostics.diagnostics()[0];
+    assert!(
+        primary
+            .coordinate
+            .as_ref()
+            .is_some_and(|coordinate| coordinate.as_str().starts_with("src/lib.rs:")),
+        "authoring failure must locate the authored source: {diagnostics}"
+    );
+    assert!(
+        primary.message.starts_with("module.foreign-type: "),
+        "authoring failure must carry the compiler diagnostic: {diagnostics}"
+    );
 }
 
 #[test]

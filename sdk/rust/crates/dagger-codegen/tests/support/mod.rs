@@ -31,8 +31,10 @@ pub(crate) const TARGET_BYTES: &[u8] = include_bytes!("../../../../codegen/targe
 pub(crate) const CORE_SCHEMA_BYTES: &[u8] = include_bytes!("../../../../codegen/schema.json");
 
 pub(crate) fn module_authoring_input() -> ModuleAuthoringInput {
-    let path = ModuleSourcePath::new("src/lib.rs").expect("fixture source path must validate");
-    let source = r#"
+    module_authoring_input_from(MODULE_AUTHORING_SOURCE)
+}
+
+pub(crate) const MODULE_AUTHORING_SOURCE: &str = r#"
 #[dagger_sdk::object(root)]
 pub struct FixtureRoot {
     #[dagger(field)]
@@ -54,6 +56,9 @@ impl FixtureRoot {
     ) -> dagger_sdk::Directory { source }
 }
 "#;
+
+pub(crate) fn module_authoring_input_from(source: &str) -> ModuleAuthoringInput {
+    let path = ModuleSourcePath::new("src/lib.rs").expect("fixture source path must validate");
     let mut snapshot = ModuleSourceSnapshot {
         format_version: ModuleFormatVersion::current(),
         package: ModulePackage {

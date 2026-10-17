@@ -9,7 +9,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use crate::diagnostic::{DiagnosticCode, DiagnosticSet};
 use crate::module::{
     GeneratedAssetPath, GeneratedTypeBinding, GeneratedTypeKind, GeneratedTypeRegistry,
-    ModuleCompilation, ModuleCompilationRequest, ModuleCompiler, ModuleTarget,
+    ModuleCompilation, ModuleCompilationRequest, ModuleCompiler, ModuleDiagnosticSet, ModuleTarget,
     Sha256Digest as ModuleDigest, TargetValue, WireName,
 };
 use crate::projection::types::TypeProjection;
@@ -69,7 +69,34 @@ fn compile_authoring(
         sdk_dependency_alias: &authoring.sdk_dependency_alias,
         checked_bindings: &checked_bindings,
     })
-    .map_err(|_| failure())
+    .map_err(authoring_diagnostics)
+}
+
+// Module diagnostics already passed the compiler's safe-text policy and carry only
+// package-relative source coordinates, so the operation boundary keeps their code,
+// explanation, remediation, and authored location instead of one generic failure.
+fn authoring_diagnostics(errors: ModuleDiagnosticSet) -> DiagnosticSet {
+    let diagnostics = errors
+        .diagnostics()
+        .iter()
+        .map(|diagnostic| {
+            let coordinate = diagnostic.source_coordinate().map_or_else(
+                || "operation.authoring".to_owned(),
+                |source| format!("{}:{}:{}", source.path.as_str(), source.line, source.column),
+            );
+            operation_diagnostic(
+                DiagnosticCode::GeneratedProvenanceInvalid,
+                &coordinate,
+                &format!(
+                    "{}: {}; {}",
+                    diagnostic.code().external(),
+                    diagnostic.message(),
+                    diagnostic.remediation()
+                ),
+            )
+        })
+        .collect();
+    DiagnosticSet::new(diagnostics).unwrap_or_else(failure)
 }
 
 fn generated_type_registry(
